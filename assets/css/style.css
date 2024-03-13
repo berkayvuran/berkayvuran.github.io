@@ -393,14 +393,19 @@ article.active {
 .has-scrollbar::-webkit-scrollbar-track {
   background: var(--onyx);
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .has-scrollbar::-webkit-scrollbar-thumb {
   background: var(--orange-yellow-crayola);
   border-radius: 5px;
+  cursor: pointer;
+
 }
 
-.has-scrollbar::-webkit-scrollbar-button { width: 20px; }
+/* .has-scrollbar::-webkit-scrollbar-button {
+  cursor: pointer;
+  width: 20px; } */
 
 
 .content-card {
