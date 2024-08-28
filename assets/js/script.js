@@ -37,7 +37,7 @@ const testimonialsModalFunc = function () {
 for (let i = 0; i < testimonialsItem.length; i++) {
 
   testimonialsItem[i].addEventListener("click", function () {
-
+debugger
     modalImg.src = this.querySelector("[data-testimonials-avatar]").src;
     modalImg.alt = this.querySelector("[data-testimonials-avatar]").alt;
     modalTitle.innerHTML = this.querySelector("[data-testimonials-title]").innerHTML;
@@ -176,7 +176,7 @@ for (let i = 0; i < navigationLinks.length; i++) {
     const elementTextMap = {
       "hakkımda": "about",
       "cv": "cv",
-      "beceriler": "skills",
+      "referanslar": "references",
       "vitrin": "showcase",
       "blog": "blog",
     };
