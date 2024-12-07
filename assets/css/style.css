@@ -55,7 +55,7 @@
   ), hsl(240, 2%, 13%);
   --bg-gradient-yellow-1: linear-gradient(
     to bottom right, 
-    hsl(45, 100%, 71%) 0%, 
+    #A47864 0%, 
     hsla(36, 100%, 69%, 0) 50%
   );
   --bg-gradient-yellow-2: linear-gradient(
@@ -75,7 +75,7 @@
   );
   --text-gradient-yellow: linear-gradient(
     to right, 
-    hsl(45, 100%, 72%), 
+    #A47864, 
     hsl(35, 100%, 68%)
   );
 
@@ -88,7 +88,7 @@
   --smoky-black: hsl(0, 0%, 7%);
   --white-1: hsl(0, 0%, 100%);
   --white-2: hsl(0, 0%, 98%);
-  --orange-yellow-crayola: rgb(255, 205, 4);
+  --orange-yellow-crayola: #A47864;
   /* --orange-yellow-crayola: rgb(255, 190, 151); */
   --viva-magenta: #BC2649;
   --green: rgb(7, 223, 108);
