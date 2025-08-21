@@ -372,6 +372,15 @@ button:disabled {
     opacity: 0.5;
 }
 
+/* Login Button Specific Style */
+#loginBtn {
+    color: white !important; /* Login butonu için beyaz metin */
+}
+
+#loginBtn svg {
+    stroke: white !important; /* SVG ikonları için beyaz renk */
+}
+
 /* Task Item Styles */
 .task-item {
     cursor: pointer;
