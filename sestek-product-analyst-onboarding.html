@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SESTEK Product Analyst Onboarding</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://unpkg.com/lucide@latest/font/lucide.min.css">
 </head>
 <body>
     <div id="app">
@@ -29,7 +28,10 @@
                 
                 <div class="mb-8">
                     <div class="relative">
-                        <i data-lucide="mail" class="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <svg class="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <path d="m22 7-10 5L2 7"></path>
+                        </svg>
                         <input
                             type="email"
                             id="emailInput"
@@ -44,8 +46,11 @@
                     onclick="handleRegisterLogin()"
                     class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-4 px-8 rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
-                    <i data-lucide="user-plus" class="w-5 h-5"></i>
-                    Kayıt Ol / Giriş Yap
+                    <svg class="w-5 h-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 10a8 8 0 0 0-16 0c0 7 8 13 8 13s8-6 8-13a8 8 0 0 0 1 5l2 2m0 0l2-2m-2 2v6"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>Kayıt Ol / Giriş Yap</span>
                 </button>
                 
                 <div class="mt-6 p-4 bg-gradient-to-r from-cyan-50 via-blue-50 to-purple-50 rounded-xl border border-cyan-200">
@@ -54,12 +59,23 @@
                     </p>
                     <div class="flex items-center justify-center gap-4 text-xs text-gray-500">
                         <span class="flex items-center gap-1">
-                            <i data-lucide="target" class="w-3 h-3"></i>
+                            <svg class="w-3 h-3" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="6"></circle>
+                                <circle cx="12" cy="12" r="2"></circle>
+                            </svg>
                             <span id="totalTaskCount">22</span> görev
                         </span>
                         <span class="flex items-center gap-1">
-                            <i data-lucide="trophy" class="w-3 h-3"></i>
-                            <span id="totalPointCount">1450</span> puan
+                            <svg class="w-3 h-3" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                                <path d="M4 22h16"></path>
+                                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                            </svg>
+                            <span id="totalPointCount">1525</span> puan
                         </span>
                     </div>
                 </div>
@@ -95,14 +111,18 @@
                                 <div class="text-3xl font-bold bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 bg-clip-text text-transparent">
                                     <span id="earnedPoints">0</span>
                                 </div>
-                                <div class="text-sm text-gray-500 font-medium">/ <span id="totalPoints">1450</span> puan</div>
+                                <div class="text-sm text-gray-500 font-medium">/ <span id="totalPoints">1525</span> puan</div>
                             </div>
                             <button
                                 onclick="logout()"
                                 class="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                                 title="Çıkış Yap"
                             >
-                                <i data-lucide="log-in" class="w-5 h-5"></i>
+                                <svg class="w-5 h-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -127,7 +147,10 @@
                     <!-- Status Banner -->
                     <div id="statusBanner" class="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl hidden">
                         <div class="flex items-center gap-2 text-green-700">
-                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            <svg class="w-5 h-5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
                             <span class="font-semibold">Kaldığınız yerden devam ediyorsunuz!</span>
                             <span class="text-sm text-green-600">
                                 (<span id="completedCount">0</span>/<span id="totalTasksCount">22</span> görev tamamlandı)
@@ -160,7 +183,10 @@
                         <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
                             <div class="flex items-center justify-between mb-6">
                                 <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                                    <i data-lucide="clock" class="w-7 h-7 text-blue-600"></i>
+                                    <svg class="w-7 h-7 text-blue-600" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
                                     <span id="currentWeekTitle">1</span>. Hafta Görevleri
                                 </h2>
                                 <div class="bg-gradient-to-r from-cyan-50 via-blue-50 to-purple-50 px-4 py-2 rounded-xl border border-cyan-200">
@@ -181,7 +207,10 @@
                         <!-- User Info -->
                         <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
                             <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <i data-lucide="mail" class="w-5 h-5 text-blue-600"></i>
+                                <svg class="w-5 h-5 text-blue-600" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                    <path d="m22 7-10 5L2 7"></path>
+                                </svg>
                                 Kullanıcı Bilgileri
                             </h3>
                             <div class="space-y-3">
@@ -205,7 +234,11 @@
                         <!-- Weekly Stats -->
                         <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
                             <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <i data-lucide="bar-chart-3" class="w-6 h-6 text-blue-600"></i>
+                                <svg class="w-6 h-6 text-blue-600" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                                </svg>
                                 Bu Hafta
                             </h3>
                             <div class="space-y-4">
@@ -234,7 +267,10 @@
                         <!-- Achievements -->
                         <div class="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
                             <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <i data-lucide="award" class="w-6 h-6 text-orange-500"></i>
+                                <svg class="w-6 h-6 text-orange-500" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="8" r="7"></circle>
+                                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                                </svg>
                                 Başarımlar
                             </h3>
                             <div id="achievementsList" class="space-y-3">
@@ -247,7 +283,6 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
