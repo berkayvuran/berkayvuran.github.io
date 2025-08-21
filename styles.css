@@ -352,6 +352,7 @@ input:disabled {
 /* Input Styles */
 input[type="email"] {
     outline: none;
+    color: #1f2937; /* Email input için de koyu renk */
 }
 
 input[type="email"]:focus {
@@ -363,6 +364,7 @@ input[type="email"]:focus {
 button {
     cursor: pointer;
     user-select: none;
+    color: #1f2937; /* Koyu gri renk ekledik */
 }
 
 button:disabled {
