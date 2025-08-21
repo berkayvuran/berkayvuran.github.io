@@ -158,7 +158,7 @@ body {
 .tracking-wide { letter-spacing: 0.025em; }
 .tracking-wider { letter-spacing: 0.05em; }
 
-.text-white { color: white; }
+.text-white { color: #1f2937 !important; } /* Beyaz yerine koyu gri */
 .text-gray-400 { color: #9ca3af; }
 .text-gray-500 { color: #6b7280; }
 .text-gray-600 { color: #4b5563; }
@@ -364,7 +364,6 @@ input[type="email"]:focus {
 button {
     cursor: pointer;
     user-select: none;
-    color: #1f2937; /* Koyu gri renk ekledik */
 }
 
 button:disabled {
@@ -372,13 +371,17 @@ button:disabled {
     opacity: 0.5;
 }
 
-/* Login Button Specific Style */
+/* Login Button Specific Style - Koyu yazı için */
 #loginBtn {
-    color: white !important; /* Login butonu için beyaz metin */
+    color: #1f2937 !important;
 }
 
 #loginBtn svg {
-    stroke: white !important; /* SVG ikonları için beyaz renk */
+    stroke: #1f2937 !important;
+}
+
+#loginBtn span {
+    color: #1f2937 !important;
 }
 
 /* Task Item Styles */
@@ -404,6 +407,16 @@ button:disabled {
 
 .achievement-card.unlocked:hover {
     transform: scale(1.05);
+}
+
+/* Başarım kartlarındaki beyaz yazıları koyu yap */
+.achievement-card .text-white {
+    color: #1f2937 !important;
+}
+
+/* Gradient arka planlı elementlerdeki beyaz yazıları koyu yap */
+[class*="bg-gradient"] .text-white {
+    color: #1f2937 !important;
 }
 
 /* Custom scrollbar */
