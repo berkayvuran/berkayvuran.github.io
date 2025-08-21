@@ -7,7 +7,7 @@ let currentWeek = 1;
 let registrationDate = null;
 let isLogin = false;
 
-// Tasks Data
+// Tasks Data - Puan değerlerini düzelttim
 const tasks = [
     // Hafta 1 - Temel Kurulum, Araçlar ve İK Süreçleri
     { id: 101, title: 'Oryantasyon Eğitimi Formu ulaştı ve anlaşıldı mı?', category: 'İK', points: 50, week: 1, difficulty: 'Kolay', link: 'https://sestek-my.sharepoint.com/:b:/p/damla_mardin/Edyl-acAN2xEh4Uwdt1Shf4BbMywT2gaF338stSrWyh5JA?e=reCOCE' },
@@ -35,6 +35,23 @@ const tasks = [
     { id: 121, title: 'Claude hakkında bilgilendirme yapıldı mı?', category: 'Eğitim', points: 75, week: 2, difficulty: 'Orta', link: 'https://claude.ai/' },
     { id: 122, title: 'OneNote dokümanları paylaşıldı mı?', category: 'Eğitim', points: 50, week: 2, difficulty: 'Kolay' }
 ];
+
+// SVG Icons
+const icons = {
+    mail: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 5L2 7"></path></svg>',
+    userPlus: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>',
+    target: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>',
+    trophy: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>',
+    logIn: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>',
+    clock: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+    checkCircle: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
+    bookOpen: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>',
+    users: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+    zap: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+    barChart3: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
+    award: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>',
+    star: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>'
+};
 
 // Achievements Data
 const achievements = [
@@ -105,10 +122,10 @@ function getDifficultyColor(difficulty) {
 
 function getCategoryIcon(category) {
     switch(category) {
-        case 'Eğitim': return 'book-open';
-        case 'İK': return 'users';
-        case 'IT': return 'zap';
-        default: return 'check-circle';
+        case 'Eğitim': return icons.bookOpen;
+        case 'İK': return icons.users;
+        case 'IT': return icons.zap;
+        default: return icons.checkCircle;
     }
 }
 
@@ -179,6 +196,11 @@ function setCurrentWeek(week) {
     saveUserData();
     updateUI();
 }
+
+window.setCurrentWeek = setCurrentWeek;
+window.handleRegisterLogin = handleRegisterLogin;
+window.logout = logout;
+window.toggleTask = toggleTask;
 
 function showLoginScreen() {
     document.getElementById('loginScreen').classList.remove('hidden');
@@ -256,7 +278,7 @@ function updateUI() {
                 <div class="flex-1">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="p-2 rounded-lg border ${getCategoryColor(task.category)}">
-                            <i data-lucide="${getCategoryIcon(task.category)}" class="w-5 h-5"></i>
+                            ${getCategoryIcon(task.category)}
                         </div>
                         <span class="px-3 py-1 rounded-full text-xs font-bold border ${getCategoryColor(task.category)}">
                             ${task.category}
@@ -300,7 +322,7 @@ function updateUI() {
                             ? 'bg-green-500 border-green-500 shadow-lg'
                             : 'border-gray-300 hover:border-blue-400'
                     }">
-                        ${isCompleted ? '<i data-lucide="check-circle" class="w-5 h-5 text-white"></i>' : ''}
+                        ${isCompleted ? icons.checkCircle.replace('width="20"', 'width="20" class="text-white"') : ''}
                     </div>
                 </div>
             </div>
@@ -336,7 +358,7 @@ function updateUI() {
         achievementDiv.innerHTML = `
             <div class="flex items-center gap-3">
                 <div class="p-2 rounded-lg ${isUnlocked ? 'bg-white/20' : 'bg-gray-200'}">
-                    <i data-lucide="${achievement.icon}" class="w-6 h-6"></i>
+                    ${icons[achievement.icon]}
                 </div>
                 <div>
                     <div class="font-bold text-sm ${isUnlocked ? 'text-white' : 'text-gray-500'}">
@@ -352,28 +374,27 @@ function updateUI() {
         achievementsList.appendChild(achievementDiv);
     });
     
-    // Re-initialize Lucide icons
-    if (window.lucide) {
-        lucide.createIcons();
-    }
+    // Update all icon elements in sidebar
+    document.querySelectorAll('[data-icon]').forEach(el => {
+        const iconName = el.getAttribute('data-icon');
+        if (icons[iconName]) {
+            el.innerHTML = icons[iconName];
+        }
+    });
 }
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize total counts on login screen
+    const totalPoints = tasks.reduce((sum, task) => sum + task.points, 0);
     document.getElementById('totalTaskCount').textContent = tasks.length;
-    document.getElementById('totalPointCount').textContent = tasks.reduce((sum, task) => sum + task.points, 0);
+    document.getElementById('totalPointCount').textContent = totalPoints;
     
     // Try to load existing user data
     if (loadUserData()) {
         showMainApp();
     } else {
         showLoginScreen();
-    }
-    
-    // Initialize Lucide icons
-    if (window.lucide) {
-        lucide.createIcons();
     }
     
     // Add enter key support for email input
