@@ -298,3 +298,78 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
   switchLanguage(savedLanguage);
 });
+
+// Light mode toggle functionality
+const themeSwitcher = document.querySelector('.theme-switcher');
+const themeBtns = document.querySelectorAll('.theme-btn');
+const html = document.documentElement;
+
+// Check for saved theme preference or default to dark mode
+const currentTheme = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', currentTheme);
+
+// Update active button state
+themeBtns.forEach(btn => {
+  if (btn.getAttribute('data-theme') === currentTheme) {
+    btn.classList.add('active');
+  }
+});
+
+// Theme toggle function
+function setTheme(theme) {
+  html.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  
+  // Update active button state
+  themeBtns.forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.getAttribute('data-theme') === theme) {
+      btn.classList.add('active');
+    }
+  });
+}
+
+// Add click event to theme buttons
+themeBtns.forEach(btn => {
+  btn.addEventListener('click', function() {
+    const theme = this.getAttribute('data-theme');
+    setTheme(theme);
+  });
+});
+
+// Add keyboard shortcut for theme switching (Ctrl/Cmd + T)
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+    e.preventDefault();
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+  }
+});
+
+// Add system theme detection
+function detectSystemTheme() {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    return 'light';
+  }
+  return 'dark';
+}
+
+// Listen for system theme changes
+if (window.matchMedia) {
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+    if (!localStorage.getItem('theme')) { // Only auto-switch if user hasn't manually set a preference
+      const newTheme = e.matches ? 'light' : 'dark';
+      setTheme(newTheme);
+    }
+  });
+}
+
+// Initialize theme on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // If no theme is saved, use system preference
+  if (!localStorage.getItem('theme')) {
+    const systemTheme = detectSystemTheme();
+    setTheme(systemTheme);
+  }
+});
