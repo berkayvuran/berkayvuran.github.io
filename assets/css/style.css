@@ -269,23 +269,20 @@
   background: var(--smoky-black);
 }
 
-/* Light mode sidebar and navbar - keep original layout */
+/* Light mode sidebar and navbar - ONLY colors */
 [data-theme="light"] .sidebar {
   background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] .navbar {
   background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] article {
   background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Text colors with proper contrast */
+/* Text colors with proper contrast - ONLY colors */
 [data-theme="light"] .name,
 [data-theme="light"] .article-title,
 [data-theme="light"] .service-item-title,
@@ -315,46 +312,16 @@
   color: hsl(0, 0%, 25%);
 }
 
-/* Light mode navbar active state fix - more subtle color */
 [data-theme="light"] .navbar-link.active {
   color: var(--white-1);
   background: hsl(0, 0%, 20%);
-  border-radius: 8px;
-  padding: 8px 16px;
-  box-shadow: var(--shadow-1);
 }
 
-[data-theme="light"] .navbar-link.active:hover {
-  background: hsl(0, 0%, 25%);
-}
-
-/* Light mode navbar hover state fix */
 [data-theme="light"] .navbar-link:hover:not(.active) {
   color: hsl(0, 0%, 8%);
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  padding: 8px 16px;
-  transition: all var(--transition-1);
 }
 
-/* Light mode navbar general improvements */
-[data-theme="light"] .navbar-link {
-  color: hsl(0, 0%, 15%);
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: all var(--transition-1);
-}
-
-/* Light mode navbar container improvements */
-[data-theme="light"] .navbar {
-  background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-2);
-  border-radius: 12px;
-  padding: 8px;
-}
-
-/* Light mode contact and social link hover states */
 [data-theme="light"] .contact-link:hover,
 [data-theme="light"] .social-link:hover {
   color: var(--orange-yellow-crayola);
@@ -372,159 +339,66 @@
   color: hsl(0, 0%, 15%);
 }
 
-/* Icons - maintain original styling */
+/* Icons - ONLY colors */
 [data-theme="light"] .icon-box,
 [data-theme="light"] .tt-icon-box,
-[data-theme="light"] .ip-icon-box,
-[data-theme="light"] .resume-icon-box {
-  color: var(--orange-yellow-crayola);
-  background: var(--border-gradient-onyx);
+[data-theme="light"] .ip-icon-box {
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
 }
 
 [data-theme="light"] .icon-box::before,
 [data-theme="light"] .tt-icon-box::before,
 [data-theme="light"] .ip-icon-box::before {
-  background: var(--eerie-black-1);
+  background: rgba(0, 122, 255, 0.05);
 }
 
 [data-theme="light"] .resume-icon-box {
   background: transparent;
+  color: var(--orange-yellow-crayola);
 }
 
-/* Blog section light mode */
-[data-theme="light"] .blog {
-  background: var(--white-1);
-}
-
-[data-theme="light"] .blog .blog-meta {
+/* Social icons - ONLY colors */
+[data-theme="light"] .social-item .social-link {
   color: hsl(0, 0%, 35%);
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
 }
 
-[data-theme="light"] .blog .blog-link {
-  color: hsl(0, 0%, 25%);
-}
-
-[data-theme="light"] .blog .blog-link:hover {
+[data-theme="light"] .social-item .social-link:hover {
   color: var(--orange-yellow-crayola);
+  background: rgba(0, 122, 255, 0.2);
+  border-color: var(--orange-yellow-crayola);
 }
 
-/* Showcase section light mode */
-[data-theme="light"] .showcase {
-  background: var(--white-1);
+/* Title background - ONLY colors */
+[data-theme="light"] .info-content .title {
+  background: hsl(0, 0%, 15%);
+  color: var(--white-1);
 }
 
-[data-theme="light"] .showcase .showcase-link {
-  color: hsl(0, 0%, 25%);
-}
-
-[data-theme="light"] .showcase .showcase-link:hover {
-  color: var(--orange-yellow-crayola);
-}
-
-/* References section light mode */
-[data-theme="light"] .references {
-  background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-2);
-}
-
-[data-theme="light"] .references .testimonials-title {
+/* Headings - ONLY colors */
+[data-theme="light"] .h2,
+[data-theme="light"] .h3,
+[data-theme="light"] .h4,
+[data-theme="light"] .h5 {
   color: hsl(0, 0%, 8%);
 }
 
-[data-theme="light"] .references .content-card {
-  background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .references .testimonials-avatar-box {
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-1);
-  background: var(--white-1);
-}
-
-/* CV section light mode */
-[data-theme="light"] .cv {
-  background: var(--white-1);
-}
-
-[data-theme="light"] .cv .timeline-item span {
-  color: var(--orange-yellow-crayola);
-}
-
-/* Fix for light mode buttons and elements */
-[data-theme="light"] .info_more-btn {
-  color: hsl(0, 0%, 15%);
-  background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .info_more-btn span {
-  color: hsl(0, 0%, 15%);
-}
-
-[data-theme="light"] .resume-button {
-  background: var(--white-1);
-  color: hsl(0, 0%, 8%);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .resume-button .resume-article-title {
+/* Section titles - ONLY colors */
+[data-theme="light"] .service-title,
+[data-theme="light"] .testimonials-title,
+[data-theme="light"] .clients-title,
+[data-theme="light"] .timeline .title-wrapper .h3,
+[data-theme="light"] .skill .title-wrapper .h3,
+[data-theme="light"] .portfolio-title,
+[data-theme="light"] .blog-posts-title,
+[data-theme="light"] .contact-title,
+[data-theme="light"] .form-title {
   color: hsl(0, 0%, 8%);
 }
 
-[data-theme="light"] .accordion {
-  background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* Fix for light mode separators and borders */
-[data-theme="light"] .separator {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .timeline-list {
-  border-left: 2px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .timeline-item::before {
-  background: var(--orange-yellow-crayola);
-  border: 3px solid var(--white-1);
-}
-
-/* Fix for light mode service items */
-[data-theme="light"] .service-item {
-  background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* Fix for light mode testimonials */
-[data-theme="light"] .testimonials-item {
-  background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-2);
-}
-
-/* Fix for light mode about section */
-[data-theme="light"] .about-text {
-  background: var(--white-1);
-}
-
-/* Portfolio light mode fixes */
-[data-theme="light"] .project-item > a {
-  background: var(--white-1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .project-item > a::before {
-  background: var(--white-1);
-}
-
-[data-theme="light"] .project-item-icon-box {
-  background: var(--jet);
-}
-
-/* Contact form light mode */
+/* Form elements - ONLY colors */
 [data-theme="light"] .form-input {
   color: hsl(0, 0%, 8%);
   background: var(--white-1);
@@ -544,7 +418,7 @@
   background: var(--orange-yellow-crayola);
 }
 
-/* Filter select light mode */
+/* Filter elements - ONLY colors */
 [data-theme="light"] .filter-select,
 [data-theme="light"] .select-list,
 [data-theme="light"] .select-item button {
@@ -558,7 +432,28 @@
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-/* Modal light mode */
+/* Filter buttons - ONLY colors */
+[data-theme="light"] .filter-item button {
+  color: hsl(0, 0%, 35%);
+}
+
+[data-theme="light"] .filter-item button:hover {
+  color: var(--orange-yellow-crayola);
+  background: rgba(0, 122, 255, 0.1);
+}
+
+[data-theme="light"] .filter-item button.active {
+  color: var(--orange-yellow-crayola);
+  background: rgba(0, 122, 255, 0.1);
+}
+
+/* Select items - ONLY colors */
+[data-theme="light"] .select-item button:hover {
+  background: rgba(0, 122, 255, 0.1);
+  color: var(--orange-yellow-crayola);
+}
+
+/* Modal - ONLY colors */
 [data-theme="light"] .testimonials-modal {
   background: var(--white-1);
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -569,27 +464,22 @@
   color: var(--white-1);
 }
 
-/* Skills light mode */
-[data-theme="light"] .skill-progress-bg {
-  background: rgba(0, 0, 0, 0.1);
+[data-theme="light"] .modal-close-btn:hover {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
 }
 
-[data-theme="light"] .skill .title-wrapper data {
-  color: hsl(0, 0%, 35%);
-}
-
-/* Content card light mode */
+/* Content cards - ONLY colors */
 [data-theme="light"] .content-card {
   background: var(--white-1);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-2);
 }
 
 [data-theme="light"] .content-card::before {
   background: var(--white-1);
 }
 
-/* Portfolio light mode fixes */
+/* Portfolio and blog - ONLY colors */
 [data-theme="light"] .project-item > a {
   background: var(--white-1);
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -599,11 +489,6 @@
   background: var(--white-1);
 }
 
-[data-theme="light"] .project-item-icon-box {
-  background: var(--jet);
-}
-
-/* Blog light mode fixes */
 [data-theme="light"] .blog-post-item > a {
   background: var(--white-1);
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -613,7 +498,7 @@
   background: var(--white-1);
 }
 
-/* Mapbox light mode */
+/* Mapbox - ONLY colors */
 [data-theme="light"] .mapbox {
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
@@ -622,68 +507,103 @@
   filter: grayscale(0) invert(0);
 }
 
-/* Timeline light mode improvements */
+/* Timeline - ONLY colors */
 [data-theme="light"] .timeline-item::after {
   background: var(--orange-yellow-crayola);
   border: 3px solid var(--white-1);
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Service items light mode improvements */
-[data-theme="light"] .service-item {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-2);
+[data-theme="light"] .timeline-item::before {
+  background: var(--orange-yellow-crayola);
+  border: 3px solid var(--white-1);
 }
 
-/* Testimonials light mode improvements */
+/* Skills - ONLY colors */
+[data-theme="light"] .skill-progress-bg {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .skill .title-wrapper data {
+  color: hsl(0, 0%, 35%);
+}
+
+/* Separator - ONLY colors */
+[data-theme="light"] .separator {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Timeline list - ONLY colors */
+[data-theme="light"] .timeline-list {
+  border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Testimonials avatar - ONLY colors */
 [data-theme="light"] .testimonials-avatar-box {
   border: 2px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-1);
 }
 
-/* Accordion light mode improvements */
-[data-theme="light"] .accordion:hover {
-  background: rgba(0, 122, 255, 0.1);
-  color: var(--orange-yellow-crayola);
+/* Avatar box - ONLY colors */
+[data-theme="light"] .avatar-box {
+  border: 3px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Resume button light mode improvements */
-[data-theme="light"] .resume-button:hover {
-  background: rgba(0, 122, 255, 0.1);
-  border-color: var(--orange-yellow-crayola);
+/* Main content - ONLY colors */
+[data-theme="light"] main {
+  background: var(--smoky-black);
 }
 
-/* Info more button light mode improvements */
-[data-theme="light"] .info_more-btn:hover {
-  background: rgba(0, 122, 255, 0.1);
-  border-color: var(--orange-yellow-crayola);
+/* Responsive sidebar - ONLY colors */
+@media (min-width: 1250px) {
+  [data-theme="light"] .sidebar {
+    background: var(--white-1);
+  }
+  
+  [data-theme="light"] .main-content {
+    background: var(--smoky-black);
+  }
 }
 
-/* Social links light mode improvements */
-[data-theme="light"] .social-item .social-link:hover {
-  color: var(--orange-yellow-crayola);
-  transform: scale(1.1);
+/* Focus states - ONLY colors */
+[data-theme="light"] *:focus-visible {
+  outline: 2px solid var(--orange-yellow-crayola);
+  outline-offset: 2px;
 }
 
-/* Contact links light mode improvements */
-[data-theme="light"] .contact-info .contact-link:hover {
-  color: var(--orange-yellow-crayola);
+/* Selection - ONLY colors */
+[data-theme="light"] ::selection {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
 }
 
-/* Filter buttons light mode improvements */
-[data-theme="light"] .filter-item button:hover {
-  color: var(--orange-yellow-crayola);
+/* Placeholder - ONLY colors */
+[data-theme="light"] .form-input::placeholder {
+  color: hsl(0, 0%, 40%);
+  opacity: 1;
 }
 
-[data-theme="light"] .filter-item button.active {
-  color: var(--orange-yellow-crayola);
-  font-weight: var(--fw-500);
+/* Disabled state - ONLY colors */
+[data-theme="light"] .form-btn:disabled {
+  background: hsl(0, 0%, 80%);
+  color: hsl(0, 0%, 40%);
 }
 
-/* Select items light mode improvements */
-[data-theme="light"] .select-item button:hover {
-  background: rgba(0, 122, 255, 0.1);
-  color: var(--orange-yellow-crayola);
+[data-theme="light"] .form-btn:disabled:hover {
+  background: hsl(0, 0%, 80%);
+  color: hsl(0, 0%, 40%);
+}
+
+/* Scrollbar - ONLY colors */
+[data-theme="light"] .has-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .has-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--orange-yellow-crayola);
+}
+
+/* Overlay - ONLY colors */
+[data-theme="light"] .overlay.active {
+  background: rgba(0, 0, 0, 0.6);
 }
 
 /*-----------------------------------*\
@@ -3158,5 +3078,64 @@ textarea.form-input::-webkit-resizer { display: none; }
 [data-theme="light"] .form-title {
   color: hsl(0, 0%, 8%) !important;
   font-weight: var(--fw-600);
+}
+
+/* Light mode name readability fix - ONLY color, no layout changes */
+[data-theme="light"] .info-content .name {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+/* Light mode title background fix - ONLY color, no layout changes */
+[data-theme="light"] .info-content .title {
+  background: hsl(0, 0%, 15%);
+  color: var(--white-1);
+}
+
+/* Light mode "What I'm Doing" heading fix - ONLY color, no layout changes */
+[data-theme="light"] .h2,
+[data-theme="light"] .h3,
+[data-theme="light"] .h4,
+[data-theme="light"] .h5 {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+/* Light mode section headings fix - ONLY color, no layout changes */
+[data-theme="light"] .service-title,
+[data-theme="light"] .testimonials-title,
+[data-theme="light"] .clients-title,
+[data-theme="light"] .timeline .title-wrapper .h3,
+[data-theme="light"] .skill .title-wrapper .h3,
+[data-theme="light"] .portfolio-title,
+[data-theme="light"] .blog-posts-title,
+[data-theme="light"] .contact-title,
+[data-theme="light"] .form-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+/* Light mode navbar active state fix - ONLY color, no layout changes */
+[data-theme="light"] .navbar-link.active {
+  color: var(--white-1);
+  background: hsl(0, 0%, 20%);
+}
+
+[data-theme="light"] .navbar-link.active:hover {
+  background: hsl(0, 0%, 25%);
+}
+
+/* Light mode navbar hover state fix - ONLY color, no layout changes */
+[data-theme="light"] .navbar-link:hover:not(.active) {
+  color: hsl(0, 0%, 8%);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Light mode navbar general - ONLY color, no layout changes */
+[data-theme="light"] .navbar-link {
+  color: hsl(0, 0%, 15%);
+}
+
+/* Light mode navbar container - ONLY color, no layout changes */
+[data-theme="light"] .navbar {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
