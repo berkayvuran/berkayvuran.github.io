@@ -24,6 +24,47 @@
   transition: color var(--transition-1);
 }
 
+/* Light mode switcher styles */
+.theme-switcher {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--border-gradient-onyx);
+  border: 1px solid var(--jet);
+  border-radius: 50px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-1);
+}
+
+.theme-switcher button {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--transition-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--light-gray);
+}
+
+.theme-switcher button.active {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+  transform: scale(1.1);
+}
+
+.theme-switcher button:hover {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+  transform: scale(1.05);
+}
 
 :root {
 
@@ -140,9 +181,464 @@
 
 }
 
+/* Light mode variables */
+[data-theme="light"] {
+  /* gradient */
+  --bg-gradient-onyx: linear-gradient(
+    to bottom left, 
+    rgba(0, 122, 255, 0.8) 3%, 
+    hsl(220, 13%, 85%) 97%
+  );
+  --bg-gradient-onyx-2: linear-gradient(
+    to bottom left, 
+    rgba(52, 199, 89, 0.8) 3%, 
+    hsl(220, 13%, 85%) 97%
+  );
+  --bg-gradient-onyx-3: linear-gradient(
+    to bottom left, 
+    rgba(90, 200, 250, 0.8) 3%, 
+    hsl(220, 13%, 85%) 97%
+  );
+  --bg-gradient-jet: linear-gradient(
+    to bottom right, 
+    hsla(220, 15%, 80%, 0.25) 0%, 
+    hsla(220, 15%, 88%, 0) 100%
+  ), hsl(220, 15%, 85%);
+  --bg-gradient-yellow-1: linear-gradient(
+    to bottom right, 
+    rgba(0, 122, 255, 0.6) 0%, 
+    hsla(210, 100%, 50%, 0) 50%
+  );
+  --bg-gradient-yellow-2: linear-gradient(
+    135deg, 
+    hsla(210, 100%, 60%, 0.25) 0%, 
+    hsla(220, 100%, 55%, 0) 59.86%
+  ), hsl(220, 15%, 85%);
+  --border-gradient-onyx: linear-gradient(
+    to bottom right, 
+    rgba(0, 0, 0, 0.1) 0%, 
+    rgba(0, 0, 0, 0.05) 50%
+  );
+  --border-gradient-onyx-2: linear-gradient(
+    to top left, 
+    rgba(0, 0, 0, 0.1) 0%, 
+    rgba(0, 0, 0, 0.05) 50%
+  );
 
+  /* solid - better contrast for light mode */
+  --jet: hsl(220, 15%, 35%);
+  --onyx: hsl(220, 18%, 25%);
+  --eerie-black-1: hsl(220, 20%, 20%);
+  --eerie-black-2: hsl(220, 20%, 15%);
+  --smoky-black: hsl(220, 25%, 95%);
+  --white-1: hsl(0, 0%, 100%);
+  --white-2: hsl(0, 0%, 98%);
+  --light-gray: hsl(220, 15%, 25%);
+  --light-gray-70: hsla(220, 15%, 25%, 0.7);
 
+  /* shadow */
+  --shadow-1: -4px 8px 24px hsla(220, 50%, 95%, 0.25);
+  --shadow-2: 0 6px 30px hsla(220, 50%, 95%, 0.25);
+  --shadow-3: 0 16px 40px hsla(220, 50%, 95%, 0.25);
+  --shadow-4: 0 25px 50px hsla(220, 50%, 95%, 0.15);
+  --shadow-5: 0 24px 80px hsla(220, 50%, 95%, 0.25);
+}
 
+/* Light mode switcher light theme styles */
+[data-theme="light"] .theme-switcher {
+  background: var(--border-gradient-onyx);
+  border: 1px solid var(--jet);
+}
+
+[data-theme="light"] .theme-switcher button {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .theme-switcher button.active {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+}
+
+[data-theme="light"] .theme-switcher button:hover {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+}
+
+/* Light mode specific styles */
+[data-theme="light"] body {
+  background: var(--smoky-black);
+}
+
+[data-theme="light"] .sidebar {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+}
+
+[data-theme="light"] .sidebar-info .name {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .sidebar-info .title {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .contact-item .contact-title {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .contact-item .contact-link {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .contact-item address {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .social-link {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .social-link:hover {
+  color: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] .navbar {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+}
+
+[data-theme="light"] .navbar-link {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .navbar-link:hover,
+[data-theme="light"] .navbar-link.active {
+  color: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] article {
+  background: var(--smoky-black);
+  border: 1px solid var(--jet);
+}
+
+[data-theme="light"] .article-title {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .about-text p {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .service-item-title {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .service-item-text {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .timeline-item-title {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .timeline-text {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .timeline-item span {
+  color: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] .testimonials-item-title {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .testimonials-text p {
+  color: var(--light-gray);
+}
+
+[data-theme="light"] .accordion {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+}
+
+[data-theme="light"] .accordion .article-title {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .resume-button {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+}
+
+[data-theme="light"] .resume-article-title {
+  color: var(--onyx);
+}
+
+[data-theme="light"] .separator {
+  background: var(--jet);
+}
+
+[data-theme="light"] .icon-box::before,
+[data-theme="light"] .tt-icon-box::before,
+[data-theme="light"] .ip-icon-box::before {
+  background: var(--eerie-black-1);
+}
+
+[data-theme="light"] #languageSwitcher {
+  border: 1px solid var(--jet);
+  background-color: var(--eerie-black-1);
+  color: var(--orange-yellow-crayola);
+}
+
+/* Additional light mode styles for better contrast */
+[data-theme="light"] .timeline-list {
+  border-left: 2px solid var(--jet);
+}
+
+[data-theme="light"] .timeline-item::before {
+  background: var(--orange-yellow-crayola);
+  border: 3px solid var(--smoky-black);
+}
+
+[data-theme="light"] .testimonials-avatar-box {
+  border: 3px solid var(--jet);
+}
+
+[data-theme="light"] .content-card {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+}
+
+[data-theme="light"] .service-icon-box {
+  background: var(--border-gradient-onyx);
+}
+
+[data-theme="light"] .service-icon-box::before {
+  background: var(--eerie-black-1);
+}
+
+/* Fix for light mode text visibility */
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6 {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] p,
+[data-theme="light"] span,
+[data-theme="light"] li,
+[data-theme="light"] a {
+  color: var(--light-gray) !important;
+}
+
+[data-theme="light"] .name {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .title {
+  color: var(--light-gray) !important;
+}
+
+[data-theme="light"] .contact-title {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .contact-link {
+  color: var(--light-gray) !important;
+}
+
+[data-theme="light"] .social-link {
+  color: var(--light-gray) !important;
+}
+
+[data-theme="light"] .navbar-link {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .article-title {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .service-item-title {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .service-item-text {
+  color: var(--light-gray) !important;
+}
+
+[data-theme="light"] .timeline-item-title {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .timeline-text {
+  color: var(--light-gray) !important;
+}
+
+[data-theme="light"] .testimonials-item-title {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .testimonials-text p {
+  color: var(--light-gray) !important;
+}
+
+[data-theme="light"] .accordion .article-title {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .resume-article-title {
+  color: var(--onyx) !important;
+}
+
+/* Fix for light mode icons */
+[data-theme="light"] .icon-box,
+[data-theme="light"] .tt-icon-box,
+[data-theme="light"] .ip-icon-box,
+[data-theme="light"] .resume-icon-box {
+  color: var(--orange-yellow-crayola) !important;
+}
+
+[data-theme="light"] .icon-box ion-icon,
+[data-theme="light"] .tt-icon-box ion-icon,
+[data-theme="light"] .ip-icon-box ion-icon,
+[data-theme="light"] .resume-icon-box ion-icon {
+  color: inherit !important;
+}
+
+/* Fix for light mode buttons */
+[data-theme="light"] button {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .info_more-btn {
+  color: var(--onyx) !important;
+}
+
+[data-theme="light"] .info_more-btn span {
+  color: var(--onyx) !important;
+}
+
+/* Fix for light mode links */
+[data-theme="light"] a {
+  color: var(--light-gray) !important;
+}
+
+[data-theme="light"] a:hover {
+  color: var(--orange-yellow-crayola) !important;
+}
+
+/* Fix for light mode form elements */
+[data-theme="light"] select,
+[data-theme="light"] option {
+  color: var(--onyx) !important;
+  background-color: var(--eerie-black-1) !important;
+}
+
+[data-theme="light"] select {
+  border: 1px solid var(--jet) !important;
+}
+
+/* Additional light mode improvements */
+[data-theme="light"] .sidebar-info_more {
+  background: var(--bg-gradient-onyx);
+}
+
+[data-theme="light"] .main-content {
+  background: var(--smoky-black);
+}
+
+[data-theme="light"] .timeline-item {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+[data-theme="light"] .service-item {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+[data-theme="light"] .testimonials-item {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+[data-theme="light"] .about-text {
+  background: var(--bg-gradient-onyx);
+  border: 1px solid var(--jet);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+/* Fix for light mode icon backgrounds */
+[data-theme="light"] .icon-box,
+[data-theme="light"] .tt-icon-box,
+[data-theme="light"] .ip-icon-box,
+[data-theme="light"] .resume-icon-box {
+  background: var(--border-gradient-onyx) !important;
+}
+
+[data-theme="light"] .icon-box::before,
+[data-theme="light"] .tt-icon-box::before,
+[data-theme="light"] .ip-icon-box::before,
+[data-theme="light"] .resume-icon-box::before {
+  background: var(--eerie-black-1) !important;
+}
+
+/* Fix for light mode button backgrounds */
+[data-theme="light"] .info_more-btn {
+  background: var(--bg-gradient-onyx) !important;
+  border: 1px solid var(--jet) !important;
+  padding: 10px 15px !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="light"] .resume-button {
+  background: var(--bg-gradient-onyx) !important;
+  border: 1px solid var(--jet) !important;
+  padding: 15px 25px !important;
+  border-radius: 12px !important;
+}
+
+/* Fix for light mode accordion */
+[data-theme="light"] .accordion {
+  background: var(--bg-gradient-onyx) !important;
+  border: 1px solid var(--jet) !important;
+  padding: 20px !important;
+  border-radius: 15px !important;
+  margin-bottom: 20px !important;
+}
+
+/* Fix for light mode navbar */
+[data-theme="light"] .navbar {
+  background: var(--bg-gradient-onyx) !important;
+  border: 1px solid var(--jet) !important;
+  padding: 15px 20px !important;
+  border-radius: 15px !important;
+  margin-bottom: 20px !important;
+}
+
+/* Fix for light mode sidebar */
+[data-theme="light"] .sidebar {
+  background: var(--bg-gradient-onyx) !important;
+  border: 1px solid var(--jet) !important;
+  padding: 20px !important;
+  border-radius: 20px !important;
+}
 
 /*-----------------------------------*\
   #RESET
@@ -2140,4 +2636,25 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .timeline-text { max-width: 700px; }
 
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color var(--transition-1), 
+              color var(--transition-1), 
+              border-color var(--transition-1),
+              box-shadow var(--transition-1);
+}
+
+/* Theme switcher responsive design */
+@media (max-width: 768px) {
+  .theme-switcher {
+    top: 10px;
+    right: 10px;
+    padding: 6px;
+  }
+  
+  .theme-switcher button {
+    padding: 6px;
+  }
 }
