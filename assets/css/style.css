@@ -315,15 +315,46 @@
   color: hsl(0, 0%, 25%);
 }
 
+/* Light mode navbar active state fix - more subtle color */
 [data-theme="light"] .navbar-link.active {
   color: var(--white-1);
-  background: var(--orange-yellow-crayola);
+  background: hsl(0, 0%, 20%);
+  border-radius: 8px;
+  padding: 8px 16px;
+  box-shadow: var(--shadow-1);
 }
 
+[data-theme="light"] .navbar-link.active:hover {
+  background: hsl(0, 0%, 25%);
+}
+
+/* Light mode navbar hover state fix */
 [data-theme="light"] .navbar-link:hover:not(.active) {
-  color: var(--orange-yellow-crayola);
+  color: hsl(0, 0%, 8%);
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: all var(--transition-1);
 }
 
+/* Light mode navbar general improvements */
+[data-theme="light"] .navbar-link {
+  color: hsl(0, 0%, 15%);
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all var(--transition-1);
+}
+
+/* Light mode navbar container improvements */
+[data-theme="light"] .navbar {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+/* Light mode contact and social link hover states */
 [data-theme="light"] .contact-link:hover,
 [data-theme="light"] .social-link:hover {
   color: var(--orange-yellow-crayola);
@@ -393,6 +424,8 @@
 /* References section light mode */
 [data-theme="light"] .references {
   background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
 }
 
 [data-theme="light"] .references .testimonials-title {
@@ -406,6 +439,8 @@
 
 [data-theme="light"] .references .testimonials-avatar-box {
   border: 2px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-1);
+  background: var(--white-1);
 }
 
 /* CV section light mode */
@@ -467,6 +502,7 @@
 [data-theme="light"] .testimonials-item {
   background: var(--white-1);
   border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
 }
 
 /* Fix for light mode about section */
@@ -546,6 +582,7 @@
 [data-theme="light"] .content-card {
   background: var(--white-1);
   border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
 }
 
 [data-theme="light"] .content-card::before {
@@ -2881,15 +2918,15 @@ textarea.form-input::-webkit-resizer { display: none; }
 [data-theme="light"] .icon-box,
 [data-theme="light"] .tt-icon-box,
 [data-theme="light"] .ip-icon-box {
-  background: var(--border-gradient-onyx);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
   box-shadow: var(--shadow-1);
 }
 
 [data-theme="light"] .icon-box::before,
 [data-theme="light"] .tt-icon-box::before,
 [data-theme="light"] .ip-icon-box::before {
-  background: var(--eerie-black-1);
+  background: rgba(0, 122, 255, 0.05);
 }
 
 [data-theme="light"] .resume-icon-box {
@@ -2911,10 +2948,17 @@ textarea.form-input::-webkit-resizer { display: none; }
 /* Light mode social links improvements */
 [data-theme="light"] .social-item .social-link {
   color: hsl(0, 0%, 35%);
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  border-radius: 50%;
+  padding: 8px;
+  transition: all var(--transition-1);
 }
 
 [data-theme="light"] .social-item .social-link:hover {
   color: var(--orange-yellow-crayola);
+  background: rgba(0, 122, 255, 0.2);
+  border-color: var(--orange-yellow-crayola);
   transform: scale(1.1);
 }
 
@@ -3076,5 +3120,43 @@ textarea.form-input::-webkit-resizer { display: none; }
 [data-theme="light"] .testimonials-company {
   color: hsl(0, 0%, 15%) !important;
   font-weight: var(--fw-500);
+}
+
+/* Light mode name readability fix */
+[data-theme="light"] .info-content .name {
+  color: hsl(0, 0%, 8%) !important;
+  font-weight: var(--fw-500);
+  text-shadow: none;
+}
+
+/* Light mode title background fix - more professional color */
+[data-theme="light"] .info-content .title {
+  background: hsl(0, 0%, 15%);
+  color: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-weight: var(--fw-500);
+}
+
+/* Light mode "What I'm Doing" heading fix */
+[data-theme="light"] .h2,
+[data-theme="light"] .h3,
+[data-theme="light"] .h4,
+[data-theme="light"] .h5 {
+  color: hsl(0, 0%, 8%) !important;
+  font-weight: var(--fw-600);
+}
+
+/* Light mode section headings fix */
+[data-theme="light"] .service-title,
+[data-theme="light"] .testimonials-title,
+[data-theme="light"] .clients-title,
+[data-theme="light"] .timeline .title-wrapper .h3,
+[data-theme="light"] .skill .title-wrapper .h3,
+[data-theme="light"] .portfolio-title,
+[data-theme="light"] .blog-posts-title,
+[data-theme="light"] .contact-title,
+[data-theme="light"] .form-title {
+  color: hsl(0, 0%, 8%) !important;
+  font-weight: var(--fw-600);
 }
 
