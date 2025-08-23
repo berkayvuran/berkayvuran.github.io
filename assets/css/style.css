@@ -35,68 +35,67 @@
 
   --bg-gradient-onyx: linear-gradient(
     to bottom left, 
-    rgb(255, 190, 151) 3%, 
-    hsl(0, 0%, 19%) 97%
+    rgba(0, 122, 255, 0.8) 3%, 
+    hsl(220, 13%, 18%) 97%
   );
   --bg-gradient-onyx-2: linear-gradient(
     to bottom left, 
-    rgb(7, 223, 108) 3%, 
-    hsl(0, 0%, 19%) 97%
+    rgba(52, 199, 89, 0.8) 3%, 
+    hsl(220, 13%, 18%) 97%
   );
   --bg-gradient-onyx-3: linear-gradient(
     to bottom left, 
-    rgb(4, 213, 255) 3%, 
-    hsl(0, 0%, 19%) 97%
+    rgba(90, 200, 250, 0.8) 3%, 
+    hsl(220, 13%, 18%) 97%
   );
   --bg-gradient-jet: linear-gradient(
     to bottom right, 
-    hsla(240, 1%, 18%, 0.251) 0%, 
-    hsla(240, 2%, 11%, 0) 100%
-  ), hsl(240, 2%, 13%);
+    hsla(220, 15%, 20%, 0.25) 0%, 
+    hsla(220, 15%, 12%, 0) 100%
+  ), hsl(220, 15%, 15%);
   --bg-gradient-yellow-1: linear-gradient(
     to bottom right, 
-    #A47864 0%, 
-    hsla(36, 100%, 69%, 0) 50%
+    rgba(0, 122, 255, 0.6) 0%, 
+    hsla(210, 100%, 50%, 0) 50%
   );
   --bg-gradient-yellow-2: linear-gradient(
     135deg, 
-    hsla(45, 100%, 71%, 0.251) 0%, 
-    hsla(35, 100%, 68%, 0) 59.86%
-  ), hsl(240, 2%, 13%);
+    hsla(210, 100%, 60%, 0.25) 0%, 
+    hsla(220, 100%, 55%, 0) 59.86%
+  ), hsl(220, 15%, 15%);
   --border-gradient-onyx: linear-gradient(
     to bottom right, 
-    hsl(0, 0%, 25%) 0%, 
-    hsla(0, 0%, 25%, 0) 50%
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.05) 50%
   );
   --border-gradient-onyx-2: linear-gradient(
     to top left, 
-    hsl(0, 0%, 25%) 0%, 
-    hsla(0, 0%, 25%, 0) 50%
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.05) 50%
   );
   --text-gradient-yellow: linear-gradient(
     to right, 
-    #A47864, 
-    hsl(35, 100%, 68%)
+    #007AFF, 
+    #5AC8FA
   );
 
   /* solid */
 
-  --jet: hsl(0, 0%, 22%);
-  --onyx: hsl(240, 1%, 17%);
-  --eerie-black-1: hsl(240, 2%, 13%);
-  --eerie-black-2: hsl(240, 2%, 12%);
-  --smoky-black: hsl(0, 0%, 7%);
+  --jet: hsl(220, 15%, 25%);
+  --onyx: hsl(220, 18%, 20%);
+  --eerie-black-1: hsl(220, 20%, 15%);
+  --eerie-black-2: hsl(220, 20%, 12%);
+  --smoky-black: hsl(220, 25%, 8%);
   --white-1: hsl(0, 0%, 100%);
   --white-2: hsl(0, 0%, 98%);
-  --orange-yellow-crayola: #A47864;
-  /* --orange-yellow-crayola: rgb(255, 190, 151); */
-  --viva-magenta: #BC2649;
-  --green: rgb(7, 223, 108);
-  --blue: rgb(4, 213, 255);
-  --vegas-gold: hsl(45, 54%, 58%);
-  --light-gray: hsl(0, 0%, 84%);
-  --light-gray-70: hsla(0, 0%, 84%, 0.7);
-  --bittersweet-shimmer: hsl(0, 43%, 51%);
+  --orange-yellow-crayola: #007AFF;
+  --viva-magenta: #FF3B30;
+  --green: #34C759;
+  --blue: #5AC8FA;
+  --vegas-gold: #FF9F0A;
+  --light-gray: hsl(220, 15%, 65%);
+  --light-gray-70: hsla(220, 15%, 65%, 0.7);
+  --bittersweet-shimmer: #FF6B6B;
 
   /**
    * typography
@@ -126,11 +125,11 @@
    * shadow
    */
   
-  --shadow-1: -4px 8px 24px hsla(0, 0%, 0%, 0.25);
-  --shadow-2: 0 6px 30px hsla(0, 0%, 0%, 0.25);
-  --shadow-3: 0 16px 40px hsla(0, 0%, 0%, 0.25);
-  --shadow-4: 0 25px 50px hsla(0, 0%, 0%, 0.15);
-  --shadow-5: 0 24px 80px hsla(0, 0%, 0%, 0.25);
+  --shadow-1: -4px 8px 24px hsla(220, 50%, 5%, 0.25);
+  --shadow-2: 0 6px 30px hsla(220, 50%, 5%, 0.25);
+  --shadow-3: 0 16px 40px hsla(220, 50%, 5%, 0.25);
+  --shadow-4: 0 25px 50px hsla(220, 50%, 5%, 0.15);
+  --shadow-5: 0 24px 80px hsla(220, 50%, 5%, 0.25);
 
   /**
    * transition
@@ -656,7 +655,7 @@ main {
   top: 10px;
   left: 0;
   width: 100%;
-  background: hsla(240, 1%, 16%, 0.75);
+  background: hsla(220, 15%, 18%, 0.85);
   backdrop-filter: blur(10px);
   /* border: 1px solid var(--jet); */
   border-radius: 2px 2px 0 0;
@@ -866,7 +865,7 @@ main {
   left: 0;
   width: 100%;
   height: 100vh;
-  background: hsl(0, 0%, 5%);
+  background: hsl(220, 25%, 5%);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -1179,7 +1178,7 @@ main {
   border-radius: 8px;
 }
 
-.select-item button:hover { --eerie-black-2: hsl(240, 2%, 20%); }
+.select-item button:hover { --eerie-black-2: hsl(220, 20%, 20%); }
 
 .project-list {
   display: grid;
@@ -1223,7 +1222,7 @@ main {
   transition: var(--transition-1);
 }
 
-.project-item > a:hover .project-img::before { background: hsla(0, 0%, 0%, 0.5); }
+.project-item > a:hover .project-img::before { background: hsla(220, 25%, 0%, 0.5); }
 
 .project-item-icon-box {
   --scale: 0.8;
@@ -1917,9 +1916,9 @@ textarea.form-input::-webkit-resizer { display: none; }
     * shadow
     */
 
-    --shadow-1: -4px 8px 24px hsla(0, 0%, 0%, 0.125);
-    --shadow-2: 0 16px 30px hsla(0, 0%, 0%, 0.125);
-    --shadow-3: 0 16px 40px hsla(0, 0%, 0%, 0.125);
+    --shadow-1: -4px 8px 24px hsla(220, 50%, 5%, 0.125);
+    --shadow-2: 0 16px 30px hsla(220, 50%, 5%, 0.125);
+    --shadow-3: 0 16px 40px hsla(220, 50%, 5%, 0.125);
 
   }
 
@@ -2033,13 +2032,13 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   body::-webkit-scrollbar-thumb {
     border: 5px solid var(--smoky-black);
-    background: hsla(0, 0%, 100%, 0.1);
+    background: hsla(220, 30%, 60%, 0.2);
     border-radius: 20px;
-    box-shadow: inset 1px 1px 0 hsla(0, 0%, 100%, 0.11),
-                inset -1px -1px 0 hsla(0, 0%, 100%, 0.11);
+    box-shadow: inset 1px 1px 0 hsla(220, 30%, 70%, 0.15),
+                inset -1px -1px 0 hsla(220, 30%, 70%, 0.15);
   }
 
-  body::-webkit-scrollbar-thumb:hover { background: hsla(0, 0%, 100%, 0.15); }
+  body::-webkit-scrollbar-thumb:hover { background: hsla(220, 30%, 70%, 0.25); }
 
   body::-webkit-scrollbar-button { height: 60px; }
 
