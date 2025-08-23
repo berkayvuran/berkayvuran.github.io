@@ -2671,3 +2671,410 @@ textarea.form-input::-webkit-resizer { display: none; }
   }
 }
 
+/* Light mode title background fix */
+[data-theme="light"] .info-content .title {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode sidebar improvements */
+[data-theme="light"] .sidebar {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode navbar improvements */
+[data-theme="light"] .navbar {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode article improvements */
+[data-theme="light"] article {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode info more button improvements */
+[data-theme="light"] .info_more-btn {
+  color: hsl(0, 0%, 15%);
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+[data-theme="light"] .info_more-btn:hover {
+  background: rgba(0, 122, 255, 0.1);
+  border-color: var(--orange-yellow-crayola);
+  color: var(--orange-yellow-crayola);
+}
+
+/* Light mode service items improvements */
+[data-theme="light"] .service-item {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode testimonials improvements */
+[data-theme="light"] .testimonials-item {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode about text improvements */
+[data-theme="light"] .about-text {
+  background: var(--white-1);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode content card improvements */
+[data-theme="light"] .content-card {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+[data-theme="light"] .content-card::before {
+  background: var(--white-1);
+}
+
+/* Light mode accordion improvements */
+[data-theme="light"] .accordion {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode resume button improvements */
+[data-theme="light"] .resume-button {
+  background: var(--white-1);
+  color: hsl(0, 0%, 8%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode portfolio improvements */
+[data-theme="light"] .project-item > a {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+[data-theme="light"] .project-item > a::before {
+  background: var(--white-1);
+}
+
+/* Light mode blog improvements */
+[data-theme="light"] .blog-post-item > a {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+[data-theme="light"] .blog-post-item > a::before {
+  background: var(--white-1);
+}
+
+/* Light mode filter improvements */
+[data-theme="light"] .filter-select,
+[data-theme="light"] .select-list,
+[data-theme="light"] .select-item button {
+  background: var(--white-1);
+  color: hsl(0, 0%, 15%);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-1);
+}
+
+/* Light mode modal improvements */
+[data-theme="light"] .testimonials-modal {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-5);
+}
+
+/* Light mode form improvements */
+[data-theme="light"] .form-input {
+  color: hsl(0, 0%, 8%);
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-1);
+}
+
+[data-theme="light"] .form-input:focus {
+  border-color: var(--orange-yellow-crayola);
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+}
+
+/* Light mode mapbox improvements */
+[data-theme="light"] .mapbox {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode timeline improvements */
+[data-theme="light"] .timeline-item::after {
+  background: var(--orange-yellow-crayola);
+  border: 3px solid var(--white-1);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode skills improvements */
+[data-theme="light"] .skill-progress-bg {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode separator improvements */
+[data-theme="light"] .separator {
+  background: rgba(0, 0, 0, 0.1);
+  height: 2px;
+}
+
+/* Light mode timeline list improvements */
+[data-theme="light"] .timeline-list {
+  border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode testimonials avatar improvements */
+[data-theme="light"] .testimonials-avatar-box {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-1);
+}
+
+/* Light mode hover effects */
+[data-theme="light"] .service-item:hover,
+[data-theme="light"] .testimonials-item:hover,
+[data-theme="light"] .content-card:hover,
+[data-theme="light"] .project-item > a:hover,
+[data-theme="light"] .blog-post-item > a:hover {
+  border-color: var(--orange-yellow-crayola);
+  box-shadow: var(--shadow-3);
+  transform: translateY(-2px);
+  transition: all var(--transition-1);
+}
+
+/* Light mode active states */
+[data-theme="light"] .navbar-link.active {
+  color: var(--white-1);
+  background: var(--orange-yellow-crayola);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode focus states */
+[data-theme="light"] .form-input:focus,
+[data-theme="light"] .filter-select:focus,
+[data-theme="light"] .select-item button:focus {
+  outline: none;
+  border-color: var(--orange-yellow-crayola);
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+}
+
+/* Light mode icon box improvements */
+[data-theme="light"] .icon-box,
+[data-theme="light"] .tt-icon-box,
+[data-theme="light"] .ip-icon-box {
+  background: var(--border-gradient-onyx);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-1);
+}
+
+[data-theme="light"] .icon-box::before,
+[data-theme="light"] .tt-icon-box::before,
+[data-theme="light"] .ip-icon-box::before {
+  background: var(--eerie-black-1);
+}
+
+[data-theme="light"] .resume-icon-box {
+  background: transparent;
+  color: var(--orange-yellow-crayola);
+}
+
+/* Light mode contact info improvements */
+[data-theme="light"] .contact-title {
+  color: hsl(0, 0%, 35%);
+}
+
+[data-theme="light"] .contact-info .contact-link,
+[data-theme="light"] .contact-info time,
+[data-theme="light"] .contact-info address {
+  color: hsl(0, 0%, 15%);
+}
+
+/* Light mode social links improvements */
+[data-theme="light"] .social-item .social-link {
+  color: hsl(0, 0%, 35%);
+}
+
+[data-theme="light"] .social-item .social-link:hover {
+  color: var(--orange-yellow-crayola);
+  transform: scale(1.1);
+}
+
+/* Light mode language switcher improvements */
+[data-theme="light"] #languageSwitcher {
+  background-color: var(--white-1);
+  color: hsl(0, 0%, 15%);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-1);
+}
+
+[data-theme="light"] #languageSwitcher option {
+  background-color: var(--white-1);
+  color: hsl(0, 0%, 15%);
+}
+
+/* Light mode filter list improvements */
+[data-theme="light"] .filter-list {
+  background: transparent;
+}
+
+[data-theme="light"] .filter-item button {
+  color: hsl(0, 0%, 35%);
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all var(--transition-1);
+}
+
+[data-theme="light"] .filter-item button:hover {
+  color: var(--orange-yellow-crayola);
+  background: rgba(0, 122, 255, 0.1);
+}
+
+[data-theme="light"] .filter-item button.active {
+  color: var(--orange-yellow-crayola);
+  background: rgba(0, 122, 255, 0.1);
+  font-weight: var(--fw-500);
+}
+
+/* Light mode scrollbar improvements */
+[data-theme="light"] .has-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .has-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--orange-yellow-crayola);
+}
+
+/* Light mode overlay improvements */
+[data-theme="light"] .overlay.active {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Light mode modal close button improvements */
+[data-theme="light"] .modal-close-btn {
+  background: var(--jet);
+  color: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .modal-close-btn:hover {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+}
+
+/* Light mode avatar box improvements */
+[data-theme="light"] .avatar-box {
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-2);
+}
+
+/* Light mode main content improvements */
+[data-theme="light"] main {
+  background: var(--smoky-black);
+}
+
+/* Light mode responsive improvements */
+@media (min-width: 1250px) {
+  [data-theme="light"] .sidebar {
+    background: var(--white-1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-2);
+  }
+  
+  [data-theme="light"] .main-content {
+    background: var(--smoky-black);
+  }
+}
+
+/* Light mode focus visible improvements */
+[data-theme="light"] *:focus-visible {
+  outline: 2px solid var(--orange-yellow-crayola);
+  outline-offset: 2px;
+}
+
+/* Light mode selection improvements */
+[data-theme="light"] ::selection {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+}
+
+/* Light mode placeholder improvements */
+[data-theme="light"] .form-input::placeholder {
+  color: hsl(0, 0%, 40%);
+  opacity: 1;
+}
+
+/* Light mode disabled state improvements */
+[data-theme="light"] .form-btn:disabled {
+  background: hsl(0, 0%, 80%);
+  color: hsl(0, 0%, 40%);
+  cursor: not-allowed;
+}
+
+[data-theme="light"] .form-btn:disabled:hover {
+  background: hsl(0, 0%, 80%);
+  color: hsl(0, 0%, 40%);
+}
+
+/* Light mode name readability fix */
+[data-theme="light"] .info-content .name {
+  color: hsl(0, 0%, 8%) !important;
+  font-weight: var(--fw-500);
+  text-shadow: none;
+}
+
+/* Light mode title background fix */
+[data-theme="light"] .info-content .title {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode testimonials section titles fix */
+[data-theme="light"] .testimonials-title,
+[data-theme="light"] .testimonials .h3,
+[data-theme="light"] .testimonials .h4,
+[data-theme="light"] .testimonials .h5 {
+  color: hsl(0, 0%, 8%) !important;
+  font-weight: var(--fw-600);
+}
+
+/* Light mode testimonials item titles fix */
+[data-theme="light"] .testimonials-item-title {
+  color: hsl(0, 0%, 8%) !important;
+  font-weight: var(--fw-500);
+}
+
+/* Light mode testimonials text fix */
+[data-theme="light"] .testimonials-text p {
+  color: hsl(0, 0%, 25%) !important;
+}
+
+/* Light mode testimonials meta fix */
+[data-theme="light"] .testimonials-meta,
+[data-theme="light"] .testimonials-category,
+[data-theme="light"] .testimonials-company {
+  color: hsl(0, 0%, 15%) !important;
+  font-weight: var(--fw-500);
+}
+
