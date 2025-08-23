@@ -270,15 +270,15 @@
 }
 
 [data-theme="light"] .sidebar {
-  background: var(--bg-gradient-onyx);
+  background: var(--white-1) !important;
 }
 
 [data-theme="light"] .navbar {
-  background: var(--bg-gradient-onyx);
+  background: var(--white-1) !important;
 }
 
 [data-theme="light"] article {
-  background: var(--smoky-black);
+  background: var(--white-1) !important;
 }
 
 /* Text colors only - no layout changes */
@@ -333,12 +333,20 @@
   color: hsl(0, 0%, 15%) !important;
 }
 
-/* Icons */
+/* Icons - fix dark backgrounds */
 [data-theme="light"] .icon-box,
 [data-theme="light"] .tt-icon-box,
 [data-theme="light"] .ip-icon-box,
 [data-theme="light"] .resume-icon-box {
   color: var(--orange-yellow-crayola) !important;
+  background: var(--white-1) !important;
+}
+
+[data-theme="light"] .icon-box::before,
+[data-theme="light"] .tt-icon-box::before,
+[data-theme="light"] .ip-icon-box::before,
+[data-theme="light"] .resume-icon-box::before {
+  background: var(--white-1) !important;
 }
 
 [data-theme="light"] .icon-box ion-icon,
@@ -350,7 +358,7 @@
 
 /* Blog section light mode */
 [data-theme="light"] .blog {
-  background: var(--smoky-black) !important;
+  background: var(--white-1) !important;
 }
 
 [data-theme="light"] .blog .article-title {
@@ -376,7 +384,7 @@
 
 /* Showcase section light mode */
 [data-theme="light"] .showcase {
-  background: var(--smoky-black) !important;
+  background: var(--white-1) !important;
 }
 
 [data-theme="light"] .showcase .article-title {
@@ -393,6 +401,128 @@
 
 [data-theme="light"] .showcase .showcase-link:hover {
   color: var(--orange-yellow-crayola) !important;
+}
+
+/* References section light mode */
+[data-theme="light"] .references {
+  background: var(--white-1) !important;
+}
+
+[data-theme="light"] .references .article-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+[data-theme="light"] .references .testimonials-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+[data-theme="light"] .references .testimonials-text p {
+  color: hsl(0, 0%, 25%) !important;
+}
+
+[data-theme="light"] .references .content-card {
+  background: var(--white-1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .references .testimonials-avatar-box {
+  border: 2px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* CV section light mode */
+[data-theme="light"] .cv {
+  background: var(--white-1) !important;
+}
+
+[data-theme="light"] .cv .article-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+[data-theme="light"] .cv .timeline-text {
+  color: hsl(0, 0%, 25%) !important;
+}
+
+[data-theme="light"] .cv .timeline-item-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+[data-theme="light"] .cv .timeline-item span {
+  color: var(--orange-yellow-crayola) !important;
+}
+
+/* Fix for light mode buttons and elements */
+[data-theme="light"] .info_more-btn {
+  color: hsl(0, 0%, 15%) !important;
+}
+
+[data-theme="light"] .info_more-btn span {
+  color: hsl(0, 0%, 15%) !important;
+}
+
+[data-theme="light"] .resume-button {
+  background: var(--white-1) !important;
+  color: hsl(0, 0%, 8%) !important;
+}
+
+[data-theme="light"] .resume-button .resume-article-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+[data-theme="light"] .accordion {
+  background: var(--white-1) !important;
+}
+
+[data-theme="light"] .accordion .article-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+/* Fix for light mode separators and borders */
+[data-theme="light"] .separator {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .timeline-list {
+  border-left: 2px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .timeline-item::before {
+  background: var(--orange-yellow-crayola) !important;
+  border: 3px solid var(--white-1) !important;
+}
+
+/* Fix for light mode service items */
+[data-theme="light"] .service-item {
+  background: var(--white-1) !important;
+}
+
+[data-theme="light"] .service-item-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+[data-theme="light"] .service-item-text {
+  color: hsl(0, 0%, 25%) !important;
+}
+
+/* Fix for light mode testimonials */
+[data-theme="light"] .testimonials-item {
+  background: var(--white-1) !important;
+}
+
+[data-theme="light"] .testimonials-item-title {
+  color: hsl(0, 0%, 8%) !important;
+}
+
+[data-theme="light"] .testimonials-text p {
+  color: hsl(0, 0%, 25%) !important;
+}
+
+/* Fix for light mode about section */
+[data-theme="light"] .about-text {
+  background: var(--white-1) !important;
+}
+
+[data-theme="light"] .about-text p {
+  color: hsl(0, 0%, 25%) !important;
 }
 
 /*-----------------------------------*\
