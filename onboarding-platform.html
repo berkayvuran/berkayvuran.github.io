@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnboardPro - Professional Onboarding Platform</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Login Screen Styles */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .app-subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            z-index: 2;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats-card {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        /* Main App Styles */
+        .main-app {
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mini-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .points-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .points-display {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .points-number {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .task-item.completed {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .task-title.completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .task-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .task-points {
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .points-value {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox.checked {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .add-task-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .add-task-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .custom-task-form {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .achievement {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .achievement.unlocked {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .achievement.unlocked .achievement-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .achievement:not(.unlocked) .achievement-icon {
+            background: #f3f4f6;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #22c55e;
+            z-index: 1000;
+            transform: translateX(300px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="login-screen">
+            <div class="login-card">
+                <div class="logo">O</div>
+                <h1 class="app-title">OnboardPro</h1>
+                <p class="app-subtitle">Professional Onboarding Platform</p>
+                
+                <div class="input-group">
+                    <svg class="input-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                        <path d="m22 7-10 5L2 7"></path>
+                    </svg>
+                    <input
+                        type="email"
+                        id="emailInput"
+                        placeholder="Enter your email address..."
+                        class="email-input"
+                    />
+                </div>
+                
+                <button id="loginBtn" class="login-btn" onclick="handleLogin()">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <line x1="19" y1="8" x2="19" y2="14"></line>
+                        <line x1="22" y1="11" x2="16" y2="11"></line>
+                    </svg>
+                    Get Started
+                </button>
+                
+                <div class="stats-card">
+                    <p style="font-size: 14px; margin-bottom: 10px; color: #6b7280;">
+                        <strong>Customize your onboarding journey</strong>
+                    </p>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #9ca3af;">
+                        <span>📝 Custom Tasks</span>
+                        <span>🎯 Track Progress</span>
+                        <span>🏆 Achievements</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
+                    🔒 Your data is stored securely in your browser
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Screen -->
+        <div id="mainApp" class="main-app hidden">
+            <div class="container">
+                <!-- Header -->
+                <div class="header">
+                    <div class="header-top">
+                        <div class="welcome-section">
+                            <div class="mini-logo">O</div>
+                            <div>
+                                <h1 class="welcome-text">
+                                    <span id="welcomeText">Welcome!</span> 🚀
+                                </h1>
+                                <p class="user-info">
+                                    <span id="userEmailDisplay"></span> • Started <span id="daysElapsed">0</span> days ago
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="points-section">
+                            <div class="points-display">
+                                <div class="points-number"><span id="earnedPoints">0</span></div>
+                                <div style="font-size: 12px; color: #6b7280;">/ <span id="totalPoints">0</span> points</div>
+                            </div>
+                            <button onclick="logout()" class="logout-btn" title="Logout">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>Overall Progress</span>
+                            <span><span id="completionRate">0</span>%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progressBar" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Grid -->
+                <div class="content-grid">
+                    <!-- Main Content -->
+                    <div class="main-content">
+                        <div class="section-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Your Onboarding Tasks
+                        </div>
+                        
+                        <button id="addTaskBtn" class="add-task-btn" onclick="showAddTaskForm()">
+                            + Add Custom Task
+                        </button>
+                        
+                        <!-- Add Task Form -->
+                        <div id="addTaskForm" class="custom-task-form hidden">
+                            <div class="form-group">
+                                <label class="form-label">Task Title</label>
+                                <input type="text" id="taskTitle" class="form-input" placeholder="Enter task title...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea id="taskDescription" class="form-textarea" placeholder="Describe the task..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select id="taskCategory" class="form-select">
+                                    <option value="Onboarding">Onboarding</option>
+                                    <option value="Training">Training</option>
+                                    <option value="Setup">Setup</option>
+                                    <option value="Documentation">Documentation</option>
+                                    <option value="Meeting">Meeting</option>
+                                    <option value="Personal">Personal</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Points</label>
+                                <input type="number" id="taskPoints" class="form-input" value="50" min="10" max="500" step="10">
+                            </div>
+                            
+                            <div class="btn-group">
+                                <button onclick="addCustomTask()" class="btn btn-primary">Add Task</button>
+                                <button onclick="hideAddTaskForm()" class="btn btn-secondary">Cancel</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Tasks List -->
+                        <div id="tasksList">
+                            <!-- Tasks will be rendered here -->
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="emptyState" class="empty-state hidden">
+                            <div class="empty-state-icon">📝</div>
+                            <h3>No tasks yet!</h3>
+                            <p>Add your first custom task to get started with your onboarding journey.</p>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="sidebar">
+                        <!-- User Stats -->
+                        <div class="sidebar-card">
+                            <h3 class="section-title">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                    <path d="m22 7-10 5L2 7"></path>
+                                </svg>
+                                Your Profile
+                            </h3>
+                            
+                            <div class="stat-item">
+                                <div class="stat-label">Email</div>
+                                <div class="stat-value" style="font-size: 14px;" id="sidebarEmail"></div>
+                            </div>
+                            
+                            <div class="stat-item">
+                                <div class="stat-label">Status</div>
+                                <div class="stat-value" id="userStatus">Active</div>
+                            </div>
+                            
+                            <div class="stat-item">
+                                <div class="stat-label">Days Active</div>
+                                <div class="stat-value"><span id="sidebarDays">0</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Stats -->
+                        <div class="sidebar-card">
+                            <h3 class="section-title">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                                </svg>
+                                Statistics
+                            </h3>
+                            
+                            <div class="stat-item">
+                                <div class="stat-label">Completed Tasks</div>
+                                <div class="stat-value"><span id="completedTasksCount">0</span>/<span id="totalTasksCount">0</span></div>
+                            </div>
+                            
+                            <div class="stat-item">
+                                <div class="stat-label">Points Earned</div>
+                                <div class="stat-value"><span id="earnedPointsStat">0</span>/<span id="totalPointsStat">0</span></div>
+                            </div>
+                            
+                            <div class="stat-item">
+                                <div class="stat-label">Completion Rate</div>
+                                <div class="stat-value"><span id="completionRateStat">0</span>%</div>
+                            </div>
+                        </div>
+
+                        <!-- Achievements -->
+                        <div class="sidebar-card">
+                            <h3 class="section-title">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="8" r="7"></circle>
+                                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                                </svg>
+                                Achievements
+                            </h3>
+                            
+                            <div id="achievementsList">
+                                <!-- Achievements will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Element -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <script>
+        // Global State
+        let userEmail = '';
+        let isRegistered = false;
+        let completedTasks = new Set();
+        let customTasks = [];
+        let registrationDate = null;
+        let isLogin = false;
+        let taskIdCounter = 1;
+
+        // Default Sample Tasks
+        const defaultTasks = [
+            { 
+                id: 'default-1', 
+                title: 'Complete your profile setup', 
+                description: 'Fill in your basic information and preferences',
+                category: 'Onboarding', 
+                points: 100,
+                isDefault: true
+            },
+            { 
+                id: 'default-2', 
+                title: 'Read the company handbook', 
+                description: 'Familiarize yourself with company policies and culture',
+                category: 'Documentation', 
+                points: 150,
+                isDefault: true
+            },
+            { 
+                id: 'default-3', 
+                title: 'Set up your workspace', 
+                description: 'Configure your tools and development environment',
+                category: 'Setup', 
+                points: 75,
+                isDefault: true
+            },
+            { 
+                id: 'default-4', 
+                title: 'Meet your team members', 
+                description: 'Schedule introductory meetings with your colleagues',
+                category: 'Meeting', 
+                points: 125,
+                isDefault: true
+            },
+            { 
+                id: 'default-5', 
+                title: 'Complete security training', 
+                description: 'Learn about information security best practices',
+                category: 'Training', 
+                points: 200,
+                isDefault: true
+            }
+        ];
+
+        // Achievements Data
+        const achievements = [
+            { 
+                name: 'Getting Started', 
+                description: 'Complete your first task', 
+                icon: '🌟', 
+                checkUnlocked: () => completedTasks.size >= 1
+            },
+            { 
+                name: 'Task Master', 
+                description: 'Complete 5 tasks', 
+                icon: '🎯', 
+                checkUnlocked: () => completedTasks.size >= 5
+            },
+            { 
+                name: 'Point Collector', 
+                description: 'Earn 500 points', 
+                icon: '💎', 
+                checkUnlocked: () => calculateEarnedPoints() >= 500
+            },
+            { 
+                name: 'Customizer', 
+                description: 'Add your first custom task', 
+                icon: '⚡', 
+                checkUnlocked: () => customTasks.length >= 1
+            },
+            { 
+                name: 'Completionist', 
+                description: 'Complete all tasks', 
+                icon: '🏆', 
+                checkUnlocked: () => {
+                    const allTasks = [...defaultTasks, ...customTasks];
+                    return allTasks.length > 0 && allTasks.every(task => completedTasks.has(task.id));
+                }
+            }
+        ];
+
+        // LocalStorage Helper Functions
+        function getStorageKey(email) {
+            return `onboardpro_${email.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        }
+
+        function loadUserData() {
+            const email = localStorage.getItem('onboardpro_current_user');
+            if (email) {
+                const userData = JSON.parse(localStorage.getItem(getStorageKey(email)) || '{}');
+                if (userData.email) {
+                    userEmail = email;
+                    isRegistered = true;
+                    completedTasks = new Set(userData.completedTasks || []);
+                    customTasks = userData.customTasks || [];
+                    registrationDate = userData.registrationDate || null;
+                    taskIdCounter = userData.taskIdCounter || 1;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function saveUserData() {
+            if (isRegistered && userEmail) {
+                const userData = {
+                    email: userEmail,
+                    completedTasks: Array.from(completedTasks),
+                    customTasks,
+                    registrationDate,
+                    taskIdCounter,
+                    lastUpdated: new Date().toISOString()
+                };
+                localStorage.setItem(getStorageKey(userEmail), JSON.stringify(userData));
+                localStorage.setItem('onboardpro_current_user', userEmail);
+            }
+        }
+
+        // Utility Functions
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function getDaysElapsed() {
+            if (!registrationDate) return 0;
+            const start = new Date(registrationDate);
+            const now = new Date();
+            return Math.floor((now - start) / (1000 * 60 * 60 * 24));
+        }
+
+        function getAllTasks() {
+            return [...defaultTasks, ...customTasks];
+        }
+
+        function calculateEarnedPoints() {
+            const allTasks = getAllTasks();
+            return allTasks.filter(task => completedTasks.has(task.id))
+                          .reduce((sum, task) => sum + task.points, 0);
+        }
+
+        function calculateTotalPoints() {
+            const allTasks = getAllTasks();
+            return allTasks.reduce((sum, task) => sum + task.points, 0);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // UI Functions
+        function handleLogin() {
+            const emailInput = document.getElementById('emailInput');
+            const email = emailInput.value.trim();
+            
+            if (!validateEmail(email)) {
+                showNotification('Please enter a valid email address');
+                return;
+            }
+            
+            userEmail = email;
+            const existingUser = localStorage.getItem(getStorageKey(email));
+            
+            if (existingUser) {
+                // Existing user - login
+                const userData = JSON.parse(existingUser);
+                completedTasks = new Set(userData.completedTasks || []);
+                customTasks = userData.customTasks || [];
+                registrationDate = userData.registrationDate;
+                taskIdCounter = userData.taskIdCounter || 1;
+                isLogin = true;
+                showNotification('Welcome back! 🎉');
+            } else {
+                // New user - register
+                registrationDate = new Date().toISOString();
+                isLogin = false;
+                showNotification('Welcome to OnboardPro! 🚀');
+            }
+            
+            isRegistered = true;
+            saveUserData();
+            showMainApp();
+        }
+
+        function logout() {
+            localStorage.removeItem('onboardpro_current_user');
+            userEmail = '';
+            isRegistered = false;
+            completedTasks = new Set();
+            customTasks = [];
+            registrationDate = null;
+            taskIdCounter = 1;
+            showLoginScreen();
+            showNotification('Logged out successfully');
+        }
+
+        function toggleTask(taskId) {
+            if (completedTasks.has(taskId)) {
+                completedTasks.delete(taskId);
+                showNotification('Task marked as incomplete');
+            } else {
+                completedTasks.add(taskId);
+                const task = getAllTasks().find(t => t.id === taskId);
+                if (task) {
+                    showNotification(`+${task.points} points! 🎉`);
+                }
+            }
+            saveUserData();
+            updateUI();
+        }
+
+        function showAddTaskForm() {
+            document.getElementById('addTaskForm').classList.remove('hidden');
+            document.getElementById('addTaskBtn').style.display = 'none';
+        }
+
+        function hideAddTaskForm() {
+            document.getElementById('addTaskForm').classList.add('hidden');
+            document.getElementById('addTaskBtn').style.display = 'block';
+            clearTaskForm();
+        }
+
+        function clearTaskForm() {
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('taskCategory').value = 'Onboarding';
+            document.getElementById('taskPoints').value = '50';
+        }
+
+        function addCustomTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const category = document.getElementById('taskCategory').value;
+            const points = parseInt(document.getElementById('taskPoints').value);
+
+            if (!title) {
+                showNotification('Please enter a task title');
+                return;
+            }
+
+            if (points < 10 || points > 500) {
+                showNotification('Points must be between 10 and 500');
+                return;
+            }
+
+            const newTask = {
+                id: `custom-${taskIdCounter++}`,
+                title,
+                description,
+                category,
+                points,
+                isDefault: false,
+                createdAt: new Date().toISOString()
+            };
+
+            customTasks.push(newTask);
+            saveUserData();
+            hideAddTaskForm();
+            updateUI();
+            showNotification('Custom task added successfully! ✨');
+        }
+
+        function deleteCustomTask(taskId) {
+            if (confirm('Are you sure you want to delete this custom task?')) {
+                customTasks = customTasks.filter(task => task.id !== taskId);
+                completedTasks.delete(taskId);
+                saveUserData();
+                updateUI();
+                showNotification('Custom task deleted');
+            }
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                'Onboarding': 'background: rgba(99, 102, 241, 0.1); color: #6366f1;',
+                'Training': 'background: rgba(34, 197, 94, 0.1); color: #22c55e;',
+                'Setup': 'background: rgba(249, 115, 22, 0.1); color: #f97316;',
+                'Documentation': 'background: rgba(168, 85, 247, 0.1); color: #a855f7;',
+                'Meeting': 'background: rgba(239, 68, 68, 0.1); color: #ef4444;',
+                'Personal': 'background: rgba(20, 184, 166, 0.1); color: #14b8a6;'
+            };
+            return colors[category] || colors['Onboarding'];
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            updateUI();
+        }
+
+        function updateUI() {
+            const allTasks = getAllTasks();
+            const earnedPoints = calculateEarnedPoints();
+            const totalPoints = calculateTotalPoints();
+            const completionRate = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0;
+            
+            // Update Header
+            document.getElementById('welcomeText').textContent = isLogin ? 'Welcome back!' : 'Welcome!';
+            document.getElementById('userEmailDisplay').textContent = userEmail;
+            document.getElementById('daysElapsed').textContent = getDaysElapsed();
+            document.getElementById('earnedPoints').textContent = earnedPoints;
+            document.getElementById('totalPoints').textContent = totalPoints;
+            document.getElementById('completionRate').textContent = completionRate;
+            document.getElementById('progressBar').style.width = `${completionRate}%`;
+            
+            // Update Sidebar
+            document.getElementById('sidebarEmail').textContent = userEmail;
+            document.getElementById('sidebarDays').textContent = getDaysElapsed();
+            document.getElementById('completedTasksCount').textContent = completedTasks.size;
+            document.getElementById('totalTasksCount').textContent = allTasks.length;
+            document.getElementById('earnedPointsStat').textContent = earnedPoints;
+            document.getElementById('totalPointsStat').textContent = totalPoints;
+            document.getElementById('completionRateStat').textContent = completionRate;
+            
+            // Render Tasks
+            renderTasks();
+            
+            // Render Achievements
+            renderAchievements();
+        }
+
+        function renderTasks() {
+            const tasksList = document.getElementById('tasksList');
+            const emptyState = document.getElementById('emptyState');
+            const allTasks = getAllTasks();
+            
+            if (allTasks.length === 0) {
+                tasksList.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            tasksList.innerHTML = '';
+            
+            allTasks.forEach(task => {
+                const isCompleted = completedTasks.has(task.id);
+                const taskDiv = document.createElement('div');
+                taskDiv.className = `task-item ${isCompleted ? 'completed' : ''}`;
+                taskDiv.onclick = () => toggleTask(task.id);
+                
+                taskDiv.innerHTML = `
+                    <div class="task-header">
+                        <div style="flex: 1;">
+                            <div class="task-category" style="${getCategoryColor(task.category)}">
+                                ${task.category}
+                            </div>
+                            <h3 class="task-title ${isCompleted ? 'completed' : ''}">${task.title}</h3>
+                            ${task.description ? `<p style="color: #6b7280; font-size: 14px; margin-top: 5px;">${task.description}</p>` : ''}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="task-points">
+                                <div class="points-value">+${task.points}</div>
+                                <div style="font-size: 12px; color: #6b7280;">points</div>
+                            </div>
+                            ${!task.isDefault ? `
+                                <button onclick="event.stopPropagation(); deleteCustomTask('${task.id}')" 
+                                        style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px;"
+                                        title="Delete custom task">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                                    </svg>
+                                </button>
+                            ` : ''}
+                            <div class="checkbox ${isCompleted ? 'checked' : ''}"></div>
+                        </div>
+                    </div>
+                `;
+                
+                tasksList.appendChild(taskDiv);
+            });
+        }
+
+        function renderAchievements() {
+            const achievementsList = document.getElementById('achievementsList');
+            achievementsList.innerHTML = '';
+            
+            achievements.forEach(achievement => {
+                const isUnlocked = achievement.checkUnlocked();
+                const achievementDiv = document.createElement('div');
+                achievementDiv.className = `achievement ${isUnlocked ? 'unlocked' : ''}`;
+                
+                achievementDiv.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 2px;">${achievement.name}</div>
+                        <div style="font-size: 12px; opacity: 0.8;">${achievement.description}</div>
+                    </div>
+                `;
+                
+                achievementsList.appendChild(achievementDiv);
+            });
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to load existing user data
+            if (loadUserData()) {
+                showMainApp();
+            } else {
+                showLoginScreen();
+            }
+            
+            // Add enter key support for email input
+            const emailInput = document.getElementById('emailInput');
+            if (emailInput) {
+                emailInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        handleLogin();
+                    }
+                });
+                
+                // Enable/disable login button based on email validity
+                emailInput.addEventListener('input', function() {
+                    const loginBtn = document.getElementById('loginBtn');
+                    if (validateEmail(this.value)) {
+                        loginBtn.disabled = false;
+                        loginBtn.style.opacity = '1';
+                    } else {
+                        loginBtn.disabled = true;
+                        loginBtn.style.opacity = '0.5';
+                    }
+                });
+            }
+        });
+
+        // Global function assignments
+        window.handleLogin = handleLogin;
+        window.logout = logout;
+        window.toggleTask = toggleTask;
+        window.showAddTaskForm = showAddTaskForm;
+        window.hideAddTaskForm = hideAddTaskForm;
+        window.addCustomTask = addCustomTask;
+        window.deleteCustomTask = deleteCustomTask;
+    </script>
+</body>
+</html>
