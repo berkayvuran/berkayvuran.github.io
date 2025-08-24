@@ -316,6 +316,7 @@ html.setAttribute('data-theme', currentTheme);
 
 // Update active button state
 themeBtns.forEach(btn => {
+  btn.classList.remove('active');
   if (btn.getAttribute('data-theme') === currentTheme) {
     btn.classList.add('active');
   }
