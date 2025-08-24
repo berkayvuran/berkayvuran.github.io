@@ -13,18 +13,90 @@
 
 
 
-#languageSwitcher {
-  margin: 10px;
-  padding: 5px;
-  border: 1px solid var(--eerie-black-2);
-  /* border-radius: 5px; */
-  background-color: var(--eerie-black-2);
-  color: var(--orange-yellow-crayola);
-  font-size: var(--fs-5);
-  transition: color var(--transition-1);
+
+
+/* Language switcher in navbar */
+.navbar-item.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
 }
 
-/* Light mode switcher styles */
+.navbar-item.language-switcher .lang-btn {
+  background: var(--onyx);
+  border: 1px solid var(--jet);
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-1);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: var(--light-gray);
+  min-width: 36px;
+  min-height: 36px;
+  /* Flag emoji rendering - ultra strong */
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", "EmojiOne Color", "Twemoji Mozilla", system-ui, sans-serif !important;
+  font-variant-emoji: emoji !important;
+  font-feature-settings: "liga" on, "clig" on, "kern" on, "locl" on !important;
+  text-rendering: optimizeQuality;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+  font-size: 16px;
+  font-weight: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1;
+  unicode-bidi: isolate;
+  white-space: nowrap;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fallback for browsers that don't show flags */
+.navbar-item.language-switcher .lang-btn[data-lang="en"]:empty::before {
+  content: "🇺🇸";
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", system-ui, sans-serif;
+}
+
+.navbar-item.language-switcher .lang-btn[data-lang="tr"]:empty::before {
+  content: "🇹🇷";
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", system-ui, sans-serif;
+}
+
+/* Ultra fallback with text */
+@supports not (font-variant-emoji: emoji) {
+  .navbar-item.language-switcher .lang-btn[data-lang="en"] {
+    content: "EN";
+    font-family: var(--ff-poppins), sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+  }
+  
+  .navbar-item.language-switcher .lang-btn[data-lang="tr"] {
+    content: "TR";
+    font-family: var(--ff-poppins), sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+  }
+}
+
+.navbar-item.language-switcher .lang-btn.active {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+  border-color: var(--orange-yellow-crayola);
+  transform: translateY(-2px);
+}
+
+.navbar-item.language-switcher .lang-btn:hover {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+  border-color: var(--orange-yellow-crayola);
+  transform: translateY(-2px);
+}
+
+/* Theme switcher styles */
 .theme-switcher {
   position: fixed;
   top: 20px;
@@ -40,6 +112,8 @@
   backdrop-filter: blur(10px);
   transition: all var(--transition-1);
 }
+
+
 
 .theme-switcher button {
   background: none;
@@ -244,7 +318,30 @@
   --shadow-5: 0 16px 40px hsla(0, 0%, 0%, 0.08);
 }
 
-/* Light mode switcher light theme styles */
+/* Light mode language switcher styles */
+[data-theme="light"] .navbar-item.language-switcher .lang-btn {
+  background: var(--white-1);
+  border: 1px solid var(--light-gray);
+  color: var(--eerie-black-1);
+  box-shadow: var(--shadow-1);
+}
+
+[data-theme="light"] .navbar-item.language-switcher .lang-btn.active {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+  border-color: var(--orange-yellow-crayola);
+  box-shadow: var(--shadow-2);
+}
+
+[data-theme="light"] .navbar-item.language-switcher .lang-btn:hover {
+  background: var(--orange-yellow-crayola);
+  color: var(--white-1);
+  border-color: var(--orange-yellow-crayola);
+  box-shadow: var(--shadow-2);
+  transform: translateY(-2px);
+}
+
+/* Light mode theme switcher styles */
 [data-theme="light"] .theme-switcher {
   background: var(--border-gradient-onyx);
   border: 1px solid var(--jet);
@@ -327,17 +424,7 @@
   color: var(--orange-yellow-crayola);
 }
 
-/* Language picker */
-[data-theme="light"] #languageSwitcher {
-  background-color: var(--white-1);
-  color: hsl(0, 0%, 15%);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-}
 
-[data-theme="light"] #languageSwitcher option {
-  background-color: var(--white-1);
-  color: hsl(0, 0%, 15%);
-}
 
 /* Icons - ONLY colors */
 [data-theme="light"] .icon-box,
@@ -1140,12 +1227,7 @@ main {
   transition: color var(--transition-1);
 }
 
-.languageSwitcher {
-  color: var(--light-gray);
-  font-size: var(--fs-4);
-  padding: 20px 7px;
-  transition: color var(--transition-1);
-}
+
 
 .navbar-link:hover,
 .navbar-link:focus { color: var(--light-gray-70); }
@@ -2084,7 +2166,7 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .navbar-link { --fs-8: 14px; }
 
-  .languageSwitcher { --fs-8: 14px; }
+
 
 
 
@@ -2295,7 +2377,7 @@ textarea.form-input::-webkit-resizer { display: none; }
    */
 
   .navbar-link { --fs-8: 15px; }
-  .languageSwitcher { --fs-8: 15px; }
+
 
 
 
@@ -2436,7 +2518,7 @@ textarea.form-input::-webkit-resizer { display: none; }
   }
 
   .navbar-link { font-weight: var(--fw-500); }
-  .languageSwitcher { font-weight: var(--fw-500); }
+
 
 
 
@@ -2882,18 +2964,7 @@ textarea.form-input::-webkit-resizer { display: none; }
   transform: scale(1.1);
 }
 
-/* Light mode language switcher improvements */
-[data-theme="light"] #languageSwitcher {
-  background-color: var(--white-1);
-  color: hsl(0, 0%, 15%);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: var(--shadow-1);
-}
 
-[data-theme="light"] #languageSwitcher option {
-  background-color: var(--white-1);
-  color: hsl(0, 0%, 15%);
-}
 
 /* Light mode filter list improvements */
 [data-theme="light"] .filter-list {
