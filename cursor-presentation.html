@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursor ile Uçtan Uca Geliştirme - İnteraktif Sunum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d1b69 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .presentation-container {
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .slide-counter {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Slides */
+        .slide {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Typography */
+        .slide h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa, #fb7185);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .slide h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .slide h3 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e2e8f0;
+        }
+
+        .slide p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            margin-bottom: 20px;
+            color: #cbd5e1;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 20px 40px rgba(96, 165, 250, 0.2);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #fb7185);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .feature-card p {
+            font-size: 1rem;
+            color: #cbd5e1;
+            margin-bottom: 0;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: #334155;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+        }
+
+        .code-block pre {
+            margin-top: 20px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        /* Steps Timeline */
+        .steps-timeline {
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s ease;
+        }
+
+        .step.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .step-content p {
+            color: #cbd5e1;
+            margin-bottom: 0;
+        }
+
+        /* CTA Buttons */
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(96, 165, 250, 0.4);
+        }
+
+        .cta-btn.secondary {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .cta-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Demo Section */
+        .demo-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-screen {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-screen::before {
+            content: '⚫ ⚫ ⚫';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .pulsing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #fb7185);
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* Background Elements */
+        .bg-decoration {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1));
+            filter: blur(40px);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-decoration:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bg-decoration:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .bg-decoration:nth-child(3) {
+            bottom: 10%;
+            left: 30%;
+            animation-delay: 4s;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                top: 10px;
+                right: 10px;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .nav-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .step {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .mb-4 { margin-bottom: 2rem; }
+        .mt-4 { margin-top: 2rem; }
+        .hidden { display: none; }
+
+        /* Emoji Styling */
+        .emoji {
+            font-size: 1.5em;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="nav-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">8</span>
+        </div>
+        <button class="nav-btn" id="prevBtn">⬅ Önceki</button>
+        <button class="nav-btn" id="nextBtn">Sonraki ➡</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Background Decorations -->
+        <div class="bg-decoration"></div>
+        <div class="bg-decoration"></div>
+        <div class="bg-decoration"></div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active" id="slide1">
+            <div class="slide-content">
+                <h1 class="floating">🚀 Cursor ile Uçtan Uca Geliştirme</h1>
+                <p class="mb-4">Modern AI destekli kod editörü ile yazılım geliştirmenin geleceği</p>
+                <div class="cta-buttons">
+                    <button class="cta-btn" id="startBtn">Sunuma Başla</button>
+                    <a href="https://cursor.sh" target="_blank" class="cta-btn secondary">Cursor'ı İndir</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: What is Cursor -->
+        <div class="slide" id="slide2">
+            <div class="slide-content">
+                <h2>🤖 Cursor Nedir?</h2>
+                <p class="mb-4">Cursor, AI teknolojisiyle güçlendirilmiş yeni nesil kod editörüdür. VS Code'un tüm özelliklerini barındırırken, yapay zeka destekli kod yazma, düzenleme ve hata ayıklama yetenekleri sunar.</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <h4>AI Kod Asistanı</h4>
+                        <p>GPT-4 entegrasyonu ile akıllı kod önerileri ve otomatik kod tamamlama</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h4>Hızlı Geliştirme</h4>
+                        <p>Kodunuzu anlayarak context-aware öneriler ve düzeltmeler</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <h4>VS Code Uyumlu</h4>
+                        <p>Tüm VS Code eklentileri ve ayarlarınızla tam uyumluluk</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Key Features -->
+        <div class="slide" id="slide3">
+            <div class="slide-content">
+                <h2>✨ Cursor'ın Temel Özellikleri</h2>
+                
+                <div class="steps-timeline">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>🎯 Akıllı Kod Tamamlama (Tab)</h4>
+                            <p>Tab tuşu ile AI destekli kod tamamlama. Cursor, yazdığınız kodun context'ini anlayarak en uygun kod parçacığını önerir.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>💬 Chat ile Kod Yazma (Cmd+K)</h4>
+                            <p>Doğal dille kod yazın. "React component oluştur" deyin, AI sizin için component'i yazacak.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>🔍 Codebase Chat (Cmd+L)</h4>
+                            <p>Tüm projenizi analiz ederek proje-spesifik sorulara cevap verir ve kod önerilerinde bulunur.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>🎨 Multi-file Editing</h4>
+                            <p>Birden fazla dosyayı aynı anda düzenleyerek tutarlı değişiklikler yapın.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Installation & Setup -->
+        <div class="slide" id="slide4">
+            <div class="slide-content">
+                <h2>⚙️ Kurulum ve İlk Ayarlar</h2>
+                
+                <div class="demo-container">
+                    <h3>📥 Kurulum Adımları</h3>
+                    <div class="steps-timeline">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>cursor.sh adresinden indirin</h4>
+                                <p>macOS, Windows ve Linux için mevcut</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>VS Code ayarlarınızı import edin</h4>
+                                <p>Cmd+Shift+P → "Import VS Code Settings"</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>AI modelini seçin</h4>
+                                <p>GPT-4, Claude Sonnet, ya da kendi API anahtarınız</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <pre># Terminal'den Cursor'ı başlatma
+cursor .
+
+# Veya proje klasörünü açma
+cursor /path/to/your/project</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: AI Features Demo -->
+        <div class="slide" id="slide5">
+            <div class="slide-content">
+                <h2>🤖 AI Özellikleri Detayı</h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⌨️</div>
+                        <h4>Tab to Autocomplete</h4>
+                        <p>Yazdığınız kodun devamını tahmin eder ve Tab ile tamamlar</p>
+                        <div class="code-block">
+                            <pre>// Yazdığınız: function calculateTax(
+// Tab'a basın: amount, rate) {
+//   return amount * rate / 100;
+// }</pre>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💭</div>
+                        <h4>Cmd+K Inline Chat</h4>
+                        <p>Seçili kodu düzenlemek için doğal dil kullanın</p>
+                        <div class="code-block">
+                            <pre>// Kodu seçin ve Cmd+K yapın
+// "Bu fonksiyonu async/await yap"
+// "Error handling ekle"
+// "TypeScript tiplerini ekle"</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-container">
+                    <h3>🎯 Pratik Örnekler</h3>
+                    <p><strong>Cmd+L ile proje analizi:</strong> "Bu projedeki authentication nasıl çalışıyor?"</p>
+                    <p><strong>Refactoring:</strong> "Bu component'i daha performanslı yap"</p>
+                    <p><strong>Bug fix:</strong> "Bu hatayı düzelt ve açıkla"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Development Workflow -->
+        <div class="slide" id="slide6">
+            <div class="slide-content">
+                <h2>🔄 Geliştirme İş Akışı</h2>
+                
+                <div class="steps-timeline">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>📋 Planlama</h4>
+                            <p>Cursor'a projenizi anlatın. "React ile todo app yapacağım" deyin ve size roadmap versin.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>🏗️ Temel Yapı</h4>
+                            <p>Cmd+L ile "Proje klasör yapısını oluştur" deyin. Dosyaları otomatik oluştursun.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>💻 Kod Yazma</h4>
+                            <p>Tab ile hızlı kod tamamlama, Cmd+K ile düzenleme yapın.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>🐛 Debug & Test</h4>
+                            <p>"Bu kodu test et" ve "Hataları bul" komutlarıyla kalite kontrolü yapın.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>🚀 Deploy</h4>
+                            <p>Deploy scriptleri ve CI/CD pipeline'ları oluşturmak için AI yardımı alın.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Tips & Tricks -->
+        <div class="slide" id="slide7">
+            <div class="slide-content">
+                <h2>💡 İpuçları ve Püf Noktaları</h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h4>Spesifik Ol</h4>
+                        <p>"Button component'i" yerine "React TypeScript ile mavi gradient background'lu button component'i" deyin.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📁</div>
+                        <h4>Context Sağla</h4>
+                        <p>İlgili dosyaları açık tutun. AI daha iyi context ile daha doğru öneriler verir.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h4>Iterative Yaklaşım</h4>
+                        <p>Büyük değişiklikleri küçük adımlara bölün. "Önce stil ver, sonra fonksiyonalite ekle"</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h4>Öğrenme Aracı</h4>
+                        <p>"Bu kodu açıkla" diyerek yeni teknolojileri öğrenin ve best practice'leri keşfedin.</p>
+                    </div>
+                </div>
+
+                <div class="demo-container">
+                    <h3>⌨️ Keyboard Shortcuts</h3>
+                    <div class="code-block">
+                        <pre>Tab          → AI kod tamamlama
+Cmd+K        → Inline chat (seçili kod için)
+Cmd+L        → Codebase chat (proje geneli)
+Cmd+Shift+L  → Chat geçmişi
+Cmd+I        → AI panel toggle</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Conclusion -->
+        <div class="slide" id="slide8">
+            <div class="slide-content">
+                <h2 class="floating">🎉 Sonuç</h2>
+                <p class="mb-4">Cursor ile yazılım geliştirme deneyiminizi AI'nin gücüyle bir üst seviyeye taşıyın!</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h4>%70 Daha Hızlı</h4>
+                        <p>Kod yazma hızınızı dramatik şekilde artırın</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h4>Daha Az Hata</h4>
+                        <p>AI destekli kod incelemesi ile bug'ları önleyin</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h4>Sürekli Öğrenme</h4>
+                        <p>Her gün yeni teknolojiler ve pattern'ler öğrenin</p>
+                    </div>
+                </div>
+
+                <div class="cta-buttons">
+                    <a href="https://cursor.sh" target="_blank" class="cta-btn">Hemen Başla</a>
+                    <a href="https://docs.cursor.sh" target="_blank" class="cta-btn secondary">Dokümantasyon</a>
+                    <button class="cta-btn secondary" id="restartBtn">Sunumu Tekrarla</button>
+                </div>
+
+                <p class="mt-4" style="font-size: 0.9rem; opacity: 0.7;">
+                    💫 Bu sunum Cursor AI ile hazırlanmıştır - 
+                    <a href="/" style="color: #60a5fa;">berkayvuran.github.io</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 1;
+        const totalSlides = 8;
+
+        // Initialize
+        document.getElementById('totalSlides').textContent = totalSlides;
+        updateProgressBar();
+        animateSteps();
+        
+        // Add event listeners to navigation buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const startBtn = document.getElementById('startBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', nextSlide);
+                console.log('Next button event listener added');
+            }
+            if (prevBtn) {
+                prevBtn.addEventListener('click', previousSlide);
+                console.log('Previous button event listener added');
+            }
+            if (startBtn) {
+                startBtn.addEventListener('click', nextSlide);
+                console.log('Start button event listener added');
+            }
+            if (restartBtn) {
+                restartBtn.addEventListener('click', function() {
+                    goToSlide(1);
+                });
+                console.log('Restart button event listener added');
+            }
+        });
+
+        function nextSlide() {
+            console.log('Next slide clicked, current:', currentSlideIndex, 'total:', totalSlides);
+            if (currentSlideIndex < totalSlides) {
+                document.getElementById(`slide${currentSlideIndex}`).classList.remove('active');
+                currentSlideIndex++;
+                document.getElementById(`slide${currentSlideIndex}`).classList.add('active');
+                updateUI();
+                animateSteps();
+                console.log('Moved to slide:', currentSlideIndex);
+            } else {
+                console.log('Already at last slide');
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlideIndex > 1) {
+                document.getElementById(`slide${currentSlideIndex}`).classList.remove('active');
+                currentSlideIndex--;
+                document.getElementById(`slide${currentSlideIndex}`).classList.add('active');
+                updateUI();
+                animateSteps();
+            }
+        }
+
+        function goToSlide(slideNumber) {
+            if (slideNumber >= 1 && slideNumber <= totalSlides) {
+                document.getElementById(`slide${currentSlideIndex}`).classList.remove('active');
+                currentSlideIndex = slideNumber;
+                document.getElementById(`slide${currentSlideIndex}`).classList.add('active');
+                updateUI();
+                animateSteps();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('currentSlide').textContent = currentSlideIndex;
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const progress = (currentSlideIndex / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function animateSteps() {
+            // Animate steps on current slide with delay
+            const currentSlide = document.getElementById(`slide${currentSlideIndex}`);
+            const steps = currentSlide.querySelectorAll('.step');
+            
+            steps.forEach((step, index) => {
+                step.classList.remove('animate');
+                setTimeout(() => {
+                    step.classList.add('animate');
+                }, index * 200);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                event.preventDefault();
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                previousSlide();
+            } else if (event.key === 'Home') {
+                event.preventDefault();
+                goToSlide(1);
+            } else if (event.key === 'End') {
+                event.preventDefault();
+                goToSlide(totalSlides);
+            }
+        });
+
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    nextSlide();
+                } else {
+                    // Swipe right - previous slide
+                    previousSlide();
+                }
+            }
+        }
+
+        // Auto-advance demo (optional)
+        let autoAdvanceTimer;
+        function startAutoAdvance() {
+            autoAdvanceTimer = setInterval(() => {
+                if (currentSlideIndex < totalSlides) {
+                    nextSlide();
+                } else {
+                    stopAutoAdvance();
+                }
+            }, 10000); // 10 seconds per slide
+        }
+
+        function stopAutoAdvance() {
+            if (autoAdvanceTimer) {
+                clearInterval(autoAdvanceTimer);
+                autoAdvanceTimer = null;
+            }
+        }
+
+        // Stop auto-advance on user interaction
+        document.addEventListener('click', stopAutoAdvance);
+        document.addEventListener('keydown', stopAutoAdvance);
+        document.addEventListener('touchstart', stopAutoAdvance);
+
+        // Initialize animations
+        setTimeout(animateSteps, 500);
+
+        // Add some interactive effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Performance optimization
+        const slides = document.querySelectorAll('.slide');
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px'
+        };
+
+        const slideObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.willChange = 'transform, opacity';
+                } else {
+                    entry.target.style.willChange = 'auto';
+                }
+            });
+        }, observerOptions);
+
+        slides.forEach(slide => {
+            slideObserver.observe(slide);
+        });
+    </script>
+</body>
+</html>
