@@ -276,23 +276,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     
-    // Language switcher value'sunu güncelle
-    const languageSwitcher = document.querySelector('#languageSwitcher');
-    if (languageSwitcher) {
-      languageSwitcher.value = lang;
-    }
+    // Language switcher butonlarının active state'ini güncelle
+    const langBtns = document.querySelectorAll('.lang-btn');
+    langBtns.forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.getAttribute('data-lang') === lang) {
+        btn.classList.add('active');
+      }
+    });
     
     // Local storage'a kaydet
     localStorage.setItem('preferredLanguage', lang);
   };
 
   // Language switcher event listener
-  const languageSwitcher = document.querySelector('#languageSwitcher');
-  if (languageSwitcher) {
-    languageSwitcher.addEventListener('change', (event) => {
-      switchLanguage(event.target.value);
+  const langBtns = document.querySelectorAll('.lang-btn');
+  
+  langBtns.forEach((btn, index) => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const lang = this.getAttribute('data-lang');
+      switchLanguage(lang);
     });
-  }
+  });
 
   // Sayfa yüklendiğinde saved language'ı uygula
   const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
