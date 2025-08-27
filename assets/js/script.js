@@ -380,3 +380,115 @@ document.addEventListener('DOMContentLoaded', function() {
     setTheme(systemTheme);
   }
 });
+
+// Typewriter effect functionality
+class TypewriterEffect {
+  constructor() {
+    this.typewriterEn = document.getElementById('typewriter-en');
+    this.typewriterTr = document.getElementById('typewriter-tr');
+    this.currentIndex = 0;
+    this.currentTextIndex = 0;
+    this.isDeleting = false;
+    this.typingSpeed = 150; // Speed of typing
+    this.deletingSpeed = 75; // Speed of deleting
+    this.pauseTime = 2000; // Pause between words
+    
+    // Different titles to cycle through
+    this.titlesEn = [
+      'Product Manager',
+      'Product Owner',
+      'UX Researcher', 
+      'Data Analyst',
+      'Scrum Master',
+      'Digital Strategist',
+      'Innovation Catalyst',
+      'Problem Solver'
+    ];
+    
+    this.titlesTr = [
+      'Ürün Müdürü',
+      'Ürün Sahibi',
+      'UX Araştırmacısı',
+      'Veri Analisti', 
+      'Scrum Master',
+      'Dijital Stratejist',
+      'İnovasyon Katalizörü',
+      'Problem Çözücü'
+    ];
+    
+    this.init();
+  }
+  
+  init() {
+    if (this.typewriterEn && this.typewriterTr) {
+      this.startTypewriter();
+    }
+  }
+  
+  startTypewriter() {
+    const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+    const titles = currentLang === 'tr' ? this.titlesTr : this.titlesEn;
+    const element = currentLang === 'tr' ? this.typewriterTr : this.typewriterEn;
+    
+    if (!element) return;
+    
+    const currentTitle = titles[this.currentIndex];
+    
+    if (this.isDeleting) {
+      // Delete text
+      element.textContent = currentTitle.substring(0, this.currentTextIndex - 1);
+      this.currentTextIndex--;
+      
+      if (this.currentTextIndex === 0) {
+        this.isDeleting = false;
+        this.currentIndex = (this.currentIndex + 1) % titles.length;
+        setTimeout(() => this.startTypewriter(), 500);
+        return;
+      }
+      
+      setTimeout(() => this.startTypewriter(), this.deletingSpeed);
+    } else {
+      // Type text
+      element.textContent = currentTitle.substring(0, this.currentTextIndex + 1);
+      this.currentTextIndex++;
+      
+      if (this.currentTextIndex === currentTitle.length) {
+        this.isDeleting = true;
+        setTimeout(() => this.startTypewriter(), this.pauseTime);
+        return;
+      }
+      
+      setTimeout(() => this.startTypewriter(), this.typingSpeed);
+    }
+  }
+  
+  // Method to restart typewriter when language changes
+  restart() {
+    this.currentIndex = 0;
+    this.currentTextIndex = 0;
+    this.isDeleting = false;
+    
+    // Clear both elements
+    if (this.typewriterEn) this.typewriterEn.textContent = '';
+    if (this.typewriterTr) this.typewriterTr.textContent = '';
+    
+    // Start with a small delay
+    setTimeout(() => this.startTypewriter(), 300);
+  }
+}
+
+// Initialize typewriter effect
+let typewriter;
+
+document.addEventListener('DOMContentLoaded', function() {
+  typewriter = new TypewriterEffect();
+});
+
+// Restart typewriter when language changes
+const originalSwitchLanguage = switchLanguage;
+switchLanguage = function(lang) {
+  originalSwitchLanguage(lang);
+  if (typewriter) {
+    setTimeout(() => typewriter.restart(), 100);
+  }
+};
