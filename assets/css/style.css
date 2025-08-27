@@ -621,6 +621,93 @@
   box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
 }
 
+/* Light mode typewriter-container override */
+[data-theme="light"] .info-content .title.typewriter-container {
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+  color: var(--white-1);
+  border: 1px solid #1976d2;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+  padding: 8px 16px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Typewriter effect styles */
+.typewriter-container {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  min-height: 1.5em;
+}
+
+.static-text {
+  display: inline;
+}
+
+.typewriter {
+  display: inline;
+  min-width: 1ch;
+  color: var(--orange-yellow-crayola);
+  font-weight: var(--fw-500);
+}
+
+.cursor {
+  display: inline-block;
+  background-color: var(--orange-yellow-crayola);
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  animation: blink 1s infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes delete {
+  from { width: 100%; }
+  to { width: 0; }
+}
+
+/* Light mode typewriter styles */
+[data-theme="light"] .typewriter {
+  color: var(--white-1) !important;
+  font-weight: var(--fw-600);
+}
+
+[data-theme="light"] .cursor {
+  background-color: var(--white-1) !important;
+}
+
+/* Light mode typewriter container improvements */
+[data-theme="light"] .typewriter-container {
+  background: transparent;
+  color: var(--white-1);
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.15);
+}
+
+/* Responsive typewriter */
+@media (max-width: 768px) {
+  .typewriter-container {
+    font-size: var(--fs-8);
+  }
+  
+  .cursor {
+    width: 1px;
+    height: 0.8em;
+  }
+}
+
 /* Light mode contact titles */
 [data-theme="light"] .contact-title {
   color: #424242 !important;
@@ -1091,6 +1178,8 @@ main {
   font-weight: var(--fw-500);
   letter-spacing: -0.25px;
   margin-bottom: 10px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .info-content .title {
@@ -1101,6 +1190,8 @@ main {
   width: max-content;
   padding: 5px 18px;
   border-radius: 5px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .info_more-btn {
