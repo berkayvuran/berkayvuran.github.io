@@ -8,13 +8,21 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
+% Calibri benzeri akıcı yazı tipi (pdfLaTeX uyumlu)
+\usepackage{carlito} % Calibri benzeri açık kaynak yazı tipi
+\renewcommand{\familydefault}{\sfdefault} % Sans-serif varsayılan yap
+\usepackage{microtype} % Tipografi iyileştirmeleri
+
+% Alternatif seçenekler (yorumları kaldırarak deneyebilirsiniz):
+% \usepackage{opensans} % Open Sans - modern ve temiz
+% \usepackage{sourcesanspro} % Source Sans Pro - Adobe'nin yazı tipi
+
 % Adjust page margins
 \usepackage[scale=0.85]{geometry}
 
 % Personal data
 \name{Berkay}{Vuran}
 \title{Lider Ürün Yöneticisi}
-
 \address{Ankara, Türkiye}{}{}
 \phone[mobile]{+90 542 423 99 30}
 \email{berkaypsy@gmail.com}
@@ -47,8 +55,8 @@
 \item \textbf{Takım Geliştirme:} 3 genç ürün profesyoneli için mentorluk programı kurma, \%100 elde tutma ve dahili terfi oranı sağlama
 \item \textbf{Müşteri Başarısı:} Yapılandırılmış geri bildirim döngüleri ve eskalasyon yönetimi uygulama, müşteri memnuniyet puanlarını \%40 iyileştirme
 \item \$2M+ pipeline değeri üreten 2 yeni AI özelliği sonucu doğuran ürün keşif girişimleri liderliği
+\\
 \end{itemize}}
-
 \cventry{11.2022--09.2024}{Kıdemli Ürün Yöneticisi \& Scrum Master}{Emlakjet (iLab Ventures)}{İstanbul (Uzaktan)}{Lider PropTech Platformu - 2M+ Kullanıcı}{
 \begin{itemize}
 \item \textbf{Ürün Stratejisi:} Ana pazar yeri platformu için uçtan uca ürün yaşam döngüsü liderliği, \%35 kullanıcı etkileşim artışı sağlama
@@ -65,6 +73,7 @@
 \item \textbf{İş Zekası:} Gerçek zamanlı operasyonel içgörüler ve stratejik karar verme sağlayan AWS QuickSight analitik platformu mimarisi
 \item \textbf{Fonksiyonlar Arası Liderlik:} Mühendislik, tasarım ve iş geliştirme dahil 6 kişilik uluslararası takım koordinasyonu
 \item Müşteri kazanma, elde tutma ve gelir genelinde 15+ KPI'yi takip eden ürün metrikleri çerçevesi kurma
+\\
 \end{itemize}}
 
 \cventry{11.2021--01.2022}{Kıdemli İş Analisti}{Etiya}{Ankara (Hibrit)}{Küresel Telekomünikasyon Yazılım Çözümleri}{
@@ -73,6 +82,7 @@
 \item \textbf{Kalite Güvencesi:} Lansman sonrası kusurları \%20 azaltan kapsamlı UAT çerçevesi geliştirme
 \item \textbf{UX Liderliği:} Kurumsal müşteriler genelinde ürün benimseme oranlarını iyileştiren kullanıcı araştırması girişimleri liderliği
 \item 6 ürün takımı genelinde şirket çapında benimsenmiş standart iş analizi metodolojisi oluşturma
+\\
 \end{itemize}}
 
 \cventry{02.2019--11.2021}{Ürün Sahibi}{T.C. Sağlık Bakanlığı}{Ankara}{Kamu Sektörü Dijital Dönüşüm}{
@@ -102,7 +112,7 @@
 \cventry{2019--2024}{Yüksek Lisans, Örgütsel Davranış}{Hacettepe Üniversitesi}{}{Yüksek Onur (3.86/4.00)}{Tez: "Denetim Odağı ve Cinsiyetin İşe Yabancılaşmaya Etkisi: Uzaktan Çalışanlar Üzerine Bir Araştırma}
 \cventry{2020--2022}{Ön Lisans, Web Tasarımı \& Geliştirme}{Anadolu Üniversitesi}{}{Onur (3.08/4.00)}{Web teknolojileri ve kullanıcı deneyimi tasarımında teknik temel}
 \cventry{2013--2017}{Lisans, Psikoloji}{Hacettepe Üniversitesi}{}{Yüksek Onur (3.55/4.00)}{Uzmanlık: Endüstri \& Örgüt Psikolojisi - Takım dinamikleri ve kullanıcı davranışı odağı}
-
+\newpage
 % Key Leadership Achievements
 \section{Temel Liderlik Başarıları}
 \cvitem{Takım Performansı}{Fonksiyonlar arası takım verimliliğini \%40 iyileştiren ve teslimat döngü süresini \%25 azaltan çevik dönüşüm liderliği}
