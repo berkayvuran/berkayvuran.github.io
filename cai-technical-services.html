@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAI Use Cases: Technical Services Scenario</title>
+    <link rel="icon" href="assets/images/favicon.ico">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Page-local enhanced styling with subtle motion */
+        :root { --accent: #2563eb; /* SESTEK blue-ish */ --accent-2: #7c3aed; /* SESTEK purple-ish */ --muted: #6a737d; --bg: #0a0f1e; --card: #0f172a; --text: #e6edf3; }
+        html, body { height: 100%; overflow: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: var(--text); background: radial-gradient(1200px 600px at 10% -10%, rgba(37,99,235,0.25), transparent 70%), radial-gradient(1000px 500px at 100% 10%, rgba(124,58,237,0.18), transparent 70%), var(--bg); }
+        .deck { position: relative; width: 100%; height: 100%; }
+        /* 16:9 stage centered and scaled */
+        .stage { position: absolute; inset: 0; display: grid; place-items: center; }
+        .frame { width: 98vw; max-width: 1920px; aspect-ratio: 16 / 9; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 60px rgba(0,0,0,0.5); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); overflow: hidden; position: relative; }
+        .slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 48px; opacity: 0; transform: translateX(6%); transition: opacity .5s ease, transform .5s ease; }
+        .slide.active { opacity: 1; transform: translateX(0); }
+        .container { width: 100%; max-width: 1600px; margin: 0 auto; }
+        .hero { padding: 24px 0; position: relative; overflow: visible; }
+        .hero::after { content: ""; position: absolute; inset: -20% -10% auto -10%; height: 220px; background: radial-gradient(600px 140px at 20% 0%, rgba(124,58,237,0.28), transparent 60%); pointer-events: none; filter: blur(10px); }
+        .hero h1 { margin: 0 0 8px; font-size: 40px; letter-spacing: -0.02em; animation: riseIn 700ms cubic-bezier(.2,.8,.2,1) both; }
+        .hero p { margin: 0; color: #b8c0cc; max-width: 820px; animation: fadeIn 900ms 120ms both; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .brand-mark { width: 28px; height: 28px; border-radius: 6px; background: conic-gradient(from 180deg at 50% 50%, var(--accent), var(--accent-2), var(--accent)); box-shadow: 0 4px 14px rgba(124,58,237,0.5); }
+        .brand-name { font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #dbeafe; }
+        @keyframes riseIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Hide old nav since deck has controls */
+        .nav-wrap { display: none; }
+        section { padding: 0; }
+        h2 { margin: 0 0 12px; font-size: 32px; letter-spacing: -0.01em; }
+        h3 { margin: 24px 0 8px; font-size: 18px; }
+        .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); transform: translateY(0); transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.18); background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); }
+        .grid { display: grid; gap: 16px; }
+        @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 1200px) { .grid-2-60 { grid-template-columns: 3fr 2fr; } }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; vertical-align: top; }
+        th { background: rgba(255,255,255,0.04); font-weight: 700; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: rgba(238,242,255,0.15); color: #c7d2fe; border: 1px solid rgba(224,231,255,0.25); }
+        .muted { color: #9aa3af; }
+        .list { margin: 0; padding-left: 18px; }
+        .list-lg li { font-size: 18px; }
+        .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: rgba(246,248,250,0.05); border: 1px solid rgba(225,228,232,0.15); border-radius: 6px; padding: 2px 6px; font-size: 12px; color: #cbd5e1; }
+        .footer { padding: 24px 0 48px; color: #9aa3af; font-size: 14px; }
+        .pill { display: inline-block; padding: 6px 10px; background: rgba(230,240,255,0.15); color: #e2e8f0; border-radius: 999px; font-weight: 600; font-size: 12px; border: 1px solid rgba(204,223,255,0.25); }
+        .hero .pill { margin-top: 8px; animation: riseIn 700ms 80ms both; }
+        /* Controls */
+        .controls { position: fixed; inset: auto 24px 24px auto; display: flex; gap: 10px; z-index: 50; }
+        .btn { appearance: none; background: rgba(255,255,255,0.06); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 10px 14px; font-weight: 700; cursor: pointer; transition: transform .15s ease, background .2s ease, border-color .2s ease; }
+        .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.22); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .progress { position: fixed; left: 24px; bottom: 28px; color: #9aa3af; font-size: 13px; z-index: 50; }
+        .date-badge { position: absolute; top: 16px; right: 20px; z-index: 40; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.08); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.16); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+        /* Team */
+        .team-grid { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); margin: 8px 0 16px; }
+        .person { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
+        .avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.18); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .person h4 { margin: 0 0 2px; font-size: 16px; }
+        .person .role { color: #a5b4c3; font-size: 13px; margin: 0; }
+    </style>
+    <meta name="description" content="Presentation: CAI Use Cases - Technical Services Scenario. Owner: Berkay Vuran. RACI, scope, handover, and tasks.">
+</head>
+<body>
+    <div class="deck">
+      <div class="stage"><div class="frame">
+        <section class="slide" data-slide="1" id="intro" data-skip="true">
+        <div class="container">
+        <header class="hero">
+            <div class="brand"><div class="brand-mark"></div><div class="brand-name">SESTEK</div></div>
+            <div class="pill">CAI Presentation</div>
+            <h1>CAI Use Cases: Technical Services Scenario</h1>
+            <p>Designed to manage and develop new product concepts and scenarios for CAI, tailored to specific use cases.</p>
+        </header>
+        <div class="card" style="margin-top:16px;">
+            <h2>Agenda</h2>
+            <ul class="list">
+                <li>1) Handover Summary</li>
+                <li>2) AI Agent Capabilities</li>
+                <li>3) Technical Services Overview</li>
+                <li>4) Vertical Insights</li>
+                <li>5) RACI</li>
+                <li>6) Team & Ownership</li>
+                <li>7) Phase 1 Scope</li>
+                <li>8) Work Plan (Backlog)</li>
+                <li>9) End</li>
+            </ul>
+            <p class="muted">Use <span class="kbd">→</span> or <span class="kbd">Space</span> to navigate</p>
+        </div>
+        </div>
+        </section>
+
+        <section id="team" class="slide" data-slide="2">
+            <div class="container">
+            <div class="card">
+                <h2>Team & Ownership</h2>
+                <p><strong>Process Owner</strong>: Berkay Vuran</p>
+                <p><strong>Responsible Team</strong>: Marketing (Venüs), PS (Ekin), PdM (Berkay)</p>
+                
+                <div class="grid grid-2" style="margin-top:12px;">
+                    <div>
+                        <h3 style="margin-top:0;">Berkay</h3>
+                        <ul class="list">
+                            <li>Benchmarking</li>
+                            <li>Roadmap planning</li>
+                            <li>Process management</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="margin-top:0;">Ekin</h3>
+                        <ul class="list">
+                            <li>Contributing across solution design</li>
+                            <li>Generate use cases</li>
+                            <li>Produce demo line and demos</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="margin-top:0;">Venüs</h3>
+                        <ul class="list">
+                            <li>Generate marketing materials</li>
+                            <li>Promotion assets & landing updates</li>
+                            <li>Support vertical positioning</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="muted">Purpose: Establish a repeatable structure to define, validate, and launch CAI scenarios per vertical, starting with Technical Services.</p>
+            </div>
+            </div>
+        </section>
+
+        <section id="raci" class="slide" data-slide="3">
+            <div class="container">
+            <div class="grid grid-2">
+                <div class="card">
+                    <h2>General RACI Matrix</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Who</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Responsible</td>
+                                <td>PdM, PS, Marketing</td>
+                            </tr>
+                            <tr>
+                                <td>Accountable</td>
+                                <td>PdM</td>
+                            </tr>
+                            <tr>
+                                <td>Consulted</td>
+                                <td>Sales, PdM</td>
+                            </tr>
+                            <tr>
+                                <td>Informed</td>
+                                <td>Management Level</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h2>RACI: Technical Support Use Case</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Who</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Responsible</td>
+                                <td>Berkay, Venüs, Ekin</td>
+                            </tr>
+                            <tr>
+                                <td>Accountable</td>
+                                <td>Berkay, Çağatay</td>
+                            </tr>
+                            <tr>
+                                <td>Consulted</td>
+                                <td>Serdar Bey, Mert Çıkan, Şuara, Selin, Yalım, Ahmet</td>
+                            </tr>
+                            <tr>
+                                <td>Informed</td>
+                                <td>Levent Hoca, Serdar Bey, Buğra, Tülin, Çağatay</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <section id="scope" class="slide" data-slide="4">
+            <div class="container">
+            <div class="card">
+                <h2>Phase 1 Scope</h2>
+                <ul class="list">
+                    <li>Review current technical service customers and scenarios</li>
+                    <li>Run competitive analysis for the vertical</li>
+                    <li>Define a reusable technical flow specific to the vertical</li>
+                    <li>Enrich and align template projects</li>
+                    <li>Prepare marketing materials</li>
+                    <li>Inform internal teams</li>
+                </ul>
+                <p class="muted">Kick-off update cadence: monthly status updates starting in October.</p>
+            </div>
+            </div>
+        </section>
+
+        <section id="handover" class="slide" data-slide="5">
+            <div class="container">
+            <div class="card">
+                <h2>Handover Summary</h2>
+                <ul class="list">
+                    <li>Prioritize <strong>Service Appointment</strong> use case</li>
+                    <li>Study marketing motions (e.g., <span class="tag">ElevenLabs</span>), evaluate Arçelik–Vestel scenarios with PS</li>
+                    <li>Set up demo line; prepare English & Turkish demos/content; update website</li>
+                    <li>Hold regular status meetings</li>
+                    <li>Team: Berkay (owner), consultant assigned by Tülin, Venüs</li>
+                    <li>Phase 1: Integrate with template projects</li>
+                    <li>Phase 2: Plan an "App Store"-like structure with expansion packs</li>
+                    <li>Marketing focuses on micro use cases: service appointment, collections, banking dispute, energy subscription management</li>
+                </ul>
+            </div>
+            </div>
+        </section>
+
+        <section id="market" class="slide" data-slide="6">
+            <div class="container">
+            <div class="card">
+                <h2>Vertical Insights & References</h2>
+                <p>Input from Yalım on verticalized CAI players:</p>
+                <ul class="list">
+                    <li><strong>Springlabs</strong>: ultra-niche vertical focus</li>
+                    <li><strong>glia</strong> & <strong>interface.ai</strong>: banking and credit union focus</li>
+                    <li><strong>Happy Robot</strong>: logistics-focused; notable demo content on YouTube</li>
+                    <li>Recommendation: speak with <strong>David Taglieri</strong></li>
+                    <li><strong>Kore.ai</strong>: product management discipline with solution owners</li>
+                </ul>
+            </div>
+            </div>
+        </section>
+
+        <section id="tasks" class="slide" data-slide="7">
+            <div class="container">
+            <div class="card">
+                <h2>Work Plan</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Title</th>
+                            <th>State</th>
+                            <th>Iteration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>136905</td><td>User Story</td><td>Phase 0: Generate 'CAI Use Cases'</td><td><span class="tag">Active</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136901</td><td>Task</td><td>CAI Use Cases Handover Meeting</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136904</td><td>Task</td><td>RACI Matrix</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136906</td><td>Task</td><td>Plan Status Update Meetings</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136907</td><td>Task</td><td>Research & Benchmark for CAI Use Cases</td><td><span class="tag">Active</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136908</td><td>Task</td><td>Align as Accountable Team</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136962</td><td>Task</td><td>Generate Kickoff Using Teams</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>137045</td><td>Task</td><td>Review Marketing Materials</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136949</td><td>User Story</td><td>Generate Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136950</td><td>Task</td><td>Review Arçelik-Vestel Use Cases</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136951</td><td>Task</td><td>Generate Generic Flow for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136952</td><td>Task</td><td>Generate Demo Line for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136953</td><td>Task</td><td>Select Differentiator Features for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136954</td><td>Task</td><td>Generate Turkish/English Use Case Presentation for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136956</td><td>Task</td><td>Generate Demo & Promotion Videos for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                        <tr><td>136957</td><td>Task</td><td>Update Landing Page for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
+                    </tbody>
+                </table>
+                <p class="muted">Open as query</p>
+            </div>
+            </div>
+        </section>
+        
+        <!-- Technical Services Overview (visual) -->
+        <section id="tech-services" class="slide" data-slide="8">
+            <div class="container">
+            <div class="card">
+                <h2>Technical Services Overview</h2>
+                <div class="grid grid-2-60" style="align-items:center;">
+                    <div>
+                        <ul class="list list-lg">
+                            <li>Service appointment booking and rescheduling</li>
+                            <li>Warranty & ticket lookup with guided troubleshooting</li>
+                            <li>Field technician dispatch coordination</li>
+                            <li>Post-service feedback and CSAT capture</li>
+                        </ul>
+                        <p class="muted">Targets: reduce call center load, increase first-contact resolution, improve CSAT.</p>
+                    </div>
+                    <div>
+                        <!-- Simple SVG illustration -->
+                        <svg viewBox="0 0 560 300" width="100%" height="auto" role="img" aria-label="Technical services diagram">
+                            <defs>
+                                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#0072ce" stop-opacity="0.9"/>
+                                    <stop offset="100%" stop-color="#00b3e6" stop-opacity="0.9"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="24" y="32" width="150" height="70" rx="12" fill="url(#g1)" opacity="0.9"/>
+                            <text x="99" y="69" text-anchor="middle" fill="#e6f0ff" font-size="16" font-weight="700">Customer</text>
+                            <rect x="386" y="32" width="150" height="70" rx="12" fill="url(#g1)" opacity="0.9"/>
+                            <text x="461" y="69" text-anchor="middle" fill="#e6f0ff" font-size="16" font-weight="700">Technician</text>
+                            <rect x="220" y="122" width="120" height="70" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)"/>
+                            <text x="280" y="162" text-anchor="middle" fill="#cbd5e1" font-size="14" font-weight="700">CAI Orchestrator</text>
+                            <rect x="24" y="210" width="150" height="60" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)"/>
+                            <text x="99" y="245" text-anchor="middle" fill="#cbd5e1" font-size="13" font-weight="600">CRM / Tickets</text>
+                            <rect x="386" y="210" width="150" height="60" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)"/>
+                            <text x="461" y="245" text-anchor="middle" fill="#cbd5e1" font-size="13" font-weight="600">Scheduling</text>
+                            <path d="M174 67 L386 67" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+                            <path d="M280 192 L99 210" stroke="#94a3b8" stroke-width="2"/>
+                            <path d="M280 192 L461 210" stroke="#94a3b8" stroke-width="2"/>
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- AI Agent Capabilities (visual) -->
+        <section id="ai-agent" class="slide" data-slide="9">
+            <div class="container">
+            <div class="card">
+                <h2>AI Agent Capabilities</h2>
+                <div class="grid grid-2-60" style="align-items:center;">
+                    <div>
+                        <ul class="list list-lg">
+                            <li>Natural language appointment booking with constraints</li>
+                            <li>Knowledge-grounded troubleshooting (KB, manuals, CRM)</li>
+                            <li>Tool-use: CRM, scheduling, notification APIs</li>
+                            <li>Multi-lingual: TR/EN dialogs and assets</li>
+                        </ul>
+                        <p class="muted">Outcomes: lower AHT, fewer transfers, higher NPS/CSAT.</p>
+                    </div>
+                    <div>
+                        <!-- Radial nodes diagram -->
+                        <svg viewBox="0 0 560 300" width="100%" height="auto" role="img" aria-label="AI agent capabilities">
+                            <defs>
+                                <radialGradient id="rg" cx="50%" cy="50%" r="60%">
+                                    <stop offset="0%" stop-color="#00b3e6" stop-opacity="0.95"/>
+                                    <stop offset="100%" stop-color="#0072ce" stop-opacity="0.75"/>
+                                </radialGradient>
+                            </defs>
+                            <circle cx="280" cy="150" r="50" fill="url(#rg)"/>
+                            <text x="280" y="154" text-anchor="middle" fill="#e6f0ff" font-size="14" font-weight="800">CAI Agent</text>
+                            <g stroke="#7dd3fc" stroke-width="2">
+                                <line x1="280" y1="100" x2="280" y2="36"/>
+                                <line x1="280" y1="200" x2="280" y2="264"/>
+                                <line x1="230" y1="150" x2="116" y2="150"/>
+                                <line x1="330" y1="150" x2="444" y2="150"/>
+                            </g>
+                            <g>
+                                <rect x="240" y="8" width="80" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="#38bdf8"/>
+                                <text x="280" y="35" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">Scheduler API</text>
+                                <rect x="240" y="248" width="80" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="#38bdf8"/>
+                                <text x="280" y="275" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">CRM API</text>
+                                <rect x="56" y="128" width="100" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="#38bdf8"/>
+                                <text x="106" y="155" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">KB / Docs</text>
+                                <rect x="404" y="128" width="100" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="#38bdf8"/>
+                                <text x="454" y="155" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">Notify API</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- End slide -->
+        <section id="end" class="slide" data-slide="10">
+            <div class="container">
+            <div class="card" style="text-align:center; padding:48px;">
+                <h2>Thank you</h2>
+                <p class="muted">Questions, feedback, or next steps?</p>
+                <p class="muted">Owner: <strong>Berkay Vuran</strong> · Team: Venüs (Marketing), Ekin (PS)</p>
+            </div>
+            </div>
+        </section>
+
+      <div class="date-badge">24.09.2025</div>
+      </div></div>
+
+        <div class="controls">
+            <button class="btn" id="prevBtn" aria-label="Previous slide">← Prev</button>
+            <button class="btn" id="nextBtn" aria-label="Next slide">Next →</button>
+        </div>
+        <div class="progress" id="progress">1 / 9</div>
+    </div>
+    <script>
+        // Deck navigation: no scroll, next/prev & keyboard
+        (function(){
+            // Desired order
+            var orderIds = ['intro','handover','ai-agent','tech-services','market','raci','team','scope','tasks','end'];
+            // Build slides array in this order; ignore missing
+            var slides = orderIds.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+            var index = 0;
+            var prevBtn = document.getElementById('prevBtn');
+            var nextBtn = document.getElementById('nextBtn');
+            var progress = document.getElementById('progress');
+
+            function show(i){
+                if (i < 0 || i >= slides.length) return;
+                slides.forEach(function(s){ s.classList.remove('active'); });
+                slides[i].classList.add('active');
+                index = i;
+                updateControls();
+            }
+
+            function updateControls(){
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = index === slides.length - 1;
+                var displayIndex = index === 0 ? 0 : index; // start numbering at 0 for Intro
+                var displayTotal = Math.max(slides.length - 1, 1); // show total as 9 when there are 10 slides
+                progress.textContent = displayIndex + ' / ' + displayTotal;
+            }
+
+            prevBtn.addEventListener('click', function(){ show(index - 1); });
+            nextBtn.addEventListener('click', function(){ show(index + 1); });
+
+            document.addEventListener('keydown', function(e){
+                var key = e.key;
+                if (key === 'ArrowRight' || key === 'PageDown' || key === ' ') { e.preventDefault(); show(index + 1); }
+                if (key === 'ArrowLeft' || key === 'PageUp' || key === 'Backspace') { e.preventDefault(); show(index - 1); }
+                if (key === 'Home') { e.preventDefault(); show(0); }
+                if (key === 'End') { e.preventDefault(); show(slides.length - 1); }
+            });
+
+            // Basic swipe for touch
+            var startX = 0; var startY = 0; var moved = false;
+            document.addEventListener('touchstart', function(e){
+                var t = e.changedTouches[0]; startX = t.clientX; startY = t.clientY; moved = false;
+            }, { passive: true });
+            document.addEventListener('touchmove', function(){ moved = true; }, { passive: true });
+            document.addEventListener('touchend', function(e){
+                var t = e.changedTouches[0]; var dx = t.clientX - startX; var dy = t.clientY - startY;
+                if (Math.abs(dx) > 40 && Math.abs(dy) < 50) { if (dx < 0) show(index + 1); else show(index - 1); }
+            });
+
+            // Ensure first slide is active per new order
+            show(0);
+        })();
+    </script>
+</body>
+</html>
+
+
