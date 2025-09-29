@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knovvu Service AI - SESTEK | Servis Randevularınızı Otomatikleştirin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00B4D8;
+            --primary-dark: #0077B6;
+            --secondary: #E91E63;
+            --accent: #9C27B0;
+            --gradient-knovvu: linear-gradient(135deg, #00B4D8 0%, #E91E63 100%);
+            --gradient-hover: linear-gradient(135deg, #0077B6 0%, #C2185B 100%);
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --bg-light: #F9FAFB;
+            --white: #FFFFFF;
+            --success: #10B981;
+            --warning: #F59E0B;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-knovvu);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::before {
+            content: 'K';
+            position: absolute;
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            animation: pulse-logo 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-logo {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cta-button {
+            background: var(--gradient-knovvu);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,180,216,0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 30c11 0 20 9 20 20s-9 20-20 20-20-9-20-20 9-20 20-20z" fill="%2300B4D8" opacity="0.05"/%3E%3C/svg%3E') repeat;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .badge {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-icon {
+            color: var(--success);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .btn-primary {
+            background: var(--gradient-knovvu);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,180,216,0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .phone-mockup {
+            width: 380px;
+            height: 700px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            transform: perspective(1000px) rotateY(-15deg);
+            transition: transform 0.3s ease;
+        }
+
+        .phone-mockup:hover {
+            transform: perspective(1000px) rotateY(-5deg);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chat-header {
+            background: var(--gradient-knovvu);
+            margin: -20px -20px 20px -20px;
+            padding: 15px;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .chat-message {
+            background: var(--bg-light);
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            animation: slideIn 0.5s ease;
+            max-width: 85%;
+        }
+
+        .chat-message.ai {
+            background: var(--gradient-knovvu);
+            color: white;
+            margin-left: auto;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* SESTEK Section */
+        .sestek-section {
+            padding: 4rem 0;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sestek-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .sestek-logo {
+            text-align: center;
+        }
+
+        .sestek-logo img {
+            max-width: 200px;
+        }
+
+        .sestek-text h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sestek-text p {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .tech-badges {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .tech-badge {
+            background: var(--bg-light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 0;
+            background: var(--bg-light);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 20px;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-knovvu);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-knovvu);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-description {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Compliance Section */
+        .compliance-section {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .compliance-content {
+            text-align: center;
+            color: white;
+        }
+
+        .compliance-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .compliance-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .compliance-card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .compliance-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 5rem 0;
+            background: var(--bg-light);
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            position: relative;
+        }
+
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            top: 60px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--gradient-knovvu);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-knovvu);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.3);
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            color: var(--text-light);
+        }
+
+        /* Clients Section */
+        .clients {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .clients-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .clients-header h3 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .clients-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .client-logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-light);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .client-logo:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 5rem 0;
+            background: var(--gradient-knovvu);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-content {
+            text-align: center;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-content h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .demo-form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .demo-input {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .demo-input:focus {
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+
+        .demo-submit {
+            background: white;
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            grid-column: span 2;
+        }
+
+        .demo-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+        }
+
+        .footer-content {
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .phone-mockup {
+                width: 300px;
+                height: 560px;
+                margin: 0 auto;
+            }
+
+            .stats-grid,
+            .features-grid,
+            .steps-container,
+            .compliance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-container::before {
+                display: none;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .demo-form {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-submit {
+                grid-column: span 1;
+            }
+
+            .sestek-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        /* Animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Pulse Animation */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 180, 216, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 180, 216, 0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>Knovvu Service AI</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Özellikler</a></li>
+                <li><a href="#how-it-works">Nasıl Çalışır</a></li>
+                <li><a href="#compliance">Güvenlik</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="https://www.sestek.com/" target="_blank">SESTEK</a></li>
+            </ul>
+            <a href="#demo" class="cta-button">📞 Ücretsiz Demo</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Servis Randevularınızı Sesli AI ile Otomatikleştirin</h1>
+                    <p>SESTEK'in 24 yıllık Türkçe konuşma tanıma uzmanlığı ve %97+ doğruluk oranıyla desteklenen Knovvu Virtual Agent, müşterilerinizin telefon ve dijital kanallardan 7/24 randevu almasını sağlar.</p>
+                    
+                    <div class="hero-badges">
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>%97+ Konuşma Tanıma</span>
+                        </div>
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>550+ Kurumsal Müşteri</span>
+                        </div>
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>ISO 27001 & PCI DSS</span>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-buttons">
+                        <a href="#demo" class="btn-primary">🎬 Canlı Demo İzle</a>
+                        <a href="https://www.sestek.com/knovvu" target="_blank" class="btn-secondary">📖 Knovvu Hakkında</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="chat-header">🎧 Knovvu Servis Asistanı</div>
+                            <div class="chat-message">
+                                🔧 Merhaba, çamaşır makinemde bir sorun var, randevu almak istiyorum
+                            </div>
+                            <div class="chat-message ai">
+                                Merhaba! Size hemen yardımcı oluyorum. Cihazınızın seri numarasını söyler misiniz?
+                            </div>
+                            <div class="chat-message">
+                                Seri numaram: ARC123456789
+                            </div>
+                            <div class="chat-message ai">
+                                Teşekkürler! Cihazınız garanti kapsamında. Yarın 14:00-16:00 arası uygun musunuz?
+                            </div>
+                            <div class="chat-message">
+                                Evet, uygun
+                            </div>
+                            <div class="chat-message ai">
+                                ✅ Randevunuz oluşturuldu! SMS ile onay gönderdim. Teknisyenimiz yarın 14:00-16:00 arasında adresinizde olacak.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SESTEK Section -->
+    <section class="sestek-section">
+        <div class="container">
+            <div class="sestek-content">
+                <div class="sestek-logo">
+                    <h3 style="font-size: 2.5rem; margin-bottom: 1rem;">SESTEK</h3>
+                    <p style="color: var(--text-light);">Konuşma Teknolojileri Lideri</p>
+                </div>
+                <div class="sestek-text">
+                    <h3>SESTEK'in Kanıtlanmış Türkçe Konuşma Tanıma Gücü</h3>
+                    <p>2000 yılından beri Türkçe konuşma teknolojilerinde lider olan SESTEK, Unifonic (SoftBank Vision Fund) tarafından satın alınmıştır ve 20 ülkede 550+ kurumsal müşteriye hizmet vermektedir.</p>
+                    <p>Knovvu Speech Recognition, Google, Azure, AWS ve Whisper'dan daha yüksek Türkçe tanıma doğruluğu sunarak, Türkçenin karmaşık morfolojik yapısını %97+ doğrulukla işler.</p>
+                    <div class="tech-badges">
+                        <div class="tech-badge">🎯 2024 En Düşük WER</div>
+                        <div class="tech-badge">🔊 100+ Ses Parametresi</div>
+                        <div class="tech-badge">🌍 20 Ülke, 11 Dil</div>
+                        <div class="tech-badge">⚡ 3 Saniyede Doğrulama</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">%97+</div>
+                    <div class="stat-label">Türkçe Tanıma Doğruluğu</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5 FTE</div>
+                    <div class="stat-label">Temsilci Tasarrufu</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">%58</div>
+                    <div class="stat-label">Dijital Ödeme Artışı</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">550+</div>
+                    <div class="stat-label">Kurumsal Müşteri</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Neden Knovvu Service AI?</h2>
+                <p>SESTEK teknolojisi ile güçlendirilmiş, kurumsal düzeyde özellikler</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎙️</div>
+                    <div class="feature-title">Knovvu Speech Recognition</div>
+                    <div class="feature-description">
+                        Türkçenin eklemeli yapısını ve morfolojisini mükemmel anlayan, Google ve Azure'dan daha yüksek doğruluk sunan konuşma tanıma motoru.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">Kurumsal Güvenlik</div>
+                    <div class="feature-description">
+                        ISO 27001, SOC 2 Type 2, PCI DSS 4.0 sertifikalı. AES-256 şifreleme, GDPR/KVKK uyumlu, AWS güvenlik altyapısı.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-title">Ses Biyometrisi</div>
+                    <div class="feature-description">
+                        Knovvu Biometrics ile 3 saniyede %98 doğrulukla ses doğrulama. Sahte ses tespiti ve güvenli kimlik doğrulama.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">Agentic AI Yetenekleri</div>
+                    <div class="feature-description">
+                        Yeni nesil Agentic AI ile gelişmiş muhakeme, stratejik karar verme, sürekli öğrenme ve otonom eylem yürütme.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Knovvu Analytics</div>
+                    <div class="feature-description">
+                        %100 etkileşim analizi, gerçek zamanlı içgörüler, duygu analizi ve otomatik kalite puanlama.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <div class="feature-title">Hazır Entegrasyonlar</div>
+                    <div class="feature-description">
+                        SAP, Salesforce, Microsoft Dynamics ve tüm büyük CRM/ERP sistemleri ile sorunsuz entegrasyon.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compliance Section -->
+    <section class="compliance-section" id="compliance">
+        <div class="container">
+            <div class="compliance-content">
+                <h2>Kurumsal Güvenlik ve Uyumluluk</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem;">Tüm yasal düzenlemelere tam uyum, maksimum veri güvenliği</p>
+                
+                <div class="compliance-grid">
+                    <div class="compliance-card">
+                        <h4>🔐 ISO 27001</h4>
+                        <p>Bilgi Güvenliği Yönetim Sistemi sertifikası</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>🛡️ SOC 2 Type 2</h4>
+                        <p>Güvenlik, kullanılabilirlik ve gizlilik kontrolleri</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>💳 PCI DSS 4.0</h4>
+                        <p>Ödeme kartı verilerinin güvenli işlenmesi</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>🇪🇺 GDPR/KVKK</h4>
+                        <p>Tam veri koruma yasalarına uyumluluk</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>Nasıl Çalışır?</h2>
+                <p>SESTEK SR teknolojisi ile güçlendirilmiş 4 adımlık süreç</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Müşteri Araması</div>
+                    <div class="step-description">Müşteri telefon veya dijital kanaldan ulaşır</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Knovvu AI Anlama</div>
+                    <div class="step-description">%97+ doğrulukla Türkçe konuşma tanıma</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Virtual Agent İşleme</div>
+                    <div class="step-description">Agentic AI ile randevu planlaması</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Onay & Takip</div>
+                    <div class="step-description">SMS/E-posta onayı ve otomatik hatırlatma</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section class="clients">
+        <div class="container">
+            <div class="clients-header">
+                <h3>550+ Kurumsal Müşterimizden Bazıları</h3>
+            </div>
+            <div class="clients-logos">
+                <div class="client-logo">Yapı Kredi</div>
+                <div class="client-logo">Arçelik</div>
+                <div class="client-logo">Vestel</div>
+                <div class="client-logo">Hepsiburada</div>
+                <div class="client-logo">ING Bank</div>
+                <div class="client-logo">VakıfBank</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <div class="demo-content">
+                <h2>Hemen Ücretsiz Demo Talep Edin</h2>
+                <p>Knovvu Virtual Agent ve SESTEK'in 24 yıllık teknoloji birikimini keşfedin</p>
+                <form class="demo-form">
+                    <input type="email" class="demo-input" placeholder="E-posta adresiniz" required>
+                    <input type="tel" class="demo-input" placeholder="Telefon numaranız (5XX XXX XX XX)" pattern="[0-9]{10}" required>
+                    <button type="submit" class="demo-submit">🚀 Demo Talep Et</button>
+                </form>
+                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                    📞 Hemen arayın: +90 216 706 18 00
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo" style="font-size: 1.5rem; margin-bottom: 1rem; justify-content: center; display: flex; align-items: center;">
+                    <div class="logo-icon" style="margin-right: 10px;"></div>
+                    <span>Knovvu Service AI - SESTEK (Unifonic Company)</span>
+                </div>
+                <div class="footer-links">
+                    <a href="https://www.sestek.com/" target="_blank">SESTEK Hakkında</a>
+                    <a href="https://www.sestek.com/virtual-agent-knovvu" target="_blank">Knovvu Virtual Agent</a>
+                    <a href="https://www.sestek.com/demos" target="_blank">Demolar</a>
+                    <a href="#">KVKK</a>
+                    <a href="#">İletişim</a>
+                </div>
+                <p style="opacity: 0.7;">© 2025 Knovvu - SESTEK. Tüm hakları saklıdır. | 2000'den beri Türkçe konuşma teknolojilerinde lider</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.15)';
+            } else {
+                nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.08)';
+            }
+        });
+
+        // Form submission
+        document.querySelector('.demo-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            const phone = e.target.querySelector('input[type="tel"]').value;
+            alert(`Demo talebiniz alındı!\n\nE-posta: ${email}\nTelefon: ${phone}\n\nEn kısa sürede sizinle iletişime geçeceğiz.`);
+            e.target.reset();
+        });
+
+        // Animated numbers
+        const animateValue = (element, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                if (element.textContent.includes('%')) {
+                    element.textContent = '%' + value;
+                } else if (element.textContent.includes('<')) {
+                    element.textContent = '<' + value + 'sn';
+                } else {
+                    element.textContent = value;
+                }
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+
+        // Trigger number animations when stats section is visible
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.animated) {
+                    entry.target.animated = true;
+                    const numbers = entry.target.querySelectorAll('.stat-number');
+                    if (numbers[0]) animateValue(numbers[0], 0, 99, 2000);
+                }
+            });
+        });
+
+        const statsSection = document.querySelector('.stats');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+    </script>
+</body>
+</html>
