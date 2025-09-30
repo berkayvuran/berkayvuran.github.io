@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Knovvu Service AI - SESTEK | Servis Randevularınızı Otomatikleştirin</title>
+    <title>Knovvu AppointmentPro - AI-Powered Service Scheduling by SESTEK</title>
     <style>
         * {
             margin: 0;
@@ -39,6 +39,67 @@
             padding: 0 20px;
         }
 
+        /* Language Switcher */
+        .lang-switcher {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+        }
+
+        .lang-btn.active {
+            background: var(--gradient-knovvu);
+            color: white;
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: var(--bg-light);
+        }
+
+        /* Hide Turkish content by default */
+        [data-lang="tr"] {
+            display: none !important;
+        }
+
+        body.lang-tr [data-lang="en"] {
+            display: none !important;
+        }
+
+        body.lang-tr [data-lang="tr"] {
+            display: block !important;
+        }
+
+        body.lang-tr [data-lang="tr"].flex {
+            display: flex !important;
+        }
+
+        body.lang-tr [data-lang="tr"].grid {
+            display: grid !important;
+        }
+
+        [data-lang="en"].flex {
+            display: flex;
+        }
+
+        [data-lang="en"].grid {
+            display: grid;
+        }
+
         /* Navigation */
         nav {
             position: fixed;
@@ -62,37 +123,23 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: bold;
             color: var(--text-dark);
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--gradient-knovvu);
-            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
-            position: relative;
-            overflow: hidden;
         }
 
-        .logo-icon::before {
-            content: 'K';
-            position: absolute;
-            font-size: 18px;
-            color: white;
-            font-weight: bold;
-            animation: pulse-logo 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-logo {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.9; }
+        .logo-svg {
+            width: 100%;
+            height: 100%;
         }
 
         .nav-links {
@@ -162,7 +209,7 @@
         }
 
         .hero-text h1 {
-            font-size: 3.5rem;
+            font-size: 3.2rem;
             font-weight: 800;
             background: var(--gradient-knovvu);
             -webkit-background-clip: text;
@@ -335,8 +382,12 @@
             text-align: center;
         }
 
-        .sestek-logo img {
-            max-width: 200px;
+        .sestek-logo h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .sestek-text h3 {
@@ -612,7 +663,7 @@
         }
 
         .client-logo {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--text-light);
             opacity: 0.6;
@@ -765,54 +816,56 @@
                 grid-template-columns: 1fr;
                 text-align: center;
             }
-        }
 
-        /* Animations */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-
-        .animate-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Pulse Animation */
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.7);
+            .lang-switcher {
+                top: 80px;
+                right: 10px;
             }
-            70% {
-                box-shadow: 0 0 0 10px rgba(0, 180, 216, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(0, 180, 216, 0);
-            }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" onclick="setLanguage('tr')">TR</button>
+    </div>
+
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
             <div class="logo">
-                <div class="logo-icon"></div>
-                <span>Knovvu Service AI</span>
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00B4D8;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#E91E63;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="45" fill="url(#logoGradient)"/>
+                        <path d="M 30 50 Q 50 30, 70 50 T 70 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <path d="M 30 50 Q 50 70, 70 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span>Knovvu AppointmentPro</span>
             </div>
-            <ul class="nav-links">
+            <ul class="nav-links flex" data-lang="en">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#compliance">Security</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="https://www.sestek.com/" target="_blank">SESTEK</a></li>
+            </ul>
+            <ul class="nav-links flex" data-lang="tr">
                 <li><a href="#features">Özellikler</a></li>
                 <li><a href="#how-it-works">Nasıl Çalışır</a></li>
                 <li><a href="#compliance">Güvenlik</a></li>
                 <li><a href="#demo">Demo</a></li>
                 <li><a href="https://www.sestek.com/" target="_blank">SESTEK</a></li>
             </ul>
-            <a href="#demo" class="cta-button">📞 Ücretsiz Demo</a>
+            <a href="#demo" class="cta-button" data-lang="en">Get Free Demo</a>
+            <a href="#demo" class="cta-button" data-lang="tr" style="display:none;">Ücretsiz Demo</a>
         </div>
     </nav>
 
@@ -820,14 +873,39 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Servis Randevularınızı Sesli AI ile Otomatikleştirin</h1>
-                    <p>SESTEK'in 24 yıllık Türkçe konuşma tanıma uzmanlığı ve %97+ doğruluk oranıyla desteklenen Knovvu Virtual Agent, müşterilerinizin telefon ve dijital kanallardan 7/24 randevu almasını sağlar.</p>
+                <div class="hero-text" data-lang="en">
+                    <h1>Automate Service Appointments with Agentic AI</h1>
+                    <p>Powered by SESTEK's 24 years of speech recognition expertise and 97%+ accuracy, Knovvu AppointmentPro's AI Agents enable autonomous appointment scheduling 24/7 through voice and digital channels.</p>
                     
-                    <div class="hero-badges">
+                    <div class="hero-badges flex">
                         <div class="badge">
                             <span class="badge-icon">✓</span>
-                            <span>%97+ Konuşma Tanıma</span>
+                            <span>Agentic AI Platform</span>
+                        </div>
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>550+ Enterprise Clients</span>
+                        </div>
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>ISO 27001 & PCI DSS</span>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-buttons flex">
+                        <a href="#demo" class="btn-primary">🎬 Watch AI Agent Demo</a>
+                        <a href="#contact" class="btn-secondary">📞 Talk to Sales</a>
+                    </div>
+                </div>
+
+                <div class="hero-text" data-lang="tr">
+                    <h1>Servis Randevularınızı Agentic AI ile Otomatikleştirin</h1>
+                    <p>SESTEK'in 24 yıllık konuşma tanıma uzmanlığı ve %97+ doğruluk oranıyla desteklenen Knovvu AppointmentPro AI Agent'ları, ses ve dijital kanallardan 7/24 otonom randevu planlaması sağlar.</p>
+                    
+                    <div class="hero-badges flex">
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>Agentic AI Platformu</span>
                         </div>
                         <div class="badge">
                             <span class="badge-icon">✓</span>
@@ -839,32 +917,58 @@
                         </div>
                     </div>
                     
-                    <div class="hero-buttons">
-                        <a href="#demo" class="btn-primary">🎬 Canlı Demo İzle</a>
-                        <a href="https://www.sestek.com/knovvu" target="_blank" class="btn-secondary">📖 Knovvu Hakkında</a>
+                    <div class="hero-buttons flex">
+                        <a href="#demo" class="btn-primary">🎬 AI Agent Demosu İzle</a>
+                        <a href="#contact" class="btn-secondary">📞 Satış ile Konuş</a>
                     </div>
                 </div>
+
                 <div class="hero-visual">
                     <div class="phone-mockup">
                         <div class="phone-screen">
-                            <div class="chat-header">🎧 Knovvu Servis Asistanı</div>
-                            <div class="chat-message">
-                                🔧 Merhaba, çamaşır makinemde bir sorun var, randevu almak istiyorum
+                            <div class="chat-header" data-lang="en">🎧 Knovvu Service Assistant</div>
+                            <div class="chat-header" data-lang="tr">🎧 Knovvu Servis Asistanı</div>
+                            
+                            <div data-lang="en">
+                                <div class="chat-message">
+                                    🔧 Hi, my washing machine has an issue, I need to schedule a service
+                                </div>
+                                <div class="chat-message ai">
+                                    I'll be happy to help! Could you provide your device serial number?
+                                </div>
+                                <div class="chat-message">
+                                    Serial: ARC123456789
+                                </div>
+                                <div class="chat-message ai">
+                                    Great! Your device is under warranty. Is tomorrow 2-4 PM convenient for you?
+                                </div>
+                                <div class="chat-message">
+                                    Yes, that works
+                                </div>
+                                <div class="chat-message ai">
+                                    ✅ Appointment confirmed! I've sent SMS confirmation. Our technician will visit tomorrow between 2-4 PM.
+                                </div>
                             </div>
-                            <div class="chat-message ai">
-                                Merhaba! Size hemen yardımcı oluyorum. Cihazınızın seri numarasını söyler misiniz?
-                            </div>
-                            <div class="chat-message">
-                                Seri numaram: ARC123456789
-                            </div>
-                            <div class="chat-message ai">
-                                Teşekkürler! Cihazınız garanti kapsamında. Yarın 14:00-16:00 arası uygun musunuz?
-                            </div>
-                            <div class="chat-message">
-                                Evet, uygun
-                            </div>
-                            <div class="chat-message ai">
-                                ✅ Randevunuz oluşturuldu! SMS ile onay gönderdim. Teknisyenimiz yarın 14:00-16:00 arasında adresinizde olacak.
+
+                            <div data-lang="tr">
+                                <div class="chat-message">
+                                    🔧 Merhaba, çamaşır makinemde arıza var, randevu almak istiyorum
+                                </div>
+                                <div class="chat-message ai">
+                                    Size hemen yardımcı oluyorum! Cihazınızın seri numarasını alabilir miyim?
+                                </div>
+                                <div class="chat-message">
+                                    Seri: ARC123456789
+                                </div>
+                                <div class="chat-message ai">
+                                    Harika! Cihazınız garanti kapsamında. Yarın 14:00-16:00 arası uygun musunuz?
+                                </div>
+                                <div class="chat-message">
+                                    Evet, uygun
+                                </div>
+                                <div class="chat-message ai">
+                                    ✅ Randevunuz onaylandı! SMS ile bilgi gönderdim. Teknisyenimiz yarın 14:00-16:00 arasında adresinizde olacak.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -878,18 +982,30 @@
         <div class="container">
             <div class="sestek-content">
                 <div class="sestek-logo">
-                    <h3 style="font-size: 2.5rem; margin-bottom: 1rem;">SESTEK</h3>
-                    <p style="color: var(--text-light);">Konuşma Teknolojileri Lideri</p>
+                    <h3>SESTEK</h3>
+                    <p data-lang="en" style="color: var(--text-light);">Speech Technology Leader</p>
+                    <p data-lang="tr" style="color: var(--text-light);">Konuşma Teknolojileri Lideri</p>
                 </div>
-                <div class="sestek-text">
-                    <h3>SESTEK'in Kanıtlanmış Türkçe Konuşma Tanıma Gücü</h3>
-                    <p>2000 yılından beri Türkçe konuşma teknolojilerinde lider olan SESTEK, Unifonic (SoftBank Vision Fund) tarafından satın alınmıştır ve 20 ülkede 550+ kurumsal müşteriye hizmet vermektedir.</p>
-                    <p>Knovvu Speech Recognition, Google, Azure, AWS ve Whisper'dan daha yüksek Türkçe tanıma doğruluğu sunarak, Türkçenin karmaşık morfolojik yapısını %97+ doğrulukla işler.</p>
-                    <div class="tech-badges">
-                        <div class="tech-badge">🎯 2024 En Düşük WER</div>
-                        <div class="tech-badge">🔊 100+ Ses Parametresi</div>
-                        <div class="tech-badge">🌍 20 Ülke, 11 Dil</div>
-                        <div class="tech-badge">⚡ 3 Saniyede Doğrulama</div>
+                <div class="sestek-text" data-lang="en">
+                    <h3>Powered by SESTEK's Agentic AI Technology</h3>
+                    <p>Leading conversational AI since 2000, SESTEK was acquired by Unifonic (SoftBank Vision Fund) and serves 550+ enterprise clients across 20 countries with autonomous AI agents.</p>
+                    <p>Knovvu's Agentic AI platform delivers next-generation autonomous agents with advanced reasoning, decision-making, and action-taking capabilities, powered by superior speech recognition.</p>
+                    <div class="tech-badges flex">
+                        <div class="tech-badge">🤖 Agentic AI Engine</div>
+                        <div class="tech-badge">🎯 Autonomous Actions</div>
+                        <div class="tech-badge">🧠 Advanced Reasoning</div>
+                        <div class="tech-badge">⚡ Real-time Processing</div>
+                    </div>
+                </div>
+                <div class="sestek-text" data-lang="tr">
+                    <h3>SESTEK'in Agentic AI Teknolojisi ile Güçlendirilmiş</h3>
+                    <p>2000 yılından beri konuşma AI'ı alanında lider olan SESTEK, Unifonic (SoftBank Vision Fund) tarafından satın alınmıştır ve 20 ülkede 550+ kurumsal müşteriye otonom AI agent'ları ile hizmet vermektedir.</p>
+                    <p>Knovvu'nun Agentic AI platformu, üstün konuşma tanıma ile desteklenen ileri muhakeme, karar verme ve eylem yürütme yeteneklerine sahip yeni nesil otonom agent'lar sunar.</p>
+                    <div class="tech-badges flex">
+                        <div class="tech-badge">🤖 Agentic AI Motoru</div>
+                        <div class="tech-badge">🎯 Otonom Eylemler</div>
+                        <div class="tech-badge">🧠 İleri Muhakeme</div>
+                        <div class="tech-badge">⚡ Gerçek Zamanlı İşleme</div>
                     </div>
                 </div>
             </div>
@@ -899,18 +1015,36 @@
     <!-- Stats Section -->
     <section class="stats">
         <div class="container">
-            <div class="stats-grid">
+            <div class="stats-grid grid" data-lang="en">
                 <div class="stat-card">
-                    <div class="stat-number">%97+</div>
-                    <div class="stat-label">Türkçe Tanıma Doğruluğu</div>
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Autonomous AI Agents</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5 FTE</div>
+                    <div class="stat-label">Agent Cost Savings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">97%+</div>
+                    <div class="stat-label">Recognition Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">550+</div>
+                    <div class="stat-label">Enterprise Clients</div>
+                </div>
+            </div>
+            <div class="stats-grid grid" data-lang="tr">
+                <div class="stat-card">
+                    <div class="stat-number">%100</div>
+                    <div class="stat-label">Otonom AI Agent'lar</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">5 FTE</div>
                     <div class="stat-label">Temsilci Tasarrufu</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">%58</div>
-                    <div class="stat-label">Dijital Ödeme Artışı</div>
+                    <div class="stat-number">%97+</div>
+                    <div class="stat-label">Tanıma Doğruluğu</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">550+</div>
@@ -923,51 +1057,101 @@
     <!-- Features Section -->
     <section class="features" id="features">
         <div class="container">
-            <div class="section-header">
-                <h2>Neden Knovvu Service AI?</h2>
-                <p>SESTEK teknolojisi ile güçlendirilmiş, kurumsal düzeyde özellikler</p>
+            <div class="section-header" data-lang="en">
+                <h2>Why Choose Knovvu AppointmentPro?</h2>
+                <p>Enterprise-grade features powered by SESTEK technology</p>
             </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🎙️</div>
-                    <div class="feature-title">Knovvu Speech Recognition</div>
-                    <div class="feature-description">
-                        Türkçenin eklemeli yapısını ve morfolojisini mükemmel anlayan, Google ve Azure'dan daha yüksek doğruluk sunan konuşma tanıma motoru.
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <div class="feature-title">Kurumsal Güvenlik</div>
-                    <div class="feature-description">
-                        ISO 27001, SOC 2 Type 2, PCI DSS 4.0 sertifikalı. AES-256 şifreleme, GDPR/KVKK uyumlu, AWS güvenlik altyapısı.
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <div class="feature-title">Ses Biyometrisi</div>
-                    <div class="feature-description">
-                        Knovvu Biometrics ile 3 saniyede %98 doğrulukla ses doğrulama. Sahte ses tespiti ve güvenli kimlik doğrulama.
-                    </div>
-                </div>
+            <div class="section-header" data-lang="tr">
+                <h2>Neden Knovvu AppointmentPro?</h2>
+                <p>SESTEK teknolojisiyle güçlendirilmiş kurumsal özellikler</p>
+            </div>
+
+            <div class="features-grid grid" data-lang="en">
                 <div class="feature-card">
                     <div class="feature-icon">🤖</div>
-                    <div class="feature-title">Agentic AI Yetenekleri</div>
+                    <div class="feature-title">Agentic AI Platform</div>
                     <div class="feature-description">
-                        Yeni nesil Agentic AI ile gelişmiş muhakeme, stratejik karar verme, sürekli öğrenme ve otonom eylem yürütme.
+                        Next-generation autonomous AI agents with advanced reasoning, strategic decision-making, and independent action-taking capabilities.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Cognitive AI Engine</div>
+                    <div class="feature-description">
+                        Advanced natural language understanding with context awareness, multi-turn conversation management, and intent recognition.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Autonomous Actions</div>
+                    <div class="feature-description">
+                        AI agents independently schedule, reschedule, and manage appointments without human intervention, learning from each interaction.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔊</div>
+                    <div class="feature-title">Voice-First AI Agents</div>
+                    <div class="feature-description">
+                        Superior speech recognition enabling natural voice interactions with 97%+ accuracy across multiple languages and accents.
                     </div>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
-                    <div class="feature-title">Knovvu Analytics</div>
+                    <div class="feature-title">AI Agent Analytics</div>
                     <div class="feature-description">
-                        %100 etkileşim analizi, gerçek zamanlı içgörüler, duygu analizi ve otomatik kalite puanlama.
+                        Real-time monitoring of AI agent performance, conversation analytics, and continuous learning optimization.
                     </div>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🔗</div>
-                    <div class="feature-title">Hazır Entegrasyonlar</div>
+                    <div class="feature-title">Enterprise Integration</div>
                     <div class="feature-description">
-                        SAP, Salesforce, Microsoft Dynamics ve tüm büyük CRM/ERP sistemleri ile sorunsuz entegrasyon.
+                        Seamless integration with SAP, Salesforce, Microsoft Dynamics, and all major CRM/ERP systems for AI agent orchestration.
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-grid grid" data-lang="tr">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">Agentic AI Platformu</div>
+                    <div class="feature-description">
+                        İleri muhakeme, stratejik karar verme ve bağımsız eylem yürütme yeteneklerine sahip yeni nesil otonom AI agent'ları.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Bilişsel AI Motoru</div>
+                    <div class="feature-description">
+                        Bağlam farkındalığı, çok turlu konuşma yönetimi ve niyet tanıma ile gelişmiş doğal dil anlama.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Otonom Eylemler</div>
+                    <div class="feature-description">
+                        AI agent'ları insan müdahalesi olmadan bağımsız olarak randevu planlayıp yönetir, her etkileşimden öğrenir.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔊</div>
+                    <div class="feature-title">Ses Öncelikli AI Agent'lar</div>
+                    <div class="feature-description">
+                        Birden fazla dil ve aksanda %97+ doğrulukla doğal ses etkileşimlerini sağlayan üstün konuşma tanıma.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">AI Agent Analitiği</div>
+                    <div class="feature-description">
+                        AI agent performansının gerçek zamanlı izlenmesi, konuşma analitiği ve sürekli öğrenme optimizasyonu.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <div class="feature-title">Kurumsal Entegrasyon</div>
+                    <div class="feature-description">
+                        AI agent orkestrasyonu için SAP, Salesforce, Microsoft Dynamics ve tüm büyük CRM/ERP sistemleri ile sorunsuz entegrasyon.
                     </div>
                 </div>
             </div>
@@ -977,11 +1161,35 @@
     <!-- Compliance Section -->
     <section class="compliance-section" id="compliance">
         <div class="container">
-            <div class="compliance-content">
+            <div class="compliance-content" data-lang="en">
+                <h2>Enterprise Security and Compliance</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem;">Full regulatory compliance, maximum data security</p>
+                
+                <div class="compliance-grid grid">
+                    <div class="compliance-card">
+                        <h4>🔐 ISO 27001</h4>
+                        <p>Information Security Management System certification</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>🛡️ SOC 2 Type 2</h4>
+                        <p>Security, availability, and privacy controls</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>💳 PCI DSS 4.0</h4>
+                        <p>Secure payment card data processing</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>🇪🇺 GDPR/KVKK</h4>
+                        <p>Full data protection law compliance</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="compliance-content" data-lang="tr">
                 <h2>Kurumsal Güvenlik ve Uyumluluk</h2>
                 <p style="font-size: 1.2rem; margin-bottom: 2rem;">Tüm yasal düzenlemelere tam uyum, maksimum veri güvenliği</p>
                 
-                <div class="compliance-grid">
+                <div class="compliance-grid grid">
                     <div class="compliance-card">
                         <h4>🔐 ISO 27001</h4>
                         <p>Bilgi Güvenliği Yönetim Sistemi sertifikası</p>
@@ -1006,30 +1214,58 @@
     <!-- How It Works -->
     <section class="how-it-works" id="how-it-works">
         <div class="container">
-            <div class="section-header">
-                <h2>Nasıl Çalışır?</h2>
-                <p>SESTEK SR teknolojisi ile güçlendirilmiş 4 adımlık süreç</p>
+            <div class="section-header" data-lang="en">
+                <h2>How AI Agents Work</h2>
+                <p>4-step autonomous process powered by Agentic AI</p>
             </div>
-            <div class="steps-container">
+            <div class="section-header" data-lang="tr">
+                <h2>AI Agent'lar Nasıl Çalışır?</h2>
+                <p>Agentic AI ile güçlendirilmiş 4 adımlık otonom süreç</p>
+            </div>
+
+            <div class="steps-container grid" data-lang="en">
                 <div class="step">
                     <div class="step-number">1</div>
-                    <div class="step-title">Müşteri Araması</div>
-                    <div class="step-description">Müşteri telefon veya dijital kanaldan ulaşır</div>
+                    <div class="step-title">Customer Contact</div>
+                    <div class="step-description">Customer reaches out via voice or digital channels</div>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div class="step-title">Knovvu AI Anlama</div>
-                    <div class="step-description">%97+ doğrulukla Türkçe konuşma tanıma</div>
+                    <div class="step-title">AI Agent Understanding</div>
+                    <div class="step-description">Agentic AI processes intent with 97%+ accuracy</div>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <div class="step-title">Virtual Agent İşleme</div>
-                    <div class="step-description">Agentic AI ile randevu planlaması</div>
+                    <div class="step-title">Autonomous Action</div>
+                    <div class="step-description">AI Agent independently schedules appointment</div>
                 </div>
                 <div class="step">
                     <div class="step-number">4</div>
-                    <div class="step-title">Onay & Takip</div>
-                    <div class="step-description">SMS/E-posta onayı ve otomatik hatırlatma</div>
+                    <div class="step-title">Intelligent Follow-up</div>
+                    <div class="step-description">Automated confirmations and smart reminders</div>
+                </div>
+            </div>
+
+            <div class="steps-container grid" data-lang="tr">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Müşteri İletişimi</div>
+                    <div class="step-description">Müşteri ses veya dijital kanaldan ulaşır</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">AI Agent Anlama</div>
+                    <div class="step-description">Agentic AI niyeti %97+ doğrulukla işler</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Otonom Eylem</div>
+                    <div class="step-description">AI Agent bağımsız olarak randevu planlar</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Akıllı Takip</div>
+                    <div class="step-description">Otomatik onaylar ve akıllı hatırlatıcılar</div>
                 </div>
             </div>
         </div>
@@ -1038,10 +1274,13 @@
     <!-- Clients Section -->
     <section class="clients">
         <div class="container">
-            <div class="clients-header">
+            <div class="clients-header" data-lang="en">
+                <h3>Some of Our 550+ Enterprise Clients</h3>
+            </div>
+            <div class="clients-header" data-lang="tr">
                 <h3>550+ Kurumsal Müşterimizden Bazıları</h3>
             </div>
-            <div class="clients-logos">
+            <div class="clients-logos flex">
                 <div class="client-logo">Yapı Kredi</div>
                 <div class="client-logo">Arçelik</div>
                 <div class="client-logo">Vestel</div>
@@ -1055,13 +1294,26 @@
     <!-- Demo Section -->
     <section class="demo-section" id="demo">
         <div class="container">
-            <div class="demo-content">
-                <h2>Hemen Ücretsiz Demo Talep Edin</h2>
-                <p>Knovvu Virtual Agent ve SESTEK'in 24 yıllık teknoloji birikimini keşfedin</p>
+            <div class="demo-content" data-lang="en">
+                <h2>Experience Our AI Agents in Action</h2>
+                <p>See how Knovvu's Agentic AI transforms appointment scheduling with autonomous agents</p>
+                <form class="demo-form">
+                    <input type="email" class="demo-input" placeholder="Your email address" required>
+                    <input type="tel" class="demo-input" placeholder="Phone number" required>
+                    <button type="submit" class="demo-submit">🚀 Request AI Agent Demo</button>
+                </form>
+                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                    📞 Call now: +90 216 706 18 00
+                </p>
+            </div>
+
+            <div class="demo-content" data-lang="tr">
+                <h2>AI Agent'larımızı Aksiyonda Deneyimleyin</h2>
+                <p>Knovvu'nun Agentic AI'ının otonom agent'larla randevu planlamayı nasıl dönüştürdüğünü görün</p>
                 <form class="demo-form">
                     <input type="email" class="demo-input" placeholder="E-posta adresiniz" required>
-                    <input type="tel" class="demo-input" placeholder="Telefon numaranız (5XX XXX XX XX)" pattern="[0-9]{10}" required>
-                    <button type="submit" class="demo-submit">🚀 Demo Talep Et</button>
+                    <input type="tel" class="demo-input" placeholder="Telefon numaranız" required>
+                    <button type="submit" class="demo-submit">🚀 AI Agent Demosu Talep Et</button>
                 </form>
                 <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
                     📞 Hemen arayın: +90 216 706 18 00
@@ -1075,22 +1327,59 @@
         <div class="container">
             <div class="footer-content">
                 <div class="logo" style="font-size: 1.5rem; margin-bottom: 1rem; justify-content: center; display: flex; align-items: center;">
-                    <div class="logo-icon" style="margin-right: 10px;"></div>
-                    <span>Knovvu Service AI - SESTEK (Unifonic Company)</span>
+                    <div class="logo-icon" style="margin-right: 10px;">
+                        <svg class="logo-svg" style="width: 40px; height: 40px;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00B4D8;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#E91E63;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="50" cy="50" r="45" fill="url(#footerLogoGradient)"/>
+                            <path d="M 30 50 Q 50 30, 70 50 T 70 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+                            <path d="M 30 50 Q 50 70, 70 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <span>Knovvu AppointmentPro - SESTEK (Unifonic Company)</span>
                 </div>
-                <div class="footer-links">
-                    <a href="https://www.sestek.com/" target="_blank">SESTEK Hakkında</a>
+                <div class="footer-links flex">
+                    <a href="https://www.sestek.com/" target="_blank">SESTEK</a>
                     <a href="https://www.sestek.com/virtual-agent-knovvu" target="_blank">Knovvu Virtual Agent</a>
-                    <a href="https://www.sestek.com/demos" target="_blank">Demolar</a>
-                    <a href="#">KVKK</a>
-                    <a href="#">İletişim</a>
+                    <a href="https://www.sestek.com/demos" target="_blank">Demos</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Contact</a>
                 </div>
-                <p style="opacity: 0.7;">© 2025 Knovvu - SESTEK. Tüm hakları saklıdır. | 2000'den beri Türkçe konuşma teknolojilerinde lider</p>
+                <p style="opacity: 0.7;" data-lang="en">© 2025 Knovvu - SESTEK. All rights reserved. | Leading Turkish speech technology since 2000</p>
+                <p style="opacity: 0.7;" data-lang="tr">© 2025 Knovvu - SESTEK. Tüm hakları saklıdır. | 2000'den beri Türkçe konuşma teknolojilerinde lider</p>
             </div>
         </div>
     </footer>
 
     <script>
+        // Language switching functionality
+        function setLanguage(lang) {
+            document.body.className = lang === 'tr' ? 'lang-tr' : '';
+            
+            // Update language buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Save preference
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Load saved language preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            if (savedLang === 'tr') {
+                document.body.className = 'lang-tr';
+                document.querySelector('.lang-btn:nth-child(2)').classList.add('active');
+                document.querySelector('.lang-btn:nth-child(1)').classList.remove('active');
+            }
+        });
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1105,24 +1394,6 @@
             });
         });
 
-        // Animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.animate-on-scroll').forEach(el => {
-            observer.observe(el);
-        });
-
         // Navbar background on scroll
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('nav');
@@ -1134,12 +1405,20 @@
         });
 
         // Form submission
-        document.querySelector('.demo-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = e.target.querySelector('input[type="email"]').value;
-            const phone = e.target.querySelector('input[type="tel"]').value;
-            alert(`Demo talebiniz alındı!\n\nE-posta: ${email}\nTelefon: ${phone}\n\nEn kısa sürede sizinle iletişime geçeceğiz.`);
-            e.target.reset();
+        document.querySelectorAll('.demo-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = e.target.querySelector('input[type="email"]').value;
+                const phone = e.target.querySelector('input[type="tel"]').value;
+                const lang = document.body.classList.contains('lang-tr') ? 'tr' : 'en';
+                
+                if (lang === 'tr') {
+                    alert(`Demo talebiniz alındı!\n\nE-posta: ${email}\nTelefon: ${phone}\n\nEn kısa sürede sizinle iletişime geçeceğiz.`);
+                } else {
+                    alert(`Demo request received!\n\nEmail: ${email}\nPhone: ${phone}\n\nWe'll contact you shortly.`);
+                }
+                e.target.reset();
+            });
         });
 
         // Animated numbers
@@ -1150,9 +1429,9 @@
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 const value = Math.floor(progress * (end - start) + start);
                 if (element.textContent.includes('%')) {
-                    element.textContent = '%' + value;
-                } else if (element.textContent.includes('<')) {
-                    element.textContent = '<' + value + 'sn';
+                    element.textContent = '%' + value + (element.textContent.includes('+') ? '+' : '');
+                } else if (element.textContent.includes('+')) {
+                    element.textContent = value + '+';
                 } else {
                     element.textContent = value;
                 }
@@ -1169,7 +1448,7 @@
                 if (entry.isIntersecting && !entry.target.animated) {
                     entry.target.animated = true;
                     const numbers = entry.target.querySelectorAll('.stat-number');
-                    if (numbers[0]) animateValue(numbers[0], 0, 99, 2000);
+                    if (numbers[0]) animateValue(numbers[0], 0, 97, 2000);
                 }
             });
         });
