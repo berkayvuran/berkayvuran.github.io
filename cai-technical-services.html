@@ -3,462 +3,1460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAI Use Cases: Technical Services Scenario</title>
-    <link rel="icon" href="assets/images/favicon.ico">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="styles.css">
+    <title>Knovvu AppointmentPro - AI-Powered Service Scheduling by SESTEK</title>
     <style>
-        /* Page-local enhanced styling with subtle motion */
-        :root { --accent: #2563eb; /* SESTEK blue-ish */ --accent-2: #7c3aed; /* SESTEK purple-ish */ --muted: #6a737d; --bg: #0a0f1e; --card: #0f172a; --text: #e6edf3; }
-        html, body { height: 100%; overflow: hidden; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: var(--text); background: radial-gradient(1200px 600px at 10% -10%, rgba(37,99,235,0.25), transparent 70%), radial-gradient(1000px 500px at 100% 10%, rgba(124,58,237,0.18), transparent 70%), var(--bg); }
-        .deck { position: relative; width: 100%; height: 100%; }
-        /* 16:9 stage centered and scaled */
-        .stage { position: absolute; inset: 0; display: grid; place-items: center; }
-        .frame { width: 98vw; max-width: 1920px; aspect-ratio: 16 / 9; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 60px rgba(0,0,0,0.5); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); overflow: hidden; position: relative; }
-        .slide { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 48px; opacity: 0; transform: translateX(6%); transition: opacity .5s ease, transform .5s ease; }
-        .slide.active { opacity: 1; transform: translateX(0); }
-        .container { width: 100%; max-width: 1600px; margin: 0 auto; }
-        .hero { padding: 24px 0; position: relative; overflow: visible; }
-        .hero::after { content: ""; position: absolute; inset: -20% -10% auto -10%; height: 220px; background: radial-gradient(600px 140px at 20% 0%, rgba(124,58,237,0.28), transparent 60%); pointer-events: none; filter: blur(10px); }
-        .hero h1 { margin: 0 0 8px; font-size: 40px; letter-spacing: -0.02em; animation: riseIn 700ms cubic-bezier(.2,.8,.2,1) both; }
-        .hero p { margin: 0; color: #b8c0cc; max-width: 820px; animation: fadeIn 900ms 120ms both; }
-        .brand { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .brand-mark { width: 28px; height: 28px; border-radius: 6px; background: conic-gradient(from 180deg at 50% 50%, var(--accent), var(--accent-2), var(--accent)); box-shadow: 0 4px 14px rgba(124,58,237,0.5); }
-        .brand-name { font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #dbeafe; }
-        @keyframes riseIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        /* Hide old nav since deck has controls */
-        .nav-wrap { display: none; }
-        section { padding: 0; }
-        h2 { margin: 0 0 12px; font-size: 32px; letter-spacing: -0.01em; }
-        h3 { margin: 24px 0 8px; font-size: 18px; }
-        .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); transform: translateY(0); transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.18); background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); }
-        .grid { display: grid; gap: 16px; }
-        @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
-        @media (min-width: 1200px) { .grid-2-60 { grid-template-columns: 3fr 2fr; } }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; vertical-align: top; }
-        th { background: rgba(255,255,255,0.04); font-weight: 700; }
-        .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: rgba(238,242,255,0.15); color: #c7d2fe; border: 1px solid rgba(224,231,255,0.25); }
-        .muted { color: #9aa3af; }
-        .list { margin: 0; padding-left: 18px; }
-        .list-lg li { font-size: 18px; }
-        .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: rgba(246,248,250,0.05); border: 1px solid rgba(225,228,232,0.15); border-radius: 6px; padding: 2px 6px; font-size: 12px; color: #cbd5e1; }
-        .footer { padding: 24px 0 48px; color: #9aa3af; font-size: 14px; }
-        .pill { display: inline-block; padding: 6px 10px; background: rgba(230,240,255,0.15); color: #e2e8f0; border-radius: 999px; font-weight: 600; font-size: 12px; border: 1px solid rgba(204,223,255,0.25); }
-        .hero .pill { margin-top: 8px; animation: riseIn 700ms 80ms both; }
-        /* Controls */
-        .controls { position: fixed; inset: auto 24px 24px auto; display: flex; gap: 10px; z-index: 50; }
-        .btn { appearance: none; background: rgba(255,255,255,0.06); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 10px 14px; font-weight: 700; cursor: pointer; transition: transform .15s ease, background .2s ease, border-color .2s ease; }
-        .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.22); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .progress { position: fixed; left: 24px; bottom: 28px; color: #9aa3af; font-size: 13px; z-index: 50; }
-        .date-badge { position: absolute; top: 16px; right: 20px; z-index: 40; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.08); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.16); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
-        /* Team */
-        .team-grid { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); margin: 8px 0 16px; }
-        .person { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
-        .avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.18); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .person h4 { margin: 0 0 2px; font-size: 16px; }
-        .person .role { color: #a5b4c3; font-size: 13px; margin: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00B4D8;
+            --primary-dark: #0077B6;
+            --secondary: #E91E63;
+            --accent: #9C27B0;
+            --gradient-knovvu: linear-gradient(135deg, #00B4D8 0%, #E91E63 100%);
+            --gradient-hover: linear-gradient(135deg, #0077B6 0%, #C2185B 100%);
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --bg-light: #F9FAFB;
+            --white: #FFFFFF;
+            --success: #10B981;
+            --warning: #F59E0B;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Language Switcher */
+        .lang-switcher {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+        }
+
+        .lang-btn.active {
+            background: var(--gradient-knovvu);
+            color: white;
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: var(--bg-light);
+        }
+
+        /* Hide Turkish content by default */
+        [data-lang="tr"] {
+            display: none !important;
+        }
+
+        body.lang-tr [data-lang="en"] {
+            display: none !important;
+        }
+
+        body.lang-tr [data-lang="tr"] {
+            display: block !important;
+        }
+
+        body.lang-tr [data-lang="tr"].flex {
+            display: flex !important;
+        }
+
+        body.lang-tr [data-lang="tr"].grid {
+            display: grid !important;
+        }
+
+        [data-lang="en"].flex {
+            display: flex;
+        }
+
+        [data-lang="en"].grid {
+            display: grid;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cta-button {
+            background: var(--gradient-knovvu);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,180,216,0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 30c11 0 20 9 20 20s-9 20-20 20-20-9-20-20 9-20 20-20z" fill="%2300B4D8" opacity="0.05"/%3E%3C/svg%3E') repeat;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .badge {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-icon {
+            color: var(--success);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .btn-primary {
+            background: var(--gradient-knovvu);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,180,216,0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .phone-mockup {
+            width: 380px;
+            height: 700px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            transform: perspective(1000px) rotateY(-15deg);
+            transition: transform 0.3s ease;
+        }
+
+        .phone-mockup:hover {
+            transform: perspective(1000px) rotateY(-5deg);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chat-header {
+            background: var(--gradient-knovvu);
+            margin: -20px -20px 20px -20px;
+            padding: 15px;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .chat-message {
+            background: var(--bg-light);
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            animation: slideIn 0.5s ease;
+            max-width: 85%;
+        }
+
+        .chat-message.ai {
+            background: var(--gradient-knovvu);
+            color: white;
+            margin-left: auto;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* SESTEK Section */
+        .sestek-section {
+            padding: 4rem 0;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sestek-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .sestek-logo {
+            text-align: center;
+        }
+
+        .sestek-logo h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sestek-text h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sestek-text p {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .tech-badges {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .tech-badge {
+            background: var(--bg-light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 0;
+            background: var(--bg-light);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 20px;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-knovvu);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-knovvu);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-knovvu);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-description {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Compliance Section */
+        .compliance-section {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .compliance-content {
+            text-align: center;
+            color: white;
+        }
+
+        .compliance-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .compliance-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .compliance-card h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .compliance-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 5rem 0;
+            background: var(--bg-light);
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            position: relative;
+        }
+
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            top: 60px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--gradient-knovvu);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-knovvu);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.3);
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            color: var(--text-light);
+        }
+
+        /* Clients Section */
+        .clients {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .clients-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .clients-header h3 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .clients-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .client-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-light);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .client-logo:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 5rem 0;
+            background: var(--gradient-knovvu);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-content {
+            text-align: center;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-content h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .demo-form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .demo-input {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .demo-input:focus {
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+
+        .demo-submit {
+            background: white;
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            grid-column: span 2;
+        }
+
+        .demo-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+        }
+
+        .footer-content {
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .phone-mockup {
+                width: 300px;
+                height: 560px;
+                margin: 0 auto;
+            }
+
+            .stats-grid,
+            .features-grid,
+            .steps-container,
+            .compliance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-container::before {
+                display: none;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .demo-form {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-submit {
+                grid-column: span 1;
+            }
+
+            .sestek-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .lang-switcher {
+                top: 80px;
+                right: 10px;
+            }
+        }
     </style>
-    <meta name="description" content="Presentation: CAI Use Cases - Technical Services Scenario. Owner: Berkay Vuran. RACI, scope, handover, and tasks.">
 </head>
 <body>
-    <div class="deck">
-      <div class="stage"><div class="frame">
-        <section class="slide" data-slide="1" id="intro" data-skip="true">
-        <div class="container">
-        <header class="hero">
-            <div class="brand"><div class="brand-mark"></div><div class="brand-name">SESTEK</div></div>
-            <div class="pill">CAI Presentation</div>
-            <h1>CAI Use Cases: Technical Services Scenario</h1>
-            <p>Designed to manage and develop new product concepts and scenarios for CAI, tailored to specific use cases.</p>
-        </header>
-        <div class="card" style="margin-top:16px;">
-            <h2>Agenda</h2>
-            <ul class="list">
-                <li>1) Handover Summary</li>
-                <li>2) AI Agent Capabilities</li>
-                <li>3) Technical Services Overview</li>
-                <li>4) Vertical Insights</li>
-                <li>5) RACI</li>
-                <li>6) Team & Ownership</li>
-                <li>7) Phase 1 Scope</li>
-                <li>8) Work Plan (Backlog)</li>
-                <li>9) End</li>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" onclick="setLanguage('tr')">TR</button>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00B4D8;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#E91E63;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="45" fill="url(#logoGradient)"/>
+                        <path d="M 30 50 Q 50 30, 70 50 T 70 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <path d="M 30 50 Q 50 70, 70 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span>Knovvu AppointmentPro</span>
+            </div>
+            <ul class="nav-links flex" data-lang="en">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#compliance">Security</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="https://www.sestek.com/" target="_blank">SESTEK</a></li>
             </ul>
-            <p class="muted">Use <span class="kbd">→</span> or <span class="kbd">Space</span> to navigate</p>
+            <ul class="nav-links flex" data-lang="tr">
+                <li><a href="#features">Özellikler</a></li>
+                <li><a href="#how-it-works">Nasıl Çalışır</a></li>
+                <li><a href="#compliance">Güvenlik</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="https://www.sestek.com/" target="_blank">SESTEK</a></li>
+            </ul>
+            <a href="#demo" class="cta-button" data-lang="en">Get Free Demo</a>
+            <a href="#demo" class="cta-button" data-lang="tr" style="display:none;">Ücretsiz Demo</a>
         </div>
-        </div>
-        </section>
+    </nav>
 
-        <section id="team" class="slide" data-slide="2">
-            <div class="container">
-            <div class="card">
-                <h2>Team & Ownership</h2>
-                <p><strong>Process Owner</strong>: Berkay Vuran</p>
-                <p><strong>Responsible Team</strong>: Marketing (Venüs), PS (Ekin), PdM (Berkay)</p>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text" data-lang="en">
+                    <h1>Automate Service Appointments with Agentic AI</h1>
+                    <p>Powered by SESTEK's 24 years of speech recognition expertise and 97%+ accuracy, Knovvu AppointmentPro's AI Agents enable autonomous appointment scheduling 24/7 through voice and digital channels.</p>
+                    
+                    <div class="hero-badges flex">
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>Agentic AI Platform</span>
+                        </div>
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>550+ Enterprise Clients</span>
+                        </div>
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>ISO 27001 & PCI DSS</span>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-buttons flex">
+                        <a href="#demo" class="btn-primary">🎬 Watch AI Agent Demo</a>
+                        <a href="#contact" class="btn-secondary">📞 Talk to Sales</a>
+                    </div>
+                </div>
+
+                <div class="hero-text" data-lang="tr">
+                    <h1>Servis Randevularınızı Agentic AI ile Otomatikleştirin</h1>
+                    <p>SESTEK'in 24 yıllık konuşma tanıma uzmanlığı ve %97+ doğruluk oranıyla desteklenen Knovvu AppointmentPro AI Agent'ları, ses ve dijital kanallardan 7/24 otonom randevu planlaması sağlar.</p>
+                    
+                    <div class="hero-badges flex">
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>Agentic AI Platformu</span>
+                        </div>
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>550+ Kurumsal Müşteri</span>
+                        </div>
+                        <div class="badge">
+                            <span class="badge-icon">✓</span>
+                            <span>ISO 27001 & PCI DSS</span>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-buttons flex">
+                        <a href="#demo" class="btn-primary">🎬 AI Agent Demosu İzle</a>
+                        <a href="#contact" class="btn-secondary">📞 Satış ile Konuş</a>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="chat-header" data-lang="en">🎧 Knovvu Service Assistant</div>
+                            <div class="chat-header" data-lang="tr">🎧 Knovvu Servis Asistanı</div>
+                            
+                            <div data-lang="en">
+                                <div class="chat-message">
+                                    🔧 Hi, my washing machine has an issue, I need to schedule a service
+                                </div>
+                                <div class="chat-message ai">
+                                    I'll be happy to help! Could you provide your device serial number?
+                                </div>
+                                <div class="chat-message">
+                                    Serial: ARC123456789
+                                </div>
+                                <div class="chat-message ai">
+                                    Great! Your device is under warranty. Is tomorrow 2-4 PM convenient for you?
+                                </div>
+                                <div class="chat-message">
+                                    Yes, that works
+                                </div>
+                                <div class="chat-message ai">
+                                    ✅ Appointment confirmed! I've sent SMS confirmation. Our technician will visit tomorrow between 2-4 PM.
+                                </div>
+                            </div>
+
+                            <div data-lang="tr">
+                                <div class="chat-message">
+                                    🔧 Merhaba, çamaşır makinemde arıza var, randevu almak istiyorum
+                                </div>
+                                <div class="chat-message ai">
+                                    Size hemen yardımcı oluyorum! Cihazınızın seri numarasını alabilir miyim?
+                                </div>
+                                <div class="chat-message">
+                                    Seri: ARC123456789
+                                </div>
+                                <div class="chat-message ai">
+                                    Harika! Cihazınız garanti kapsamında. Yarın 14:00-16:00 arası uygun musunuz?
+                                </div>
+                                <div class="chat-message">
+                                    Evet, uygun
+                                </div>
+                                <div class="chat-message ai">
+                                    ✅ Randevunuz onaylandı! SMS ile bilgi gönderdim. Teknisyenimiz yarın 14:00-16:00 arasında adresinizde olacak.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SESTEK Section -->
+    <section class="sestek-section">
+        <div class="container">
+            <div class="sestek-content">
+                <div class="sestek-logo">
+                    <h3>SESTEK</h3>
+                    <p data-lang="en" style="color: var(--text-light);">Speech Technology Leader</p>
+                    <p data-lang="tr" style="color: var(--text-light);">Konuşma Teknolojileri Lideri</p>
+                </div>
+                <div class="sestek-text" data-lang="en">
+                    <h3>Powered by SESTEK's Agentic AI Technology</h3>
+                    <p>Leading conversational AI since 2000, SESTEK was acquired by Unifonic (SoftBank Vision Fund) and serves 550+ enterprise clients across 20 countries with autonomous AI agents.</p>
+                    <p>Knovvu's Agentic AI platform delivers next-generation autonomous agents with advanced reasoning, decision-making, and action-taking capabilities, powered by superior speech recognition.</p>
+                    <div class="tech-badges flex">
+                        <div class="tech-badge">🤖 Agentic AI Engine</div>
+                        <div class="tech-badge">🎯 Autonomous Actions</div>
+                        <div class="tech-badge">🧠 Advanced Reasoning</div>
+                        <div class="tech-badge">⚡ Real-time Processing</div>
+                    </div>
+                </div>
+                <div class="sestek-text" data-lang="tr">
+                    <h3>SESTEK'in Agentic AI Teknolojisi ile Güçlendirilmiş</h3>
+                    <p>2000 yılından beri konuşma AI'ı alanında lider olan SESTEK, Unifonic (SoftBank Vision Fund) tarafından satın alınmıştır ve 20 ülkede 550+ kurumsal müşteriye otonom AI agent'ları ile hizmet vermektedir.</p>
+                    <p>Knovvu'nun Agentic AI platformu, üstün konuşma tanıma ile desteklenen ileri muhakeme, karar verme ve eylem yürütme yeteneklerine sahip yeni nesil otonom agent'lar sunar.</p>
+                    <div class="tech-badges flex">
+                        <div class="tech-badge">🤖 Agentic AI Motoru</div>
+                        <div class="tech-badge">🎯 Otonom Eylemler</div>
+                        <div class="tech-badge">🧠 İleri Muhakeme</div>
+                        <div class="tech-badge">⚡ Gerçek Zamanlı İşleme</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid grid" data-lang="en">
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Autonomous AI Agents</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5 FTE</div>
+                    <div class="stat-label">Agent Cost Savings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">97%+</div>
+                    <div class="stat-label">Recognition Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">550+</div>
+                    <div class="stat-label">Enterprise Clients</div>
+                </div>
+            </div>
+            <div class="stats-grid grid" data-lang="tr">
+                <div class="stat-card">
+                    <div class="stat-number">%100</div>
+                    <div class="stat-label">Otonom AI Agent'lar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5 FTE</div>
+                    <div class="stat-label">Temsilci Tasarrufu</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">%97+</div>
+                    <div class="stat-label">Tanıma Doğruluğu</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">550+</div>
+                    <div class="stat-label">Kurumsal Müşteri</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header" data-lang="en">
+                <h2>Why Choose Knovvu AppointmentPro?</h2>
+                <p>Enterprise-grade features powered by SESTEK technology</p>
+            </div>
+            <div class="section-header" data-lang="tr">
+                <h2>Neden Knovvu AppointmentPro?</h2>
+                <p>SESTEK teknolojisiyle güçlendirilmiş kurumsal özellikler</p>
+            </div>
+
+            <div class="features-grid grid" data-lang="en">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">Agentic AI Platform</div>
+                    <div class="feature-description">
+                        Next-generation autonomous AI agents with advanced reasoning, strategic decision-making, and independent action-taking capabilities.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Cognitive AI Engine</div>
+                    <div class="feature-description">
+                        Advanced natural language understanding with context awareness, multi-turn conversation management, and intent recognition.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Autonomous Actions</div>
+                    <div class="feature-description">
+                        AI agents independently schedule, reschedule, and manage appointments without human intervention, learning from each interaction.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔊</div>
+                    <div class="feature-title">Voice-First AI Agents</div>
+                    <div class="feature-description">
+                        Superior speech recognition enabling natural voice interactions with 97%+ accuracy across multiple languages and accents.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">AI Agent Analytics</div>
+                    <div class="feature-description">
+                        Real-time monitoring of AI agent performance, conversation analytics, and continuous learning optimization.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <div class="feature-title">Enterprise Integration</div>
+                    <div class="feature-description">
+                        Seamless integration with SAP, Salesforce, Microsoft Dynamics, and all major CRM/ERP systems for AI agent orchestration.
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-grid grid" data-lang="tr">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">Agentic AI Platformu</div>
+                    <div class="feature-description">
+                        İleri muhakeme, stratejik karar verme ve bağımsız eylem yürütme yeteneklerine sahip yeni nesil otonom AI agent'ları.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Bilişsel AI Motoru</div>
+                    <div class="feature-description">
+                        Bağlam farkındalığı, çok turlu konuşma yönetimi ve niyet tanıma ile gelişmiş doğal dil anlama.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Otonom Eylemler</div>
+                    <div class="feature-description">
+                        AI agent'ları insan müdahalesi olmadan bağımsız olarak randevu planlayıp yönetir, her etkileşimden öğrenir.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔊</div>
+                    <div class="feature-title">Ses Öncelikli AI Agent'lar</div>
+                    <div class="feature-description">
+                        Birden fazla dil ve aksanda %97+ doğrulukla doğal ses etkileşimlerini sağlayan üstün konuşma tanıma.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">AI Agent Analitiği</div>
+                    <div class="feature-description">
+                        AI agent performansının gerçek zamanlı izlenmesi, konuşma analitiği ve sürekli öğrenme optimizasyonu.
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <div class="feature-title">Kurumsal Entegrasyon</div>
+                    <div class="feature-description">
+                        AI agent orkestrasyonu için SAP, Salesforce, Microsoft Dynamics ve tüm büyük CRM/ERP sistemleri ile sorunsuz entegrasyon.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compliance Section -->
+    <section class="compliance-section" id="compliance">
+        <div class="container">
+            <div class="compliance-content" data-lang="en">
+                <h2>Enterprise Security and Compliance</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem;">Full regulatory compliance, maximum data security</p>
                 
-                <div class="grid grid-2" style="margin-top:12px;">
-                    <div>
-                        <h3 style="margin-top:0;">Berkay</h3>
-                        <ul class="list">
-                            <li>Benchmarking</li>
-                            <li>Roadmap planning</li>
-                            <li>Process management</li>
-                        </ul>
+                <div class="compliance-grid grid">
+                    <div class="compliance-card">
+                        <h4>🔐 ISO 27001</h4>
+                        <p>Information Security Management System certification</p>
                     </div>
-                    <div>
-                        <h3 style="margin-top:0;">Ekin</h3>
-                        <ul class="list">
-                            <li>Contributing across solution design</li>
-                            <li>Generate use cases</li>
-                            <li>Produce demo line and demos</li>
-                        </ul>
+                    <div class="compliance-card">
+                        <h4>🛡️ SOC 2 Type 2</h4>
+                        <p>Security, availability, and privacy controls</p>
                     </div>
-                    <div>
-                        <h3 style="margin-top:0;">Venüs</h3>
-                        <ul class="list">
-                            <li>Generate marketing materials</li>
-                            <li>Promotion assets & landing updates</li>
-                            <li>Support vertical positioning</li>
-                        </ul>
+                    <div class="compliance-card">
+                        <h4>💳 PCI DSS 4.0</h4>
+                        <p>Secure payment card data processing</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>🇪🇺 GDPR/KVKK</h4>
+                        <p>Full data protection law compliance</p>
                     </div>
                 </div>
-                <p class="muted">Purpose: Establish a repeatable structure to define, validate, and launch CAI scenarios per vertical, starting with Technical Services.</p>
             </div>
-            </div>
-        </section>
 
-        <section id="raci" class="slide" data-slide="3">
-            <div class="container">
-            <div class="grid grid-2">
-                <div class="card">
-                    <h2>General RACI Matrix</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Role</th>
-                                <th>Who</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Responsible</td>
-                                <td>PdM, PS, Marketing</td>
-                            </tr>
-                            <tr>
-                                <td>Accountable</td>
-                                <td>PdM</td>
-                            </tr>
-                            <tr>
-                                <td>Consulted</td>
-                                <td>Sales, PdM</td>
-                            </tr>
-                            <tr>
-                                <td>Informed</td>
-                                <td>Management Level</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card">
-                    <h2>RACI: Technical Support Use Case</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Role</th>
-                                <th>Who</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Responsible</td>
-                                <td>Berkay, Venüs, Ekin</td>
-                            </tr>
-                            <tr>
-                                <td>Accountable</td>
-                                <td>Berkay, Çağatay</td>
-                            </tr>
-                            <tr>
-                                <td>Consulted</td>
-                                <td>Serdar Bey, Mert Çıkan, Şuara, Selin, Yalım, Ahmet</td>
-                            </tr>
-                            <tr>
-                                <td>Informed</td>
-                                <td>Levent Hoca, Serdar Bey, Buğra, Tülin, Çağatay</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            </div>
-        </section>
-
-        <section id="scope" class="slide" data-slide="4">
-            <div class="container">
-            <div class="card">
-                <h2>Phase 1 Scope</h2>
-                <ul class="list">
-                    <li>Review current technical service customers and scenarios</li>
-                    <li>Run competitive analysis for the vertical</li>
-                    <li>Define a reusable technical flow specific to the vertical</li>
-                    <li>Enrich and align template projects</li>
-                    <li>Prepare marketing materials</li>
-                    <li>Inform internal teams</li>
-                </ul>
-                <p class="muted">Kick-off update cadence: monthly status updates starting in October.</p>
-            </div>
-            </div>
-        </section>
-
-        <section id="handover" class="slide" data-slide="5">
-            <div class="container">
-            <div class="card">
-                <h2>Handover Summary</h2>
-                <ul class="list">
-                    <li>Prioritize <strong>Service Appointment</strong> use case</li>
-                    <li>Study marketing motions (e.g., <span class="tag">ElevenLabs</span>), evaluate Arçelik–Vestel scenarios with PS</li>
-                    <li>Set up demo line; prepare English & Turkish demos/content; update website</li>
-                    <li>Hold regular status meetings</li>
-                    <li>Team: Berkay (owner), consultant assigned by Tülin, Venüs</li>
-                    <li>Phase 1: Integrate with template projects</li>
-                    <li>Phase 2: Plan an "App Store"-like structure with expansion packs</li>
-                    <li>Marketing focuses on micro use cases: service appointment, collections, banking dispute, energy subscription management</li>
-                </ul>
-            </div>
-            </div>
-        </section>
-
-        <section id="market" class="slide" data-slide="6">
-            <div class="container">
-            <div class="card">
-                <h2>Vertical Insights & References</h2>
-                <p>Input from Yalım on verticalized CAI players:</p>
-                <ul class="list">
-                    <li><strong>Springlabs</strong>: ultra-niche vertical focus</li>
-                    <li><strong>glia</strong> & <strong>interface.ai</strong>: banking and credit union focus</li>
-                    <li><strong>Happy Robot</strong>: logistics-focused; notable demo content on YouTube</li>
-                    <li>Recommendation: speak with <strong>David Taglieri</strong></li>
-                    <li><strong>Kore.ai</strong>: product management discipline with solution owners</li>
-                </ul>
-            </div>
-            </div>
-        </section>
-
-        <section id="tasks" class="slide" data-slide="7">
-            <div class="container">
-            <div class="card">
-                <h2>Work Plan</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Type</th>
-                            <th>Title</th>
-                            <th>State</th>
-                            <th>Iteration</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>136905</td><td>User Story</td><td>Phase 0: Generate 'CAI Use Cases'</td><td><span class="tag">Active</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136901</td><td>Task</td><td>CAI Use Cases Handover Meeting</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136904</td><td>Task</td><td>RACI Matrix</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136906</td><td>Task</td><td>Plan Status Update Meetings</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136907</td><td>Task</td><td>Research & Benchmark for CAI Use Cases</td><td><span class="tag">Active</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136908</td><td>Task</td><td>Align as Accountable Team</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136962</td><td>Task</td><td>Generate Kickoff Using Teams</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>137045</td><td>Task</td><td>Review Marketing Materials</td><td><span class="tag">Closed</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136949</td><td>User Story</td><td>Generate Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136950</td><td>Task</td><td>Review Arçelik-Vestel Use Cases</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136951</td><td>Task</td><td>Generate Generic Flow for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136952</td><td>Task</td><td>Generate Demo Line for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136953</td><td>Task</td><td>Select Differentiator Features for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136954</td><td>Task</td><td>Generate Turkish/English Use Case Presentation for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136956</td><td>Task</td><td>Generate Demo & Promotion Videos for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                        <tr><td>136957</td><td>Task</td><td>Update Landing Page for Technical Services Use Case</td><td><span class="tag">New</span></td><td>CAI Use Cases</td></tr>
-                    </tbody>
-                </table>
-                <p class="muted">Open as query</p>
-            </div>
-            </div>
-        </section>
-        
-        <!-- Technical Services Overview (visual) -->
-        <section id="tech-services" class="slide" data-slide="8">
-            <div class="container">
-            <div class="card">
-                <h2>Technical Services Overview</h2>
-                <div class="grid grid-2-60" style="align-items:center;">
-                    <div>
-                        <ul class="list list-lg">
-                            <li>Service appointment booking and rescheduling</li>
-                            <li>Warranty & ticket lookup with guided troubleshooting</li>
-                            <li>Field technician dispatch coordination</li>
-                            <li>Post-service feedback and CSAT capture</li>
-                        </ul>
-                        <p class="muted">Targets: reduce call center load, increase first-contact resolution, improve CSAT.</p>
+            <div class="compliance-content" data-lang="tr">
+                <h2>Kurumsal Güvenlik ve Uyumluluk</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem;">Tüm yasal düzenlemelere tam uyum, maksimum veri güvenliği</p>
+                
+                <div class="compliance-grid grid">
+                    <div class="compliance-card">
+                        <h4>🔐 ISO 27001</h4>
+                        <p>Bilgi Güvenliği Yönetim Sistemi sertifikası</p>
                     </div>
-                    <div>
-                        <!-- Simple SVG illustration -->
-                        <svg viewBox="0 0 560 300" width="100%" height="auto" role="img" aria-label="Technical services diagram">
+                    <div class="compliance-card">
+                        <h4>🛡️ SOC 2 Type 2</h4>
+                        <p>Güvenlik, kullanılabilirlik ve gizlilik kontrolleri</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>💳 PCI DSS 4.0</h4>
+                        <p>Ödeme kartı verilerinin güvenli işlenmesi</p>
+                    </div>
+                    <div class="compliance-card">
+                        <h4>🇪🇺 GDPR/KVKK</h4>
+                        <p>Tam veri koruma yasalarına uyumluluk</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header" data-lang="en">
+                <h2>How AI Agents Work</h2>
+                <p>4-step autonomous process powered by Agentic AI</p>
+            </div>
+            <div class="section-header" data-lang="tr">
+                <h2>AI Agent'lar Nasıl Çalışır?</h2>
+                <p>Agentic AI ile güçlendirilmiş 4 adımlık otonom süreç</p>
+            </div>
+
+            <div class="steps-container grid" data-lang="en">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Customer Contact</div>
+                    <div class="step-description">Customer reaches out via voice or digital channels</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">AI Agent Understanding</div>
+                    <div class="step-description">Agentic AI processes intent with 97%+ accuracy</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Autonomous Action</div>
+                    <div class="step-description">AI Agent independently schedules appointment</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Intelligent Follow-up</div>
+                    <div class="step-description">Automated confirmations and smart reminders</div>
+                </div>
+            </div>
+
+            <div class="steps-container grid" data-lang="tr">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Müşteri İletişimi</div>
+                    <div class="step-description">Müşteri ses veya dijital kanaldan ulaşır</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">AI Agent Anlama</div>
+                    <div class="step-description">Agentic AI niyeti %97+ doğrulukla işler</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Otonom Eylem</div>
+                    <div class="step-description">AI Agent bağımsız olarak randevu planlar</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Akıllı Takip</div>
+                    <div class="step-description">Otomatik onaylar ve akıllı hatırlatıcılar</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section class="clients">
+        <div class="container">
+            <div class="clients-header" data-lang="en">
+                <h3>Some of Our 550+ Enterprise Clients</h3>
+            </div>
+            <div class="clients-header" data-lang="tr">
+                <h3>550+ Kurumsal Müşterimizden Bazıları</h3>
+            </div>
+            <div class="clients-logos flex">
+                <div class="client-logo">Yapı Kredi</div>
+                <div class="client-logo">Arçelik</div>
+                <div class="client-logo">Vestel</div>
+                <div class="client-logo">Hepsiburada</div>
+                <div class="client-logo">ING Bank</div>
+                <div class="client-logo">VakıfBank</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <div class="demo-content" data-lang="en">
+                <h2>Experience Our AI Agents in Action</h2>
+                <p>See how Knovvu's Agentic AI transforms appointment scheduling with autonomous agents</p>
+                <form class="demo-form">
+                    <input type="email" class="demo-input" placeholder="Your email address" required>
+                    <input type="tel" class="demo-input" placeholder="Phone number" required>
+                    <button type="submit" class="demo-submit">🚀 Request AI Agent Demo</button>
+                </form>
+                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                    📞 Call now: +90 216 706 18 00
+                </p>
+            </div>
+
+            <div class="demo-content" data-lang="tr">
+                <h2>AI Agent'larımızı Aksiyonda Deneyimleyin</h2>
+                <p>Knovvu'nun Agentic AI'ının otonom agent'larla randevu planlamayı nasıl dönüştürdüğünü görün</p>
+                <form class="demo-form">
+                    <input type="email" class="demo-input" placeholder="E-posta adresiniz" required>
+                    <input type="tel" class="demo-input" placeholder="Telefon numaranız" required>
+                    <button type="submit" class="demo-submit">🚀 AI Agent Demosu Talep Et</button>
+                </form>
+                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                    📞 Hemen arayın: +90 216 706 18 00
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo" style="font-size: 1.5rem; margin-bottom: 1rem; justify-content: center; display: flex; align-items: center;">
+                    <div class="logo-icon" style="margin-right: 10px;">
+                        <svg class="logo-svg" style="width: 40px; height: 40px;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                             <defs>
-                                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                                    <stop offset="0%" stop-color="#0072ce" stop-opacity="0.9"/>
-                                    <stop offset="100%" stop-color="#00b3e6" stop-opacity="0.9"/>
+                                <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00B4D8;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#E91E63;stop-opacity:1" />
                                 </linearGradient>
                             </defs>
-                            <rect x="24" y="32" width="150" height="70" rx="12" fill="url(#g1)" opacity="0.9"/>
-                            <text x="99" y="69" text-anchor="middle" fill="#e6f0ff" font-size="16" font-weight="700">Customer</text>
-                            <rect x="386" y="32" width="150" height="70" rx="12" fill="url(#g1)" opacity="0.9"/>
-                            <text x="461" y="69" text-anchor="middle" fill="#e6f0ff" font-size="16" font-weight="700">Technician</text>
-                            <rect x="220" y="122" width="120" height="70" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)"/>
-                            <text x="280" y="162" text-anchor="middle" fill="#cbd5e1" font-size="14" font-weight="700">CAI Orchestrator</text>
-                            <rect x="24" y="210" width="150" height="60" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)"/>
-                            <text x="99" y="245" text-anchor="middle" fill="#cbd5e1" font-size="13" font-weight="600">CRM / Tickets</text>
-                            <rect x="386" y="210" width="150" height="60" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)"/>
-                            <text x="461" y="245" text-anchor="middle" fill="#cbd5e1" font-size="13" font-weight="600">Scheduling</text>
-                            <path d="M174 67 L386 67" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
-                            <path d="M280 192 L99 210" stroke="#94a3b8" stroke-width="2"/>
-                            <path d="M280 192 L461 210" stroke="#94a3b8" stroke-width="2"/>
-                            <defs>
-                                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
-                                </marker>
-                            </defs>
+                            <circle cx="50" cy="50" r="45" fill="url(#footerLogoGradient)"/>
+                            <path d="M 30 50 Q 50 30, 70 50 T 70 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+                            <path d="M 30 50 Q 50 70, 70 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
                         </svg>
                     </div>
+                    <span>Knovvu AppointmentPro - SESTEK (Unifonic Company)</span>
                 </div>
-            </div>
-            </div>
-        </section>
-
-        <!-- AI Agent Capabilities (visual) -->
-        <section id="ai-agent" class="slide" data-slide="9">
-            <div class="container">
-            <div class="card">
-                <h2>AI Agent Capabilities</h2>
-                <div class="grid grid-2-60" style="align-items:center;">
-                    <div>
-                        <ul class="list list-lg">
-                            <li>Natural language appointment booking with constraints</li>
-                            <li>Knowledge-grounded troubleshooting (KB, manuals, CRM)</li>
-                            <li>Tool-use: CRM, scheduling, notification APIs</li>
-                            <li>Multi-lingual: TR/EN dialogs and assets</li>
-                        </ul>
-                        <p class="muted">Outcomes: lower AHT, fewer transfers, higher NPS/CSAT.</p>
-                    </div>
-                    <div>
-                        <!-- Radial nodes diagram -->
-                        <svg viewBox="0 0 560 300" width="100%" height="auto" role="img" aria-label="AI agent capabilities">
-                            <defs>
-                                <radialGradient id="rg" cx="50%" cy="50%" r="60%">
-                                    <stop offset="0%" stop-color="#00b3e6" stop-opacity="0.95"/>
-                                    <stop offset="100%" stop-color="#0072ce" stop-opacity="0.75"/>
-                                </radialGradient>
-                            </defs>
-                            <circle cx="280" cy="150" r="50" fill="url(#rg)"/>
-                            <text x="280" y="154" text-anchor="middle" fill="#e6f0ff" font-size="14" font-weight="800">CAI Agent</text>
-                            <g stroke="#7dd3fc" stroke-width="2">
-                                <line x1="280" y1="100" x2="280" y2="36"/>
-                                <line x1="280" y1="200" x2="280" y2="264"/>
-                                <line x1="230" y1="150" x2="116" y2="150"/>
-                                <line x1="330" y1="150" x2="444" y2="150"/>
-                            </g>
-                            <g>
-                                <rect x="240" y="8" width="80" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="#38bdf8"/>
-                                <text x="280" y="35" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">Scheduler API</text>
-                                <rect x="240" y="248" width="80" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="#38bdf8"/>
-                                <text x="280" y="275" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">CRM API</text>
-                                <rect x="56" y="128" width="100" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="#38bdf8"/>
-                                <text x="106" y="155" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">KB / Docs</text>
-                                <rect x="404" y="128" width="100" height="44" rx="10" fill="rgba(255,255,255,0.06)" stroke="#38bdf8"/>
-                                <text x="454" y="155" text-anchor="middle" fill="#bae6fd" font-size="12" font-weight="700">Notify API</text>
-                            </g>
-                        </svg>
-                    </div>
+                <div class="footer-links flex">
+                    <a href="https://www.sestek.com/" target="_blank">SESTEK</a>
+                    <a href="https://www.sestek.com/virtual-agent-knovvu" target="_blank">Knovvu Virtual Agent</a>
+                    <a href="https://www.sestek.com/demos" target="_blank">Demos</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Contact</a>
                 </div>
+                <p style="opacity: 0.7;" data-lang="en">© 2025 Knovvu - SESTEK. All rights reserved. | Leading Turkish speech technology since 2000</p>
+                <p style="opacity: 0.7;" data-lang="tr">© 2025 Knovvu - SESTEK. Tüm hakları saklıdır. | 2000'den beri Türkçe konuşma teknolojilerinde lider</p>
             </div>
-            </div>
-        </section>
-
-        <!-- End slide -->
-        <section id="end" class="slide" data-slide="10">
-            <div class="container">
-            <div class="card" style="text-align:center; padding:48px;">
-                <h2>Thank you</h2>
-                <p class="muted">Questions, feedback, or next steps?</p>
-                <p class="muted">Owner: <strong>Berkay Vuran</strong> · Team: Venüs (Marketing), Ekin (PS)</p>
-            </div>
-            </div>
-        </section>
-
-      <div class="date-badge">24.09.2025</div>
-      </div></div>
-
-        <div class="controls">
-            <button class="btn" id="prevBtn" aria-label="Previous slide">← Prev</button>
-            <button class="btn" id="nextBtn" aria-label="Next slide">Next →</button>
         </div>
-        <div class="progress" id="progress">1 / 9</div>
-    </div>
+    </footer>
+
     <script>
-        // Deck navigation: no scroll, next/prev & keyboard
-        (function(){
-            // Desired order
-            var orderIds = ['intro','handover','ai-agent','tech-services','market','raci','team','scope','tasks','end'];
-            // Build slides array in this order; ignore missing
-            var slides = orderIds.map(function(id){ return document.getElementById(id); }).filter(Boolean);
-            var index = 0;
-            var prevBtn = document.getElementById('prevBtn');
-            var nextBtn = document.getElementById('nextBtn');
-            var progress = document.getElementById('progress');
-
-            function show(i){
-                if (i < 0 || i >= slides.length) return;
-                slides.forEach(function(s){ s.classList.remove('active'); });
-                slides[i].classList.add('active');
-                index = i;
-                updateControls();
-            }
-
-            function updateControls(){
-                prevBtn.disabled = index === 0;
-                nextBtn.disabled = index === slides.length - 1;
-                var displayIndex = index === 0 ? 0 : index; // start numbering at 0 for Intro
-                var displayTotal = Math.max(slides.length - 1, 1); // show total as 9 when there are 10 slides
-                progress.textContent = displayIndex + ' / ' + displayTotal;
-            }
-
-            prevBtn.addEventListener('click', function(){ show(index - 1); });
-            nextBtn.addEventListener('click', function(){ show(index + 1); });
-
-            document.addEventListener('keydown', function(e){
-                var key = e.key;
-                if (key === 'ArrowRight' || key === 'PageDown' || key === ' ') { e.preventDefault(); show(index + 1); }
-                if (key === 'ArrowLeft' || key === 'PageUp' || key === 'Backspace') { e.preventDefault(); show(index - 1); }
-                if (key === 'Home') { e.preventDefault(); show(0); }
-                if (key === 'End') { e.preventDefault(); show(slides.length - 1); }
+        // Language switching functionality
+        function setLanguage(lang) {
+            document.body.className = lang === 'tr' ? 'lang-tr' : '';
+            
+            // Update language buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
+            event.target.classList.add('active');
+            
+            // Save preference
+            localStorage.setItem('preferredLanguage', lang);
+        }
 
-            // Basic swipe for touch
-            var startX = 0; var startY = 0; var moved = false;
-            document.addEventListener('touchstart', function(e){
-                var t = e.changedTouches[0]; startX = t.clientX; startY = t.clientY; moved = false;
-            }, { passive: true });
-            document.addEventListener('touchmove', function(){ moved = true; }, { passive: true });
-            document.addEventListener('touchend', function(e){
-                var t = e.changedTouches[0]; var dx = t.clientX - startX; var dy = t.clientY - startY;
-                if (Math.abs(dx) > 40 && Math.abs(dy) < 50) { if (dx < 0) show(index + 1); else show(index - 1); }
+        // Load saved language preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            if (savedLang === 'tr') {
+                document.body.className = 'lang-tr';
+                document.querySelector('.lang-btn:nth-child(2)').classList.add('active');
+                document.querySelector('.lang-btn:nth-child(1)').classList.remove('active');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
+        });
 
-            // Ensure first slide is active per new order
-            show(0);
-        })();
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.15)';
+            } else {
+                nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.08)';
+            }
+        });
+
+        // Form submission
+        document.querySelectorAll('.demo-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = e.target.querySelector('input[type="email"]').value;
+                const phone = e.target.querySelector('input[type="tel"]').value;
+                const lang = document.body.classList.contains('lang-tr') ? 'tr' : 'en';
+                
+                if (lang === 'tr') {
+                    alert(`Demo talebiniz alındı!\n\nE-posta: ${email}\nTelefon: ${phone}\n\nEn kısa sürede sizinle iletişime geçeceğiz.`);
+                } else {
+                    alert(`Demo request received!\n\nEmail: ${email}\nPhone: ${phone}\n\nWe'll contact you shortly.`);
+                }
+                e.target.reset();
+            });
+        });
+
+        // Animated numbers
+        const animateValue = (element, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                if (element.textContent.includes('%')) {
+                    element.textContent = '%' + value + (element.textContent.includes('+') ? '+' : '');
+                } else if (element.textContent.includes('+')) {
+                    element.textContent = value + '+';
+                } else {
+                    element.textContent = value;
+                }
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+
+        // Trigger number animations when stats section is visible
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.animated) {
+                    entry.target.animated = true;
+                    const numbers = entry.target.querySelectorAll('.stat-number');
+                    if (numbers[0]) animateValue(numbers[0], 0, 97, 2000);
+                }
+            });
+        });
+
+        const statsSection = document.querySelector('.stats');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
     </script>
 </body>
 </html>
-
-
