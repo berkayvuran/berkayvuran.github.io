@@ -23,12 +23,12 @@
         }
 
         :root {
-            --primary: #00B4D8;
-            --primary-dark: #0077B6;
-            --secondary: #E91E63;
-            --accent: #9C27B0;
-            --gradient-knovvu: linear-gradient(135deg, #00B4D8 0%, #E91E63 100%);
-            --gradient-hover: linear-gradient(135deg, #0077B6 0%, #C2185B 100%);
+            --primary: #0066CC;
+            --primary-dark: #004C99;
+            --secondary: #0052A3;
+            --accent: #0080FF;
+            --gradient-knovvu: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
+            --gradient-hover: linear-gradient(135deg, #004C99 0%, #003D7A 100%);
             --text-dark: #1F2937;
             --text-light: #6B7280;
             --bg-light: #F9FAFB;
@@ -182,14 +182,14 @@
 
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,180,216,0.3);
+            box-shadow: 0 10px 30px rgba(0,102,204,0.3);
         }
 
         /* Hero Section */
         .hero {
             margin-top: 80px;
             padding: 5rem 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
             position: relative;
             overflow: hidden;
         }
@@ -201,7 +201,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 30c11 0 20 9 20 20s-9 20-20 20-20-9-20-20 9-20 20-20z" fill="%2300B4D8" opacity="0.05"/%3E%3C/svg%3E') repeat;
+            background: url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 30c11 0 20 9 20 20s-9 20-20 20-20-9-20-20 9-20 20-20z" fill="%230066CC" opacity="0.03"/%3E%3C/svg%3E') repeat;
             animation: float 20s linear infinite;
         }
 
@@ -221,12 +221,17 @@
 
         .hero-text h1 {
             font-size: 3.2rem;
-            font-weight: 800;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease;
+            line-height: 1.2;
+        }
+
+        .hero-text h1 span {
             background: var(--gradient-knovvu);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1.5rem;
-            animation: fadeInUp 0.8s ease;
         }
 
         @keyframes fadeInUp {
@@ -241,10 +246,11 @@
         }
 
         .hero-text p {
-            font-size: 1.25rem;
-            color: var(--text-dark);
+            font-size: 1.15rem;
+            color: #4a5568;
             margin-bottom: 1rem;
             animation: fadeInUp 0.8s ease 0.2s both;
+            line-height: 1.7;
         }
 
         .hero-badges {
@@ -277,37 +283,39 @@
         }
 
         .btn-primary {
-            background: var(--gradient-knovvu);
+            background: linear-gradient(135deg, #e91e8c 0%, #0066CC 100%);
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
             display: inline-block;
+            border: 2px solid transparent;
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0,180,216,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(233, 30, 140, 0.3);
         }
 
         .btn-secondary {
             background: white;
             color: var(--primary);
-            padding: 1rem 2rem;
+            padding: 1rem 2.5rem;
             border: 2px solid var(--primary);
-            border-radius: 50px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
 
         .btn-secondary:hover {
             background: var(--primary);
             color: white;
+            transform: translateY(-2px);
         }
 
         .hero-visual {
@@ -318,7 +326,7 @@
         .phone-mockup {
             width: 380px;
             height: 700px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
             border-radius: 40px;
             padding: 20px;
             box-shadow: 0 30px 60px rgba(0,0,0,0.3);
@@ -555,7 +563,7 @@
         /* Compliance Section */
         .compliance-section {
             padding: 4rem 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
         }
 
         .compliance-content {
@@ -635,7 +643,7 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: white;
-            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
         }
 
         .step-title {
@@ -850,8 +858,8 @@
                     <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#00B4D8;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#E91E63;stop-opacity:1" />
+                                <stop offset="0%" style="stop-color:#0066CC;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0052A3;stop-opacity:1" />
                             </linearGradient>
                         </defs>
                         <circle cx="50" cy="50" r="45" fill="url(#logoGradient)"/>
@@ -885,8 +893,8 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text" data-lang="en">
-                    <h1>Automate Service Appointments with Agentic AI</h1>
-                    <p>Powered by SESTEK's 24 years of speech recognition expertise and 97%+ accuracy, Knovvu FixPoint Schedular Agent's AI Agents enable autonomous appointment scheduling 24/7 through voice and digital channels.</p>
+                    <h1>Automate Service Appointments with <span>Agentic AI</span></h1>
+                    <p>Powered by SESTEK's 25 years of speech recognition expertise and 97%+ accuracy, Knovvu FixPoint Schedular Agent's AI Agents enable autonomous appointment scheduling 24/7 through voice and digital channels.</p>
                     
                     <div class="hero-badges flex">
                         <div class="badge">
@@ -899,19 +907,19 @@
                         </div>
                         <div class="badge">
                             <span class="badge-icon">✓</span>
-                            <span>ISO 27001 & PCI DSS</span>
+                            <span>ISO 27001 & SOC 2</span>
                         </div>
                     </div>
                     
                     <div class="hero-buttons flex">
-                        <a href="#demo" class="btn-primary">🎬 Watch AI Agent Demo</a>
+                        <a href="https://www.youtube.com/watch?v=K8Px_t_7igs" target="_blank" class="btn-primary">🎬 Watch AI Agent Demo</a>
                         <a href="#contact" class="btn-secondary">📞 Talk to Sales</a>
                     </div>
                 </div>
 
                 <div class="hero-text" data-lang="tr">
-                    <h1>Servis Randevularınızı Agentic AI ile Otomatikleştirin</h1>
-                    <p>SESTEK'in 24 yıllık konuşma tanıma uzmanlığı ve %97+ doğruluk oranıyla desteklenen Knovvu FixPoint Schedular AI Agent'ları, ses ve dijital kanallardan 7/24 otonom randevu planlaması sağlar.</p>
+                    <h1>Servis Randevularınızı <span>Agentic AI</span> ile Otomatikleştirin</h1>
+                    <p>SESTEK'in 25 yıllık konuşma tanıma uzmanlığı ve %97+ doğruluk oranıyla desteklenen Knovvu FixPoint Schedular AI Agent'ları, ses ve dijital kanallardan 7/24 otonom randevu planlaması sağlar.</p>
                     
                     <div class="hero-badges flex">
                         <div class="badge">
@@ -924,12 +932,12 @@
                         </div>
                         <div class="badge">
                             <span class="badge-icon">✓</span>
-                            <span>ISO 27001 & PCI DSS</span>
+                            <span>ISO 27001 & SOC 2</span>
                         </div>
                     </div>
                     
                     <div class="hero-buttons flex">
-                        <a href="#demo" class="btn-primary">🎬 AI Agent Demosu İzle</a>
+                        <a href="https://www.youtube.com/watch?v=K8Px_t_7igs" target="_blank" class="btn-primary">🎬 AI Agent Demosu İzle</a>
                         <a href="#contact" class="btn-secondary">📞 Satış ile Konuş</a>
                     </div>
                 </div>
@@ -1000,7 +1008,7 @@
                 <div class="sestek-text" data-lang="en">
                     <h3>Powered by SESTEK's Agentic AI Technology</h3>
                     <p>Leading conversational AI since 2000, SESTEK was acquired by Unifonic (SoftBank Vision Fund) and serves 550+ enterprise clients across 20 countries with autonomous AI agents.</p>
-                    <p>Knovvu's Agentic AI platform delivers next-generation autonomous agents with advanced reasoning, decision-making, and action-taking capabilities, powered by superior speech recognition.</p>
+                    <p>Knovvu's Agentic AI platform delivers next-generation autonomous agents with advanced reasoning, decision-making, and action-taking capabilities, powered by 25 years of superior speech recognition expertise.</p>
                     <div class="tech-badges flex">
                         <div class="tech-badge">🤖 Agentic AI Engine</div>
                         <div class="tech-badge">🎯 Autonomous Actions</div>
@@ -1011,7 +1019,7 @@
                 <div class="sestek-text" data-lang="tr">
                     <h3>SESTEK'in Agentic AI Teknolojisi ile Güçlendirilmiş</h3>
                     <p>2000 yılından beri konuşma AI'ı alanında lider olan SESTEK, Unifonic (SoftBank Vision Fund) tarafından satın alınmıştır ve 20 ülkede 550+ kurumsal müşteriye otonom AI agent'ları ile hizmet vermektedir.</p>
-                    <p>Knovvu'nun Agentic AI platformu, üstün konuşma tanıma ile desteklenen ileri muhakeme, karar verme ve eylem yürütme yeteneklerine sahip yeni nesil otonom agent'lar sunar.</p>
+                    <p>Knovvu'nun Agentic AI platformu, 25 yıllık üstün konuşma tanıma uzmanlığı ile desteklenen ileri muhakeme, karar verme ve eylem yürütme yeteneklerine sahip yeni nesil otonom agent'lar sunar.</p>
                     <div class="tech-badges flex">
                         <div class="tech-badge">🤖 Agentic AI Motoru</div>
                         <div class="tech-badge">🎯 Otonom Eylemler</div>
@@ -1186,12 +1194,12 @@
                         <p>Security, availability, and privacy controls</p>
                     </div>
                     <div class="compliance-card">
-                        <h4>💳 PCI DSS 4.0</h4>
-                        <p>Secure payment card data processing</p>
+                        <h4>🎭 Data Masking</h4>
+                        <p>Automatic masking and protection of personal data</p>
                     </div>
                     <div class="compliance-card">
-                        <h4>🇪🇺 GDPR/KVKK</h4>
-                        <p>Full data protection law compliance</p>
+                        <h4>⚡ AI Guardrails</h4>
+                        <p>Built-in safeguards preventing unwanted behaviors</p>
                     </div>
                 </div>
             </div>
@@ -1210,12 +1218,12 @@
                         <p>Güvenlik, kullanılabilirlik ve gizlilik kontrolleri</p>
                     </div>
                     <div class="compliance-card">
-                        <h4>💳 PCI DSS 4.0</h4>
-                        <p>Ödeme kartı verilerinin güvenli işlenmesi</p>
+                        <h4>🎭 Veri Maskeleme</h4>
+                        <p>Kişisel verilerin otomatik maskelenmesi ve korunması</p>
                     </div>
                     <div class="compliance-card">
-                        <h4>🇪🇺 GDPR/KVKK</h4>
-                        <p>Tam veri koruma yasalarına uyumluluk</p>
+                        <h4>⚡ AI Guardrail</h4>
+                        <p>İstenmeyen davranışları engelleyen güvenlik önlemleri</p>
                     </div>
                 </div>
             </div>
@@ -1342,8 +1350,8 @@
                         <svg class="logo-svg" style="width: 40px; height: 40px;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#00B4D8;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#E91E63;stop-opacity:1" />
+                                    <stop offset="0%" style="stop-color:#0066CC;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#0052A3;stop-opacity:1" />
                                 </linearGradient>
                             </defs>
                             <circle cx="50" cy="50" r="45" fill="url(#footerLogoGradient)"/>
