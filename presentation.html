@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Agent Project - C-Level Presentation</title>
+    <title>Knovvu FixPoint Schedular Agent - Status Update</title>
     <style>
         * {
             margin: 0;
@@ -58,6 +58,26 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            position: relative;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 18px;
+            color: #667eea;
+            font-weight: 600;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .slide-date {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 18px;
+            color: #999;
+            animation: fadeInUp 0.8s ease-out;
         }
 
         .slide-title {
@@ -247,81 +267,26 @@
         .bullet-list li:nth-child(4) { animation-delay: 0.4s; }
         .bullet-list li:nth-child(5) { animation-delay: 0.5s; }
 
-        .demo-flow {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            animation: fadeInUp 0.8s ease-out 0.3s both;
-        }
-
-        .flow-step {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 15px;
-            transition: all 0.3s;
-        }
-
-        .flow-step:hover {
-            background: rgba(102, 126, 234, 0.2);
-            transform: translateX(10px);
-        }
-
-        .flow-step:not(:last-child)::after {
-            content: '↓';
-            position: absolute;
-            bottom: -35px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 32px;
-            color: #667eea;
-        }
-
-        .step-number {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .step-content {
-            flex: 1;
-        }
-
-        .step-content strong {
-            color: #667eea;
-            font-size: 22px;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .step-content p {
-            color: #ccc;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-
         .title-slide {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             text-align: center;
         }
 
         .title-slide .slide-title {
-            font-size: 80px;
-            margin-bottom: 30px;
+            font-size: 72px;
+            margin-bottom: 20px;
+        }
+
+        .title-slide .product-name {
+            font-size: 56px;
+            color: #667eea;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+            font-weight: 600;
         }
 
         .title-slide .subtitle {
-            font-size: 48px;
+            font-size: 40px;
             color: #764ba2;
             margin-bottom: 60px;
             animation: fadeInUp 0.8s ease-out 0.5s both;
@@ -353,13 +318,6 @@
             margin: 0 5px;
             font-weight: bold;
             color: #667eea;
-        }
-
-        .grid-2col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            animation: fadeInUp 0.8s ease-out 0.3s both;
         }
 
         .timeline-item {
@@ -460,13 +418,65 @@
             margin-bottom: 15px;
         }
 
+        .demo-link {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            border: 2px solid #667eea;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            animation: scaleIn 0.8s ease-out 0.3s both;
+        }
+
+        .demo-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 36px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .demo-link a:hover {
+            transform: scale(1.1);
+            color: #764ba2;
+        }
+
+        .demo-link p {
+            margin-top: 30px;
+            font-size: 20px;
+            color: #ccc;
+        }
+
+        .phone-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            border: 2px solid #667eea;
+            padding: 60px;
+            border-radius: 20px;
+            text-align: center;
+            animation: scaleIn 0.8s ease-out 0.3s both;
+        }
+
+        .phone-box .phone-number {
+            font-size: 56px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .phone-box .extension {
+            font-size: 42px;
+            color: #764ba2;
+            margin-bottom: 30px;
+        }
+
+        .phone-box p {
+            font-size: 20px;
+            color: #ccc;
+        }
+
         @media (max-width: 1200px) {
             .stat-grid, .wireframe-grid {
                 grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .grid-2col {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -485,11 +495,14 @@
         <!-- Slide 1: Title -->
         <div class="slide active title-slide">
             <div class="slide-content">
+                <div class="slide-number">Slide 1/8</div>
+                <div class="slide-date">16.10.2025</div>
                 <div class="slide-title">AI Agent Project Progress</div>
+                <div class="product-name">Knovvu FixPoint Schedular Agent</div>
                 <div class="subtitle">Technical Services Appointment Use Case</div>
                 <div class="meta">
-                    C-Level Presentation<br><br>
-                    Team: Berkay (Owner), Tülin, Venüs
+                    Status Update for Informed Team<br><br>
+                    Team: Venüs, Ekin, Berkay
                 </div>
             </div>
         </div>
@@ -497,6 +510,8 @@
         <!-- Slide 2: What We Accomplished -->
         <div class="slide">
             <div class="slide-content">
+                <div class="slide-number">Slide 2/8</div>
+                <div class="slide-date">16.10.2025</div>
                 <div class="slide-title">What We Accomplished</div>
                 <div class="stat-grid">
                     <div class="stat-card">
@@ -518,9 +533,8 @@
                 </div>
                 <div class="content-box" style="margin-top: 50px;">
                     <p style="font-size: 24px; line-height: 1.8; color: #ccc;">
-                        We've completed comprehensive research and planning for the Technical Services 
-                        Appointment use case, with specific focus on Arçelik-Vestel scenarios. 
-                        All deliverables are ready for execution.
+                        We've completed comprehensive research and planning for the <strong style="color: #667eea;">Knovvu FixPoint Schedular Agent</strong>, 
+                        with specific focus on Arçelik scenarios. All deliverables are ready for execution.
                     </p>
                 </div>
             </div>
@@ -529,6 +543,8 @@
         <!-- Slide 3: Benchmarking Summary -->
         <div class="slide">
             <div class="slide-content">
+                <div class="slide-number">Slide 3/8</div>
+                <div class="slide-date">16.10.2025</div>
                 <div class="slide-title">Benchmarking: Key Insights</div>
                 <ul class="bullet-list">
                     <li><strong>Market Opportunity:</strong> No dominant player in appointment automation vertical - open market window</li>
@@ -539,7 +555,8 @@
                 <div class="content-box" style="margin-top: 40px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%); border-color: #10b981;">
                     <h3 style="color: #10b981; font-size: 28px; margin-bottom: 15px;">Strategic Position</h3>
                     <p style="font-size: 20px; color: #ccc;">
-                        Position as "Appointment Automation Specialist" with Turkish localization advantage and rapid deployment capabilities.
+                        <strong style="color: #fff;">Knovvu FixPoint Schedular Agent</strong> positioned as "Appointment Automation Specialist" 
+                        with Turkish localization advantage and rapid deployment capabilities.
                     </p>
                 </div>
             </div>
@@ -548,12 +565,14 @@
         <!-- Slide 4: Landing Page Wireframe -->
         <div class="slide">
             <div class="slide-content">
+                <div class="slide-number">Slide 4/8</div>
+                <div class="slide-date">16.10.2025</div>
                 <div class="slide-title">Landing Page Wireframe</div>
                 <div class="wireframe-grid">
                     <div class="wireframe-card">
                         <div class="icon">🎨</div>
                         <h3>Hero Section</h3>
-                        <p>Live conversational demo showing real-time appointment scheduling with clear value proposition</p>
+                        <p>Live conversational demo of Knovvu FixPoint Schedular Agent showing real-time appointment scheduling with clear value proposition</p>
                     </div>
                     <div class="wireframe-card">
                         <div class="icon">⚙️</div>
@@ -579,68 +598,45 @@
             </div>
         </div>
 
-        <!-- Slide 5: Demo Flow -->
+        <!-- Slide 5: Demo Landing Page -->
         <div class="slide">
             <div class="slide-content">
-                <div class="slide-title">Demo Flow: Technical Services</div>
-                <div class="demo-flow">
-                    <div class="flow-step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <strong>Customer Initiation</strong>
-                            <p>"Hi, my washing machine has an issue, I need to schedule a service"</p>
-                        </div>
-                    </div>
-                    <div class="flow-step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <strong>Device Identification</strong>
-                            <p>AI collects serial number, validates warranty, identifies product model</p>
-                        </div>
-                    </div>
-                    <div class="flow-step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <strong>Smart Scheduling</strong>
-                            <p>AI shows warranty status, suggests available time slots based on technician availability</p>
-                        </div>
-                    </div>
-                    <div class="flow-step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <strong>Confirmation & Follow-up</strong>
-                            <p>Calendar event created, SMS sent, technician dispatched, automated reminders</p>
-                        </div>
-                    </div>
+                <div class="slide-number">Slide 5/8</div>
+                <div class="slide-date">16.10.2025</div>
+                <div class="slide-title">Demo Landing Page</div>
+                <div class="demo-link">
+                    <div class="icon" style="font-size: 80px;">🌐</div>
+                    <a href="https://berkayvuran.com/knovvu-service-landing" target="_blank">
+                        berkayvuran.com/knovvu-service-landing
+                    </a>
+                    <p>Click to view the live demo landing page</p>
+                </div>
+                <div class="content-box" style="margin-top: 40px;">
+                    <p style="font-size: 20px; color: #ccc; text-align: center;">
+                        Interactive demonstration of <strong style="color: #667eea;">Knovvu FixPoint Schedular Agent</strong> showcasing 
+                        the full appointment scheduling experience with real-time AI conversation flow and user interface
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 6: Demo Line Setup -->
+        <!-- Slide 6: Demo Line -->
         <div class="slide">
             <div class="slide-content">
-                <div class="slide-title">Demo Line Configuration</div>
-                <div class="wireframe-grid">
-                    <div class="wireframe-card">
-                        <div class="icon">🇹🇷</div>
-                        <h3>Turkish Demo Line</h3>
-                        <p>Natural Turkish conversation flow with local service center scenarios. Focus on Arçelik/Vestel use cases for authenticity.</p>
-                    </div>
-                    <div class="wireframe-card">
-                        <div class="icon">🇬🇧</div>
-                        <h3>English Demo Line</h3>
-                        <p>International-ready demos showcasing same capabilities for global market expansion and partnerships.</p>
-                    </div>
-                    <div class="wireframe-card">
-                        <div class="icon">📱</div>
-                        <h3>Multi-Channel Support</h3>
-                        <p>Phone (primary), WhatsApp, Web Chat - all channels with consistent experience and real integrations.</p>
-                    </div>
-                    <div class="wireframe-card">
-                        <div class="icon">🔗</div>
-                        <h3>Live Integrations</h3>
-                        <p>Connected to real calendar systems, CRM, and service management platforms for authentic demonstrations.</p>
-                    </div>
+                <div class="slide-number">Slide 6/8</div>
+                <div class="slide-date">16.10.2025</div>
+                <div class="slide-title">Demo Line</div>
+                <div class="phone-box">
+                    <div class="icon" style="font-size: 80px;">📞</div>
+                    <div class="phone-number">0212 286 2545</div>
+                    <div class="extension">Extension: 813</div>
+                    <p>Call to experience the live AI agent demonstration</p>
+                </div>
+                <div class="content-box" style="margin-top: 40px;">
+                    <p style="font-size: 20px; color: #ccc; text-align: center;">
+                        Live voice demo of <strong style="color: #667eea;">Knovvu FixPoint Schedular Agent</strong> featuring 
+                        natural Turkish conversation flow with Technical Services appointment scheduling capabilities
+                    </p>
                 </div>
             </div>
         </div>
@@ -648,11 +644,13 @@
         <!-- Slide 7: Marketing Roadmap -->
         <div class="slide">
             <div class="slide-content">
+                <div class="slide-number">Slide 7/8</div>
+                <div class="slide-date">16.10.2025</div>
                 <div class="slide-title">Marketing Roadmap</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
                     <div>
                         <div class="timeline-item">
-                            <h3>✅ Phase 1: Foundation (Done)</h3>
+                            <h3>✅ Phase 1: Foundation</h3>
                             <ul>
                                 <li>Competitive benchmarking completed</li>
                                 <li>Landing page wireframe designed</li>
@@ -661,7 +659,7 @@
                             </ul>
                         </div>
                         <div class="timeline-item">
-                            <h3>🚀 Phase 2: Content Creation (30 Days)</h3>
+                            <h3>🚀 Phase 2: Content Creation</h3>
                             <ul>
                                 <li>Generate digital ads (Google, LinkedIn)</li>
                                 <li>Create digital marketing funnel for CRO</li>
@@ -673,16 +671,16 @@
                     </div>
                     <div>
                         <div class="timeline-item">
-                            <h3>📈 Phase 3: Launch & Pilot (60-90 Days)</h3>
+                            <h3>📈 Phase 3: Launch & Pilot</h3>
                             <ul>
-                                <li>Launch Arçelik/Vestel pilot campaigns</li>
+                                <li>Launch Arçelik pilot campaigns</li>
                                 <li>Case study development</li>
                                 <li>Industry-specific content marketing</li>
                                 <li>Demo webinars & presentations</li>
                             </ul>
                         </div>
                         <div class="timeline-item">
-                            <h3>🌐 Phase 4: Scale & Expand (6-12 Months)</h3>
+                            <h3>🌐 Phase 4: Scale & Expand</h3>
                             <ul>
                                 <li>Vertical expansion campaigns</li>
                                 <li>App Store/Marketplace marketing</li>
@@ -696,63 +694,15 @@
             </div>
         </div>
 
-        <!-- Slide 8: Next Steps -->
-        <div class="slide">
-            <div class="slide-content">
-                <div class="slide-title">Immediate Next Steps</div>
-                <ul class="bullet-list">
-                    <li><strong>Week 1:</strong> Meet with David Taglieri (Kore.ai insights) + Analyze Happy Robot demo strategy</li>
-                    <li><strong>Week 2:</strong> Develop Turkish/English demo scripts (3 personas) + Use case team kick-off meeting</li>
-                    <li><strong>Week 3-4:</strong> Build first template prototype for Technical Services use case</li>
-                    <li><strong>Week 5-6:</strong> Prepare Arçelik/Vestel pilot proposal with ROI calculations and success metrics</li>
-                    <li><strong>Ongoing:</strong> Launch marketing content production (ads, videos, landing page development)</li>
-                </ul>
-                <div class="content-box" style="margin-top: 40px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%); border-color: #10b981;">
-                    <p style="font-size: 24px; text-align: center; color: #fff;">
-                        🚀 <strong>Timeline:</strong> Prototype in 2 weeks | Pilot in 4-6 weeks | Full rollout Q1 2025
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 9: Conclusion -->
+        <!-- Slide 8: Q&A -->
         <div class="slide title-slide">
             <div class="slide-content" style="text-align: center;">
-                <div style="font-size: 120px; margin-bottom: 40px; animation: scaleIn 0.8s ease-out;">✅</div>
-                <div class="slide-title">Ready for Execution</div>
-                <div class="stat-grid" style="margin-top: 60px;">
-                    <div class="stat-card">
-                        <div class="stat-number">4</div>
-                        <div class="stat-label">Deliverables<br>Complete</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">Clear</div>
-                        <div class="stat-label">Strategy &<br>Roadmap</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">Ready</div>
-                        <div class="stat-label">For Pilot<br>Launch</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">Strong</div>
-                        <div class="stat-label">Market<br>Position</div>
-                    </div>
-                </div>
-                <div style="font-size: 32px; color: #667eea; margin-top: 60px; font-weight: 600;">
-                    Positioned to become Turkey's leading Appointment Automation specialist
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 10: Q&A -->
-        <div class="slide title-slide">
-            <div class="slide-content" style="text-align: center;">
+                <div class="slide-number">Slide 8/8</div>
+                <div class="slide-date">16.10.2025</div>
                 <div style="font-size: 120px; margin-bottom: 40px;">❓</div>
                 <div class="slide-title">Questions & Discussion</div>
-                <div style="font-size: 28px; color: #ccc; margin-top: 60px; line-height: 2;">
-                    Project Owner: Berkay<br>
-                    Consulting Team: Tülin's Consultant<br>
-                    Technical Lead: Venüs
+                <div style="font-size: 32px; color: #667eea; margin-top: 60px; font-weight: 600;">
+                    Knovvu FixPoint Schedular Agent
                 </div>
             </div>
         </div>
@@ -762,7 +712,7 @@
     <div class="navigation">
         <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">←</button>
         <div class="slide-counter">
-            <span id="currentSlide">1</span> / <span id="totalSlides">10</span>
+            <span id="currentSlide">1</span> / <span id="totalSlides">8</span>
         </div>
         <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">→</button>
     </div>
