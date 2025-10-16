@@ -491,8 +491,12 @@
 
         .section-header h2 {
             font-size: 2.5rem;
-            font-weight: 800;
+            font-weight: 700;
             margin-bottom: 1rem;
+            color: #1a1a2e;
+        }
+
+        .section-header h2 span {
             background: var(--gradient-knovvu);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -514,26 +518,22 @@
         .feature-card {
             background: white;
             padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            border: 1px solid #f0f0f0;
         }
 
         .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--gradient-knovvu);
+            display: none;
         }
 
         .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+            border-color: #e91e8c;
         }
 
         .feature-icon {
@@ -721,41 +721,107 @@
             opacity: 0.95;
         }
 
-        .demo-form {
-            max-width: 600px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .demo-buttons-container {
+            display: flex;
             gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
         }
 
-        .demo-input {
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 50px;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        .demo-input:focus {
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
-        }
-
-        .demo-submit {
+        .demo-button {
             background: white;
             color: var(--primary);
             padding: 1rem 2rem;
             border: none;
-            border-radius: 50px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            grid-column: span 2;
+            font-size: 1rem;
+            min-width: 200px;
         }
 
-        .demo-submit:hover {
+        .demo-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .demo-button.voice {
+            background: linear-gradient(135deg, #e91e8c 0%, #0066CC 100%);
+            color: white;
+            border: 2px solid white;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal h3 {
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .modal p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
         }
 
         /* Footer */
@@ -831,6 +897,14 @@
                 grid-column: span 1;
             }
 
+            .demo-buttons-container {
+                flex-direction: column;
+            }
+
+            .demo-button {
+                width: 100%;
+            }
+
             .sestek-content {
                 grid-template-columns: 1fr;
                 text-align: center;
@@ -893,13 +967,13 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text" data-lang="en">
-                    <h1>Automate Service Appointments with <span>Agentic AI</span></h1>
+                    <h1>Automate Service Appointments with <span>AI Agents</span></h1>
                     <p>Powered by SESTEK's 25 years of speech recognition expertise and 97%+ accuracy, Knovvu FixPoint Schedular Agent's AI Agents enable autonomous appointment scheduling 24/7 through voice and digital channels.</p>
                     
                     <div class="hero-badges flex">
                         <div class="badge">
                             <span class="badge-icon">✓</span>
-                            <span>Agentic AI Platform</span>
+                            <span>AI Agent Platform</span>
                         </div>
                         <div class="badge">
                             <span class="badge-icon">✓</span>
@@ -913,18 +987,18 @@
                     
                     <div class="hero-buttons flex">
                         <a href="https://www.youtube.com/watch?v=K8Px_t_7igs" target="_blank" class="btn-primary">🎬 Watch AI Agent Demo</a>
-                        <a href="#contact" class="btn-secondary">📞 Talk to Sales</a>
+                        <a href="#demo" class="btn-secondary">📅 Book a Demo</a>
                     </div>
                 </div>
 
                 <div class="hero-text" data-lang="tr">
-                    <h1>Servis Randevularınızı <span>Agentic AI</span> ile Otomatikleştirin</h1>
+                    <h1>Servis Randevularınızı <span>AI Agent</span> ile Otomatikleştirin</h1>
                     <p>SESTEK'in 25 yıllık konuşma tanıma uzmanlığı ve %97+ doğruluk oranıyla desteklenen Knovvu FixPoint Schedular AI Agent'ları, ses ve dijital kanallardan 7/24 otonom randevu planlaması sağlar.</p>
                     
                     <div class="hero-badges flex">
                         <div class="badge">
                             <span class="badge-icon">✓</span>
-                            <span>Agentic AI Platformu</span>
+                            <span>AI Agent Platformu</span>
                         </div>
                         <div class="badge">
                             <span class="badge-icon">✓</span>
@@ -938,7 +1012,7 @@
                     
                     <div class="hero-buttons flex">
                         <a href="https://www.youtube.com/watch?v=K8Px_t_7igs" target="_blank" class="btn-primary">🎬 AI Agent Demosu İzle</a>
-                        <a href="#contact" class="btn-secondary">📞 Satış ile Konuş</a>
+                        <a href="#demo" class="btn-secondary">📅 Demo Rezervasyonu</a>
                     </div>
                 </div>
 
@@ -1006,22 +1080,22 @@
                     <p data-lang="tr" style="color: var(--text-light);">Konuşma Teknolojileri Lideri</p>
                 </div>
                 <div class="sestek-text" data-lang="en">
-                    <h3>Powered by SESTEK's Agentic AI Technology</h3>
+                    <h3>Powered by SESTEK's AI Agent Technology</h3>
                     <p>Leading conversational AI since 2000, SESTEK was acquired by Unifonic (SoftBank Vision Fund) and serves 550+ enterprise clients across 20 countries with autonomous AI agents.</p>
-                    <p>Knovvu's Agentic AI platform delivers next-generation autonomous agents with advanced reasoning, decision-making, and action-taking capabilities, powered by 25 years of superior speech recognition expertise.</p>
+                    <p>Knovvu's AI Agent platform delivers next-generation autonomous agents with advanced reasoning, decision-making, and action-taking capabilities, powered by 25 years of superior speech recognition expertise.</p>
                     <div class="tech-badges flex">
-                        <div class="tech-badge">🤖 Agentic AI Engine</div>
+                        <div class="tech-badge">🤖 AI Agent Engine</div>
                         <div class="tech-badge">🎯 Autonomous Actions</div>
                         <div class="tech-badge">🧠 Advanced Reasoning</div>
                         <div class="tech-badge">⚡ Real-time Processing</div>
                     </div>
                 </div>
                 <div class="sestek-text" data-lang="tr">
-                    <h3>SESTEK'in Agentic AI Teknolojisi ile Güçlendirilmiş</h3>
+                    <h3>SESTEK'in AI Agent Teknolojisi ile Güçlendirilmiş</h3>
                     <p>2000 yılından beri konuşma AI'ı alanında lider olan SESTEK, Unifonic (SoftBank Vision Fund) tarafından satın alınmıştır ve 20 ülkede 550+ kurumsal müşteriye otonom AI agent'ları ile hizmet vermektedir.</p>
-                    <p>Knovvu'nun Agentic AI platformu, 25 yıllık üstün konuşma tanıma uzmanlığı ile desteklenen ileri muhakeme, karar verme ve eylem yürütme yeteneklerine sahip yeni nesil otonom agent'lar sunar.</p>
+                    <p>Knovvu'nun AI Agent platformu, 25 yıllık üstün konuşma tanıma uzmanlığı ile desteklenen ileri muhakeme, karar verme ve eylem yürütme yeteneklerine sahip yeni nesil otonom agent'lar sunar.</p>
                     <div class="tech-badges flex">
-                        <div class="tech-badge">🤖 Agentic AI Motoru</div>
+                        <div class="tech-badge">🤖 AI Agent Motoru</div>
                         <div class="tech-badge">🎯 Otonom Eylemler</div>
                         <div class="tech-badge">🧠 İleri Muhakeme</div>
                         <div class="tech-badge">⚡ Gerçek Zamanlı İşleme</div>
@@ -1040,16 +1114,16 @@
                     <div class="stat-label">Autonomous AI Agents</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">5 FTE</div>
-                    <div class="stat-label">Agent Cost Savings</div>
+                    <div class="stat-number">80%</div>
+                    <div class="stat-label">Cost Reduction</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">97%+</div>
                     <div class="stat-label">Recognition Accuracy</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">550+</div>
-                    <div class="stat-label">Enterprise Clients</div>
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Monthly Calls Handled</div>
                 </div>
             </div>
             <div class="stats-grid grid" data-lang="tr">
@@ -1058,16 +1132,16 @@
                     <div class="stat-label">Otonom AI Agent'lar</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">5 FTE</div>
-                    <div class="stat-label">Temsilci Tasarrufu</div>
+                    <div class="stat-number">%80</div>
+                    <div class="stat-label">Maliyet Azaltma</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">%97+</div>
                     <div class="stat-label">Tanıma Doğruluğu</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">550+</div>
-                    <div class="stat-label">Kurumsal Müşteri</div>
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Aylık İşlenen Çağrı</div>
                 </div>
             </div>
         </div>
@@ -1077,18 +1151,18 @@
     <section class="features" id="features">
         <div class="container">
             <div class="section-header" data-lang="en">
-                <h2>Why Choose Knovvu FixPoint Schedular Agent?</h2>
+                <h2>Why Choose Knovvu FixPoint <span>Schedular Agent</span>?</h2>
                 <p>Enterprise-grade features powered by SESTEK technology</p>
             </div>
             <div class="section-header" data-lang="tr">
-                <h2>Neden Knovvu FixPoint Schedular Agent?</h2>
+                <h2>Neden Knovvu FixPoint <span>Schedular Agent</span>?</h2>
                 <p>SESTEK teknolojisiyle güçlendirilmiş kurumsal özellikler</p>
             </div>
 
             <div class="features-grid grid" data-lang="en">
                 <div class="feature-card">
                     <div class="feature-icon">🤖</div>
-                    <div class="feature-title">Agentic AI Platform</div>
+                    <div class="feature-title">AI Agent Platform</div>
                     <div class="feature-description">
                         Next-generation autonomous AI agents with advanced reasoning, strategic decision-making, and independent action-taking capabilities.
                     </div>
@@ -1115,10 +1189,10 @@
                     </div>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <div class="feature-title">AI Agent Analytics</div>
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-title">Proven Track Record</div>
                     <div class="feature-description">
-                        Real-time monitoring of AI agent performance, conversation analytics, and continuous learning optimization.
+                        Successfully deployed at Arçelik (Beko Corporate), handling 50,000+ monthly calls for installation appointments across 46 products and 10 brands.
                     </div>
                 </div>
                 <div class="feature-card">
@@ -1133,7 +1207,7 @@
             <div class="features-grid grid" data-lang="tr">
                 <div class="feature-card">
                     <div class="feature-icon">🤖</div>
-                    <div class="feature-title">Agentic AI Platformu</div>
+                    <div class="feature-title">AI Agent Platformu</div>
                     <div class="feature-description">
                         İleri muhakeme, stratejik karar verme ve bağımsız eylem yürütme yeteneklerine sahip yeni nesil otonom AI agent'ları.
                     </div>
@@ -1160,10 +1234,10 @@
                     </div>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <div class="feature-title">AI Agent Analitiği</div>
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-title">Kanıtlanmış Başarı</div>
                     <div class="feature-description">
-                        AI agent performansının gerçek zamanlı izlenmesi, konuşma analitiği ve sürekli öğrenme optimizasyonu.
+                        Arçelik'te (Beko Corporate) başarıyla devreye alındı, 46 ürün ve 10 marka için aylık 50.000+ montaj randevu çağrısını yönetiyor.
                     </div>
                 </div>
                 <div class="feature-card">
@@ -1234,12 +1308,12 @@
     <section class="how-it-works" id="how-it-works">
         <div class="container">
             <div class="section-header" data-lang="en">
-                <h2>How AI Agents Work</h2>
-                <p>4-step autonomous process powered by Agentic AI</p>
+                <h2>How <span>AI Agents</span> Work</h2>
+                <p>4-step autonomous process powered by AI Agent technology</p>
             </div>
             <div class="section-header" data-lang="tr">
-                <h2>AI Agent'lar Nasıl Çalışır?</h2>
-                <p>Agentic AI ile güçlendirilmiş 4 adımlık otonom süreç</p>
+                <h2><span>AI Agent'lar</span> Nasıl Çalışır?</h2>
+                <p>AI Agent teknolojisi ile güçlendirilmiş 4 adımlık otonom süreç</p>
             </div>
 
             <div class="steps-container grid" data-lang="en">
@@ -1251,7 +1325,7 @@
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-title">AI Agent Understanding</div>
-                    <div class="step-description">Agentic AI processes intent with 97%+ accuracy</div>
+                    <div class="step-description">AI Agent processes intent with 97%+ accuracy</div>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
@@ -1274,7 +1348,7 @@
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-title">AI Agent Anlama</div>
-                    <div class="step-description">Agentic AI niyeti %97+ doğrulukla işler</div>
+                    <div class="step-description">AI Agent niyeti %97+ doğrulukla işler</div>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
@@ -1314,32 +1388,59 @@
     <section class="demo-section" id="demo">
         <div class="container">
             <div class="demo-content" data-lang="en">
-                <h2>Experience Our AI Agents in Action</h2>
-                <p>See how Knovvu's Agentic AI transforms appointment scheduling with autonomous agents</p>
-                <form class="demo-form">
-                    <input type="email" class="demo-input" placeholder="Your email address" required>
-                    <input type="tel" class="demo-input" placeholder="Phone number" required>
-                    <button type="submit" class="demo-submit">🚀 Request AI Agent Demo</button>
-                </form>
-                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
-                    📞 Call now: +90 216 706 18 00
+                <h2>Experience <span style="background: white; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FixPoint Schedular Agent</span> in Action</h2>
+                <p>Try our AI Agent through voice or chat - Choose your preferred channel</p>
+                <div class="demo-buttons-container">
+                    <button onclick="openVoiceAgent()" class="demo-button voice">
+                        🎤 Try Voice Agent
+                    </button>
+                    <button onclick="openChatAgent()" class="demo-button">
+                        💬 Try Chat Agent
+                    </button>
+                </div>
+                <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.8;">
+                    📞 Or call us directly: +90 216 706 18 00
                 </p>
             </div>
 
             <div class="demo-content" data-lang="tr">
-                <h2>AI Agent'larımızı Aksiyonda Deneyimleyin</h2>
-                <p>Knovvu'nun Agentic AI'ının otonom agent'larla randevu planlamayı nasıl dönüştürdüğünü görün</p>
-                <form class="demo-form">
-                    <input type="email" class="demo-input" placeholder="E-posta adresiniz" required>
-                    <input type="tel" class="demo-input" placeholder="Telefon numaranız" required>
-                    <button type="submit" class="demo-submit">🚀 AI Agent Demosu Talep Et</button>
-                </form>
-                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
-                    📞 Hemen arayın: +90 216 706 18 00
+                <h2><span style="background: white; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FixPoint Schedular Agent'ı</span> Aksiyonda Deneyimleyin</h2>
+                <p>AI Agent'ımızı sesli veya yazılı olarak deneyin - Tercih ettiğiniz kanalı seçin</p>
+                <div class="demo-buttons-container">
+                    <button onclick="openVoiceAgent()" class="demo-button voice">
+                        🎤 Sesli Agent'ı Dene
+                    </button>
+                    <button onclick="openChatAgent()" class="demo-button">
+                        💬 Yazılı Agent'ı Dene
+                    </button>
+                </div>
+                <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.8;">
+                    📞 Veya direkt arayın: +90 216 706 18 00
                 </p>
             </div>
         </div>
     </section>
+
+    <!-- Modals -->
+    <div id="voiceModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('voiceModal')">&times;</button>
+            <h3 data-lang="en">🎤 Voice Agent Demo</h3>
+            <h3 data-lang="tr" style="display:none;">🎤 Sesli Agent Demo</h3>
+            <p data-lang="en">Voice channel integration will open here. This will connect you to our FixPoint Schedular Agent via voice call.</p>
+            <p data-lang="tr" style="display:none;">Sesli kanal entegrasyonu burada açılacak. FixPoint Schedular Agent'a sesli arama ile bağlanacaksınız.</p>
+        </div>
+    </div>
+
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('chatModal')">&times;</button>
+            <h3 data-lang="en">💬 Chat Agent Demo</h3>
+            <h3 data-lang="tr" style="display:none;">💬 Yazılı Agent Demo</h3>
+            <p data-lang="en">Chat channel integration will open here. This will start a text conversation with our FixPoint Schedular Agent.</p>
+            <p data-lang="tr" style="display:none;">Yazılı kanal entegrasyonu burada açılacak. FixPoint Schedular Agent ile yazılı görüşme başlatacaksınız.</p>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -1438,6 +1539,32 @@
                 }
                 e.target.reset();
             });
+        });
+
+        // Open Voice Agent
+        function openVoiceAgent() {
+            document.getElementById('voiceModal').classList.add('active');
+            // In production, this would trigger voice channel integration
+            // Example: window.knovvu.startVoiceCall();
+        }
+
+        // Open Chat Agent
+        function openChatAgent() {
+            document.getElementById('chatModal').classList.add('active');
+            // In production, this would trigger chat widget
+            // Example: window.knovvu.openChat();
+        }
+
+        // Close Modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
         });
 
         // Animated numbers
