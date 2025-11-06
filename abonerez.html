@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AboneRez - Abonelikli Randevu Platformu</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --card-bg: #1a1d2e;
+      --hover-bg: #252940;
+      --text-primary: #ffffff;
+      --text-secondary: #a0aec0;
+      --border-color: #2d3748;
+      --accent-purple: #667eea;
+      --accent-pink: #f093fb;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f111a;
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 28px;
+      font-weight: 700;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      background: var(--primary-gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .user-avatar:hover {
+      transform: scale(1.1);
+    }
+
+    /* Auth Screen */
+    .auth-screen {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .auth-left {
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px;
+    }
+
+    .auth-left-content {
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .auth-logo h1 {
+      font-size: 42px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .auth-logo p {
+      color: var(--text-secondary);
+      font-size: 16px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 35px;
+      background: #151821;
+      padding: 6px;
+      border-radius: 14px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-tab.active {
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .auth-form {
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 18px;
+      background: #151821;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 15px;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent-purple);
+      background: #1a1d2e;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .demo-accounts {
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .demo-title {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    .demo-account {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: #151821;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 12px;
+    }
+
+    .demo-account:hover {
+      border-color: var(--accent-purple);
+      transform: translateX(5px);
+      background: var(--hover-bg);
+    }
+
+    .demo-icon {
+      font-size: 28px;
+    }
+
+    .demo-info strong {
+      display: block;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .demo-info span {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .demo-arrow {
+      margin-left: auto;
+      color: var(--accent-purple);
+      font-size: 20px;
+    }
+
+    /* Auth Right Side */
+    .auth-right {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-right::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      top: -200px;
+      right: -200px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .auth-right::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      bottom: -100px;
+      left: -100px;
+      animation: float 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-30px); }
+    }
+
+    .auth-showcase {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: white;
+    }
+
+    .auth-showcase h2 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    .auth-showcase p {
+      font-size: 20px;
+      margin-bottom: 50px;
+      opacity: 0.95;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .feature-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 30px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    .businesses-section {
+      min-width: 0;
+    }
+
+    .subscriptions-sidebar {
+      position: sticky;
+      top: 30px;
+      height: fit-content;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+    }
+
+    .top-bar {
+      display: grid;
+      grid-template-columns: 2fr 200px 1fr;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+    }
+
+    .page-header {
+      margin: 0;
+      text-align: left;
+    }
+
+    .page-header h1 {
+      font-size: 24px;
+      margin-bottom: 4px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .search-filter {
+      display: contents;
+    }
+
+    .search-box {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 45px 12px 16px;
+      background: rgba(24, 27, 40, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: all 0.3s;
+      box-sizing: border-box;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--accent-purple);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 18px;
+    }
+
+    .filter-select {
+      padding: 12px 16px;
+      background: rgba(24, 27, 40, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-sizing: border-box;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--accent-purple);
+    }
+
+    /* Business Grid */
+    .business-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .business-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .business-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
+      border-color: var(--accent-purple);
+    }
+
+    .business-image {
+      width: 100%;
+      height: 180px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 72px;
+      position: relative;
+    }
+
+    .business-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--accent-purple);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .business-content {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .business-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .business-title h3 {
+      font-size: 22px;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .business-category {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .business-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--primary-gradient);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .business-info {
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .info-icon {
+      color: var(--accent-purple);
+      font-size: 16px;
+    }
+
+    .subscription-plans {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .plan-badge {
+      flex: 1;
+      padding: 10px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+      border: 1px solid var(--accent-purple);
+      border-radius: 10px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .plan-badge:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+      transform: scale(1.05);
+    }
+
+    .plan-name {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .plan-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-purple);
+    }
+
+    .business-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: auto;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 12px;
+      background: var(--hover-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-secondary:hover {
+      background: var(--card-bg);
+      border-color: var(--accent-purple);
+    }
+
+    .btn-subscribe {
+      flex: 1;
+      padding: 12px;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-subscribe:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Subscription Section */
+    .section-header {
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 22px;
+      margin-bottom: 0;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    .subscription-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .subscription-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .subscription-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--success-gradient);
+    }
+
+    .subscription-card:hover {
+      border-color: var(--accent-purple);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+    }
+
+    .subscription-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .subscription-header h3 {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .subscription-header p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .active-badge {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: var(--dark-bg);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .subscription-info {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: rgba(102, 126, 234, 0.05);
+      border-radius: 8px;
+    }
+
+    .info-row span:first-child {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .info-row span:last-child {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .usage-bar {
+      margin-bottom: 6px;
+    }
+
+    .usage-bar-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .usage-bar-label span:first-child {
+      color: var(--text-secondary);
+    }
+
+    .usage-bar-label span:last-child {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--success-gradient);
+      border-radius: 8px;
+      transition: width 0.3s;
+    }
+
+    .subscription-action {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .subscription-action button {
+      flex: 1;
+      padding: 10px 16px;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .subscription-action button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 20px;
+      max-width: 600px;
+      width: 100%;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+      padding: 35px;
+      position: relative;
+      border: 1px solid var(--border-color);
+      margin: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 28px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+      transform: rotate(90deg);
+    }
+
+    .modal-header {
+      margin-bottom: 25px;
+    }
+
+    .modal-header h2 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      padding-right: 30px;
+    }
+
+    .plans-grid {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 25px;
+      max-height: 450px;
+      overflow-y: auto;
+    }
+
+    .plan-card {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .plan-card:hover, .plan-card.selected {
+      border-color: var(--accent-purple);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+      transform: scale(1.02);
+    }
+
+    .plan-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .plan-card h3 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .plan-price-tag {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-purple);
+    }
+
+    .plan-price-tag small {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .plan-features {
+      list-style: none;
+    }
+
+    .plan-features li {
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .check-icon {
+      color: #4facfe;
+      font-size: 16px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+
+      .subscriptions-sidebar {
+        position: relative;
+        top: 0;
+        max-height: none;
+      }
+
+      .top-bar {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .business-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main-content {
+        padding: 20px 15px;
+      }
+
+      .top-bar {
+        padding: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .auth-screen {
+        grid-template-columns: 1fr;
+      }
+      
+      .auth-right {
+        display: none;
+      }
+
+      .auth-left {
+        padding: 30px 20px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main-content {
+        padding: 25px 15px;
+      }
+
+      .page-header {
+        padding: 0;
+      }
+
+      .page-header h1 {
+        font-size: 24px;
+      }
+
+      .page-header p {
+        font-size: 14px;
+      }
+
+      .search-filter {
+        padding: 0;
+        gap: 10px;
+        grid-template-columns: 1fr;
+      }
+
+      .filter-select {
+        width: 100%;
+      }
+
+      .business-grid {
+        grid-template-columns: 1fr;
+        padding: 0;
+        gap: 15px;
+      }
+
+      .subscription-grid {
+        grid-template-columns: 1fr;
+        padding: 0;
+        gap: 15px;
+      }
+
+      .section-header {
+        padding: 0;
+      }
+
+      .section-header h2 {
+        font-size: 22px;
+      }
+
+      .business-content {
+        padding: 20px;
+      }
+
+      .subscription-card {
+        padding: 20px;
+      }
+
+      .subscription-plans {
+        flex-direction: column;
+      }
+
+      .business-actions {
+        flex-direction: column;
+      }
+
+      .btn-secondary,
+      .btn-subscribe {
+        width: 100%;
+      }
+
+      .modal-content {
+        padding: 25px;
+        max-height: calc(100vh - 40px);
+      }
+
+      .modal-header h2 {
+        font-size: 24px;
+      }
+
+      .plan-card {
+        padding: 16px;
+      }
+
+      .plan-card h3 {
+        font-size: 20px;
+      }
+
+      .plan-price-tag {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Auth Screen -->
+    <div class="auth-screen" id="authScreen">
+      <div class="auth-left">
+        <div class="auth-left-content">
+          <div class="auth-logo">
+            <h1>🎯 AboneRez</h1>
+            <p>Abonelik tabanlı randevu deneyimi</p>
+          </div>
+
+          <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchAuthTab('login')">Giriş Yap</button>
+            <button class="auth-tab" onclick="switchAuthTab('register')">Kayıt Ol</button>
+          </div>
+
+          <!-- Login Form -->
+          <div class="auth-form active" id="loginForm">
+            <form onsubmit="handleLogin(event)">
+              <div class="form-group">
+                <label>E-posta</label>
+                <input type="email" id="loginEmail" placeholder="ornek@email.com" required>
+              </div>
+              <div class="form-group">
+                <label>Parola</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Giriş Yap</button>
+            </form>
+
+            <div class="demo-accounts">
+              <div class="demo-title">Hızlı Giriş - Demo Hesaplar</div>
+              <div class="demo-account" onclick="quickLogin('ahmet.yilmaz@email.com', '123456')">
+                <div class="demo-icon">👤</div>
+                <div class="demo-info">
+                  <strong>Ahmet Yılmaz</strong>
+                  <span>ahmet.yilmaz@email.com • 123456</span>
+                </div>
+                <div class="demo-arrow">→</div>
+              </div>
+              <div class="demo-account" onclick="quickLogin('ayse.demir@email.com', '123456')">
+                <div class="demo-icon">👤</div>
+                <div class="demo-info">
+                  <strong>Ayşe Demir</strong>
+                  <span>ayse.demir@email.com • 123456</span>
+                </div>
+                <div class="demo-arrow">→</div>
+              </div>
+              <div class="demo-account" onclick="quickLogin('mehmet.kaya@email.com', '123456')">
+                <div class="demo-icon">👤</div>
+                <div class="demo-info">
+                  <strong>Mehmet Kaya</strong>
+                  <span>mehmet.kaya@email.com • 123456</span>
+                </div>
+                <div class="demo-arrow">→</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Register Form -->
+          <div class="auth-form" id="registerForm">
+            <form onsubmit="handleRegister(event)">
+              <div class="form-group">
+                <label>Ad Soyad</label>
+                <input type="text" id="registerName" placeholder="Adınız Soyadınız" required>
+              </div>
+              <div class="form-group">
+                <label>E-posta</label>
+                <input type="email" id="registerEmail" placeholder="ornek@email.com" required>
+              </div>
+              <div class="form-group">
+                <label>Telefon</label>
+                <input type="tel" id="registerPhone" placeholder="5XX XXX XX XX" required>
+              </div>
+              <div class="form-group">
+                <label>Parola</label>
+                <input type="password" id="registerPassword" placeholder="••••••••" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-right">
+        <div class="auth-showcase">
+          <h2>Aboneliklerle<br>Tasarruf Edin</h2>
+          <p>Favori işletmelerinizden abonelik alın,<br>randevularınızı garantileyin</p>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="feature-icon">💎</div>
+              <h3>Premium Abonelikler</h3>
+              <p>Özel indirimler ve avantajlar</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">⚡</div>
+              <h3>Hızlı Randevu</h3>
+              <p>Anında randevu alın</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🎁</div>
+              <h3>Özel Teklifler</h3>
+              <p>Sadece abonelere özel fırsatlar</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🔒</div>
+              <h3>Garantili Slot</h3>
+              <p>Yeriniz her zaman hazır</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="hidden" id="mainApp">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <div class="logo">
+            <div class="logo-icon">🎯</div>
+            AboneRez
+          </div>
+          <div class="user-menu">
+            <div class="user-avatar" onclick="logout()">
+              <span id="userInitials">AY</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="dashboard-container">
+          <!-- Left: Businesses Section -->
+          <div class="businesses-section">
+            <!-- Top Bar: Title + Category + Search -->
+            <div class="top-bar">
+              <div class="page-header">
+                <h1>İşletmeleri Keşfet</h1>
+                <p>Abonelik yaparak randevularınızı garantileyin ve tasarruf edin</p>
+              </div>
+              <select class="filter-select" id="categoryFilter" onchange="filterBusinesses()">
+                <option value="">Tüm Kategoriler</option>
+                <option value="berber">Berber</option>
+                <option value="kuafor">Kuaför</option>
+                <option value="guzellik">Güzellik Merkezi</option>
+                <option value="dovme">Dövme Stüdyosu</option>
+                <option value="oto">Oto Tamiri</option>
+                <option value="fitness">Fitness</option>
+                <option value="masaj">Masaj Salonu</option>
+              </select>
+              <div class="search-box">
+                <input type="text" id="searchInput" placeholder="İşletme ara..." onkeyup="filterBusinesses()">
+                <span class="search-icon">🔍</span>
+              </div>
+            </div>
+
+            <!-- Business Grid -->
+            <div class="business-grid" id="businessGrid">
+              <!-- Businesses will be dynamically loaded here -->
+            </div>
+          </div>
+
+          <!-- Right: Subscriptions Sidebar -->
+          <div class="subscriptions-sidebar">
+          <div class="section-header">
+            <h2>Aboneliklerim</h2>
+          </div>
+            <div class="subscription-grid" id="subscriptionGrid">
+              <!-- User subscriptions will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Business Detail Modal -->
+    <div class="modal" id="businessModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div class="modal-header">
+          <h2 id="modalBusinessName"></h2>
+          <p id="modalBusinessCategory" style="color: var(--text-secondary);"></p>
+        </div>
+        <div id="modalBusinessInfo" style="margin-bottom: 30px;">
+          <!-- Business info will be loaded here -->
+        </div>
+        <h3 style="margin-bottom: 20px;">Abonelik Paketleri</h3>
+        <div class="plans-grid" id="modalPlansGrid">
+          <!-- Plans will be loaded here -->
+        </div>
+        <button class="btn btn-primary" onclick="subscribe()">Abone Ol</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dummy Data
+    const businesses = [
+      {
+        id: 1,
+        name: 'Elite Berber Salonu',
+        category: 'berber',
+        categoryText: 'Berber',
+        icon: '💇',
+        rating: 4.8,
+        address: 'Kadıköy, İstanbul',
+        phone: '+90 212 555 0101',
+        plans: [
+          { name: 'Bronz', appointments: 4, price: 299, discount: '15%' },
+          { name: 'Gümüş', appointments: 8, price: 549, discount: '25%' },
+          { name: 'Altın', appointments: 12, price: 749, discount: '35%' }
+        ]
+      },
+      {
+        id: 2,
+        name: 'Güzellik Merkezi Lux',
+        category: 'guzellik',
+        categoryText: 'Güzellik Merkezi',
+        icon: '✨',
+        rating: 4.9,
+        address: 'Beşiktaş, İstanbul',
+        phone: '+90 212 555 0202',
+        plans: [
+          { name: 'Temel', appointments: 4, price: 499, discount: '20%' },
+          { name: 'İleri', appointments: 8, price: 899, discount: '30%' },
+          { name: 'Elit', appointments: 12, price: 1199, discount: '40%' }
+        ]
+      },
+      {
+        id: 3,
+        name: 'AutoFix Oto Tamiri',
+        category: 'oto',
+        categoryText: 'Oto Tamiri',
+        icon: '🔧',
+        rating: 4.7,
+        address: 'Şişli, İstanbul',
+        phone: '+90 212 555 0303',
+        plans: [
+          { name: 'Bakım', appointments: 4, price: 799, discount: '15%' },
+          { name: 'Bakım Plus', appointments: 8, price: 1499, discount: '25%' }
+        ]
+      },
+      {
+        id: 4,
+        name: 'Tattoo Studio Art',
+        category: 'dovme',
+        categoryText: 'Dövme Stüdyosu',
+        icon: '🎨',
+        rating: 4.9,
+        address: 'Beşiktaş, İstanbul',
+        phone: '+90 212 555 0404',
+        plans: [
+          { name: 'Başlangıç', appointments: 2, price: 599, discount: '10%' },
+          { name: 'Sanatçı', appointments: 4, price: 1099, discount: '20%' },
+          { name: 'Usta', appointments: 6, price: 1499, discount: '30%' }
+        ]
+      },
+      {
+        id: 5,
+        name: 'Zen Masaj Salonu',
+        category: 'masaj',
+        categoryText: 'Masaj Salonu',
+        icon: '🧘',
+        rating: 4.8,
+        address: 'Nişantaşı, İstanbul',
+        phone: '+90 212 555 0505',
+        plans: [
+          { name: 'Rahatlatıcı', appointments: 4, price: 699, discount: '20%' },
+          { name: 'İleri', appointments: 8, price: 1299, discount: '30%' }
+        ]
+      },
+      {
+        id: 6,
+        name: 'FitZone Spor Merkezi',
+        category: 'fitness',
+        categoryText: 'Fitness',
+        icon: '💪',
+        rating: 4.6,
+        address: 'Levent, İstanbul',
+        phone: '+90 212 555 0606',
+        plans: [
+          { name: 'Aylık', appointments: 8, price: 399, discount: '10%' },
+          { name: '3 Aylık', appointments: 24, price: 999, discount: '25%' },
+          { name: 'Yıllık', appointments: 96, price: 2999, discount: '40%' }
+        ]
+      },
+      {
+        id: 7,
+        name: 'Saç Tasarım Atölyesi',
+        category: 'kuafor',
+        categoryText: 'Kuaför',
+        icon: '💁',
+        rating: 4.9,
+        address: 'Etiler, İstanbul',
+        phone: '+90 212 555 0707',
+        plans: [
+          { name: 'Temel', appointments: 4, price: 599, discount: '15%' },
+          { name: 'Stil', appointments: 8, price: 1099, discount: '25%' },
+          { name: 'İleri', appointments: 12, price: 1499, discount: '35%' }
+        ]
+      },
+      {
+        id: 8,
+        name: 'Royal Berber',
+        category: 'berber',
+        categoryText: 'Berber',
+        icon: '💈',
+        rating: 4.7,
+        address: 'Bakırköy, İstanbul',
+        phone: '+90 212 555 0808',
+        plans: [
+          { name: 'Temel', appointments: 4, price: 249, discount: '10%' },
+          { name: 'Altın', appointments: 8, price: 449, discount: '20%' }
+        ]
+      }
+    ];
+
+    // User subscriptions
+    let userSubscriptions = [
+      {
+        businessId: 1,
+        businessName: 'Elite Berber Salonu',
+        planName: 'Gümüş',
+        totalAppointments: 8,
+        usedAppointments: 3,
+        remainingAppointments: 5,
+        status: 'active',
+        startDate: '2024-01-15',
+        endDate: '2024-02-15'
+      },
+      {
+        businessId: 2,
+        businessName: 'Güzellik Merkezi Lux',
+        planName: 'İleri',
+        totalAppointments: 8,
+        usedAppointments: 6,
+        remainingAppointments: 2,
+        status: 'active',
+        startDate: '2024-01-10',
+        endDate: '2024-02-10'
+      }
+    ];
+
+    let currentUser = null;
+    let selectedBusiness = null;
+    let selectedPlan = null;
+
+    // Auth Functions
+    function switchAuthTab(tab) {
+      const tabs = document.querySelectorAll('.auth-tab');
+      const forms = document.querySelectorAll('.auth-form');
+      
+      tabs.forEach(t => t.classList.remove('active'));
+      forms.forEach(f => f.classList.remove('active'));
+      
+      if (tab === 'login') {
+        tabs[0].classList.add('active');
+        document.getElementById('loginForm').classList.add('active');
+      } else {
+        tabs[1].classList.add('active');
+        document.getElementById('registerForm').classList.add('active');
+      }
+    }
+
+    function quickLogin(email, password) {
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = password;
+      setTimeout(() => {
+        document.querySelector('#loginForm form').dispatchEvent(new Event('submit', { cancelable: true }));
+      }, 300);
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const name = email.split('@')[0].split('.').map(n => n.charAt(0).toUpperCase() + n.slice(1)).join(' ');
+      
+      currentUser = { name, email };
+      showMainApp();
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('registerName').value;
+      const email = document.getElementById('registerEmail').value;
+      
+      currentUser = { name, email };
+      showMainApp();
+    }
+
+    function showMainApp() {
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.remove('hidden');
+      
+      // Set user initials
+      const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('userInitials').textContent = initials;
+      
+      loadBusinesses();
+      loadSubscriptions();
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById('authScreen').classList.remove('hidden');
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPassword').value = '';
+    }
+
+    // Load Businesses
+    function loadBusinesses() {
+      const grid = document.getElementById('businessGrid');
+      grid.innerHTML = businesses.map(business => `
+        <div class="business-card" onclick="openBusinessModal(${business.id})">
+          <div class="business-image">
+            <div style="font-size: 72px;">${business.icon}</div>
+            <div class="business-badge">${business.categoryText}</div>
+          </div>
+          <div class="business-content">
+            <div class="business-header">
+              <div class="business-title">
+                <h3>${business.name}</h3>
+                <div class="business-category">${business.categoryText}</div>
+              </div>
+              <div class="business-rating">
+                ⭐ ${business.rating}
+              </div>
+            </div>
+            <div class="business-info">
+              <div class="info-item">
+                <span class="info-icon">📍</span>
+                <span>${business.address}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-icon">📞</span>
+                <span>${business.phone}</span>
+              </div>
+            </div>
+            <div class="subscription-plans">
+              ${business.plans.map(plan => `
+                <div class="plan-badge">
+                  <div class="plan-name">${plan.name}</div>
+                  <div class="plan-price">${plan.price}₺</div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="business-actions">
+              <button class="btn-secondary" onclick="event.stopPropagation(); openBusinessModal(${business.id})">
+                Detaylar
+              </button>
+              <button class="btn-subscribe" onclick="event.stopPropagation(); openBusinessModal(${business.id})">
+                Abone Ol
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Filter Businesses
+    function filterBusinesses() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+      
+      const filtered = businesses.filter(b => {
+        const matchSearch = b.name.toLowerCase().includes(search) || b.categoryText.toLowerCase().includes(search);
+        const matchCategory = !category || b.category === category;
+        return matchSearch && matchCategory;
+      });
+      
+      const grid = document.getElementById('businessGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 80px 20px; color: var(--text-secondary); font-size: 18px;">🔍 Hiç işletme bulunamadı</div>';
+      } else {
+        grid.innerHTML = filtered.map(business => `
+          <div class="business-card" onclick="openBusinessModal(${business.id})">
+            <div class="business-image">
+              <div style="font-size: 72px;">${business.icon}</div>
+              <div class="business-badge">${business.categoryText}</div>
+            </div>
+            <div class="business-content">
+              <div class="business-header">
+                <div class="business-title">
+                  <h3>${business.name}</h3>
+                  <div class="business-category">${business.categoryText}</div>
+                </div>
+                <div class="business-rating">
+                  ⭐ ${business.rating}
+                </div>
+              </div>
+              <div class="business-info">
+                <div class="info-item">
+                  <span class="info-icon">📍</span>
+                  <span>${business.address}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon">📞</span>
+                  <span>${business.phone}</span>
+                </div>
+              </div>
+              <div class="subscription-plans">
+                ${business.plans.map(plan => `
+                  <div class="plan-badge">
+                    <div class="plan-name">${plan.name}</div>
+                    <div class="plan-price">${plan.price}₺</div>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="business-actions">
+                <button class="btn-secondary" onclick="event.stopPropagation(); openBusinessModal(${business.id})">
+                  Detaylar
+                </button>
+                <button class="btn-subscribe" onclick="event.stopPropagation(); openBusinessModal(${business.id})">
+                  Abone Ol
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Load User Subscriptions
+    function loadSubscriptions() {
+      const grid = document.getElementById('subscriptionGrid');
+      if (userSubscriptions.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-secondary); font-size: 18px;">💎 Henüz aboneliğiniz yok<br><span style="font-size: 14px; margin-top: 10px; display: block;">İşletmeleri keşfedin ve abonelik avantajlarından yararlanın</span></div>';
+        return;
+      }
+      
+      grid.innerHTML = userSubscriptions.map(sub => {
+        const progress = (sub.usedAppointments / sub.totalAppointments) * 100;
+        return `
+          <div class="subscription-card">
+            <div class="subscription-header">
+              <div>
+                <h3>${sub.businessName}</h3>
+                <p>${sub.planName} Paket</p>
+              </div>
+              <div class="active-badge">Aktif</div>
+            </div>
+            <div class="subscription-info">
+              <div class="info-row">
+                <span>Kalan Randevu</span>
+                <span>${sub.remainingAppointments}/${sub.totalAppointments}</span>
+              </div>
+              <div class="info-row">
+                <span>Bitiş Tarihi</span>
+                <span>${formatDate(sub.endDate)}</span>
+              </div>
+            </div>
+            <div class="usage-bar">
+              <div class="usage-bar-label">
+                <span>Kullanım</span>
+                <span>${Math.round(progress)}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progress}%"></div>
+              </div>
+            </div>
+            <div class="subscription-action">
+              <button onclick="takeAppointment(${sub.businessId})">
+                Randevu Al
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Business Modal
+    function openBusinessModal(businessId) {
+      selectedBusiness = businesses.find(b => b.id === businessId);
+      if (!selectedBusiness) return;
+      
+      document.getElementById('modalBusinessName').textContent = selectedBusiness.name;
+      document.getElementById('modalBusinessCategory').textContent = selectedBusiness.categoryText;
+      
+      document.getElementById('modalBusinessInfo').innerHTML = `
+        <div class="info-item" style="margin-bottom: 12px;">
+          <span class="info-icon">📍</span>
+          <span>${selectedBusiness.address}</span>
+        </div>
+        <div class="info-item" style="margin-bottom: 12px;">
+          <span class="info-icon">📞</span>
+          <span>${selectedBusiness.phone}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">⭐</span>
+          <span>${selectedBusiness.rating} / 5.0</span>
+        </div>
+      `;
+      
+      document.getElementById('modalPlansGrid').innerHTML = selectedBusiness.plans.map((plan, index) => `
+        <div class="plan-card ${index === 0 ? 'selected' : ''}" onclick="selectPlan(${index})">
+          <div class="plan-header-row">
+            <div>
+              <h3>${plan.name}</h3>
+              <p style="color: var(--text-secondary); margin-bottom: 16px;">${plan.appointments} Randevu Hakkı</p>
+            </div>
+            <div class="plan-price-tag">
+              ${plan.price}₺
+              <br><small>aylık</small>
+            </div>
+          </div>
+          <ul class="plan-features">
+            <li><span class="check-icon">✓</span> ${plan.appointments} randevu hakkı</li>
+            <li><span class="check-icon">✓</span> ${plan.discount} indirim avantajı</li>
+            <li><span class="check-icon">✓</span> Öncelikli rezervasyon</li>
+            <li><span class="check-icon">✓</span> İptal garantisi</li>
+          </ul>
+        </div>
+      `).join('');
+      
+      selectedPlan = selectedBusiness.plans[0];
+      document.getElementById('businessModal').classList.add('active');
+    }
+
+    function selectPlan(index) {
+      const plans = document.querySelectorAll('.plan-card');
+      plans.forEach(p => p.classList.remove('selected'));
+      plans[index].classList.add('selected');
+      selectedPlan = selectedBusiness.plans[index];
+    }
+
+    function closeModal() {
+      document.getElementById('businessModal').classList.remove('active');
+      selectedBusiness = null;
+      selectedPlan = null;
+    }
+
+    function subscribe() {
+      if (!selectedBusiness || !selectedPlan) return;
+      
+      const newSub = {
+        businessId: selectedBusiness.id,
+        businessName: selectedBusiness.name,
+        planName: selectedPlan.name,
+        totalAppointments: selectedPlan.appointments,
+        usedAppointments: 0,
+        remainingAppointments: selectedPlan.appointments,
+        status: 'active',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0]
+      };
+      
+      userSubscriptions.push(newSub);
+      loadSubscriptions();
+      closeModal();
+      
+      alert(`🎉 Tebrikler! ${selectedBusiness.name} - ${selectedPlan.name} paketine başarıyla abone oldunuz!`);
+    }
+
+    // Take Appointment
+    function takeAppointment(businessId) {
+      const subscription = userSubscriptions.find(sub => sub.businessId === businessId);
+      if (!subscription) {
+        alert('❌ Abonelik bulunamadı!');
+        return;
+      }
+      
+      if (subscription.remainingAppointments <= 0) {
+        alert('❌ Kalan randevu hakkınız yok. Lütfen paketinizi yenileyin.');
+        return;
+      }
+      
+      // Simulate appointment booking
+      subscription.usedAppointments++;
+      subscription.remainingAppointments--;
+      
+      loadSubscriptions();
+      
+      alert(`✅ Randevunuz başarıyla oluşturuldu!\n\n${subscription.businessName}\nKalan randevu hakkınız: ${subscription.remainingAppointments}`);
+    }
+
+    // Utility
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    // Close modal on outside click
+    document.getElementById('businessModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
+
