@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AboneRez - Randevu No-Show Sorununa Son!</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --dark-bg: #0f1318;
+      --card-bg: #181b28;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a5b8;
+      --accent-purple: #667eea;
+      --border-color: #2a2f3d;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    .presentation {
+      height: 100vh;
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      position: relative;
+    }
+
+    .slide {
+      height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 50%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .slide-content {
+      max-width: 1400px;
+      width: 100%;
+      z-index: 1;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Slide 1 - Hero */
+    .hero-slide {
+      text-align: center;
+    }
+
+    .hero-logo {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .hero-title {
+      font-size: 72px;
+      font-weight: 800;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 30px;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: 32px;
+      color: var(--text-secondary);
+      margin-bottom: 50px;
+      font-weight: 300;
+    }
+
+    .scroll-indicator {
+      margin-top: 60px;
+      font-size: 16px;
+      color: var(--text-secondary);
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    /* Slide 2 - Story */
+    .story-slide {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    }
+
+    .story-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .story-image {
+      font-size: 200px;
+      text-align: center;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .story-text h2 {
+      font-size: 48px;
+      margin-bottom: 30px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .story-paragraph {
+      font-size: 20px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      padding-left: 30px;
+      border-left: 4px solid var(--accent-purple);
+    }
+
+    .highlight {
+      color: var(--text-primary);
+      font-weight: 600;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Slide 3 - Problem */
+    .problem-slide {
+      background: radial-gradient(circle at center, rgba(231, 76, 60, 0.05) 0%, transparent 70%);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      margin-top: 60px;
+    }
+
+    .problem-card {
+      background: var(--card-bg);
+      border: 2px solid rgba(231, 76, 60, 0.3);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .problem-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(231, 76, 60, 0.6);
+      box-shadow: 0 20px 40px rgba(231, 76, 60, 0.2);
+    }
+
+    .problem-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+    }
+
+    .problem-title {
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: #e74c3c;
+    }
+
+    .problem-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .section-title {
+      font-size: 56px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .section-subtitle {
+      font-size: 24px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    /* Slide 4 - Solution */
+    .solution-slide {
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.05) 0%, rgba(52, 152, 219, 0.05) 100%);
+    }
+
+    .solution-hero {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .solution-logo {
+      font-size: 120px;
+      margin-bottom: 30px;
+      filter: drop-shadow(0 10px 30px rgba(102, 126, 234, 0.4));
+    }
+
+    .solution-tagline {
+      font-size: 36px;
+      background: var(--secondary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .solution-description {
+      font-size: 22px;
+      color: var(--text-secondary);
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* Slide 5, 6, 7 - Screenshots */
+    .screenshot-slide {
+      background: var(--card-bg);
+    }
+
+    .screenshot-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .screenshot-info h2 {
+      font-size: 48px;
+      margin-bottom: 30px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .screenshot-info h3 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      margin-top: 40px;
+      color: var(--accent-purple);
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-top: 20px;
+    }
+
+    .feature-list li {
+      font-size: 20px;
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+      padding-left: 40px;
+      position: relative;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #2ecc71;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .screenshot-image {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .screenshot-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      display: block;
+      border: 1px solid var(--border-color);
+    }
+
+    .screenshot-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      z-index: 10;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .screenshot-overlay:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .screenshot-badge {
+      position: absolute;
+      top: 35px;
+      right: 35px;
+      background: var(--primary-gradient);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 11;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .screenshot-frame {
+      background: #1a1d2e;
+      border-radius: 15px;
+      padding: 10px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .screenshot-dots {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 0 5px;
+    }
+
+    .screenshot-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff5f56;
+    }
+
+    .screenshot-dot:nth-child(2) {
+      background: #ffbd2e;
+    }
+
+    .screenshot-dot:nth-child(3) {
+      background: #27c93f;
+    }
+
+    /* Slide 8 - Benefits */
+    .benefits-slide {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+      margin-top: 60px;
+    }
+
+    .benefit-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 40px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .benefit-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-gradient);
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--accent-purple);
+      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .benefit-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+
+    .benefit-title {
+      font-size: 28px;
+      margin-bottom: 15px;
+      color: var(--text-primary);
+    }
+
+    .benefit-desc {
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Slide 9 - CTA */
+    .cta-slide {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      text-align: center;
+    }
+
+    .cta-content h2 {
+      font-size: 64px;
+      margin-bottom: 30px;
+      color: white;
+      font-weight: 800;
+    }
+
+    .cta-content p {
+      font-size: 28px;
+      margin-bottom: 50px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 25px 60px;
+      background: white;
+      color: #667eea;
+      font-size: 24px;
+      font-weight: 700;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .cta-stats {
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      margin-top: 80px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 56px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Navigation dots */
+    .nav-dots {
+      position: fixed;
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1000;
+    }
+
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      margin: 15px 0;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .nav-dot:hover,
+    .nav-dot.active {
+      background: var(--accent-purple);
+      transform: scale(1.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .slide {
+        padding: 40px;
+      }
+
+      .hero-title {
+        font-size: 56px;
+      }
+
+      .hero-subtitle {
+        font-size: 24px;
+      }
+
+      .story-container,
+      .screenshot-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .problem-grid,
+      .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .section-title {
+        font-size: 42px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .slide {
+        padding: 30px 20px;
+      }
+
+      .hero-title {
+        font-size: 36px;
+      }
+
+      .hero-subtitle {
+        font-size: 18px;
+      }
+
+      .hero-logo {
+        font-size: 60px;
+      }
+
+      .section-title {
+        font-size: 32px;
+      }
+
+      .story-text h2 {
+        font-size: 32px;
+      }
+
+      .story-paragraph {
+        font-size: 16px;
+      }
+
+      .cta-content h2 {
+        font-size: 42px;
+      }
+
+      .cta-stats {
+        flex-direction: column;
+        gap: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+    <!-- Slide 1: Hero -->
+    <section class="slide hero-slide">
+      <div class="slide-content">
+        <div class="hero-logo">🎯</div>
+        <h1 class="hero-title">AboneRez</h1>
+        <p class="hero-subtitle">Randevu No-Show Sorununa Son!</p>
+        <div class="scroll-indicator">
+          ↓ Kaydırarak hikayemizi keşfedin
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: The Story -->
+    <section class="slide story-slide">
+      <div class="slide-content">
+        <div class="story-container">
+          <div class="story-image">💈</div>
+          <div class="story-text">
+            <h2>Bir Berber Hikayesi</h2>
+            <p class="story-paragraph">
+              Bugün berbere gittim. Berberim <span class="highlight">Adem Abi</span> beni tıraş ederken <span class="highlight">Mehmet Bey</span> geldi.
+            </p>
+            <p class="story-paragraph">
+              Mehmet Bey daha önce <span class="highlight">2 kez randevu almış ve randevusuna gelmemiş</span>, tabiri caizse "mimli" birisi.
+            </p>
+            <p class="story-paragraph">
+              Adem Abi bu davranışından ötürü Mehmet Bey'i randevuya bırakmadan hemen almak istedi fakat <span class="highlight">eli dolu olduğu için reddetmek zorunda kaldı.</span>
+            </p>
+            <p class="story-paragraph">
+              Mehmet Bey'le Adem Abi'nin <span class="highlight">içine sinmeyerek</span> randevulaştılar, çünkü Adem Abi üçüncü kez Mehmet Bey'in gelmeyeceğinden şüpheliydi.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: The Problem -->
+    <section class="slide problem-slide">
+      <div class="slide-content">
+        <h2 class="section-title">😔 Sorun</h2>
+        <p class="section-subtitle">Adem Abi bir çıkmazdaydı...</p>
+        <div class="problem-grid">
+          <div class="problem-card">
+            <div class="problem-icon">💸</div>
+            <h3 class="problem-title">Para Kaybı Korkusu</h3>
+            <p class="problem-desc">Mehmet Bey'e kızarsa müşteri kaybedecek. Kızmasa bir slot boşa gidecek ve para kaybedecek.</p>
+          </div>
+          <div class="problem-card">
+            <div class="problem-icon">⏰</div>
+            <h3 class="problem-title">Zaman Kaybı</h3>
+            <p class="problem-desc">Mehmet Bey gelmezse, o saatte başka müşteriye hizmet veremeyecek. Fırsat maliyeti çok yüksek.</p>
+          </div>
+          <div class="problem-card">
+            <div class="problem-icon">😓</div>
+            <h3 class="problem-title">Stres ve Güvensizlik</h3>
+            <p class="problem-desc">Her randevuda "acaba gelir mi gelmez mi?" endişesi. İşletme planlaması yapamıyor.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: The Solution -->
+    <section class="slide solution-slide">
+      <div class="slide-content">
+        <div class="solution-hero">
+          <div class="solution-logo">🎯</div>
+          <h2 class="section-title">💡 Çözüm: AboneRez</h2>
+          <p class="solution-tagline">Gelse de gelmese de Adem Abi parasını kazanacaktı!</p>
+          <p class="solution-description">
+            AboneRez ile işletmeler müşterilerine <strong>abonelik paketleri</strong> satıyor. 
+            Müşteri gelse de gelmese de, işletme parasını peşinen almış oluyor. 
+            Bu sayede hem <strong>gelir garantili</strong>, hem de müşteri verdiği sözü tutmaya daha motive!
+          </p>
+        </div>
+        <div class="problem-grid">
+          <div class="problem-card" style="border-color: rgba(46, 204, 113, 0.5);">
+            <div class="problem-icon">💰</div>
+            <h3 class="problem-title" style="color: #2ecc71;">Garantili Gelir</h3>
+            <p class="problem-desc">Müşteri gelmese bile ödemeyi yapmış durumda. Fırsat maliyeti sıfır!</p>
+          </div>
+          <div class="problem-card" style="border-color: rgba(52, 152, 219, 0.5);">
+            <div class="problem-icon">🎯</div>
+            <h3 class="problem-title" style="color: #3498db;">Motive Müşteri</h3>
+            <p class="problem-desc">Abonelik alan müşteri, parasını boşa harcamamak için daha çok gelir.</p>
+          </div>
+          <div class="problem-card" style="border-color: rgba(155, 89, 182, 0.5);">
+            <div class="problem-icon">📊</div>
+            <h3 class="problem-title" style="color: #9b59b6;">Öngörülebilir İş</h3>
+            <p class="problem-desc">Kaç müşterinin kaç randevusu olduğunu biliyorsun. Planlama yapabiliyorsun.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: Screenshot 1 - Login -->
+    <section class="slide screenshot-slide">
+      <div class="slide-content">
+        <div class="screenshot-container">
+          <div class="screenshot-image">
+            <div class="screenshot-frame">
+              <div class="screenshot-dots">
+                <div class="screenshot-dot"></div>
+                <div class="screenshot-dot"></div>
+                <div class="screenshot-dot"></div>
+              </div>
+              <img src="assets/images/abonerez-screenshots/login-screen.png" alt="AboneRez Giriş Ekranı" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 800%22%3E%3Crect fill=%22%230f1318%22 width=%221200%22 height=%22800%22/%3E%3Ctext x=%22600%22 y=%22400%22 font-family=%22Arial%22 font-size=%2232%22 fill=%22%23667eea%22 text-anchor=%22middle%22%3EGiriş Ekranı%3C/text%3E%3C/svg%3E'">
+            </div>
+            <div class="screenshot-overlay" onclick="window.open('abonerez.html', '_blank')"></div>
+            <div class="screenshot-badge">Giriş Ekranı</div>
+          </div>
+          <div class="screenshot-info">
+            <h2>Kolay Giriş ve Kayıt</h2>
+            <p class="story-paragraph">
+              Hem işletmeler hem de müşteriler <span class="highlight">saniyeler içinde</span> kayıt olup sisteme girebilir.
+            </p>
+            <h3>Özellikler</h3>
+            <ul class="feature-list">
+              <li>Modern ve kullanıcı dostu arayüz</li>
+              <li>Hızlı demo hesap girişleri</li>
+              <li>Mobil uyumlu tasarım</li>
+              <li>Güvenli kimlik doğrulama</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Screenshot 2 - Dashboard -->
+    <section class="slide screenshot-slide">
+      <div class="slide-content">
+        <div class="screenshot-container">
+          <div class="screenshot-info">
+            <h2>İşletmeleri Keşfet</h2>
+            <p class="story-paragraph">
+              Müşteriler sevdikleri işletmeleri bulup <span class="highlight">abonelik paketlerini</span> kolayca inceleyebilir.
+            </p>
+            <h3>Özellikler</h3>
+            <ul class="feature-list">
+              <li>Kategori bazlı filtreleme</li>
+              <li>Arama ve keşfet özellikleri</li>
+              <li>Abonelik takibi sidebar'da</li>
+              <li>Detaylı işletme bilgileri</li>
+              <li>Farklı paket seçenekleri</li>
+            </ul>
+          </div>
+          <div class="screenshot-image">
+            <div class="screenshot-frame">
+              <div class="screenshot-dots">
+                <div class="screenshot-dot"></div>
+                <div class="screenshot-dot"></div>
+                <div class="screenshot-dot"></div>
+              </div>
+              <img src="assets/images/abonerez-screenshots/dashboard-screen.png" alt="AboneRez İşletmeler Ekranı" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 800%22%3E%3Crect fill=%22%230f1318%22 width=%221200%22 height=%22800%22/%3E%3Ctext x=%22600%22 y=%22400%22 font-family=%22Arial%22 font-size=%2232%22 fill=%22%23667eea%22 text-anchor=%22middle%22%3EAna Panel%3C/text%3E%3C/svg%3E'">
+            </div>
+            <div class="screenshot-overlay" onclick="window.open('abonerez.html', '_blank')"></div>
+            <div class="screenshot-badge">İşletmeler</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Screenshot 3 - Modal -->
+    <section class="slide screenshot-slide">
+      <div class="slide-content">
+        <div class="screenshot-container">
+          <div class="screenshot-image">
+            <div class="screenshot-frame">
+              <div class="screenshot-dots">
+                <div class="screenshot-dot"></div>
+                <div class="screenshot-dot"></div>
+                <div class="screenshot-dot"></div>
+              </div>
+              <img src="assets/images/abonerez-screenshots/modal-screen.png" alt="AboneRez Paketler Ekranı" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 800%22%3E%3Crect fill=%22%230f1318%22 width=%221200%22 height=%22800%22/%3E%3Ctext x=%22600%22 y=%22400%22 font-family=%22Arial%22 font-size=%2232%22 fill=%22%23667eea%22 text-anchor=%22middle%22%3EPaket Seçimi%3C/text%3E%3C/svg%3E'">
+            </div>
+            <div class="screenshot-overlay" onclick="window.open('abonerez.html', '_blank')"></div>
+            <div class="screenshot-badge">Paketler</div>
+          </div>
+          <div class="screenshot-info">
+            <h2>Abonelik Paketleri</h2>
+            <p class="story-paragraph">
+              İşletmeler <span class="highlight">farklı paketler</span> sunarak her müşteriye uygun çözüm sunar.
+            </p>
+            <h3>Paket Özellikleri</h3>
+            <ul class="feature-list">
+              <li>Bronz, Gümüş, Altın gibi seviyeler</li>
+              <li>Aylık randevu hakları</li>
+              <li>İndirim avantajları</li>
+              <li>Öncelikli rezervasyon</li>
+              <li>İptal garantisi</li>
+            </ul>
+            <p class="story-paragraph" style="margin-top: 30px;">
+              <span class="highlight">Mehmet Bey bir paket alsa</span>, Adem Abi parasını garantiye almış olacak!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: Benefits -->
+    <section class="slide benefits-slide">
+      <div class="slide-content">
+        <h2 class="section-title">🎁 Faydalar</h2>
+        <p class="section-subtitle">AboneRez ile herkes kazanıyor!</p>
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div class="benefit-icon">💼</div>
+            <h3 class="benefit-title">İşletmeler İçin</h3>
+            <p class="benefit-desc">
+              <strong>✓</strong> Garantili gelir akışı<br>
+              <strong>✓</strong> Fırsat maliyeti sıfır<br>
+              <strong>✓</strong> Öngörülebilir iş planı<br>
+              <strong>✓</strong> Müşteri bağlılığı artar<br>
+              <strong>✓</strong> No-show stresi biter
+            </p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">👥</div>
+            <h3 class="benefit-title">Müşteriler İçin</h3>
+            <p class="benefit-desc">
+              <strong>✓</strong> İndirimli hizmet alır<br>
+              <strong>✓</strong> Öncelikli randevu hakkı<br>
+              <strong>✓</strong> Planlı tasarruf yapar<br>
+              <strong>✓</strong> Garanti randevu slotu<br>
+              <strong>✓</strong> Özel avantajlar kazanır
+            </p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">🤝</div>
+            <h3 class="benefit-title">Adem Abi İçin</h3>
+            <p class="benefit-desc">
+              <strong>✓</strong> Mehmet Bey'e kızmaya gerek yok<br>
+              <strong>✓</strong> Gelsin gelmesin para garantili<br>
+              <strong>✓</strong> Stres azalır, kazanç artar<br>
+              <strong>✓</strong> İşini planlamak kolaylaşır<br>
+              <strong>✓</strong> Müşteri ilişkileri güçlenir
+            </p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">💎</div>
+            <h3 class="benefit-title">Mehmet Bey İçin</h3>
+            <p class="benefit-desc">
+              <strong>✓</strong> Verdiği sözü tutmaya motive<br>
+              <strong>✓</strong> İndirimli berber hizmeti<br>
+              <strong>✓</strong> Adem Abi ile ilişkisi düzelir<br>
+              <strong>✓</strong> Planlanmış bakım rutini<br>
+              <strong>✓</strong> VIP müşteri hissi
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: Call to Action -->
+    <section class="slide cta-slide">
+      <div class="slide-content">
+        <div class="cta-content">
+          <h2>Hazır mısınız?</h2>
+          <p>No-show sorununa son verin, garantili gelir kazanın!</p>
+          <a href="abonerez.html" class="cta-button">Hemen Başla 🚀</a>
+          <div class="cta-stats">
+            <div class="stat-item">
+              <div class="stat-number">%0</div>
+              <div class="stat-label">Fırsat Maliyeti</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">%100</div>
+              <div class="stat-label">Gelir Garantisi</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">∞</div>
+              <div class="stat-label">Mutlu Müşteri</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation Dots -->
+  <div class="nav-dots">
+    <div class="nav-dot active" onclick="scrollToSlide(0)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(1)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(2)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(3)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(4)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(5)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(6)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(7)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(8)"></div>
+  </div>
+
+  <script>
+    // Scroll to specific slide
+    function scrollToSlide(index) {
+      const slides = document.querySelectorAll('.slide');
+      slides[index].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Update active dot on scroll
+    const presentation = document.querySelector('.presentation');
+    const dots = document.querySelectorAll('.nav-dot');
+    
+    presentation.addEventListener('scroll', () => {
+      const scrollPos = presentation.scrollTop;
+      const slideHeight = window.innerHeight;
+      const currentSlide = Math.round(scrollPos / slideHeight);
+      
+      dots.forEach((dot, index) => {
+        if (index === currentSlide) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      const scrollPos = presentation.scrollTop;
+      const slideHeight = window.innerHeight;
+      const currentSlide = Math.round(scrollPos / slideHeight);
+      
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        e.preventDefault();
+        scrollToSlide(Math.min(currentSlide + 1, 8));
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        scrollToSlide(Math.max(currentSlide - 1, 0));
+      }
+    });
+
+  </script>
+</body>
+</html>
+
