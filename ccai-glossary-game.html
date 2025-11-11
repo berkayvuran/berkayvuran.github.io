@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCaaS Platform Glossary Quiz</title>
     <style>
+        :root {
+            --bg-primary: #0f2027;
+            --bg-secondary: #203a43;
+            --bg-tertiary: #2c5364;
+            --container-bg: #1e1e1e;
+            --card-bg: #2d2d2d;
+            --border-color: #3d3d3d;
+            --accent-color: #10b981;
+            --accent-hover: #059669;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+        }
+
+        body.light-mode {
+            --bg-primary: #f3f4f6;
+            --bg-secondary: #e5e7eb;
+            --bg-tertiary: #d1d5db;
+            --container-bg: #ffffff;
+            --card-bg: #f9fafb;
+            --border-color: #e5e7eb;
+            --accent-color: #059669;
+            --accent-hover: #047857;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,24 +41,26 @@
 
         body {
             font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            transition: all 0.3s ease;
         }
 
         .container {
-            background: #1e1e1e;
-            border: 2px solid #10b981;
+            background: var(--container-bg);
+            border: 2px solid var(--accent-color);
             border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2), 0 0 40px rgba(16, 185, 129, 0.1);
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);
             max-width: 900px;
             width: 100%;
             padding: 40px;
             animation: slideIn 0.5s ease-out;
-            color: #d4d4d4;
+            color: var(--text-primary);
+            position: relative;
         }
 
         @keyframes slideIn {
@@ -44,13 +74,45 @@
             }
         }
 
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .theme-toggle, .lang-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover, .lang-toggle:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+
+        .lang-toggle.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .header {
             text-align: center;
             margin-bottom: 30px;
+            margin-top: 40px;
         }
 
         h1 {
-            color: #10b981;
+            color: var(--accent-color);
             font-size: 2.5em;
             margin-bottom: 10px;
             font-weight: 700;
@@ -58,7 +120,7 @@
         }
 
         .subtitle {
-            color: #9ca3af;
+            color: var(--text-secondary);
             font-size: 1.1em;
             font-style: italic;
         }
@@ -68,10 +130,9 @@
             justify-content: space-between;
             margin-bottom: 30px;
             padding: 20px;
-            background: #2d2d2d;
-            border: 1px solid #3d3d3d;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
         }
 
         .stat {
@@ -80,7 +141,7 @@
 
         .stat-label {
             font-size: 0.85em;
-            color: #9ca3af;
+            color: var(--text-secondary);
             margin-bottom: 5px;
             text-transform: lowercase;
         }
@@ -88,14 +149,14 @@
         .stat-value {
             font-size: 1.8em;
             font-weight: bold;
-            color: #10b981;
+            color: var(--accent-color);
         }
 
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: #2d2d2d;
-            border: 1px solid #3d3d3d;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             overflow: hidden;
             margin-bottom: 30px;
@@ -103,7 +164,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-hover) 100%);
             transition: width 0.3s ease;
         }
 
@@ -113,10 +174,21 @@
 
         .question {
             font-size: 1.2em;
-            color: #e5e7eb;
+            color: var(--text-primary);
             margin-bottom: 20px;
             line-height: 1.7;
             font-weight: 400;
+        }
+
+        .question-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--accent-color);
+            color: var(--container-bg);
+            border-radius: 4px;
+            font-size: 0.75em;
+            margin-bottom: 15px;
+            font-weight: 600;
         }
 
         .options {
@@ -126,26 +198,26 @@
 
         .option {
             padding: 16px 20px;
-            background: #2d2d2d;
-            border: 1px solid #3d3d3d;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
             font-size: 0.95em;
-            color: #d4d4d4;
+            color: var(--text-primary);
         }
 
         .option:hover {
-            background: #3d3d3d;
-            border-color: #10b981;
+            background: var(--border-color);
+            border-color: var(--accent-color);
             transform: translateX(3px);
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
 
         .option.selected {
-            background: #10b981;
+            background: var(--accent-color);
             color: white;
-            border-color: #10b981;
+            border-color: var(--accent-color);
         }
 
         .option.correct {
@@ -160,6 +232,90 @@
             color: white;
             border-color: #f44336;
             animation: shake 0.5s ease;
+        }
+
+        /* Matching Type Styles */
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .matching-column h4 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .matching-item {
+            padding: 12px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .matching-item:hover {
+            border-color: var(--accent-color);
+            transform: translateX(3px);
+        }
+
+        .matching-item.selected {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .matching-item.matched {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Fill in the Blank Styles */
+        .fill-blank-text {
+            font-size: 1.1em;
+            line-height: 2;
+            margin-bottom: 20px;
+        }
+
+        .blank-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .blank-option {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        .blank-option:hover {
+            border-color: var(--accent-color);
+        }
+
+        .blank-option.selected {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .blank-space {
+            display: inline-block;
+            min-width: 120px;
+            padding: 4px 12px;
+            border-bottom: 2px solid var(--accent-color);
+            margin: 0 8px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--accent-color);
         }
 
         @keyframes correctPulse {
@@ -186,7 +342,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
             color: white;
         }
 
@@ -196,12 +352,13 @@
         }
 
         .btn-secondary {
-            background: #e0e0e0;
-            color: #333;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
         .btn-secondary:hover {
-            background: #d0d0d0;
+            border-color: var(--accent-color);
         }
 
         .btn:disabled {
@@ -221,27 +378,26 @@
         }
 
         .welcome-screen h2, .results-screen h2 {
-            color: #10b981;
+            color: var(--accent-color);
             font-size: 2em;
             margin-bottom: 20px;
         }
 
         .welcome-screen p, .results-screen p {
-            color: #9ca3af;
+            color: var(--text-secondary);
             font-size: 1em;
             line-height: 1.8;
             margin-bottom: 20px;
         }
 
         .high-score {
-            background: #2d2d2d;
-            border: 1px solid #10b981;
-            color: #10b981;
+            background: var(--card-bg);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
             padding: 15px;
             border-radius: 6px;
             margin: 20px 0;
             font-size: 1.1em;
-            font-family: 'JetBrains Mono', monospace;
         }
 
         .result-summary {
@@ -258,7 +414,7 @@
         }
 
         .result-card.score {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
             color: white;
         }
 
@@ -281,13 +437,11 @@
             font-size: 2.5em;
             font-weight: bold;
             margin: 10px 0;
-            font-family: 'JetBrains Mono', monospace;
         }
 
         .result-card-label {
             font-size: 0.85em;
             opacity: 0.9;
-            font-family: 'JetBrains Mono', monospace;
             text-transform: lowercase;
         }
 
@@ -322,22 +476,11 @@
             display: none;
         }
 
-        .term-highlight {
-            color: #10b981;
-            font-weight: 600;
-        }
-
-        .timer {
-            font-size: 1.5em;
-            color: #10b981;
-            font-weight: bold;
-        }
-
         .achievements {
             margin-top: 30px;
             padding: 20px;
-            background: #2d2d2d;
-            border: 1px solid #3d3d3d;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
         }
 
@@ -345,12 +488,11 @@
             display: inline-block;
             padding: 8px 16px;
             margin: 5px;
-            background: #10b981;
-            color: #1e1e1e;
+            background: var(--accent-color);
+            color: var(--container-bg);
             border-radius: 4px;
             font-size: 0.85em;
             font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
         }
 
         @media (max-width: 600px) {
@@ -370,34 +512,50 @@
             .result-summary {
                 grid-template-columns: 1fr;
             }
+
+            .matching-container {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                position: static;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="controls">
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+            <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">EN</button>
+        </div>
+
         <!-- Welcome Screen -->
         <div id="welcomeScreen" class="welcome-screen">
             <div class="header">
-                <h1>$ ./ccaas-glossary-quiz</h1>
-                <p class="subtitle">// Developer's Guide to CCaaS Platform</p>
+                <h1 id="title">$ ./ccaas-glossary-quiz</h1>
+                <p class="subtitle" id="subtitle">// Developer's Guide to CCaaS Platform</p>
             </div>
             
-            <p>Interactive knowledge base for Agentic CX team. Improve your understanding of CCaaS Platform architecture, APIs, and core concepts.</p>
+            <p id="description">Interactive knowledge base for Agentic CX team. Improve your understanding of CCaaS Platform architecture, APIs, and core concepts.</p>
             
             <div class="high-score" id="highScoreDisplay">
-                &gt; High Score: <span id="highScoreValue">0</span> pts
+                <span id="highScoreText">&gt; High Score:</span> <span id="highScoreValue">0</span> <span id="ptsText">pts</span>
             </div>
             
-            <p><strong>$ cat README.md</strong></p>
-            <ul style="text-align: left; margin: 20px auto; max-width: 500px; line-height: 2;">
-                <li>• 20 randomized technical questions</li>
-                <li>• +10 points per correct answer</li>
-                <li>• Detailed explanations for each concept</li>
-                <li>• Local storage for progress tracking</li>
+            <p><strong id="readmeText">$ cat README.md</strong></p>
+            <ul style="text-align: left; margin: 20px auto; max-width: 500px; line-height: 2;" id="featureList">
+                <li id="feature1">• 20 randomized technical questions</li>
+                <li id="feature2">• +10 points per correct answer</li>
+                <li id="feature3">• Detailed explanations for each concept</li>
+                <li id="feature4">• Local storage for progress tracking</li>
+                <li id="feature5">• Multiple question types (MCQ, True/False, Fill-in, Matching)</li>
             </ul>
             
             <div class="button-group">
-                <button class="btn btn-primary" onclick="startGame()">$ npm start</button>
+                <button class="btn btn-primary" onclick="startGame()" id="startBtn">$ npm start</button>
             </div>
         </div>
 
@@ -405,15 +563,15 @@
         <div id="quizScreen" class="hidden">
             <div class="stats-bar">
                 <div class="stat">
-                    <div class="stat-label">Question</div>
+                    <div class="stat-label" id="questionLabel">question</div>
                     <div class="stat-value"><span id="currentQuestion">1</span>/<span id="totalQuestions">20</span></div>
                 </div>
                 <div class="stat">
-                    <div class="stat-label">Score</div>
+                    <div class="stat-label" id="scoreLabel">score</div>
                     <div class="stat-value" id="score">0</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-label">Correct</div>
+                    <div class="stat-label" id="correctLabel">correct</div>
                     <div class="stat-value" id="correctCount">0</div>
                 </div>
             </div>
@@ -423,38 +581,39 @@
             </div>
 
             <div class="question-container">
+                <div class="question-type-badge" id="questionTypeBadge">Multiple Choice</div>
                 <div class="question" id="questionText"></div>
-                <div class="options" id="optionsContainer"></div>
+                <div id="answerContainer"></div>
             </div>
 
             <div id="explanation" class="feedback hidden"></div>
 
             <div class="button-group">
-                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled id="nextBtnText">Next Question</button>
             </div>
         </div>
 
         <!-- Results Screen -->
         <div id="resultsScreen" class="hidden results-screen">
             <div class="header">
-                <h2>// Quiz Complete ✓</h2>
+                <h2 id="resultsTitle">// Quiz Complete ✓</h2>
             </div>
 
             <div class="result-summary">
                 <div class="result-card score">
-                    <div class="result-card-label">total_score</div>
+                    <div class="result-card-label" id="totalScoreLabel">total_score</div>
                     <div class="result-card-value" id="finalScore">0</div>
                 </div>
                 <div class="result-card correct">
-                    <div class="result-card-label">correct_answers</div>
+                    <div class="result-card-label" id="correctAnswersLabel">correct_answers</div>
                     <div class="result-card-value" id="finalCorrect">0</div>
                 </div>
                 <div class="result-card incorrect">
-                    <div class="result-card-label">wrong_answers</div>
+                    <div class="result-card-label" id="wrongAnswersLabel">wrong_answers</div>
                     <div class="result-card-value" id="finalIncorrect">0</div>
                 </div>
                 <div class="result-card accuracy">
-                    <div class="result-card-label">accuracy</div>
+                    <div class="result-card-label" id="accuracyLabel">accuracy</div>
                     <div class="result-card-value" id="finalAccuracy">0%</div>
                 </div>
             </div>
@@ -462,605 +621,1415 @@
             <div id="performanceFeedback" class="feedback"></div>
 
             <div id="achievementsSection" class="achievements hidden">
-                <h3 style="margin-bottom: 15px;">// Achievements Unlocked</h3>
+                <h3 style="margin-bottom: 15px;" id="achievementsTitle">// Achievements Unlocked</h3>
                 <div id="achievementsList"></div>
             </div>
 
             <div class="button-group">
-                <button class="btn btn-primary" onclick="startGame()">$ run again</button>
-                <button class="btn btn-secondary" onclick="showWelcome()">$ cd ..</button>
+                <button class="btn btn-primary" onclick="startGame()" id="playAgainBtn">$ run again</button>
+                <button class="btn btn-secondary" onclick="showWelcome()" id="mainMenuBtn">$ cd ..</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Quiz Data - Generated from the glossary
+        // Localization
+        const translations = {
+            en: {
+                title: "$ ./ccaas-glossary-quiz",
+                subtitle: "// Developer's Guide to CCaaS Platform",
+                description: "Interactive knowledge base for Agentic CX team. Improve your understanding of CCaaS Platform architecture, APIs, and core concepts.",
+                highScoreText: "> High Score:",
+                ptsText: "pts",
+                readmeText: "$ cat README.md",
+                feature1: "• 20 randomized technical questions",
+                feature2: "• +10 points per correct answer",
+                feature3: "• Detailed explanations for each concept",
+                feature4: "• Local storage for progress tracking",
+                feature5: "• Multiple question types (MCQ, True/False, Fill-in, Matching)",
+                startBtn: "$ npm start",
+                questionLabel: "question",
+                scoreLabel: "score",
+                correctLabel: "correct",
+                nextBtnText: "Next Question",
+                resultsTitle: "// Quiz Complete ✓",
+                totalScoreLabel: "total_score",
+                correctAnswersLabel: "correct_answers",
+                wrongAnswersLabel: "wrong_answers",
+                accuracyLabel: "accuracy",
+                achievementsTitle: "// Achievements Unlocked",
+                playAgainBtn: "$ run again",
+                mainMenuBtn: "$ cd ..",
+                multipleChoice: "Multiple Choice",
+                trueFalse: "True/False",
+                fillBlank: "Fill in the Blank",
+                matching: "Matching",
+                correct: "✓ Correct!",
+                incorrect: "✗ Incorrect!",
+                correctAnswer: "The correct answer is:",
+                feedbackExcellent: "✓ Build successful! Senior-level CCaaS Platform knowledge detected.",
+                feedbackGood: "✓ Quiz passed. Solid understanding of core architecture.",
+                feedbackAverage: "⚠ Warning: Review documentation to improve knowledge.",
+                feedbackPoor: "✗ Build failed. Run --verbose and review the docs.",
+                achievement1: "✓ 100% Code Coverage",
+                achievement2: "⚡ Performance Optimized",
+                achievement3: "🔧 System Architect",
+                achievement4: "📚 Documentation Master",
+                achievement5: "🚀 New High Score"
+            },
+            tr: {
+                title: "$ ./ccaas-sozluk-quiz",
+                subtitle: "// Geliştiriciler İçin CCaaS Platform Rehberi",
+                description: "Agentic CX ekibi için interaktif bilgi bankası. CCaaS Platform mimarisi, API'ler ve temel kavramlar hakkında bilginizi geliştirin.",
+                highScoreText: "> En Yüksek Skor:",
+                ptsText: "puan",
+                readmeText: "$ cat BENIOKU.md",
+                feature1: "• 20 rastgele teknik soru",
+                feature2: "• Her doğru cevap için +10 puan",
+                feature3: "• Her kavram için detaylı açıklamalar",
+                feature4: "• İlerleme takibi için yerel depolama",
+                feature5: "• Çoklu soru tipleri (Çoktan Seçmeli, D/Y, Boşluk Doldurma, Eşleştirme)",
+                startBtn: "$ npm start",
+                questionLabel: "soru",
+                scoreLabel: "skor",
+                correctLabel: "doğru",
+                nextBtnText: "Sonraki Soru",
+                resultsTitle: "// Quiz Tamamlandı ✓",
+                totalScoreLabel: "toplam_skor",
+                correctAnswersLabel: "dogru_cevaplar",
+                wrongAnswersLabel: "yanlis_cevaplar",
+                accuracyLabel: "dogruluk",
+                achievementsTitle: "// Kazanılan Başarımlar",
+                playAgainBtn: "$ tekrar oyna",
+                mainMenuBtn: "$ cd ..",
+                multipleChoice: "Çoktan Seçmeli",
+                trueFalse: "Doğru/Yanlış",
+                fillBlank: "Boşluk Doldurma",
+                matching: "Eşleştirme",
+                correct: "✓ Doğru!",
+                incorrect: "✗ Yanlış!",
+                correctAnswer: "Doğru cevap:",
+                feedbackExcellent: "✓ Yapım başarılı! Üst düzey CCaaS Platform bilgisi tespit edildi.",
+                feedbackGood: "✓ Quiz geçildi. Temel mimari hakkında sağlam anlayış.",
+                feedbackAverage: "⚠ Uyarı: Bilgiyi geliştirmek için dokümantasyonu inceleyin.",
+                feedbackPoor: "✗ Yapım başarısız. --verbose ile çalıştırın ve dokümanları inceleyin.",
+                achievement1: "✓ %100 Kod Kapsamı",
+                achievement2: "⚡ Performans Optimize Edildi",
+                achievement3: "🔧 Sistem Mimarı",
+                achievement4: "📚 Dokümantasyon Uzmanı",
+                achievement5: "🚀 Yeni Rekor"
+            }
+        };
+
+        let currentLang = localStorage.getItem('quizLang') || 'en';
+
+        function updateLanguage() {
+            const t = translations[currentLang];
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('description').textContent = t.description;
+            document.getElementById('highScoreText').textContent = t.highScoreText;
+            document.getElementById('ptsText').textContent = t.ptsText;
+            document.getElementById('readmeText').textContent = t.readmeText;
+            document.getElementById('feature1').textContent = t.feature1;
+            document.getElementById('feature2').textContent = t.feature2;
+            document.getElementById('feature3').textContent = t.feature3;
+            document.getElementById('feature4').textContent = t.feature4;
+            document.getElementById('feature5').textContent = t.feature5;
+            document.getElementById('startBtn').textContent = t.startBtn;
+            document.getElementById('questionLabel').textContent = t.questionLabel;
+            document.getElementById('scoreLabel').textContent = t.scoreLabel;
+            document.getElementById('correctLabel').textContent = t.correctLabel;
+            document.getElementById('nextBtn').textContent = t.nextBtnText;
+            document.getElementById('resultsTitle').textContent = t.resultsTitle;
+            document.getElementById('totalScoreLabel').textContent = t.totalScoreLabel;
+            document.getElementById('correctAnswersLabel').textContent = t.correctAnswersLabel;
+            document.getElementById('wrongAnswersLabel').textContent = t.wrongAnswersLabel;
+            document.getElementById('accuracyLabel').textContent = t.accuracyLabel;
+            document.getElementById('achievementsTitle').textContent = t.achievementsTitle;
+            document.getElementById('playAgainBtn').textContent = t.playAgainBtn;
+            document.getElementById('mainMenuBtn').textContent = t.mainMenuBtn;
+            document.getElementById('langBtn').textContent = currentLang.toUpperCase();
+        }
+
+        function toggleLanguage() {
+            // Don't allow language change during quiz
+            if (!document.getElementById('quizScreen').classList.contains('hidden')) {
+                return;
+            }
+            currentLang = currentLang === 'en' ? 'tr' : 'en';
+            localStorage.setItem('quizLang', currentLang);
+            updateLanguage();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
+
+        // Quiz Data with different question types
         const quizData = [
+            // Multiple Choice Questions (30 questions)
             {
-                question: "What does AI stand for in the context of contact centers?",
-                options: [
-                    "Automated Integration",
-                    "Artificial Intelligence",
-                    "Agent Interaction",
-                    "Advanced Interface"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What does AI stand for in the context of contact centers?",
+                    tr: "AI, çağrı merkezleri bağlamında ne anlama gelir?"
+                },
+                options: {
+                    en: ["Automated Integration", "Artificial Intelligence", "Agent Interaction", "Advanced Interface"],
+                    tr: ["Otomatik Entegrasyon", "Yapay Zeka", "Müşteri temsilcisi Etkileşimi", "Gelişmiş Arayüz"]
+                },
                 correct: 1,
-                explanation: "AI stands for Artificial Intelligence - a computer system that can perform tasks normally done by humans, including speech recognition, automated chat, translation, and visual perception."
+                explanation: {
+                    en: "AI stands for Artificial Intelligence - a computer system that can perform tasks normally done by humans, including speech recognition, automated chat, translation, and visual perception.",
+                    tr: "AI, Yapay Zeka anlamına gelir - konuşma tanıma, otomatik sohbet, çeviri ve görsel algılama dahil olmak üzere normalde insanlar tarafından yapılan görevleri yerine getirebilen bir bilgisayar sistemidir."
+                }
             },
             {
-                question: "What is Agent Assist?",
-                options: [
-                    "A tool for scheduling agent breaks",
-                    "A CCaaS Platform technology that augments human conversations with AI",
-                    "A device that helps agents sit properly",
-                    "A manual for training new agents"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Agent Assist?",
+                    tr: "Agent Assist nedir?"
+                },
+                options: {
+                    en: ["A tool for scheduling agent breaks", "A CCaaS Platform technology that augments human conversations with AI", "A device that helps agents sit properly", "A manual for training new agents"],
+                    tr: ["Müşteri temsilcisi molalarını planlamak için bir araç", "İnsan konuşmalarını AI ile güçlendiren bir CCaaS Platform teknolojisi", "Müşteri temsilcisilara doğru oturmaya yardımcı olan bir cihaz", "Yeni müşteri temsilcilerini eğitmek için bir kılavuz"]
+                },
                 correct: 1,
-                explanation: "Agent Assist is a CCaaS Platform technology that augments human conversations with artificial intelligence, helping agents deliver the best possible customer experience with AI-driven recommendations and real-time sentiment analysis."
+                explanation: {
+                    en: "Agent Assist is a CCaaS Platform technology that augments human conversations with artificial intelligence, helping agents deliver the best possible customer experience with AI-driven recommendations and real-time sentiment analysis.",
+                    tr: "Agent Assist, yapay zeka ile insan konuşmalarını güçlendiren, müşteri temsilcileria AI destekli öneriler ve gerçek zamanlı duygu analizi ile mümkün olan en iyi müşteri deneyimini sunmalarına yardımcı olan bir CCaaS Platform teknolojisidir."
+                }
             },
             {
-                question: "What does AHT stand for?",
-                options: [
-                    "Agent Handling Time",
-                    "Average Hold Time",
-                    "Average Handling Time",
-                    "Automated Help Ticket"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What does AHT stand for?",
+                    tr: "AHT ne anlama gelir?"
+                },
+                options: {
+                    en: ["Agent Handling Time", "Average Hold Time", "Average Handling Time", "Automated Help Ticket"],
+                    tr: ["Müşteri temsilcisi İşleme Süresi", "Ortalama Bekleme Süresi", "Ortalama İşleme Süresi", "Otomatik Yardım Bileti"]
+                },
                 correct: 2,
-                explanation: "AHT stands for Average Handling Time - the amount of time that an agent spends handling each customer call, calculated as an average of all their interactions in a given timeframe."
+                explanation: {
+                    en: "AHT stands for Average Handling Time - the amount of time that an agent spends handling each customer call, calculated as an average of all their interactions in a given timeframe.",
+                    tr: "AHT, Ortalama İşleme Süresi anlamına gelir - bir müşteri temsilcisinin her müşteri çağrısını işlemek için harcadığı süre, belirli bir zaman dilimindeki tüm etkileşimlerinin ortalaması olarak hesaplanır."
+                }
             },
             {
-                question: "What is an IVR system primarily used for?",
-                options: [
-                    "Recording agent conversations",
-                    "Managing employee schedules",
-                    "Routing calls through an interactive menu",
-                    "Storing customer data"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is an IVR system primarily used for?",
+                    tr: "IVR sistemi öncelikle ne için kullanılır?"
+                },
+                options: {
+                    en: ["Recording agent conversations", "Managing employee schedules", "Routing calls through an interactive menu", "Storing customer data"],
+                    tr: ["Müşteri temsilcisi konuşmalarını kaydetmek", "Çalışan programlarını yönetmek", "Etkileşimli menü üzerinden çağrıları yönlendirmek", "Müşteri verilerini depolamak"]
+                },
                 correct: 2,
-                explanation: "IVR (Interactive Voice Response) is the menu component of a contact center where callers can make selections that influence routing, leave messages, or make payments through automated menus."
+                explanation: {
+                    en: "IVR (Interactive Voice Response) is the menu component of a contact center where callers can make selections that influence routing, leave messages, or make payments through automated menus.",
+                    tr: "IVR (Interaktif Sesli Yanıt), arayanların yönlendirmeyi etkileyen seçimler yapabildiği, mesaj bırakabildiği veya otomatik menüler aracılığıyla ödeme yapabildiği bir çağrı merkezinin menü bileşenidir."
+                }
             },
             {
-                question: "What does NPS measure?",
-                options: [
-                    "Number of Phone Sales",
-                    "Net Promoter Score - customer loyalty",
-                    "Network Performance Status",
-                    "New Product Success"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What does NPS measure?",
+                    tr: "NPS neyi ölçer?"
+                },
+                options: {
+                    en: ["Number of Phone Sales", "Net Promoter Score - customer loyalty", "Network Performance Status", "New Product Success"],
+                    tr: ["Telefon Satış Sayısı", "Net Promoter Score - müşteri sadakati", "Ağ Performans Durumu", "Yeni Ürün Başarısı"]
+                },
                 correct: 1,
-                explanation: "NPS (Net Promoter Score) measures the likelihood that a customer will recommend you to their friends and family on a scale of 1-10. It's one of the most common ways companies track loyalty and customer churn."
+                explanation: {
+                    en: "NPS (Net Promoter Score) measures the likelihood that a customer will recommend you to their friends and family on a scale of 1-10. It's one of the most common ways companies track loyalty and customer churn.",
+                    tr: "NPS (Net Promoter Score), bir müşterinin sizi arkadaşlarına ve ailesine önerme olasılığını 1-10 ölçeğinde ölçer. Şirketlerin sadakati ve müşteri kaybını takip etmesinin en yaygın yollarından biridir."
+                }
+            },
+
+            // True/False Questions (25 questions)
+            {
+                type: "tf",
+                question: {
+                    en: "CCaaS 3.0 is cloud-based while CCaaS 2.0 is on-premise.",
+                    tr: "CCaaS 3.0 bulut tabanlıdır, CCaaS 2.0 ise yerinde kurulur."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Both CCaaS 2.0 and 3.0 are cloud-based. The difference is that CCaaS 3.0 goes beyond omnichannel with predictive, contextual, and conversational CX.",
+                    tr: "Yanlış. Hem CCaaS 2.0 hem de 3.0 bulut tabanlıdır. Fark, CCaaS 3.0'ın tahmine dayalı, bağlamsal ve konuşmaya dayalı CX ile çok kanallılığın ötesine geçmesidir."
+                }
             },
             {
-                question: "What is a Virtual Agent?",
-                options: [
-                    "An agent working from home",
-                    "An AI-powered conversational CX agent for 24/7 self service",
-                    "A temporary contractor",
-                    "A supervisor monitoring other agents"
-                ],
-                correct: 1,
-                explanation: "A Virtual Agent is an AI-powered conversational CX agent for 24/7 self service that can speed up human interactions and resolutions, or in some cases handle interactions without a human agent."
+                type: "tf",
+                question: {
+                    en: "First Call Resolution (FCR) measures the ability to resolve customer issues on the first call.",
+                    tr: "İlk Arama Çözümü (FCR), müşteri sorunlarını ilk aramada çözme yeteneğini ölçer."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. FCR is a measurement of the contact center's ability to resolve a customer issue the first time they call in, thereby increasing customer satisfaction.",
+                    tr: "Doğru. FCR, çağrı merkezinin bir müşteri sorununu ilk aradıklarında çözme yeteneğinin bir ölçümüdür ve böylece müşteri memnuniyetini artırır."
+                }
             },
             {
-                question: "What does CCaaS stand for?",
-                options: [
-                    "Customer Care as a Service",
-                    "Contact Center as a Service",
-                    "Computer Calling as a Service",
-                    "Corporate Communication as a Service"
-                ],
-                correct: 1,
-                explanation: "CCaaS stands for Contact Center as a Service - a cloud-based contact center platform offered on a subscription basis."
+                type: "tf",
+                question: {
+                    en: "Sentiment analysis can only detect positive emotions.",
+                    tr: "Duygu analizi yalnızca olumlu duyguları tespit edebilir."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Sentiment analysis is an AI tool that picks up on the customer's disposition or feeling about the company during an interaction, including both positive and negative sentiments.",
+                    tr: "Yanlış. Duygu analizi, etkileşim sırasında müşterinin şirket hakkındaki eğilimini veya hissini algılayan, hem olumlu hem de olumsuz duyguları içeren bir AI aracıdır."
+                }
             },
             {
-                question: "What is First Call Resolution (FCR)?",
-                options: [
-                    "The time it takes to answer the first call",
-                    "The ability to resolve a customer issue on the first call",
-                    "The first call of the day",
-                    "The fastest call resolution time"
-                ],
-                correct: 1,
-                explanation: "First Call Resolution (FCR) is a measurement of the contact center's ability to resolve a customer issue the first time they call in, thereby increasing customer satisfaction."
+                type: "tf",
+                question: {
+                    en: "A warm transfer involves briefing the receiving agent before completing the transfer.",
+                    tr: "Sıcak transfer, transferi tamamlamadan önce alıcı müşteri temsilcisini bilgilendirmeyi içerir."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. A warm transfer is a method where the original agent greets the receiving agent and provides a brief introduction and context before completing the transfer.",
+                    tr: "Doğru. Sıcak transfer, orijinal müşteri temsilcisinin alıcı müşteri temsilcisini karşıladığı ve transferi tamamlamadan önce kısa bir tanıtım ve bağlam sağladığı bir yöntemdir."
+                }
             },
             {
-                question: "What is sentiment analysis?",
-                options: [
-                    "A tool for analyzing agent performance",
-                    "An AI tool that picks up on customer feelings during an interaction",
-                    "A method for categorizing calls",
-                    "A system for measuring call volume"
-                ],
-                correct: 1,
-                explanation: "Sentiment analysis is an AI tool that picks up on the customer's disposition or feeling about the company during an interaction, helping agents respond appropriately."
+                type: "tf",
+                question: {
+                    en: "Virtual Agents can only work during business hours.",
+                    tr: "Sanal Müşteri temsilcisilar yalnızca mesai saatlerinde çalışabilir."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. A Virtual Agent is an AI-powered conversational CX agent for 24/7 self service that can handle interactions at any time.",
+                    tr: "Yanlış. Sanal Müşteri temsilcisi, herhangi bir zamanda etkileşimleri yönetebilen 7/24 self servis için AI destekli konuşma CX müşteri temsilcisinidır."
+                }
             },
+
+            // Fill in the Blank Questions (15 questions)
             {
-                question: "What does ACW stand for?",
-                options: [
-                    "Automated Call Workflow",
-                    "Agent Communication Window",
-                    "After-Call Work time",
-                    "Average Customer Wait"
-                ],
-                correct: 2,
-                explanation: "ACW stands for After-Call Work time - the work that an agent does after each call, including logging details, updating accounts, tickets, and cases. Also known as wrap-up time."
-            },
-            {
-                question: "What is Omnichannel customer experience?",
-                options: [
-                    "Using only one communication channel",
-                    "A personalized experience that seamlessly integrates across multiple channels",
-                    "Offering multiple products to customers",
-                    "Having multiple contact centers"
-                ],
-                correct: 1,
-                explanation: "Omnichannel customer experience is a personalized customer experience where individual interactions seamlessly integrate across channels (voice, chat, email, text) to create one holistic experience."
-            },
-            {
-                question: "What is Natural Language Processing (NLP)?",
-                options: [
-                    "A way to teach agents new languages",
-                    "Technology that turns customer text/speech into actions",
-                    "A method for categorizing customer feedback",
-                    "A tool for translating international calls"
-                ],
-                correct: 1,
-                explanation: "Natural Language Processing is a technology that turns the customer's text or speech input into actions, with the goal of leading them closer to the intended resolution."
-            },
-            {
-                question: "What is a warm transfer?",
-                options: [
-                    "Transferring calls during summer months",
-                    "A friendly greeting to customers",
-                    "Transferring a call after briefing the receiving agent",
-                    "An emergency call transfer"
-                ],
-                correct: 2,
-                explanation: "A warm transfer is a method of transferring calls where the original agent greets the receiving agent and provides a brief introduction and context before completing the transfer."
-            },
-            {
-                question: "What does CSAT measure?",
-                options: [
-                    "Call System Accuracy Testing",
-                    "Customer Satisfaction",
-                    "Contact Support Average Time",
-                    "Central Server Access Time"
-                ],
-                correct: 1,
-                explanation: "CSAT stands for Customer Satisfaction - a metric calculated through customer satisfaction surveys, used to measure how well a company meets its customers' service expectations."
-            },
-            {
-                question: "What is Quality Management (QM) in a contact center?",
-                options: [
-                    "Managing the quality of office equipment",
-                    "Processes and strategies to ensure positive customer experience",
-                    "Monitoring internet connection quality",
-                    "Managing product quality"
-                ],
-                correct: 1,
-                explanation: "Quality Management (QM) encompasses the processes and strategies used to ensure a positive customer experience, including scoring agent performance and identifying areas for improvement."
-            },
-            {
-                question: "What is ACD?",
-                options: [
-                    "Agent Call Database",
-                    "Automatic Contact Distribution - automated switchboard",
-                    "Average Customer Disposition",
-                    "Advanced Call Dialing"
-                ],
-                correct: 1,
-                explanation: "ACD (Automatic Contact Distribution) is a form of automated switchboard which answers incoming calls and forwards them to the appropriate agent or department to resolve the caller's issue."
-            },
-            {
-                question: "What is a Chatbot?",
-                options: [
-                    "A human agent who handles chat",
-                    "An AI function that routes and automates customer inquiries",
-                    "A chat room for customers",
-                    "A tool for agents to chat with each other"
-                ],
-                correct: 1,
-                explanation: "A Chatbot is an AI function that improves contact center efficiency by routing customer inquiries on voice and digital channels, and can also perform advanced actions like finding knowledge base content and automating common tasks."
-            },
-            {
-                question: "What is Customer Lifetime Value (CLV)?",
-                options: [
-                    "How long a customer has been with the company",
-                    "The total value a customer brings over their lifetime",
-                    "The average age of customers",
-                    "The time spent with each customer"
-                ],
-                correct: 1,
-                explanation: "Customer Lifetime Value (CLV) is the estimated total value to the business of a given customer account over the entire lifespan of that account."
-            },
-            {
-                question: "What is Workforce Management (WFM)?",
-                options: [
-                    "Hiring new employees",
-                    "Managing office space",
-                    "Managing and monitoring agents - training, scheduling, forecasting",
-                    "Managing customer relationships"
-                ],
-                correct: 2,
-                explanation: "Workforce Management (WFM) involves managing and monitoring agents in a contact center, including tasks like training agents, scheduling, and forecasting staffing needs."
-            },
-            {
-                question: "What does SLA stand for in contact centers?",
-                options: [
-                    "Service Level Agreement",
-                    "System Login Access",
-                    "Standard Learning Assessment",
-                    "Support Line Availability"
-                ],
+                type: "fill",
+                question: {
+                    en: "The percentage of time agents are actively handling customer calls is measured by _____ occupancy.",
+                    tr: "Müşteri temsilcisiların aktif olarak müşteri çağrılarını işlediği zaman yüzdesi _____ doluluk oranı ile ölçülür."
+                },
+                options: {
+                    en: ["agent", "system", "call", "network"],
+                    tr: ["müşteri temsilcisi", "sistem", "arama", "ağ"]
+                },
                 correct: 0,
-                explanation: "SLA stands for Service Level Agreement - contact center SLAs consist of top-level metrics that help supervisors ensure the center is meeting its service targets, such as answering X percentage of calls within Y time period."
+                explanation: {
+                    en: "Agent occupancy is a workforce management metric that measures the percentage of time agents are actively handling customer calls.",
+                    tr: "Müşteri temsilcisi doluluk oranı, müşteri temsilcilerinin aktif olarak müşteri çağrılarını işlediği zaman yüzdesini ölçen bir işgücü yönetimi metriğidir."
+                }
             },
             {
-                question: "What is ASR technology?",
-                options: [
-                    "Agent Scheduling Resource",
-                    "Automatic Speech Recognition",
-                    "Average Service Rating",
-                    "Automated System Reporting"
-                ],
-                correct: 1,
-                explanation: "ASR stands for Automatic Speech Recognition - technology that allows humans and computers to interact using conversational syntax, used in features like IVRs with speech recognition."
+                type: "fill",
+                question: {
+                    en: "_____ routing uses CRM data to prioritize routing decisions and determine customer intent.",
+                    tr: "_____ yönlendirme, yönlendirme kararlarına öncelik vermek ve müşteri niyetini belirlemek için CRM verilerini kullanır."
+                },
+                options: {
+                    en: ["Contextual", "Random", "Sequential", "Manual"],
+                    tr: ["Bağlamsal", "Rastgele", "Sıralı", "Manuel"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Contextual Routing leverages data from your CRM to prioritize routing decisions and help determine customer intent.",
+                    tr: "Bağlamsal Yönlendirme, yönlendirme kararlarına öncelik vermek ve müşteri niyetini belirlemeye yardımcı olmak için CRM'inizden verileri kullanır."
+                }
             },
             {
-                question: "What is a Predictive Dialer used for?",
-                options: [
-                    "Predicting customer needs",
-                    "Making large numbers of outbound calls automatically",
-                    "Forecasting call volume",
-                    "Predicting agent performance"
-                ],
-                correct: 1,
-                explanation: "A Predictive Dialer is used in outbound call centers to make a large number of calls at a time and connect them with live agents, using agent availability data to route calls as rapidly as possible."
+                type: "fill",
+                question: {
+                    en: "_____ dialer automatically calls customer phone numbers for outbound mass communication.",
+                    tr: "_____ çevirici, giden toplu iletişim için müşteri telefon numaralarını otomatik olarak arar."
+                },
+                options: {
+                    en: ["Auto", "Manual", "Emergency", "Random"],
+                    tr: ["Otomatik", "Manuel", "Acil", "Rastgele"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "An auto dialer is a software system for outbound call centers that automatically calls customer telephone numbers to deliver automated messages.",
+                    tr: "Otomatik çevirici, otomatik mesajlar iletmek için müşteri telefon numaralarını otomatik olarak arayan giden arama merkezleri için bir yazılım sistemidir."
+                }
             },
             {
-                question: "What is the purpose of Screen Share technology?",
-                options: [
-                    "Sharing agent screens with supervisors",
-                    "Allowing agent and customer to navigate the same browser during a call",
-                    "Sharing call statistics on monitors",
-                    "Displaying company information to customers"
-                ],
+                type: "fill",
+                question: {
+                    en: "The work an agent does after each call is called _____ time or wrap-up time.",
+                    tr: "Bir müşteri temsilcisinin her aramadan sonra yaptığı işe _____ zamanı veya tamamlama zamanı denir."
+                },
+                options: {
+                    en: ["after-call work", "preparation", "login", "break"],
+                    tr: ["arama sonrası iş", "hazırlık", "giriş", "mola"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "After-call work time (ACW) is the work that an agent does after each call, including logging details and updating records.",
+                    tr: "Arama sonrası iş zamanı (ACW), ayrıntıları günlüğe kaydetme ve kayıtları güncelleme dahil olmak üzere bir müşteri temsilcisinin her aramadan sonra yaptığı işlerdir."
+                }
+            },
+
+            // Matching Questions (10 questions)
+            {
+                type: "matching",
+                question: {
+                    en: "Match the CCaaS terms with their definitions:",
+                    tr: "CCaaS terimlerini tanımlarıyla eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["ACD", "IVR", "NPS", "FCR"],
+                        right: ["Interactive menu system", "Automatic call distributor", "Customer loyalty metric", "First-time resolution measure"]
+                    },
+                    tr: {
+                        left: ["ACD", "IVR", "NPS", "FCR"],
+                        right: ["İnteraktif menü sistemi", "Otomatik çağrı dağıtıcı", "Müşteri sadakat metriği", "İlk seferinde çözüm ölçüsü"]
+                    }
+                },
+                correctPairs: [[0, 1], [1, 0], [2, 2], [3, 3]],
+                explanation: {
+                    en: "ACD = Automatic Contact Distribution, IVR = Interactive Voice Response, NPS = Net Promoter Score, FCR = First Call Resolution",
+                    tr: "ACD = Otomatik Çağrı Dağıtımı, IVR = İnteraktif Sesli Yanıt, NPS = Net Promoter Score, FCR = İlk Arama Çözümü"
+                }
+            },
+            // Additional MCQ Questions
+            {
+                type: "mcq",
+                question: {
+                    en: "What is a Virtual Agent?",
+                    tr: "Sanal Müşteri temsilcisi nedir?"
+                },
+                options: {
+                    en: ["An agent working from home", "An AI-powered conversational CX agent for 24/7 self service", "A temporary contractor", "A supervisor monitoring other agents"],
+                    tr: ["Evden çalışan bir müşteri temsilcisi", "7/24 self servis için AI destekli konuşma CX müşteri temsilcisini", "Geçici bir yüklenici", "Diğer müşteri temsilcilerini izleyen bir süpervizör"]
+                },
                 correct: 1,
-                explanation: "Screen Share is a technology that allows an agent and a customer to share screens and navigate the same browser during a call, helping with purchases, finding documents, and more."
+                explanation: {
+                    en: "A Virtual Agent is an AI-powered conversational CX agent for 24/7 self service that can speed up human interactions and resolutions.",
+                    tr: "Sanal Müşteri temsilcisi, insan etkileşimlerini ve çözümlerini hızlandırabilen 7/24 self servis için AI destekli konuşma CX müşteri temsilcisinidır."
+                }
             },
             {
-                question: "What is Agent Occupancy?",
-                options: [
-                    "The office space an agent uses",
-                    "The percentage of time agents actively handle customer calls",
-                    "The number of agents in the center",
-                    "The seating capacity of the contact center"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What does CCaaS stand for?",
+                    tr: "CCaaS ne anlama gelir?"
+                },
+                options: {
+                    en: ["Customer Care as a Service", "Contact Center as a Service", "Computer Calling as a Service", "Corporate Communication as a Service"],
+                    tr: ["Hizmet Olarak Müşteri Bakımı", "Hizmet Olarak Çağrı Merkezi", "Hizmet Olarak Bilgisayar Araması", "Hizmet Olarak Kurumsal İletişim"]
+                },
                 correct: 1,
-                explanation: "Agent Occupancy is a workforce management metric that measures the percentage of time agents are actively handling customer calls, as opposed to doing other activities like updating and closing tickets."
+                explanation: {
+                    en: "CCaaS stands for Contact Center as a Service - a cloud-based contact center platform offered on a subscription basis.",
+                    tr: "CCaaS, Hizmet Olarak Çağrı Merkezi anlamına gelir - abonelik bazında sunulan bulut tabanlı bir çağrı merkezi platformudur."
+                }
             },
             {
-                question: "What is Escalation in a contact center?",
-                options: [
-                    "Increasing call volume",
-                    "Transferring a challenging interaction to a supervisor",
-                    "Raising prices for services",
-                    "Promoting an agent"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is the purpose of Screen Share technology?",
+                    tr: "Ekran Paylaşımı teknolojisinin amacı nedir?"
+                },
+                options: {
+                    en: ["Sharing agent screens with supervisors", "Allowing agent and customer to navigate the same browser during a call", "Sharing call statistics on monitors", "Displaying company information to customers"],
+                    tr: ["Müşteri temsilcisi ekranlarını süpervizörlerle paylaşmak", "Müşteri temsilcisi ve müşterinin arama sırasında aynı tarayıcıda gezinmesine izin vermek", "Ekranlarda arama istatistiklerini paylaşmak", "Müşterilere şirket bilgilerini görüntülemek"]
+                },
                 correct: 1,
-                explanation: "Escalation is the process of transferring a challenging, complex, or unusual interaction to a supervisor for further help and resolution."
+                explanation: {
+                    en: "Screen Share allows an agent and a customer to share screens and navigate the same browser during a call, helping with purchases and finding documents.",
+                    tr: "Ekran Paylaşımı, bir müşteri temsilcisinin ve müşterinin ekran paylaşmasına ve arama sırasında aynı tarayıcıda gezinmesine olanak tanır, satın almalara ve belge bulmaya yardımcı olur."
+                }
             },
             {
-                question: "What is Voice Authentication?",
-                options: [
-                    "Verifying agent identity",
-                    "A biometric verification tool that identifies callers by voice",
-                    "Recording voice messages",
-                    "Testing audio quality"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Agent Occupancy?",
+                    tr: "Müşteri temsilcisi Doluluk Oranı nedir?"
+                },
+                options: {
+                    en: ["The office space an agent uses", "The percentage of time agents actively handle customer calls", "The number of agents in the center", "The seating capacity of the contact center"],
+                    tr: ["Bir müşteri temsilcisinin kullandığı ofis alanı", "Müşteri temsilcisiların aktif olarak müşteri çağrılarını işlediği zaman yüzdesi", "Merkezteki müşteri temsilcisi sayısı", "Çağrı merkezinin oturma kapasitesi"]
+                },
                 correct: 1,
-                explanation: "Voice Authentication is a biometric verification tool that identifies a caller based on their unique voice characteristics (voiceprint), enhancing security and reducing authentication time."
+                explanation: {
+                    en: "Agent Occupancy measures the percentage of time agents are actively handling customer calls, as opposed to other activities.",
+                    tr: "Müşteri temsilcisi Doluluk Oranı, diğer faaliyetlerin aksine müşteri temsilcilerinin aktif olarak müşteri çağrılarını işlediği zaman yüzdesini ölçer."
+                }
             },
             {
-                question: "What is the Customer Journey?",
-                options: [
-                    "The physical distance a customer travels",
-                    "The entire experience from first touchpoint to last",
-                    "The path through the office",
-                    "The routing of customer calls"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Escalation in a contact center?",
+                    tr: "Çağrı merkezinde Eskalasyon nedir?"
+                },
+                options: {
+                    en: ["Increasing call volume", "Transferring a challenging interaction to a supervisor", "Raising prices for services", "Promoting an agent"],
+                    tr: ["Arama hacmini artırmak", "Zor bir etkileşimi süpervizöre aktarmak", "Hizmet fiyatlarını artırmak", "Bir müşteri temsilcisini terfi ettirmek"]
+                },
                 correct: 1,
-                explanation: "The Customer Journey (also known as customer lifecycle) refers to the entire experience a customer has with a company from the first touchpoint to the last, including all positive and negative sentiment incidents."
+                explanation: {
+                    en: "Escalation is the process of transferring a challenging, complex, or unusual interaction to a supervisor for further help and resolution.",
+                    tr: "Eskalasyon, zor, karmaşık veya olağandışı bir etkileşimi daha fazla yardım ve çözüm için bir süpervizöre aktarma sürecidir."
+                }
             },
             {
-                question: "What is Real-time Adherence (RTA)?",
-                options: [
-                    "Following security protocols",
-                    "A metric tracking if agents follow their schedules",
-                    "Adhering to call scripts",
-                    "Sticking to break times"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What does CSAT measure?",
+                    tr: "CSAT neyi ölçer?"
+                },
+                options: {
+                    en: ["Call System Accuracy Testing", "Customer Satisfaction", "Contact Support Average Time", "Central Server Access Time"],
+                    tr: ["Arama Sistemi Doğruluk Testi", "Müşteri Memnuniyeti", "İletişim Desteği Ortalama Süresi", "Merkezi Sunucu Erişim Süresi"]
+                },
                 correct: 1,
-                explanation: "Real-time Adherence (RTA) is a workforce management metric that helps supervisors identify agents that are not adhering to their set schedule."
+                explanation: {
+                    en: "CSAT stands for Customer Satisfaction - a metric calculated through customer satisfaction surveys to measure how well a company meets its customers' service expectations.",
+                    tr: "CSAT, Müşteri Memnuniyeti anlamına gelir - bir şirketin müşterilerinin hizmet beklentilerini ne kadar iyi karşıladığını ölçmek için müşteri memnuniyeti anketleri aracılığıyla hesaplanan bir metrik."
+                }
             },
             {
-                question: "What is CTI?",
-                options: [
-                    "Customer Transaction Interface",
-                    "Computer-Telephony Integration",
-                    "Contact Tracking Information",
-                    "Central Technology Infrastructure"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Quality Management (QM) in a contact center?",
+                    tr: "Çağrı merkezinde Kalite Yönetimi (QM) nedir?"
+                },
+                options: {
+                    en: ["Managing the quality of office equipment", "Processes and strategies to ensure positive customer experience", "Monitoring internet connection quality", "Managing product quality"],
+                    tr: ["Ofis ekipmanı kalitesini yönetmek", "Olumlu müşteri deneyimini sağlamak için süreçler ve stratejiler", "İnternet bağlantı kalitesini izlemek", "Ürün kalitesini yönetmek"]
+                },
                 correct: 1,
-                explanation: "CTI (Computer-Telephony Integration) is technology that provides an interface between telephone networks and computer systems, allowing calls from the PSTN to reach agents on their desktop computers."
+                explanation: {
+                    en: "Quality Management (QM) encompasses the processes and strategies used to ensure a positive customer experience, including scoring agent performance and identifying areas for improvement.",
+                    tr: "Kalite Yönetimi (QM), müşteri temsilcisi performansını puanlama ve iyileştirme alanlarını belirleme dahil olmak üzere olumlu bir müşteri deneyimi sağlamak için kullanılan süreçleri ve stratejileri kapsar."
+                }
             },
             {
-                question: "What is Multicast Routing in CCaaS Platform?",
-                options: [
-                    "Routing to multiple contact centers",
-                    "Offering sessions to all queue agents simultaneously",
-                    "Broadcasting messages to all customers",
-                    "Sending emails to multiple recipients"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is ACD?",
+                    tr: "ACD nedir?"
+                },
+                options: {
+                    en: ["Agent Call Database", "Automatic Contact Distribution", "Average Customer Disposition", "Advanced Call Dialing"],
+                    tr: ["Müşteri temsilcisi Çağrı Veritabanı", "Otomatik İletişim Dağıtımı", "Ortalama Müşteri Eğilimi", "Gelişmiş Arama Çevirme"]
+                },
                 correct: 1,
-                explanation: "Multicast Routing is a CCaaS Platform feature that offers sessions to all agents assigned to the queue when an interaction comes in, with the quickest to respond receiving the interaction."
+                explanation: {
+                    en: "ACD (Automatic Contact Distribution) is a form of automated switchboard which answers incoming calls and forwards them to the appropriate agent or department.",
+                    tr: "ACD (Otomatik İletişim Dağıtımı), gelen aramaları yanıtlayan ve uygun müşteri temsilcisine veya departmana ileten otomatik bir santral türüdür."
+                }
             },
             {
-                question: "What is the main difference between CCaaS 2.0 and CCaaS 3.0?",
-                options: [
-                    "CCaaS 3.0 only supports voice calls",
-                    "CCaaS 3.0 goes beyond omnichannel with predictive, contextual, and conversational CX",
-                    "CCaaS 2.0 is cloud-based while 3.0 is on-premise",
-                    "There is no difference"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is a Chatbot?",
+                    tr: "Chatbot nedir?"
+                },
+                options: {
+                    en: ["A human agent who handles chat", "An AI function that routes and automates customer inquiries", "A chat room for customers", "A tool for agents to chat with each other"],
+                    tr: ["Sohbeti yöneten bir insan müşteri temsilcisini", "Müşteri sorgularını yönlendiren ve otomatikleştiren bir AI işlevi", "Müşteriler için sohbet odası", "Müşteri temsilcisiların birbirleriyle sohbet etmesi için bir araç"]
+                },
                 correct: 1,
-                explanation: "CCaaS 3.0 goes beyond omnichannel with predictive, contextual, and conversational CX built for the way modern consumers communicate, whereas CCaaS 2.0 integrates omnichannel, WFO, analytics and AI into one."
+                explanation: {
+                    en: "A Chatbot is an AI function that improves contact center efficiency by routing customer inquiries and automating common tasks.",
+                    tr: "Chatbot, müşteri sorgularını yönlendirerek ve ortak görevleri otomatikleştirerek çağrı merkezi verimliliğini artıran bir AI işlevidir."
+                }
             },
             {
-                question: "What is Contextual Routing in CCaaS Platform?",
-                options: [
-                    "Routing based on time of day",
-                    "Leveraging CRM data to prioritize routing decisions and determine customer intent",
-                    "Routing calls to the nearest agent",
-                    "Random routing distribution"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Customer Lifetime Value (CLV)?",
+                    tr: "Müşteri Yaşam Boyu Değeri (CLV) nedir?"
+                },
+                options: {
+                    en: ["How long a customer has been with the company", "The total value a customer brings over their lifetime", "The average age of customers", "The time spent with each customer"],
+                    tr: ["Bir müşterinin şirketle ne kadar süredir olduğu", "Bir müşterinin yaşam boyu getirdiği toplam değer", "Müşterilerin ortalama yaşı", "Her müşteriyle geçirilen süre"]
+                },
                 correct: 1,
-                explanation: "Contextual Routing leverages data from your CRM to prioritize routing decisions and help determine customer intent. The goal is to route more efficiently and accurately and thus drive customer experience."
+                explanation: {
+                    en: "Customer Lifetime Value (CLV) is the estimated total value to the business of a given customer account over the entire lifespan of that account.",
+                    tr: "Müşteri Yaşam Boyu Değeri (CLV), belirli bir müşteri hesabının tüm ömrü boyunca işletmeye getireceği tahmini toplam değerdir."
+                }
             },
             {
-                question: "What are Smart Actions in CCaaS Platform?",
-                options: [
-                    "Automated email responses",
-                    "Technology allowing agents to communicate visually and contextually with callers",
-                    "AI-powered call scheduling",
-                    "Performance tracking tools"
-                ],
-                correct: 1,
-                explanation: "Smart Actions is a CCaaS Platform technology that allows agents to communicate visually and contextually with callers, helping resolve calls faster through fingerprint/facial recognition, image/video sharing, text inputs, and secure payments."
+                type: "mcq",
+                question: {
+                    en: "What does Workforce Management (WFM) involve?",
+                    tr: "İşgücü Yönetimi (WFM) neyi içerir?"
+                },
+                options: {
+                    en: ["Hiring new employees", "Managing office space", "Managing and monitoring agents - training, scheduling, forecasting", "Managing customer relationships"],
+                    tr: ["Yeni çalışan işe alma", "Ofis alanını yönetme", "Müşteri temsilcisiları yönetme ve izleme - eğitim, planlama, tahmin", "Müşteri ilişkilerini yönetme"]
+                },
+                correct: 2,
+                explanation: {
+                    en: "Workforce Management (WFM) involves managing and monitoring agents in a contact center, including tasks like training agents, scheduling, and forecasting staffing needs.",
+                    tr: "İşgücü Yönetimi (WFM), müşteri temsilcilerini eğitme, planlama ve personel ihtiyaçlarını tahmin etme gibi görevler dahil olmak üzere bir çağrı merkezindeki müşteri temsilcilerini yönetme ve izlemeyi içerir."
+                }
             },
             {
-                question: "What is Deltacast Routing optimized for?",
-                options: [
-                    "Voice call distribution",
-                    "Chat concurrency and equal workload distribution",
-                    "Email routing",
-                    "Social media management"
-                ],
-                correct: 1,
-                explanation: "Deltacast routing logic from CCaaS Platform focuses on optimizing for chat concurrency and distributing workloads equally between agents."
+                type: "mcq",
+                question: {
+                    en: "What does SLA stand for in contact centers?",
+                    tr: "Çağrı merkezlerinde SLA ne anlama gelir?"
+                },
+                options: {
+                    en: ["Service Level Agreement", "System Login Access", "Standard Learning Assessment", "Support Line Availability"],
+                    tr: ["Hizmet Seviyesi Anlaşması", "Sistem Giriş Erişimi", "Standart Öğrenme Değerlendirmesi", "Destek Hattı Kullanılabilirliği"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "SLA stands for Service Level Agreement - contact center SLAs consist of top-level metrics that help supervisors ensure the center is meeting its service targets.",
+                    tr: "SLA, Hizmet Seviyesi Anlaşması anlamına gelir - çağrı merkezi SLA'ları, süpervizörlerin merkezin hizmet hedeflerini karşıladığından emin olmalarına yardımcı olan üst düzey metrikleri içerir."
+                }
             },
             {
-                question: "What is a Direct Access Point (DAP) in CCaaS Platform?",
-                options: [
-                    "Physical entry to the contact center",
-                    "A system allowing customers to be connected directly to an appropriate queue",
-                    "Admin access credentials",
-                    "Emergency hotline"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is ASR technology?",
+                    tr: "ASR teknolojisi nedir?"
+                },
+                options: {
+                    en: ["Agent Scheduling Resource", "Automatic Speech Recognition", "Average Service Rating", "Automated System Reporting"],
+                    tr: ["Müşteri temsilcisi Planlama Kaynağı", "Otomatik Konuşma Tanıma", "Ortalama Hizmet Değerlendirmesi", "Otomatik Sistem Raporlama"]
+                },
                 correct: 1,
-                explanation: "Direct Access Points allow your customers to dial a number and be connected directly to an appropriate queue, reducing friction and improving customer experience. DAPs can be based on phone numbers, user data lookup, or key-value pairs."
+                explanation: {
+                    en: "ASR stands for Automatic Speech Recognition - technology that allows humans and computers to interact using conversational syntax, used in features like IVRs.",
+                    tr: "ASR, Otomatik Konuşma Tanıma anlamına gelir - insanların ve bilgisayarların konuşma sözdizimi kullanarak etkileşime girmesine izin veren, IVR'ler gibi özelliklerde kullanılan teknoloji."
+                }
             },
             {
-                question: "What components are included in CCaaS Platform's Embeddable features?",
-                options: [
-                    "Only voice calls",
-                    "Voice, SMS, and chat",
-                    "Email and fax only",
-                    "Video conferencing only"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is a Predictive Dialer used for?",
+                    tr: "Tahmine Dayalı Çevirici ne için kullanılır?"
+                },
+                options: {
+                    en: ["Predicting customer needs", "Making large numbers of outbound calls automatically", "Forecasting call volume", "Predicting agent performance"],
+                    tr: ["Müşteri ihtiyaçlarını tahmin etmek", "Otomatik olarak çok sayıda giden arama yapmak", "Arama hacmini tahmin etmek", "Müşteri temsilcisi performansını tahmin etmek"]
+                },
                 correct: 1,
-                explanation: "Embeddable voice, SMS and chat are components of the CCaaS Platform web SDK, providing additional channels by which customers can communicate, all embeddable within your app or website."
+                explanation: {
+                    en: "A Predictive Dialer is used in outbound call centers to make a large number of calls at a time and connect them with live agents using agent availability data.",
+                    tr: "Tahmine Dayalı Çevirici, giden arama merkezlerinde aynı anda çok sayıda arama yapmak ve bunları müşteri temsilcisi kullanılabilirlik verilerini kullanarak canlı müşteri temsilcilerila bağlamak için kullanılır."
+                }
             },
             {
-                question: "What is Touch IVR?",
-                options: [
-                    "A touchscreen phone",
-                    "A visual menu allowing direct selection like website navigation",
-                    "A voice recognition system",
-                    "A physical button interface"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Voice Authentication?",
+                    tr: "Ses Kimlik Doğrulama nedir?"
+                },
+                options: {
+                    en: ["Verifying agent identity", "A biometric verification tool that identifies callers by voice", "Recording voice messages", "Testing audio quality"],
+                    tr: ["Müşteri temsilcisi kimliğini doğrulama", "Arayanları sese göre tanımlayan biyometrik doğrulama aracı", "Sesli mesajları kaydetme", "Ses kalitesini test etme"]
+                },
                 correct: 1,
-                explanation: "Touch IVR is an advanced CCaaS Platform feature that represents the menu visually and allows the caller to directly select options, similar to clicking navigation items in a website menu, instead of using numeric keypad input."
+                explanation: {
+                    en: "Voice Authentication is a biometric verification tool that identifies a caller based on their unique voice characteristics (voiceprint).",
+                    tr: "Ses Kimlik Doğrulama, bir arayıcıyı benzersiz ses özelliklerine (ses izi) göre tanımlayan biyometrik bir doğrulama aracıdır."
+                }
             },
             {
-                question: "What is Visual IVR in CCaaS Platform's mobile SDK?",
-                options: [
-                    "Video call support",
-                    "Navigation using visual and touch controls on mobile phones",
-                    "Screen sharing capability",
-                    "Image recognition"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is the Customer Journey?",
+                    tr: "Müşteri Yolculuğu nedir?"
+                },
+                options: {
+                    en: ["The physical distance a customer travels", "The entire experience from first touchpoint to last", "The path through the office", "The routing of customer calls"],
+                    tr: ["Bir müşterinin kat ettiği fiziksel mesafe", "İlk temas noktasından sonuncusuna kadar tüm deneyim", "Ofisteki yol", "Müşteri aramalarının yönlendirilmesi"]
+                },
                 correct: 1,
-                explanation: "Visual IVR is a component of the CCaaS Platform mobile SDK that lets customers navigate the menu structure using visual and touch navigation on their mobile phone, improving user experience."
+                explanation: {
+                    en: "The Customer Journey refers to the entire experience a customer has with a company from the first touchpoint to the last, including all positive and negative sentiment incidents.",
+                    tr: "Müşteri Yolculuğu, bir müşterinin bir şirketle ilk temas noktasından son noktaya kadar yaşadığı tüm deneyimi, tüm olumlu ve olumsuz duygu olayları dahil olmak üzere ifade eder."
+                }
             },
             {
-                question: "What does the CCaaS Platform Mobile SDK support?",
-                options: [
-                    "Only Android devices",
-                    "Complete developer toolkits for iOS and Android",
-                    "Only web browsers",
-                    "Desktop applications only"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Real-time Adherence (RTA)?",
+                    tr: "Gerçek Zamanlı Uyum (RTA) nedir?"
+                },
+                options: {
+                    en: ["Following security protocols", "A metric tracking if agents follow their schedules", "Adhering to call scripts", "Sticking to break times"],
+                    tr: ["Güvenlik protokollerini takip etme", "Müşteri temsilcisiların programlarını takip edip etmediklerini izleyen bir metrik", "Arama senaryolarına bağlı kalma", "Mola sürelerine sadık kalma"]
+                },
                 correct: 1,
-                explanation: "Mobile SDK provides complete developer toolkits to deploy CX widgets and help orchestrate the customer journey on mobile phones, compatible with both iOS and Android."
+                explanation: {
+                    en: "Real-time Adherence (RTA) is a workforce management metric that helps supervisors identify agents that are not adhering to their set schedule.",
+                    tr: "Gerçek Zamanlı Uyum (RTA), süpervizörlerin belirlenen programlarına uymayan müşteri temsilcilerini belirlemelerine yardımcı olan bir işgücü yönetimi metriğidir."
+                }
             },
             {
-                question: "What is In-app Chat in CCaaS Platform?",
-                options: [
-                    "Agent internal messaging",
-                    "Mobile-based messaging experience within a company's mobile app",
-                    "Social media integration",
-                    "Email within the app"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is CTI?",
+                    tr: "CTI nedir?"
+                },
+                options: {
+                    en: ["Customer Transaction Interface", "Computer-Telephony Integration", "Contact Tracking Information", "Central Technology Infrastructure"],
+                    tr: ["Müşteri İşlem Arayüzü", "Bilgisayar-Telefon Entegrasyonu", "İletişim Takip Bilgisi", "Merkezi Teknoloji Altyapısı"]
+                },
                 correct: 1,
-                explanation: "In-app chat is a component of the CCaaS Platform chat channel enabled through the mobile SDK, allowing customers and agents to communicate through a mobile-based messaging experience from within a company's mobile app."
+                explanation: {
+                    en: "CTI (Computer-Telephony Integration) is technology that provides an interface between telephone networks and computer systems.",
+                    tr: "CTI (Bilgisayar-Telefon Entegrasyonu), telefon ağları ile bilgisayar sistemleri arasında bir arayüz sağlayan teknolojidir."
+                }
             },
             {
-                question: "What is SMS Blending in CCaaS Platform?",
-                options: [
-                    "Mixing SMS with email",
-                    "Blending voice and SMS to gather data while customers wait on hold",
-                    "Combining multiple SMS messages",
-                    "Translating SMS to different languages"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Omnichannel customer experience?",
+                    tr: "Çok Kanallı müşteri deneyimi nedir?"
+                },
+                options: {
+                    en: ["Using only one communication channel", "A personalized experience that seamlessly integrates across multiple channels", "Offering multiple products to customers", "Having multiple contact centers"],
+                    tr: ["Sadece bir iletişim kanalı kullanma", "Birden fazla kanalda sorunsuz bir şekilde entegre olan kişiselleştirilmiş bir deneyim", "Müşterilere birden fazla ürün sunma", "Birden fazla çağrı merkezine sahip olma"]
+                },
                 correct: 1,
-                explanation: "SMS Blending combines voice and SMS channels to make hold times productive by gathering contextual data and setting up the call while customers wait."
+                explanation: {
+                    en: "Omnichannel customer experience is a personalized customer experience where individual interactions seamlessly integrate across channels to create one holistic experience.",
+                    tr: "Çok Kanallı müşteri deneyimi, bireysel etkileşimlerin bir bütünsel deneyim oluşturmak için kanallar arasında sorunsuz bir şekilde entegre olduğu kişiselleştirilmiş bir müşteri deneyimidir."
+                }
             },
             {
-                question: "What is Proactive Triggers in CCaaS Platform?",
-                options: [
-                    "Automatic callback scheduling",
-                    "Smart actions feature determining ideal time to present chat or calling bubble",
-                    "Email notifications",
-                    "Push notifications"
-                ],
+                type: "mcq",
+                question: {
+                    en: "What is Natural Language Processing (NLP)?",
+                    tr: "Doğal Dil İşleme (NLP) nedir?"
+                },
+                options: {
+                    en: ["A way to teach agents new languages", "Technology that turns customer text/speech into actions", "A method for categorizing customer feedback", "A tool for translating international calls"],
+                    tr: ["Müşteri temsilcisilara yeni diller öğretmenin bir yolu", "Müşteri metni/konuşmasını eylemlere dönüştüren teknoloji", "Müşteri geri bildirimini kategorilere ayırmak için bir yöntem", "Uluslararası aramaları çevirmek için bir araç"]
+                },
                 correct: 1,
-                explanation: "Proactive Triggers is a CCaaS Platform smart actions feature that determines the ideal time to proactively present consumers with a chat or calling bubble."
+                explanation: {
+                    en: "Natural Language Processing is a technology that turns the customer's text or speech input into actions, with the goal of leading them closer to the intended resolution.",
+                    tr: "Doğal Dil İşleme, müşteriyi amaçlanan çözüme daha yakın götürme hedefiyle müşterinin metin veya konuşma girdisini eylemlere dönüştüren bir teknolojidir."
+                }
+            },
+            // Additional TF Questions
+            {
+                type: "tf",
+                question: {
+                    en: "Omnichannel allows customers to seamlessly move between communication channels.",
+                    tr: "Çok Kanallı, müşterilerin iletişim kanalları arasında sorunsuz bir şekilde geçiş yapmasına olanak tanır."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. Omnichannel customer service allows interactions between a customer and the company across multiple channels, enabling seamless transitions.",
+                    tr: "Doğru. Çok Kanallı müşteri hizmeti, müşteri ile şirket arasındaki etkileşimlerin birden fazla kanalda gerçekleşmesine olanak tanıyarak sorunsuz geçişler sağlar."
+                }
             },
             {
-                question: "What is Over-capacity Deflection?",
-                options: [
-                    "Blocking all incoming calls",
-                    "Deflecting interactions with automated messages when predefined wait time is exceeded",
-                    "Forwarding calls to competitors",
-                    "Ending calls automatically"
-                ],
-                correct: 1,
-                explanation: "Over-capacity Deflection is a CCaaS Platform feature that deflects interactions using an automated message when a call is placed in a queue and not answered in a predefined amount of time."
+                type: "tf",
+                question: {
+                    en: "ACW stands for After-Call Work time.",
+                    tr: "ACW, Arama Sonrası İş zamanı anlamına gelir."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. ACW (After-Call Work) is the work that an agent does after each call, including logging details and updating records.",
+                    tr: "Doğru. ACW (Arama Sonrası İş), ayrıntıları günlüğe kaydetme ve kayıtları güncelleme dahil olmak üzere bir müşteri temsilcisinin her aramadan sonra yaptığı işlerdir."
+                }
             },
             {
-                question: "What is After-hours Deflection?",
-                options: [
-                    "Ignoring all calls after business hours",
-                    "Using automated messages to deflect calls outside operating hours",
-                    "Forwarding to competitors",
-                    "Automatic email responses"
-                ],
-                correct: 1,
-                explanation: "After-hours Deflection uses an automated message to deflect calls that come in after operating hours. Callers might be directed to voicemail, a separate IVR, or a different office."
+                type: "tf",
+                question: {
+                    en: "Quality Management only focuses on monitoring calls.",
+                    tr: "Kalite Yönetimi sadece aramaları izlemeye odaklanır."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Quality Management encompasses processes and strategies to ensure positive customer experience, including agent scoring, training, and identifying areas for improvement.",
+                    tr: "Yanlış. Kalite Yönetimi, müşteri temsilcisi puanlama, eğitim ve iyileştirme alanlarını belirleme dahil olmak üzere olumlu müşteri deneyimini sağlamak için süreçleri ve stratejileri kapsar."
+                }
             },
             {
-                question: "What is Click-to-dial Outbound in CCaaS Platform?",
-                options: [
-                    "Manual dialing assistance",
-                    "Feature reducing manual dialing errors and increasing agent reach",
-                    "Conference calling",
-                    "Speed dial shortcuts"
-                ],
-                correct: 1,
-                explanation: "Click-to-dial Outbound is a CCaaS Platform feature that reduces effort and errors associated with manual dialing and increases the number of customers an outbound agent can reach in a given time period."
+                type: "tf",
+                question: {
+                    en: "Chatbots can only handle text-based interactions.",
+                    tr: "Chatbotlar yalnızca metin tabanlı etkileşimleri yönetebilir."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Modern chatbots can handle both voice and digital channels, and can perform advanced actions like knowledge base searches and task automation.",
+                    tr: "Yanlış. Modern chatbotlar hem ses hem de dijital kanalları yönetebilir ve bilgi bankası aramaları ve görev otomasyonu gibi gelişmiş eylemleri gerçekleştirebilir."
+                }
             },
             {
-                question: "What is the Voice User Interface in CCaaS Platform?",
-                options: [
-                    "Agent training module",
-                    "Feature supporting inbound PSTN calls and outbound calling via dial pad or click-to-call",
-                    "Voice recording system",
-                    "Speech synthesis tool"
-                ],
-                correct: 1,
-                explanation: "Voice User Interface is a CCaaS Platform feature that supports inbound calls over PSTN as well as outbound calling using the agent dial pad or click-to-call within the CRM."
+                type: "tf",
+                question: {
+                    en: "ACD systems can only distribute calls randomly.",
+                    tr: "ACD sistemleri aramaları yalnızca rastgele dağıtabilir."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. ACD systems offer many distribution schemes including round-robin, least active, skill-based routing, and advanced methods like Multicast and Deltacast routing.",
+                    tr: "Yanlış. ACD sistemleri, sırayla dağıtma, en az aktif, beceri tabanlı yönlendirme ve Multicast ve Deltacast yönlendirme gibi gelişmiş yöntemler dahil olmak üzere birçok dağıtım şeması sunar."
+                }
             },
             {
-                question: "What makes CCaaS Platform a Multichannel Cloud Contact Center?",
-                options: [
-                    "It only supports phone calls",
-                    "It integrates voice, text, social media, and chat on cloud-native software",
-                    "It requires on-premise hardware",
-                    "It only works with email"
-                ],
-                correct: 1,
-                explanation: "CCaaS Platform is a Multichannel Cloud Contact Center that integrates multiple touchpoints - including voice, text, social media, and chat - running on cloud-native software rather than on-premise hardware."
+                type: "tf",
+                question: {
+                    en: "Voice Authentication uses passwords for verification.",
+                    tr: "Ses Kimlik Doğrulama, doğrulama için şifre kullanır."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Voice Authentication is a biometric verification tool that identifies callers based on their unique voice characteristics (voiceprint), not passwords.",
+                    tr: "Yanlış. Ses Kimlik Doğrulama, şifre değil, arayanları benzersiz ses özelliklerine (ses izi) göre tanımlayan biyometrik bir doğrulama aracıdır."
+                }
             },
             {
-                question: "What is Scheduled Callbacks feature?",
-                options: [
-                    "Agent break scheduling",
-                    "AI technology allowing callers to determine ideal callback time without waiting on hold",
-                    "Automatic redialing",
-                    "Meeting scheduler"
-                ],
-                correct: 1,
-                explanation: "Scheduled Callbacks is an AI technology that allows callers to determine the ideal time for an agent to call them back without waiting on hold, improving customer experience."
+                type: "tf",
+                question: {
+                    en: "Customer Lifetime Value only considers the first purchase.",
+                    tr: "Müşteri Yaşam Boyu Değeri yalnızca ilk satın almayı dikkate alır."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Customer Lifetime Value (CLV) is the estimated total value to the business over the entire lifespan of the customer account.",
+                    tr: "Yanlış. Müşteri Yaşam Boyu Değeri (CLV), müşteri hesabının tüm ömrü boyunca işletmeye olan tahmini toplam değerdir."
+                }
             },
             {
-                question: "What is Automatic Callback?",
-                options: [
-                    "System that calls customers back automatically every day",
-                    "Feature allowing callers to avoid long hold times by choosing a callback time",
-                    "Emergency contact system",
-                    "Voicemail notification"
-                ],
-                correct: 1,
-                explanation: "Automatic Callback is a feature that allows callers to avoid waiting on hold for long periods of time. Instead, they can choose a later time to receive a call back from a customer service agent."
+                type: "tf",
+                question: {
+                    en: "Real-time Adherence helps supervisors identify schedule compliance.",
+                    tr: "Gerçek Zamanlı Uyum, süpervizörlerin program uyumunu belirlemelerine yardımcı olur."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. Real-time Adherence (RTA) is a workforce management metric that helps supervisors identify agents not adhering to their set schedule.",
+                    tr: "Doğru. Gerçek Zamanlı Uyum (RTA), süpervizörlerin belirlenen programlarına uymayan müşteri temsilcilerini belirlemelerine yardımcı olan bir işgücü yönetimi metriğidir."
+                }
             },
             {
-                question: "What is the Web SDK in CCaaS Platform?",
-                options: [
-                    "Website design tool",
-                    "Software development kit for deploying CX widgets on web",
-                    "Web hosting service",
-                    "Browser extension"
-                ],
-                correct: 1,
-                explanation: "The Web SDK (Software Development Kit) is a set of tools provided by CCaaS Platform to proactively engage customers at the right time, using web page views and CRM data to route visitors to the right team."
+                type: "tf",
+                question: {
+                    en: "IVR systems can only accept numeric keypad input.",
+                    tr: "IVR sistemleri yalnızca sayısal tuş takımı girdisini kabul edebilir."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Modern IVR systems can accept voice commands, natural language input, and some even offer visual Touch IVR interfaces.",
+                    tr: "Yanlış. Modern IVR sistemleri sesli komutları, doğal dil girdisini kabul edebilir ve hatta bazıları görsel Dokunmatik IVR arayüzleri sunar."
+                }
             },
             {
-                question: "What is Outbound IVR?",
-                options: [
-                    "Receiving incoming calls through IVR",
-                    "IVR technology for sending proactive and personalized outbound messages",
-                    "Internal company announcements",
-                    "Agent performance monitoring"
-                ],
-                correct: 1,
-                explanation: "Outbound IVR is technology that contact centers can use to send proactive and personalized outbound messages to contacts, enabling automated outreach campaigns."
+                type: "tf",
+                question: {
+                    en: "Agent Assist can provide real-time sentiment analysis.",
+                    tr: "Agent Assist gerçek zamanlı duygu analizi sağlayabilir."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. Agent Assist technology augments human conversations with AI-driven recommendations and real-time sentiment analysis.",
+                    tr: "Doğru. Agent Assist teknolojisi, AI destekli öneriler ve gerçek zamanlı duygu analizi ile insan konuşmalarını güçlendirir."
+                }
             },
             {
-                question: "What characterizes an Agentic CX approach?",
-                options: [
-                    "Removing all human agents",
-                    "AI agents working autonomously to handle customer interactions intelligently",
-                    "Only using chatbots",
-                    "Manual processing of all requests"
-                ],
-                correct: 1,
-                explanation: "Agentic CX involves AI-powered agents (Virtual Agents, Agent Assist) that can work autonomously or semi-autonomously to handle customer interactions intelligently, making decisions and taking actions to improve customer experience."
+                type: "tf",
+                question: {
+                    en: "Cold transfer allows the original agent to brief the receiving agent.",
+                    tr: "Soğuk transfer, orijinal müşteri temsilcisinin alıcı müşteri temsilcisini bilgilendirmesine izin verir."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Cold transfer completes the transfer without the original agent speaking to the receiving agent. Warm transfer includes briefing.",
+                    tr: "Yanlış. Soğuk transfer, orijinal müşteri temsilcisinin alıcı müşteri temsilcisila konuşmadan transferi tamamlar. Sıcak transfer bilgilendirme içerir."
+                }
             },
             {
-                question: "What role does Agent Assist play in Agentic CX?",
-                options: [
-                    "Replaces human agents entirely",
-                    "Augments human agents with AI-driven recommendations and real-time analysis",
-                    "Only records calls",
-                    "Manages agent schedules"
-                ],
+                type: "tf",
+                question: {
+                    en: "Workforce Management includes scheduling and forecasting.",
+                    tr: "İşgücü Yönetimi, planlama ve tahmin içerir."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. Workforce Management (WFM) involves managing and monitoring agents, including training, scheduling, and forecasting staffing needs.",
+                    tr: "Doğru. İşgücü Yönetimi (WFM), eğitim, planlama ve personel ihtiyaçlarını tahmin etme dahil olmak üzere müşteri temsilcilerini yönetme ve izlemeyi içerir."
+                }
+            },
+            {
+                type: "tf",
+                question: {
+                    en: "NPS scores range from 0 to 100.",
+                    tr: "NPS skorları 0'dan 100'e kadar değişir."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. NPS (Net Promoter Score) measures customer likelihood to recommend on a scale of 1-10, though the final NPS can range from -100 to +100.",
+                    tr: "Yanlış. NPS (Net Promoter Score), müşterinin tavsiye etme olasılığını 1-10 ölçeğinde ölçer, ancak nihai NPS -100 ile +100 arasında değişebilir."
+                }
+            },
+            {
+                type: "tf",
+                question: {
+                    en: "Screen Share can only be used for viewing, not control.",
+                    tr: "Ekran Paylaşımı yalnızca görüntüleme için kullanılabilir, kontrol için değil."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Screen Share technology allows agents and customers to navigate the same browser together, enabling collaborative interaction.",
+                    tr: "Yanlış. Ekran Paylaşımı teknolojisi, müşteri temsilcilerinin ve müşterilerin aynı tarayıcıda birlikte gezinmelerine olanak tanıyarak işbirlikçi etkileşim sağlar."
+                }
+            },
+            {
+                type: "tf",
+                question: {
+                    en: "Predictive Dialers should be used with caution due to regulations.",
+                    tr: "Tahmine Dayalı Çeviriciler düzenlemeler nedeniyle dikkatli kullanılmalıdır."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. Predictive dialers should be used judiciously as their use is often regulated by law and many consumers may be wary of them.",
+                    tr: "Doğru. Tahmine Dayalı çeviriciler dikkatli kullanılmalıdır çünkü kullanımları genellikle yasalarla düzenlenir ve birçok tüketici onlardan çekinebilir."
+                }
+            },
+            {
+                type: "tf",
+                question: {
+                    en: "CTI only works with traditional phone systems.",
+                    tr: "CTI yalnızca geleneksel telefon sistemleri ile çalışır."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. CTI (Computer-Telephony Integration) can work with both traditional PSTN networks and modern IP-based systems.",
+                    tr: "Yanlış. CTI (Bilgisayar-Telefon Entegrasyonu) hem geleneksel PSTN ağları hem de modern IP tabanlı sistemler ile çalışabilir."
+                }
+            },
+            {
+                type: "tf",
+                question: {
+                    en: "CSAT surveys are typically sent after customer interactions.",
+                    tr: "CSAT anketleri genellikle müşteri etkileşimlerinden sonra gönderilir."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. CSAT (Customer Satisfaction) is typically measured through surveys sent after interactions to gauge how well service expectations were met.",
+                    tr: "Doğru. CSAT (Müşteri Memnuniyeti) genellikle hizmet beklentilerinin ne kadar iyi karşılandığını ölçmek için etkileşimlerden sonra gönderilen anketlerle ölçülür."
+                }
+            },
+            {
+                type: "tf",
+                question: {
+                    en: "ASR technology enables voice-based IVR systems.",
+                    tr: "ASR teknolojisi ses tabanlı IVR sistemlerini mümkün kılar."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. ASR (Automatic Speech Recognition) technology allows IVR systems to recognize and respond to spoken commands.",
+                    tr: "Doğru. ASR (Otomatik Konuşma Tanıma) teknolojisi, IVR sistemlerinin sözlü komutları tanımasına ve yanıt vermesine olanak tanır."
+                }
+            },
+            {
+                type: "tf",
+                question: {
+                    en: "Agent Occupancy measures physical space usage.",
+                    tr: "Müşteri temsilcisi Doluluk Oranı fiziksel alan kullanımını ölçer."
+                },
+                correct: false,
+                explanation: {
+                    en: "False. Agent Occupancy is a workforce management metric measuring the percentage of time agents actively handle customer calls, not physical space.",
+                    tr: "Yanlış. Müşteri temsilcisi Doluluk Oranı, fiziksel alan değil, müşteri temsilcilerinin aktif olarak müşteri çağrılarını işlediği zaman yüzdesini ölçen bir işgücü yönetimi metriğidir."
+                }
+            },
+            {
+                type: "tf",
+                question: {
+                    en: "Natural Language Processing can determine customer intent.",
+                    tr: "Doğal Dil İşleme müşteri niyetini belirleyebilir."
+                },
+                correct: true,
+                explanation: {
+                    en: "True. NLP technology turns customer text or speech into actions by analyzing and understanding the intent behind the communication.",
+                    tr: "Doğru. NLP teknolojisi, iletişimin arkasındaki niyeti analiz ederek ve anlayarak müşteri metni veya konuşmasını eylemlere dönüştürür."
+                }
+            },
+            // Additional Fill Questions
+            {
+                type: "fill",
+                question: {
+                    en: "_____ analytics reviews and assesses transcripts and voice recordings to apply meaningful scoring.",
+                    tr: "_____ analitik, transkriptleri ve ses kayıtlarını inceleyip anlamlı puanlama uygular."
+                },
+                options: {
+                    en: ["Customer interaction", "Sales", "Marketing", "Network"],
+                    tr: ["Müşteri etkileşimi", "Satış", "Pazarlama", "Ağ"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Customer interaction analytics software reviews and assesses transcripts and voice recordings from channels like voice, email, and chat.",
+                    tr: "Müşteri etkileşimi analitik yazılımı, ses, e-posta ve sohbet gibi kanallardan gelen transkriptleri ve ses kayıtlarını inceler ve değerlendirir."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "The _____ dialer automatically calls customer phone numbers for outbound mass communication.",
+                    tr: "_____ çevirici, giden toplu iletişim için müşteri telefon numaralarını otomatik olarak arar."
+                },
+                options: {
+                    en: ["auto", "manual", "emergency", "random"],
+                    tr: ["otomatik", "manuel", "acil", "rastgele"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "An auto dialer is a software system that automatically calls customer telephone numbers to deliver automated messages.",
+                    tr: "Otomatik çevirici, otomatik mesajlar iletmek için müşteri telefon numaralarını otomatik olarak arayan bir yazılım sistemidir."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ mode allows customers to choose between light or dark interface themes.",
+                    tr: "_____ modu, müşterilerin açık veya koyu arayüz temaları arasında seçim yapmasına olanak tanır."
+                },
+                options: {
+                    en: ["Theme", "Color", "Display", "Screen"],
+                    tr: ["Tema", "Renk", "Ekran", "Görüntü"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Theme mode (dark/light mode) allows users to switch between different visual themes for better user experience and accessibility.",
+                    tr: "Tema modu (koyu/açık mod), kullanıcıların daha iyi kullanıcı deneyimi ve erişilebilirlik için farklı görsel temalar arasında geçiş yapmasına olanak tanır."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ callback allows callers to avoid waiting on hold by choosing a time for the agent to call back.",
+                    tr: "_____ geri arama, arayanların müşteri temsilcisinin geri arama yapması için bir zaman seçerek beklemekten kaçınmasını sağlar."
+                },
+                options: {
+                    en: ["Scheduled", "Emergency", "Random", "Priority"],
+                    tr: ["Planlanmış", "Acil", "Rastgele", "Öncelikli"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Scheduled Callbacks is an AI technology that allows callers to determine the ideal time for an agent to call them back without waiting on hold.",
+                    tr: "Planlanmış Geri Aramalar, arayanların beklemeden bir müşteri temsilcisinin kendilerini geri araması için ideal zamanı belirlemelerine olanak tanıyan bir AI teknolojisidir."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ transfer involves the original agent greeting and briefing the receiving agent before completing the transfer.",
+                    tr: "_____ transfer, orijinal müşteri temsilcisinin transferi tamamlamadan önce alıcı müşteri temsilcisini selamlamasını ve bilgilendirmesini içerir."
+                },
+                options: {
+                    en: ["Warm", "Cold", "Hot", "Quick"],
+                    tr: ["Sıcak", "Soğuk", "Sıcak", "Hızlı"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "A warm transfer is a method where the original agent greets the receiving agent and provides context before completing the transfer.",
+                    tr: "Sıcak transfer, orijinal müşteri temsilcisinin alıcı müşteri temsilcisini selamladığı ve transferi tamamlamadan önce bağlam sağladığı bir yöntemdir."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ feedback helps customers understand how they can improve their experience with the company.",
+                    tr: "_____ geri bildirimi, müşterilerin şirketle deneyimlerini nasıl geliştirebileceklerini anlamalarına yardımcı olur."
+                },
+                options: {
+                    en: ["Customer", "Agent", "System", "Network"],
+                    tr: ["Müşteri", "Müşteri temsilcisi", "Sistem", "Ağ"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Customer feedback is information that consumers give to a company about their products or services, helping companies improve.",
+                    tr: "Müşteri geri bildirimi, tüketicilerin ürün veya hizmetleri hakkında bir şirkete verdiği ve şirketlerin gelişmesine yardımcı olan bilgidir."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ intelligence involves collecting and analyzing information about customers to improve interactions.",
+                    tr: "_____ zekası, etkileşimleri iyileştirmek için müşteriler hakkında bilgi toplamayı ve analiz etmeyi içerir."
+                },
+                options: {
+                    en: ["Customer", "Artificial", "Business", "Market"],
+                    tr: ["Müşteri", "Yapay", "İş", "Pazar"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Customer intelligence is the process of collecting and analyzing information about a business's customers to improve customer experience.",
+                    tr: "Müşteri zekası, müşteri deneyimini iyileştirmek için bir işletmenin müşterileri hakkında bilgi toplama ve analiz etme sürecidir."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ optimization streamlines back-office workforce functions to align with front-office services.",
+                    tr: "_____ optimizasyonu, arka ofis işgücü fonksiyonlarını ön ofis hizmetleriyle uyumlu hale getirmek için kolaylaştırır."
+                },
+                options: {
+                    en: ["Back-office", "Front-office", "Call-center", "System"],
+                    tr: ["Arka ofis", "Ön ofis", "Çağrı merkezi", "Sistem"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Back-office optimization involves streamlining and aligning back-office workforce functions to be consistent with front-office services.",
+                    tr: "Arka ofis optimizasyonu, arka ofis işgücü fonksiyonlarının ön ofis hizmetleriyle tutarlı olacak şekilde kolaylaştırılmasını ve uyumlu hale getirilmesini içerir."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ engagement measures how invested employees are in their work of supporting customers.",
+                    tr: "_____ bağlılığı, çalışanların müşterileri destekleme işlerine ne kadar yatırım yaptıklarını ölçer."
+                },
+                options: {
+                    en: ["Employee", "Customer", "Manager", "System"],
+                    tr: ["Çalışan", "Müşteri", "Yönetici", "Sistem"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Employee engagement measures how invested employees are in their work, affecting retention, performance, customer experience, and business success.",
+                    tr: "Çalışan bağlılığı, çalışanların işlerine ne kadar yatırım yaptıklarını ölçer ve elde tutma, performans, müşteri deneyimi ve iş başarısını etkiler."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ forecasting predicts the number of agents needed to handle estimated workload.",
+                    tr: "_____ tahmini, tahmini iş yükünü yönetmek için gereken müşteri temsilcisi sayısını tahmin eder."
+                },
+                options: {
+                    en: ["Workforce", "Revenue", "Sales", "Network"],
+                    tr: ["İşgücü", "Gelir", "Satış", "Ağ"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Workforce forecasting is a workforce management application used to predict the number of agents needed to handle an estimated workload.",
+                    tr: "İşgücü tahmini, tahmini iş yükünü yönetmek için gereken müşteri temsilcisi sayısını tahmin etmek için kullanılan bir işgücü yönetimi uygulamasıdır."
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    en: "_____ management involves strategies to increase agent engagement in a contact center.",
+                    tr: "_____ yönetimi, bir çağrı merkezinde müşteri temsilcisi bağlılığını artırmak için stratejiler içerir."
+                },
+                options: {
+                    en: ["Workforce engagement", "Call center", "Customer service", "Quality"],
+                    tr: ["İşgücü bağlılığı", "Çağrı merkezi", "Müşteri hizmeti", "Kalite"]
+                },
+                correct: 0,
+                explanation: {
+                    en: "Workforce Engagement Management (WEM) is a strategy to increase agent engagement in a contact center through various methods.",
+                    tr: "İşgücü Bağlılık Yönetimi (WEM), çeşitli yöntemlerle bir çağrı merkezinde müşteri temsilcisi bağlılığını artırmak için bir stratejidir."
+                }
+            },
+            // Additional Matching Questions
+            {
+                type: "matching",
+                question: {
+                    en: "Match the metrics with what they measure:",
+                    tr: "Metrikleri ölçtükleri şeylerle eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["CSAT", "CLV", "AHT", "RTA"],
+                        right: ["Schedule adherence", "Customer satisfaction", "Call duration", "Customer value"]
+                    },
+                    tr: {
+                        left: ["CSAT", "CLV", "AHT", "RTA"],
+                        right: ["Program uyumu", "Müşteri memnuniyeti", "Arama süresi", "Müşteri değeri"]
+                    }
+                },
+                correctPairs: [[0, 1], [1, 3], [2, 2], [3, 0]],
+                explanation: {
+                    en: "CSAT = Customer Satisfaction, CLV = Customer Lifetime Value, AHT = Average Handling Time, RTA = Real-time Adherence",
+                    tr: "CSAT = Müşteri Memnuniyeti, CLV = Müşteri Yaşam Boyu Değeri, AHT = Ortalama İşleme Süresi, RTA = Gerçek Zamanlı Uyum"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match the technologies with their functions:",
+                    tr: "Teknolojileri fonksiyonlarıyla eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["ASR", "CTI", "NLP", "CRM"],
+                        right: ["Customer database", "Computer-phone integration", "Speech recognition", "Text understanding"]
+                    },
+                    tr: {
+                        left: ["ASR", "CTI", "NLP", "CRM"],
+                        right: ["Müşteri veritabanı", "Bilgisayar-telefon entegrasyonu", "Konuşma tanıma", "Metin anlama"]
+                    }
+                },
+                correctPairs: [[0, 2], [1, 1], [2, 3], [3, 0]],
+                explanation: {
+                    en: "ASR = Automatic Speech Recognition, CTI = Computer-Telephony Integration, NLP = Natural Language Processing, CRM = Customer Relationship Management",
+                    tr: "ASR = Otomatik Konuşma Tanıma, CTI = Bilgisayar-Telefon Entegrasyonu, NLP = Doğal Dil İşleme, CRM = Müşteri İlişkileri Yönetimi"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match the agent activities with their categories:",
+                    tr: "Müşteri temsilcisi faaliyetlerini kategorileriyle eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["ACW", "Escalation", "Warm Transfer", "Cold Transfer"],
+                        right: ["Transfer without briefing", "After-call tasks", "Supervisor handoff", "Transfer with briefing"]
+                    },
+                    tr: {
+                        left: ["ACW", "Eskalasyon", "Sıcak Transfer", "Soğuk Transfer"],
+                        right: ["Bilgilendirmesiz transfer", "Arama sonrası görevler", "Süpervizöre devretme", "Bilgilendirmeli transfer"]
+                    }
+                },
+                correctPairs: [[0, 1], [1, 2], [2, 3], [3, 0]],
+                explanation: {
+                    en: "ACW = After-call work, Escalation = Transferring to supervisor, Warm Transfer = With briefing, Cold Transfer = Without briefing",
+                    tr: "ACW = Arama sonrası iş, Eskalasyon = Süpervizöre aktarma, Sıcak Transfer = Bilgilendirmeli, Soğuk Transfer = Bilgilendirmesiz"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match CCaaS versions with their key features:",
+                    tr: "CCaaS sürümlerini temel özellikleriyle eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["CCaaS 1.0", "CCaaS 2.0", "CCaaS 3.0", "On-Premise"],
+                        right: ["Predictive & conversational CX", "Cloud-based platform", "Integrated omnichannel", "Traditional hardware"]
+                    },
+                    tr: {
+                        left: ["CCaaS 1.0", "CCaaS 2.0", "CCaaS 3.0", "Yerinde Kurulum"],
+                        right: ["Tahmine dayalı & konuşmaya dayalı CX", "Bulut tabanlı platform", "Entegre çok kanallı", "Geleneksel donanım"]
+                    }
+                },
+                correctPairs: [[0, 1], [1, 2], [2, 0], [3, 3]],
+                explanation: {
+                    en: "CCaaS evolved from cloud platforms (1.0) to integrated omnichannel (2.0) to predictive conversational CX (3.0)",
+                    tr: "CCaaS, bulut platformlardan (1.0) entegre çok kanallıya (2.0) ve tahmine dayalı konuşma CX'ine (3.0) evrildi"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match the routing types with their descriptions:",
+                    tr: "Yönlendirme tiplerini açıklamalarıyla eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["Contextual", "Multicast", "Deltacast", "Round-robin"],
+                        right: ["Sequential distribution", "Chat concurrency focus", "CRM-based routing", "All agents simultaneously"]
+                    },
+                    tr: {
+                        left: ["Bağlamsal", "Multicast", "Deltacast", "Sıralı-dağıtım"],
+                        right: ["Sıralı dağıtım", "Sohbet eşzamanlılığı odağı", "CRM tabanlı yönlendirme", "Tüm müşteri temsilcileria aynı anda"]
+                    }
+                },
+                correctPairs: [[0, 2], [1, 3], [2, 1], [3, 0]],
+                explanation: {
+                    en: "Different routing strategies optimize for various contact center needs and channel types",
+                    tr: "Farklı yönlendirme stratejileri, çeşitli çağrı merkezi ihtiyaçları ve kanal tipleri için optimize eder"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match the contact center roles with their responsibilities:",
+                    tr: "Çağrı merkezi rollerini sorumluluklarıyla eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["Agent", "Supervisor", "WFM Analyst", "QM Specialist"],
+                        right: ["Quality evaluation", "Handle customer calls", "Team leadership", "Scheduling & forecasting"]
+                    },
+                    tr: {
+                        left: ["Müşteri temsilcisi", "Süpervizör", "WFM Analisti", "QM Uzmanı"],
+                        right: ["Kalite değerlendirmesi", "Müşteri aramalarını yönetme", "Ekip liderliği", "Planlama & tahmin"]
+                    }
+                },
+                correctPairs: [[0, 1], [1, 2], [2, 3], [3, 0]],
+                explanation: {
+                    en: "Each role in a contact center has specific responsibilities that contribute to overall customer experience",
+                    tr: "Çağrı merkezindeki her rolün genel müşteri deneyimine katkıda bulunan belirli sorumlulukları vardır"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match the communication channels with their characteristics:",
+                    tr: "İletişim kanallarını özellikleriyle eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["Voice", "Chat", "Email", "SMS"],
+                        right: ["Text messaging", "Real-time text", "Asynchronous written", "Synchronous audio"]
+                    },
+                    tr: {
+                        left: ["Ses", "Sohbet", "E-posta", "SMS"],
+                        right: ["Kısa mesaj", "Gerçek zamanlı metin", "Asenkron yazılı", "Senkron ses"]
+                    }
+                },
+                correctPairs: [[0, 3], [1, 1], [2, 2], [3, 0]],
+                explanation: {
+                    en: "Different communication channels serve different customer needs and interaction styles",
+                    tr: "Farklı iletişim kanalları, farklı müşteri ihtiyaçlarına ve etkileşim stillerine hizmet eder"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match the automation tools with their uses:",
+                    tr: "Otomasyon araçlarını kullanımlarıyla eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["Chatbot", "Auto Dialer", "Virtual Agent", "IVR"],
+                        right: ["Menu navigation", "AI self-service", "Outbound calling", "Chat automation"]
+                    },
+                    tr: {
+                        left: ["Chatbot", "Otomatik Çevirici", "Sanal Müşteri temsilcisi", "IVR"],
+                        right: ["Menü gezintisi", "AI self servis", "Giden arama", "Sohbet otomasyonu"]
+                    }
+                },
+                correctPairs: [[0, 3], [1, 2], [2, 1], [3, 0]],
+                explanation: {
+                    en: "Automation tools help contact centers handle more interactions efficiently while improving customer experience",
+                    tr: "Otomasyon araçları, çağrı merkezlerinin müşteri deneyimini iyileştirirken daha fazla etkileşimi verimli bir şekilde yönetmesine yardımcı olur"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match the customer experience terms with their focus:",
+                    tr: "Müşteri deneyimi terimlerini odaklarıyla eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["CX", "VoC", "Customer Journey", "Touchpoint"],
+                        right: ["Individual interaction", "Overall experience", "Customer feedback", "Complete lifecycle"]
+                    },
+                    tr: {
+                        left: ["CX", "VoC", "Müşteri Yolculuğu", "Temas Noktası"],
+                        right: ["Bireysel etkileşim", "Genel deneyim", "Müşteri geri bildirimi", "Tam yaşam döngüsü"]
+                    }
+                },
+                correctPairs: [[0, 1], [1, 2], [2, 3], [3, 0]],
+                explanation: {
+                    en: "Understanding different CX terms helps create comprehensive customer experience strategies",
+                    tr: "Farklı CX terimlerini anlamak, kapsamlı müşteri deneyimi stratejileri oluşturmaya yardımcı olur"
+                }
+            },
+            {
+                type: "matching",
+                question: {
+                    en: "Match the workforce management tools with their purposes:",
+                    tr: "İşgücü yönetimi araçlarını amaçlarıyla eşleştirin:"
+                },
+                pairs: {
+                    en: {
+                        left: ["RTA", "Scheduling", "Forecasting", "Shrinkage"],
+                        right: ["Non-productive time", "Real-time compliance", "Future planning", "Shift assignment"]
+                    },
+                    tr: {
+                        left: ["RTA", "Planlama", "Tahmin", "Küçülme"],
+                        right: ["Üretken olmayan zaman", "Gerçek zamanlı uyum", "Gelecek planlama", "Vardiya ataması"]
+                    }
+                },
+                correctPairs: [[0, 1], [1, 3], [2, 2], [3, 0]],
+                explanation: {
+                    en: "WFM tools help optimize agent utilization and ensure adequate staffing levels",
+                    tr: "WFM araçları, müşteri temsilcisi kullanımını optimize etmeye ve yeterli personel seviyelerini sağlamaya yardımcı olur"
+                }
+            },
+            {
+                type: "mcq",
+                question: {
+                    en: "What is Multicast Routing in CCaaS Platform?",
+                    tr: "CCaaS Platform'da Multicast Yönlendirme nedir?"
+                },
+                options: {
+                    en: ["Routing to multiple contact centers", "Offering sessions to all queue agents simultaneously", "Broadcasting messages to all customers", "Sending emails to multiple recipients"],
+                    tr: ["Birden fazla çağrı merkezine yönlendirme", "Tüm kuyruk müşteri temsilcilerinina aynı anda oturum sunma", "Tüm müşterilere mesaj yayınlama", "Birden fazla alıcıya e-posta gönderme"]
+                },
                 correct: 1,
-                explanation: "In Agentic CX, Agent Assist augments human conversations with AI, providing real-time recommendations, sentiment analysis, and surfacing relevant knowledge base content to help agents deliver better customer experiences."
+                explanation: {
+                    en: "Multicast Routing is a CCaaS Platform feature that offers sessions to all agents assigned to the queue when an interaction comes in, with the quickest to respond receiving the interaction.",
+                    tr: "Multicast Yönlendirme, bir etkileşim geldiğinde kuyruğa atanan tüm müşteri temsilcileria oturum sunan, en hızlı yanıt verenin etkileşimi aldığı bir CCaaS Platform özelliğidir."
+                }
+            },
+            {
+                type: "mcq",
+                question: {
+                    en: "What is Deltacast Routing optimized for?",
+                    tr: "Deltacast Yönlendirme neye optimize edilmiştir?"
+                },
+                options: {
+                    en: ["Voice call distribution", "Chat concurrency and equal workload distribution", "Email routing", "Social media management"],
+                    tr: ["Ses araması dağıtımı", "Sohbet eşzamanlılığı ve eşit iş yükü dağıtımı", "E-posta yönlendirme", "Sosyal medya yönetimi"]
+                },
+                correct: 1,
+                explanation: {
+                    en: "Deltacast routing logic from CCaaS Platform focuses on optimizing for chat concurrency and distributing workloads equally between agents.",
+                    tr: "CCaaS Platform'dan Deltacast yönlendirme mantığı, sohbet eşzamanlılığını optimize etmeye ve iş yüklerini müşteri temsilcileri arasında eşit olarak dağıtmaya odaklanır."
+                }
+            },
+            {
+                type: "mcq",
+                question: {
+                    en: "What is Contextual Routing in CCaaS Platform?",
+                    tr: "CCaaS Platform'da Bağlamsal Yönlendirme nedir?"
+                },
+                options: {
+                    en: ["Routing based on time of day", "Leveraging CRM data to prioritize routing decisions and determine customer intent", "Routing calls to the nearest agent", "Random routing distribution"],
+                    tr: ["Günün saatine göre yönlendirme", "Yönlendirme kararlarına öncelik vermek ve müşteri niyetini belirlemek için CRM verilerini kullanma", "Aramaları en yakın müşteri temsilcisine yönlendirme", "Rastgele yönlendirme dağıtımı"]
+                },
+                correct: 1,
+                explanation: {
+                    en: "Contextual Routing leverages data from your CRM to prioritize routing decisions and help determine customer intent. The goal is to route more efficiently and accurately and thus drive customer experience.",
+                    tr: "Bağlamsal Yönlendirme, yönlendirme kararlarına öncelik vermek ve müşteri niyetini belirlemeye yardımcı olmak için CRM'inizden verileri kullanır. Amaç, daha verimli ve doğru bir şekilde yönlendirme yaparak müşteri deneyimini artırmaktır."
+                }
+            },
+            {
+                type: "mcq",
+                question: {
+                    en: "What are Smart Actions in CCaaS Platform?",
+                    tr: "CCaaS Platform'da Akıllı Eylemler nedir?"
+                },
+                options: {
+                    en: ["Automated email responses", "Technology allowing agents to communicate visually and contextually with callers", "AI-powered call scheduling", "Performance tracking tools"],
+                    tr: ["Otomatik e-posta yanıtları", "Müşteri temsilcisiların arayan kişilerle görsel ve bağlamsal olarak iletişim kurmasına olanak tanıyan teknoloji", "AI destekli arama planlaması", "Performans izleme araçları"]
+                },
+                correct: 1,
+                explanation: {
+                    en: "Smart Actions is a CCaaS Platform technology that allows agents to communicate visually and contextually with callers, helping resolve calls faster through fingerprint/facial recognition, image/video sharing, text inputs, and secure payments.",
+                    tr: "Akıllı Eylemler, müşteri temsilcilerinin parmak izi/yüz tanıma, görüntü/video paylaşımı, metin girişleri ve güvenli ödemeler aracılığıyla aramaları daha hızlı çözmeye yardımcı olan, arayanlarla görsel ve bağlamsal olarak iletişim kurmasına olanak tanıyan bir CCaaS Platform teknolojisidir."
+                }
             }
         ];
-
+        
         // Game State
         let currentQuestionIndex = 0;
         let score = 0;
@@ -1068,6 +2037,8 @@
         let incorrectAnswers = 0;
         let selectedQuestions = [];
         let answerSelected = false;
+        let answeredQuestionIds = [];
+        let matchingSelections = [];
         let gameStats = {
             gamesPlayed: 0,
             highScore: 0,
@@ -1078,7 +2049,15 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             loadGameStats();
+            loadAnsweredQuestions();
             updateHighScore();
+            updateLanguage();
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeBtn').textContent = '☀️';
+            }
         });
 
         function loadGameStats() {
@@ -1092,106 +2071,403 @@
             localStorage.setItem('ccaasGlossaryStats', JSON.stringify(gameStats));
         }
 
+        function loadAnsweredQuestions() {
+            const saved = localStorage.getItem('ccaasAnsweredQuestions');
+            if (saved) {
+                answeredQuestionIds = JSON.parse(saved);
+            }
+        }
+
+        function saveAnsweredQuestion(questionIndex) {
+            if (!answeredQuestionIds.includes(questionIndex)) {
+                answeredQuestionIds.push(questionIndex);
+                localStorage.setItem('ccaasAnsweredQuestions', JSON.stringify(answeredQuestionIds));
+            }
+        }
+
         function updateHighScore() {
             document.getElementById('highScoreValue').textContent = gameStats.highScore;
         }
 
         function startGame() {
-            // Reset game state
             currentQuestionIndex = 0;
             score = 0;
             correctAnswers = 0;
             incorrectAnswers = 0;
             answerSelected = false;
+            matchingSelections = [];
 
-            // Select 20 random questions
-            selectedQuestions = shuffleArray([...quizData]).slice(0, 20);
+            // Disable language switcher during quiz
+            document.getElementById('langBtn').classList.add('disabled');
 
-            // Update UI
+            // Filter out already answered questions
+            const unansweredQuestions = quizData.map((q, idx) => ({q, idx}))
+                .filter(item => !answeredQuestionIds.includes(item.idx));
+
+            // If we don't have enough unanswered questions, reset the pool
+            if (unansweredQuestions.length < 20) {
+                answeredQuestionIds = [];
+                localStorage.setItem('ccaasAnsweredQuestions', JSON.stringify(answeredQuestionIds));
+            }
+
+            const availableQuestions = unansweredQuestions.length >= 20 ? 
+                unansweredQuestions : quizData.map((q, idx) => ({q, idx}));
+
+            // Select 5 of each type
+            const mcqQuestions = availableQuestions.filter(item => item.q.type === 'mcq');
+            const tfQuestions = availableQuestions.filter(item => item.q.type === 'tf');
+            const fillQuestions = availableQuestions.filter(item => item.q.type === 'fill');
+            const matchingQuestions = availableQuestions.filter(item => item.q.type === 'matching');
+
+            const selected = [
+                ...shuffleArray(mcqQuestions).slice(0, 5),
+                ...shuffleArray(tfQuestions).slice(0, 5),
+                ...shuffleArray(fillQuestions).slice(0, 5),
+                ...shuffleArray(matchingQuestions).slice(0, 5)
+            ];
+
+            selectedQuestions = shuffleArray(selected);
+
             document.getElementById('welcomeScreen').classList.add('hidden');
             document.getElementById('resultsScreen').classList.add('hidden');
             document.getElementById('quizScreen').classList.remove('hidden');
 
             document.getElementById('totalQuestions').textContent = selectedQuestions.length;
-
-            // Load first question
             loadQuestion();
         }
 
         function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-            return array;
+            return shuffled;
         }
 
         function loadQuestion() {
-            const question = selectedQuestions[currentQuestionIndex];
+            const questionData = selectedQuestions[currentQuestionIndex];
+            const question = questionData.q;
             answerSelected = false;
+            matchingSelections = [];
 
-            // Update stats
             document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
             document.getElementById('score').textContent = score;
             document.getElementById('correctCount').textContent = correctAnswers;
 
-            // Update progress bar
             const progress = ((currentQuestionIndex) / selectedQuestions.length) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
 
-            // Display question
-            document.getElementById('questionText').textContent = question.question;
+            const t = translations[currentLang];
+            const typeBadge = document.getElementById('questionTypeBadge');
+            
+            if (question.type === 'mcq') {
+                typeBadge.textContent = t.multipleChoice;
+                loadMultipleChoiceQuestion(question);
+            } else if (question.type === 'tf') {
+                typeBadge.textContent = t.trueFalse;
+                loadTrueFalseQuestion(question);
+            } else if (question.type === 'fill') {
+                typeBadge.textContent = t.fillBlank;
+                loadFillBlankQuestion(question);
+            } else if (question.type === 'matching') {
+                typeBadge.textContent = t.matching;
+                loadMatchingQuestion(question);
+            }
 
-            // Display options
-            const optionsContainer = document.getElementById('optionsContainer');
-            optionsContainer.innerHTML = '';
-
-            question.options.forEach((option, index) => {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'option';
-                optionDiv.textContent = option;
-                optionDiv.onclick = () => selectOption(index);
-                optionsContainer.appendChild(optionDiv);
-            });
-
-            // Hide explanation and disable next button
             document.getElementById('explanation').classList.add('hidden');
             document.getElementById('nextBtn').disabled = true;
         }
 
-        function selectOption(selectedIndex) {
+        function loadMultipleChoiceQuestion(question) {
+            document.getElementById('questionText').textContent = question.question[currentLang];
+            
+            const container = document.getElementById('answerContainer');
+            container.innerHTML = '<div class="options" id="optionsContainer"></div>';
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options[currentLang].forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => selectMCQOption(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        function loadTrueFalseQuestion(question) {
+            document.getElementById('questionText').textContent = question.question[currentLang];
+            
+            const container = document.getElementById('answerContainer');
+            container.innerHTML = '<div class="options" id="optionsContainer"></div>';
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            const trueText = currentLang === 'en' ? 'True' : 'Doğru';
+            const falseText = currentLang === 'en' ? 'False' : 'Yanlış';
+
+            [trueText, falseText].forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => selectTFOption(index === 0);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        function loadFillBlankQuestion(question) {
+            const blankedText = question.question[currentLang].replace('_____', '<span class="blank-space" id="blankSpace">?</span>');
+            document.getElementById('questionText').innerHTML = blankedText;
+            
+            const container = document.getElementById('answerContainer');
+            container.innerHTML = '<div class="blank-options" id="blankOptions"></div>';
+            
+            const optionsContainer = document.getElementById('blankOptions');
+            optionsContainer.innerHTML = '';
+
+            question.options[currentLang].forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'blank-option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => selectFillOption(index, option);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        function loadMatchingQuestion(question) {
+            document.getElementById('questionText').textContent = question.question[currentLang];
+            
+            const container = document.getElementById('answerContainer');
+            container.innerHTML = `
+                <div class="matching-container">
+                    <div class="matching-column">
+                        <h4>${currentLang === 'en' ? 'Terms' : 'Terimler'}</h4>
+                        <div id="leftColumn"></div>
+                    </div>
+                    <div class="matching-column">
+                        <h4>${currentLang === 'en' ? 'Definitions' : 'Tanımlar'}</h4>
+                        <div id="rightColumn"></div>
+                    </div>
+                </div>
+            `;
+
+            const leftCol = document.getElementById('leftColumn');
+            const rightCol = document.getElementById('rightColumn');
+
+            question.pairs[currentLang].left.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'matching-item';
+                itemDiv.textContent = item;
+                itemDiv.dataset.index = index;
+                itemDiv.dataset.side = 'left';
+                itemDiv.onclick = () => selectMatchingItem('left', index, itemDiv);
+                leftCol.appendChild(itemDiv);
+            });
+
+            question.pairs[currentLang].right.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'matching-item';
+                itemDiv.textContent = item;
+                itemDiv.dataset.index = index;
+                itemDiv.dataset.side = 'right';
+                itemDiv.onclick = () => selectMatchingItem('right', index, itemDiv);
+                rightCol.appendChild(itemDiv);
+            });
+        }
+
+        function selectMCQOption(selectedIndex) {
             if (answerSelected) return;
 
-            answerSelected = true;
-            const question = selectedQuestions[currentQuestionIndex];
+            const questionData = selectedQuestions[currentQuestionIndex];
+            const question = questionData.q;
             const options = document.querySelectorAll('.option');
-            const explanationDiv = document.getElementById('explanation');
-
-            // Disable all options
+            
+            answerSelected = true;
             options.forEach(option => option.style.pointerEvents = 'none');
 
-            // Check answer
+            const t = translations[currentLang];
+            const explanationDiv = document.getElementById('explanation');
+
             if (selectedIndex === question.correct) {
-                // Correct answer
                 options[selectedIndex].classList.add('correct');
                 score += 10;
                 correctAnswers++;
                 explanationDiv.className = 'feedback excellent';
-                explanationDiv.innerHTML = `<strong>✅ Correct!</strong><br><br>${question.explanation}`;
+                explanationDiv.innerHTML = `<strong>${t.correct}</strong><br><br>${question.explanation[currentLang]}`;
             } else {
-                // Incorrect answer
                 options[selectedIndex].classList.add('incorrect');
                 options[question.correct].classList.add('correct');
                 incorrectAnswers++;
                 explanationDiv.className = 'feedback poor';
-                explanationDiv.innerHTML = `<strong>❌ Incorrect!</strong><br><br>The correct answer is: <strong>${question.options[question.correct]}</strong><br><br>${question.explanation}`;
+                explanationDiv.innerHTML = `<strong>${t.incorrect}</strong><br><br>${t.correctAnswer} <strong>${question.options[currentLang][question.correct]}</strong><br><br>${question.explanation[currentLang]}`;
             }
 
-            // Show explanation and enable next button
+            saveAnsweredQuestion(questionData.idx);
             explanationDiv.classList.remove('hidden');
             document.getElementById('nextBtn').disabled = false;
+            updateStats();
+        }
 
-            // Update stats
+        function selectTFOption(selectedValue) {
+            if (answerSelected) return;
+
+            const questionData = selectedQuestions[currentQuestionIndex];
+            const question = questionData.q;
+            const options = document.querySelectorAll('.option');
+            
+            answerSelected = true;
+            options.forEach(option => option.style.pointerEvents = 'none');
+
+            const t = translations[currentLang];
+            const explanationDiv = document.getElementById('explanation');
+            const correctIndex = question.correct ? 0 : 1;
+            const selectedIndex = selectedValue ? 0 : 1;
+
+            if (selectedValue === question.correct) {
+                options[selectedIndex].classList.add('correct');
+                score += 10;
+                correctAnswers++;
+                explanationDiv.className = 'feedback excellent';
+                explanationDiv.innerHTML = `<strong>${t.correct}</strong><br><br>${question.explanation[currentLang]}`;
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+                options[correctIndex].classList.add('correct');
+                incorrectAnswers++;
+                explanationDiv.className = 'feedback poor';
+                explanationDiv.innerHTML = `<strong>${t.incorrect}</strong><br><br>${question.explanation[currentLang]}`;
+            }
+
+            saveAnsweredQuestion(questionData.idx);
+            explanationDiv.classList.remove('hidden');
+            document.getElementById('nextBtn').disabled = false;
+            updateStats();
+        }
+
+        function selectFillOption(selectedIndex, selectedText) {
+            if (answerSelected) return;
+
+            const questionData = selectedQuestions[currentQuestionIndex];
+            const question = questionData.q;
+            
+            answerSelected = true;
+            document.getElementById('blankSpace').textContent = selectedText;
+            
+            const options = document.querySelectorAll('.blank-option');
+            options.forEach(option => option.style.pointerEvents = 'none');
+            options[selectedIndex].classList.add('selected');
+
+            const t = translations[currentLang];
+            const explanationDiv = document.getElementById('explanation');
+
+            if (selectedIndex === question.correct) {
+                score += 10;
+                correctAnswers++;
+                explanationDiv.className = 'feedback excellent';
+                explanationDiv.innerHTML = `<strong>${t.correct}</strong><br><br>${question.explanation[currentLang]}`;
+            } else {
+                incorrectAnswers++;
+                explanationDiv.className = 'feedback poor';
+                explanationDiv.innerHTML = `<strong>${t.incorrect}</strong><br><br>${t.correctAnswer} <strong>${question.options[currentLang][question.correct]}</strong><br><br>${question.explanation[currentLang]}`;
+            }
+
+            saveAnsweredQuestion(questionData.idx);
+            explanationDiv.classList.remove('hidden');
+            document.getElementById('nextBtn').disabled = false;
+            updateStats();
+        }
+
+        let matchingFirstSelection = null;
+
+        function selectMatchingItem(side, index, element) {
+            if (answerSelected) return;
+            
+            if (element.classList.contains('matched')) return;
+
+            if (matchingFirstSelection === null) {
+                matchingFirstSelection = { side, index, element };
+                element.classList.add('selected');
+            } else {
+                if (matchingFirstSelection.side === side) {
+                    matchingFirstSelection.element.classList.remove('selected');
+                    matchingFirstSelection = { side, index, element };
+                    element.classList.add('selected');
+                } else {
+                    const pair = [
+                        matchingFirstSelection.side === 'left' ? matchingFirstSelection.index : index,
+                        matchingFirstSelection.side === 'right' ? matchingFirstSelection.index : index
+                    ];
+                    
+                    const questionData = selectedQuestions[currentQuestionIndex];
+                    const question = questionData.q;
+                    
+                    // Check if this pair is correct
+                    const found = question.correctPairs.find(cp => cp[0] === pair[0] && cp[1] === pair[1]);
+                    
+                    if (found) {
+                        // Correct match - mark as correct (green)
+                        matchingFirstSelection.element.classList.remove('selected');
+                        matchingFirstSelection.element.classList.add('matched');
+                        matchingFirstSelection.element.classList.add('correct');
+                        element.classList.add('matched');
+                        element.classList.add('correct');
+                    } else {
+                        // Incorrect match - mark as incorrect (red)
+                        matchingFirstSelection.element.classList.remove('selected');
+                        matchingFirstSelection.element.classList.add('matched');
+                        matchingFirstSelection.element.classList.add('incorrect');
+                        element.classList.add('matched');
+                        element.classList.add('incorrect');
+                    }
+                    
+                    matchingSelections.push(pair);
+                    matchingFirstSelection = null;
+                    
+                    if (matchingSelections.length === question.correctPairs.length) {
+                        checkMatchingAnswer();
+                    }
+                }
+            }
+        }
+
+        function checkMatchingAnswer() {
+            const questionData = selectedQuestions[currentQuestionIndex];
+            const question = questionData.q;
+            
+            answerSelected = true;
+
+            let allCorrect = true;
+            for (let pair of matchingSelections) {
+                const found = question.correctPairs.find(cp => cp[0] === pair[0] && cp[1] === pair[1]);
+                if (!found) {
+                    allCorrect = false;
+                    break;
+                }
+            }
+
+            const t = translations[currentLang];
+            const explanationDiv = document.getElementById('explanation');
+
+            if (allCorrect) {
+                score += 10;
+                correctAnswers++;
+                explanationDiv.className = 'feedback excellent';
+                explanationDiv.innerHTML = `<strong>${t.correct}</strong><br><br>${question.explanation[currentLang]}`;
+            } else {
+                incorrectAnswers++;
+                explanationDiv.className = 'feedback poor';
+                explanationDiv.innerHTML = `<strong>${t.incorrect}</strong><br><br>${question.explanation[currentLang]}`;
+            }
+
+            saveAnsweredQuestion(questionData.idx);
+            explanationDiv.classList.remove('hidden');
+            document.getElementById('nextBtn').disabled = false;
+            updateStats();
+        }
+
+        function updateStats() {
             document.getElementById('score').textContent = score;
             document.getElementById('correctCount').textContent = correctAnswers;
         }
@@ -1207,7 +2483,6 @@
         }
 
         function showResults() {
-            // Update game stats
             gameStats.gamesPlayed++;
             gameStats.totalCorrect += correctAnswers;
             gameStats.totalQuestions += selectedQuestions.length;
@@ -1216,10 +2491,8 @@
             }
             saveGameStats();
 
-            // Calculate accuracy
             const accuracy = Math.round((correctAnswers / selectedQuestions.length) * 100);
 
-            // Update UI
             document.getElementById('quizScreen').classList.add('hidden');
             document.getElementById('resultsScreen').classList.remove('hidden');
 
@@ -1228,35 +2501,34 @@
             document.getElementById('finalIncorrect').textContent = incorrectAnswers;
             document.getElementById('finalAccuracy').textContent = accuracy + '%';
 
-            // Performance feedback
+            const t = translations[currentLang];
             const feedbackDiv = document.getElementById('performanceFeedback');
             let feedbackClass = '';
             let feedbackText = '';
 
             if (accuracy >= 90) {
                 feedbackClass = 'excellent';
-                feedbackText = '✓ Build successful! Senior-level CCaaS Platform knowledge detected.';
+                feedbackText = t.feedbackExcellent;
             } else if (accuracy >= 75) {
                 feedbackClass = 'good';
-                feedbackText = '✓ Quiz passed. Solid understanding of core architecture.';
+                feedbackText = t.feedbackGood;
             } else if (accuracy >= 60) {
                 feedbackClass = 'average';
-                feedbackText = '⚠ Warning: Review documentation to improve knowledge.';
+                feedbackText = t.feedbackAverage;
             } else {
                 feedbackClass = 'poor';
-                feedbackText = '✗ Build failed. Run --verbose and review the docs.';
+                feedbackText = t.feedbackPoor;
             }
 
             feedbackDiv.className = `feedback ${feedbackClass}`;
             feedbackDiv.textContent = feedbackText;
 
-            // Achievements
             const achievements = [];
-            if (accuracy === 100) achievements.push('✓ 100% Code Coverage');
-            if (score >= 150) achievements.push('⚡ Performance Optimized');
-            if (correctAnswers >= 15) achievements.push('🔧 System Architect');
-            if (gameStats.gamesPlayed >= 5) achievements.push('📚 Documentation Master');
-            if (score === gameStats.highScore && score > 0) achievements.push('🚀 New High Score');
+            if (accuracy === 100) achievements.push(t.achievement1);
+            if (score >= 150) achievements.push(t.achievement2);
+            if (correctAnswers >= 15) achievements.push(t.achievement3);
+            if (gameStats.gamesPlayed >= 5) achievements.push(t.achievement4);
+            if (score === gameStats.highScore && score > 0) achievements.push(t.achievement5);
 
             if (achievements.length > 0) {
                 document.getElementById('achievementsSection').classList.remove('hidden');
@@ -1273,6 +2545,9 @@
             document.getElementById('resultsScreen').classList.add('hidden');
             document.getElementById('quizScreen').classList.add('hidden');
             document.getElementById('welcomeScreen').classList.remove('hidden');
+            
+            // Re-enable language switcher
+            document.getElementById('langBtn').classList.remove('disabled');
         }
     </script>
 </body>
