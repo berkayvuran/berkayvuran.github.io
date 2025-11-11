@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCaaS Platform Glossary Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1e1e1e;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2), 0 0 40px rgba(16, 185, 129, 0.1);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+            color: #d4d4d4;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #10b981;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #9ca3af;
+            margin-bottom: 5px;
+            text-transform: lowercase;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            transition: width 0.3s ease;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            font-size: 1.2em;
+            color: #e5e7eb;
+            margin-bottom: 20px;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 16px 20px;
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+            color: #d4d4d4;
+        }
+
+        .option:hover {
+            background: #3d3d3d;
+            border-color: #10b981;
+            transform: translateX(3px);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+
+        .option.selected {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .option.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .welcome-screen, .results-screen {
+            text-align: center;
+        }
+
+        .welcome-screen h2, .results-screen h2 {
+            color: #10b981;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .welcome-screen p, .results-screen p {
+            color: #9ca3af;
+            font-size: 1em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .high-score {
+            background: #2d2d2d;
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 1.1em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .result-card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .result-card.score {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .result-card.correct {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .result-card.incorrect {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+        }
+
+        .result-card.accuracy {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+        }
+
+        .result-card-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-card-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: lowercase;
+        }
+
+        .feedback {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.1em;
+        }
+
+        .feedback.excellent {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .feedback.good {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+        }
+
+        .feedback.average {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        .feedback.poor {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .term-highlight {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .timer {
+            font-size: 1.5em;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .achievements {
+            margin-top: 30px;
+            padding: 20px;
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 6px;
+        }
+
+        .achievement-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px;
+            background: #10b981;
+            color: #1e1e1e;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .result-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="welcome-screen">
+            <div class="header">
+                <h1>$ ./ccaas-glossary-quiz</h1>
+                <p class="subtitle">// Developer's Guide to CCaaS Platform</p>
+            </div>
+            
+            <p>Interactive knowledge base for Agentic CX team. Improve your understanding of CCaaS Platform architecture, APIs, and core concepts.</p>
+            
+            <div class="high-score" id="highScoreDisplay">
+                &gt; High Score: <span id="highScoreValue">0</span> pts
+            </div>
+            
+            <p><strong>$ cat README.md</strong></p>
+            <ul style="text-align: left; margin: 20px auto; max-width: 500px; line-height: 2;">
+                <li>• 20 randomized technical questions</li>
+                <li>• +10 points per correct answer</li>
+                <li>• Detailed explanations for each concept</li>
+                <li>• Local storage for progress tracking</li>
+            </ul>
+            
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="startGame()">$ npm start</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="hidden">
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-label">Question</div>
+                    <div class="stat-value"><span id="currentQuestion">1</span>/<span id="totalQuestions">20</span></div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Correct</div>
+                    <div class="stat-value" id="correctCount">0</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="question-container">
+                <div class="question" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <div id="explanation" class="feedback hidden"></div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden results-screen">
+            <div class="header">
+                <h2>// Quiz Complete ✓</h2>
+            </div>
+
+            <div class="result-summary">
+                <div class="result-card score">
+                    <div class="result-card-label">total_score</div>
+                    <div class="result-card-value" id="finalScore">0</div>
+                </div>
+                <div class="result-card correct">
+                    <div class="result-card-label">correct_answers</div>
+                    <div class="result-card-value" id="finalCorrect">0</div>
+                </div>
+                <div class="result-card incorrect">
+                    <div class="result-card-label">wrong_answers</div>
+                    <div class="result-card-value" id="finalIncorrect">0</div>
+                </div>
+                <div class="result-card accuracy">
+                    <div class="result-card-label">accuracy</div>
+                    <div class="result-card-value" id="finalAccuracy">0%</div>
+                </div>
+            </div>
+
+            <div id="performanceFeedback" class="feedback"></div>
+
+            <div id="achievementsSection" class="achievements hidden">
+                <h3 style="margin-bottom: 15px;">// Achievements Unlocked</h3>
+                <div id="achievementsList"></div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="startGame()">$ run again</button>
+                <button class="btn btn-secondary" onclick="showWelcome()">$ cd ..</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Data - Generated from the glossary
+        const quizData = [
+            {
+                question: "What does AI stand for in the context of contact centers?",
+                options: [
+                    "Automated Integration",
+                    "Artificial Intelligence",
+                    "Agent Interaction",
+                    "Advanced Interface"
+                ],
+                correct: 1,
+                explanation: "AI stands for Artificial Intelligence - a computer system that can perform tasks normally done by humans, including speech recognition, automated chat, translation, and visual perception."
+            },
+            {
+                question: "What is Agent Assist?",
+                options: [
+                    "A tool for scheduling agent breaks",
+                    "A CCaaS Platform technology that augments human conversations with AI",
+                    "A device that helps agents sit properly",
+                    "A manual for training new agents"
+                ],
+                correct: 1,
+                explanation: "Agent Assist is a CCaaS Platform technology that augments human conversations with artificial intelligence, helping agents deliver the best possible customer experience with AI-driven recommendations and real-time sentiment analysis."
+            },
+            {
+                question: "What does AHT stand for?",
+                options: [
+                    "Agent Handling Time",
+                    "Average Hold Time",
+                    "Average Handling Time",
+                    "Automated Help Ticket"
+                ],
+                correct: 2,
+                explanation: "AHT stands for Average Handling Time - the amount of time that an agent spends handling each customer call, calculated as an average of all their interactions in a given timeframe."
+            },
+            {
+                question: "What is an IVR system primarily used for?",
+                options: [
+                    "Recording agent conversations",
+                    "Managing employee schedules",
+                    "Routing calls through an interactive menu",
+                    "Storing customer data"
+                ],
+                correct: 2,
+                explanation: "IVR (Interactive Voice Response) is the menu component of a contact center where callers can make selections that influence routing, leave messages, or make payments through automated menus."
+            },
+            {
+                question: "What does NPS measure?",
+                options: [
+                    "Number of Phone Sales",
+                    "Net Promoter Score - customer loyalty",
+                    "Network Performance Status",
+                    "New Product Success"
+                ],
+                correct: 1,
+                explanation: "NPS (Net Promoter Score) measures the likelihood that a customer will recommend you to their friends and family on a scale of 1-10. It's one of the most common ways companies track loyalty and customer churn."
+            },
+            {
+                question: "What is a Virtual Agent?",
+                options: [
+                    "An agent working from home",
+                    "An AI-powered conversational CX agent for 24/7 self service",
+                    "A temporary contractor",
+                    "A supervisor monitoring other agents"
+                ],
+                correct: 1,
+                explanation: "A Virtual Agent is an AI-powered conversational CX agent for 24/7 self service that can speed up human interactions and resolutions, or in some cases handle interactions without a human agent."
+            },
+            {
+                question: "What does CCaaS stand for?",
+                options: [
+                    "Customer Care as a Service",
+                    "Contact Center as a Service",
+                    "Computer Calling as a Service",
+                    "Corporate Communication as a Service"
+                ],
+                correct: 1,
+                explanation: "CCaaS stands for Contact Center as a Service - a cloud-based contact center platform offered on a subscription basis."
+            },
+            {
+                question: "What is First Call Resolution (FCR)?",
+                options: [
+                    "The time it takes to answer the first call",
+                    "The ability to resolve a customer issue on the first call",
+                    "The first call of the day",
+                    "The fastest call resolution time"
+                ],
+                correct: 1,
+                explanation: "First Call Resolution (FCR) is a measurement of the contact center's ability to resolve a customer issue the first time they call in, thereby increasing customer satisfaction."
+            },
+            {
+                question: "What is sentiment analysis?",
+                options: [
+                    "A tool for analyzing agent performance",
+                    "An AI tool that picks up on customer feelings during an interaction",
+                    "A method for categorizing calls",
+                    "A system for measuring call volume"
+                ],
+                correct: 1,
+                explanation: "Sentiment analysis is an AI tool that picks up on the customer's disposition or feeling about the company during an interaction, helping agents respond appropriately."
+            },
+            {
+                question: "What does ACW stand for?",
+                options: [
+                    "Automated Call Workflow",
+                    "Agent Communication Window",
+                    "After-Call Work time",
+                    "Average Customer Wait"
+                ],
+                correct: 2,
+                explanation: "ACW stands for After-Call Work time - the work that an agent does after each call, including logging details, updating accounts, tickets, and cases. Also known as wrap-up time."
+            },
+            {
+                question: "What is Omnichannel customer experience?",
+                options: [
+                    "Using only one communication channel",
+                    "A personalized experience that seamlessly integrates across multiple channels",
+                    "Offering multiple products to customers",
+                    "Having multiple contact centers"
+                ],
+                correct: 1,
+                explanation: "Omnichannel customer experience is a personalized customer experience where individual interactions seamlessly integrate across channels (voice, chat, email, text) to create one holistic experience."
+            },
+            {
+                question: "What is Natural Language Processing (NLP)?",
+                options: [
+                    "A way to teach agents new languages",
+                    "Technology that turns customer text/speech into actions",
+                    "A method for categorizing customer feedback",
+                    "A tool for translating international calls"
+                ],
+                correct: 1,
+                explanation: "Natural Language Processing is a technology that turns the customer's text or speech input into actions, with the goal of leading them closer to the intended resolution."
+            },
+            {
+                question: "What is a warm transfer?",
+                options: [
+                    "Transferring calls during summer months",
+                    "A friendly greeting to customers",
+                    "Transferring a call after briefing the receiving agent",
+                    "An emergency call transfer"
+                ],
+                correct: 2,
+                explanation: "A warm transfer is a method of transferring calls where the original agent greets the receiving agent and provides a brief introduction and context before completing the transfer."
+            },
+            {
+                question: "What does CSAT measure?",
+                options: [
+                    "Call System Accuracy Testing",
+                    "Customer Satisfaction",
+                    "Contact Support Average Time",
+                    "Central Server Access Time"
+                ],
+                correct: 1,
+                explanation: "CSAT stands for Customer Satisfaction - a metric calculated through customer satisfaction surveys, used to measure how well a company meets its customers' service expectations."
+            },
+            {
+                question: "What is Quality Management (QM) in a contact center?",
+                options: [
+                    "Managing the quality of office equipment",
+                    "Processes and strategies to ensure positive customer experience",
+                    "Monitoring internet connection quality",
+                    "Managing product quality"
+                ],
+                correct: 1,
+                explanation: "Quality Management (QM) encompasses the processes and strategies used to ensure a positive customer experience, including scoring agent performance and identifying areas for improvement."
+            },
+            {
+                question: "What is ACD?",
+                options: [
+                    "Agent Call Database",
+                    "Automatic Contact Distribution - automated switchboard",
+                    "Average Customer Disposition",
+                    "Advanced Call Dialing"
+                ],
+                correct: 1,
+                explanation: "ACD (Automatic Contact Distribution) is a form of automated switchboard which answers incoming calls and forwards them to the appropriate agent or department to resolve the caller's issue."
+            },
+            {
+                question: "What is a Chatbot?",
+                options: [
+                    "A human agent who handles chat",
+                    "An AI function that routes and automates customer inquiries",
+                    "A chat room for customers",
+                    "A tool for agents to chat with each other"
+                ],
+                correct: 1,
+                explanation: "A Chatbot is an AI function that improves contact center efficiency by routing customer inquiries on voice and digital channels, and can also perform advanced actions like finding knowledge base content and automating common tasks."
+            },
+            {
+                question: "What is Customer Lifetime Value (CLV)?",
+                options: [
+                    "How long a customer has been with the company",
+                    "The total value a customer brings over their lifetime",
+                    "The average age of customers",
+                    "The time spent with each customer"
+                ],
+                correct: 1,
+                explanation: "Customer Lifetime Value (CLV) is the estimated total value to the business of a given customer account over the entire lifespan of that account."
+            },
+            {
+                question: "What is Workforce Management (WFM)?",
+                options: [
+                    "Hiring new employees",
+                    "Managing office space",
+                    "Managing and monitoring agents - training, scheduling, forecasting",
+                    "Managing customer relationships"
+                ],
+                correct: 2,
+                explanation: "Workforce Management (WFM) involves managing and monitoring agents in a contact center, including tasks like training agents, scheduling, and forecasting staffing needs."
+            },
+            {
+                question: "What does SLA stand for in contact centers?",
+                options: [
+                    "Service Level Agreement",
+                    "System Login Access",
+                    "Standard Learning Assessment",
+                    "Support Line Availability"
+                ],
+                correct: 0,
+                explanation: "SLA stands for Service Level Agreement - contact center SLAs consist of top-level metrics that help supervisors ensure the center is meeting its service targets, such as answering X percentage of calls within Y time period."
+            },
+            {
+                question: "What is ASR technology?",
+                options: [
+                    "Agent Scheduling Resource",
+                    "Automatic Speech Recognition",
+                    "Average Service Rating",
+                    "Automated System Reporting"
+                ],
+                correct: 1,
+                explanation: "ASR stands for Automatic Speech Recognition - technology that allows humans and computers to interact using conversational syntax, used in features like IVRs with speech recognition."
+            },
+            {
+                question: "What is a Predictive Dialer used for?",
+                options: [
+                    "Predicting customer needs",
+                    "Making large numbers of outbound calls automatically",
+                    "Forecasting call volume",
+                    "Predicting agent performance"
+                ],
+                correct: 1,
+                explanation: "A Predictive Dialer is used in outbound call centers to make a large number of calls at a time and connect them with live agents, using agent availability data to route calls as rapidly as possible."
+            },
+            {
+                question: "What is the purpose of Screen Share technology?",
+                options: [
+                    "Sharing agent screens with supervisors",
+                    "Allowing agent and customer to navigate the same browser during a call",
+                    "Sharing call statistics on monitors",
+                    "Displaying company information to customers"
+                ],
+                correct: 1,
+                explanation: "Screen Share is a technology that allows an agent and a customer to share screens and navigate the same browser during a call, helping with purchases, finding documents, and more."
+            },
+            {
+                question: "What is Agent Occupancy?",
+                options: [
+                    "The office space an agent uses",
+                    "The percentage of time agents actively handle customer calls",
+                    "The number of agents in the center",
+                    "The seating capacity of the contact center"
+                ],
+                correct: 1,
+                explanation: "Agent Occupancy is a workforce management metric that measures the percentage of time agents are actively handling customer calls, as opposed to doing other activities like updating and closing tickets."
+            },
+            {
+                question: "What is Escalation in a contact center?",
+                options: [
+                    "Increasing call volume",
+                    "Transferring a challenging interaction to a supervisor",
+                    "Raising prices for services",
+                    "Promoting an agent"
+                ],
+                correct: 1,
+                explanation: "Escalation is the process of transferring a challenging, complex, or unusual interaction to a supervisor for further help and resolution."
+            },
+            {
+                question: "What is Voice Authentication?",
+                options: [
+                    "Verifying agent identity",
+                    "A biometric verification tool that identifies callers by voice",
+                    "Recording voice messages",
+                    "Testing audio quality"
+                ],
+                correct: 1,
+                explanation: "Voice Authentication is a biometric verification tool that identifies a caller based on their unique voice characteristics (voiceprint), enhancing security and reducing authentication time."
+            },
+            {
+                question: "What is the Customer Journey?",
+                options: [
+                    "The physical distance a customer travels",
+                    "The entire experience from first touchpoint to last",
+                    "The path through the office",
+                    "The routing of customer calls"
+                ],
+                correct: 1,
+                explanation: "The Customer Journey (also known as customer lifecycle) refers to the entire experience a customer has with a company from the first touchpoint to the last, including all positive and negative sentiment incidents."
+            },
+            {
+                question: "What is Real-time Adherence (RTA)?",
+                options: [
+                    "Following security protocols",
+                    "A metric tracking if agents follow their schedules",
+                    "Adhering to call scripts",
+                    "Sticking to break times"
+                ],
+                correct: 1,
+                explanation: "Real-time Adherence (RTA) is a workforce management metric that helps supervisors identify agents that are not adhering to their set schedule."
+            },
+            {
+                question: "What is CTI?",
+                options: [
+                    "Customer Transaction Interface",
+                    "Computer-Telephony Integration",
+                    "Contact Tracking Information",
+                    "Central Technology Infrastructure"
+                ],
+                correct: 1,
+                explanation: "CTI (Computer-Telephony Integration) is technology that provides an interface between telephone networks and computer systems, allowing calls from the PSTN to reach agents on their desktop computers."
+            },
+            {
+                question: "What is Multicast Routing in CCaaS Platform?",
+                options: [
+                    "Routing to multiple contact centers",
+                    "Offering sessions to all queue agents simultaneously",
+                    "Broadcasting messages to all customers",
+                    "Sending emails to multiple recipients"
+                ],
+                correct: 1,
+                explanation: "Multicast Routing is a CCaaS Platform feature that offers sessions to all agents assigned to the queue when an interaction comes in, with the quickest to respond receiving the interaction."
+            },
+            {
+                question: "What is the main difference between CCaaS 2.0 and CCaaS 3.0?",
+                options: [
+                    "CCaaS 3.0 only supports voice calls",
+                    "CCaaS 3.0 goes beyond omnichannel with predictive, contextual, and conversational CX",
+                    "CCaaS 2.0 is cloud-based while 3.0 is on-premise",
+                    "There is no difference"
+                ],
+                correct: 1,
+                explanation: "CCaaS 3.0 goes beyond omnichannel with predictive, contextual, and conversational CX built for the way modern consumers communicate, whereas CCaaS 2.0 integrates omnichannel, WFO, analytics and AI into one."
+            },
+            {
+                question: "What is Contextual Routing in CCaaS Platform?",
+                options: [
+                    "Routing based on time of day",
+                    "Leveraging CRM data to prioritize routing decisions and determine customer intent",
+                    "Routing calls to the nearest agent",
+                    "Random routing distribution"
+                ],
+                correct: 1,
+                explanation: "Contextual Routing leverages data from your CRM to prioritize routing decisions and help determine customer intent. The goal is to route more efficiently and accurately and thus drive customer experience."
+            },
+            {
+                question: "What are Smart Actions in CCaaS Platform?",
+                options: [
+                    "Automated email responses",
+                    "Technology allowing agents to communicate visually and contextually with callers",
+                    "AI-powered call scheduling",
+                    "Performance tracking tools"
+                ],
+                correct: 1,
+                explanation: "Smart Actions is a CCaaS Platform technology that allows agents to communicate visually and contextually with callers, helping resolve calls faster through fingerprint/facial recognition, image/video sharing, text inputs, and secure payments."
+            },
+            {
+                question: "What is Deltacast Routing optimized for?",
+                options: [
+                    "Voice call distribution",
+                    "Chat concurrency and equal workload distribution",
+                    "Email routing",
+                    "Social media management"
+                ],
+                correct: 1,
+                explanation: "Deltacast routing logic from CCaaS Platform focuses on optimizing for chat concurrency and distributing workloads equally between agents."
+            },
+            {
+                question: "What is a Direct Access Point (DAP) in CCaaS Platform?",
+                options: [
+                    "Physical entry to the contact center",
+                    "A system allowing customers to be connected directly to an appropriate queue",
+                    "Admin access credentials",
+                    "Emergency hotline"
+                ],
+                correct: 1,
+                explanation: "Direct Access Points allow your customers to dial a number and be connected directly to an appropriate queue, reducing friction and improving customer experience. DAPs can be based on phone numbers, user data lookup, or key-value pairs."
+            },
+            {
+                question: "What components are included in CCaaS Platform's Embeddable features?",
+                options: [
+                    "Only voice calls",
+                    "Voice, SMS, and chat",
+                    "Email and fax only",
+                    "Video conferencing only"
+                ],
+                correct: 1,
+                explanation: "Embeddable voice, SMS and chat are components of the CCaaS Platform web SDK, providing additional channels by which customers can communicate, all embeddable within your app or website."
+            },
+            {
+                question: "What is Touch IVR?",
+                options: [
+                    "A touchscreen phone",
+                    "A visual menu allowing direct selection like website navigation",
+                    "A voice recognition system",
+                    "A physical button interface"
+                ],
+                correct: 1,
+                explanation: "Touch IVR is an advanced CCaaS Platform feature that represents the menu visually and allows the caller to directly select options, similar to clicking navigation items in a website menu, instead of using numeric keypad input."
+            },
+            {
+                question: "What is Visual IVR in CCaaS Platform's mobile SDK?",
+                options: [
+                    "Video call support",
+                    "Navigation using visual and touch controls on mobile phones",
+                    "Screen sharing capability",
+                    "Image recognition"
+                ],
+                correct: 1,
+                explanation: "Visual IVR is a component of the CCaaS Platform mobile SDK that lets customers navigate the menu structure using visual and touch navigation on their mobile phone, improving user experience."
+            },
+            {
+                question: "What does the CCaaS Platform Mobile SDK support?",
+                options: [
+                    "Only Android devices",
+                    "Complete developer toolkits for iOS and Android",
+                    "Only web browsers",
+                    "Desktop applications only"
+                ],
+                correct: 1,
+                explanation: "Mobile SDK provides complete developer toolkits to deploy CX widgets and help orchestrate the customer journey on mobile phones, compatible with both iOS and Android."
+            },
+            {
+                question: "What is In-app Chat in CCaaS Platform?",
+                options: [
+                    "Agent internal messaging",
+                    "Mobile-based messaging experience within a company's mobile app",
+                    "Social media integration",
+                    "Email within the app"
+                ],
+                correct: 1,
+                explanation: "In-app chat is a component of the CCaaS Platform chat channel enabled through the mobile SDK, allowing customers and agents to communicate through a mobile-based messaging experience from within a company's mobile app."
+            },
+            {
+                question: "What is SMS Blending in CCaaS Platform?",
+                options: [
+                    "Mixing SMS with email",
+                    "Blending voice and SMS to gather data while customers wait on hold",
+                    "Combining multiple SMS messages",
+                    "Translating SMS to different languages"
+                ],
+                correct: 1,
+                explanation: "SMS Blending combines voice and SMS channels to make hold times productive by gathering contextual data and setting up the call while customers wait."
+            },
+            {
+                question: "What is Proactive Triggers in CCaaS Platform?",
+                options: [
+                    "Automatic callback scheduling",
+                    "Smart actions feature determining ideal time to present chat or calling bubble",
+                    "Email notifications",
+                    "Push notifications"
+                ],
+                correct: 1,
+                explanation: "Proactive Triggers is a CCaaS Platform smart actions feature that determines the ideal time to proactively present consumers with a chat or calling bubble."
+            },
+            {
+                question: "What is Over-capacity Deflection?",
+                options: [
+                    "Blocking all incoming calls",
+                    "Deflecting interactions with automated messages when predefined wait time is exceeded",
+                    "Forwarding calls to competitors",
+                    "Ending calls automatically"
+                ],
+                correct: 1,
+                explanation: "Over-capacity Deflection is a CCaaS Platform feature that deflects interactions using an automated message when a call is placed in a queue and not answered in a predefined amount of time."
+            },
+            {
+                question: "What is After-hours Deflection?",
+                options: [
+                    "Ignoring all calls after business hours",
+                    "Using automated messages to deflect calls outside operating hours",
+                    "Forwarding to competitors",
+                    "Automatic email responses"
+                ],
+                correct: 1,
+                explanation: "After-hours Deflection uses an automated message to deflect calls that come in after operating hours. Callers might be directed to voicemail, a separate IVR, or a different office."
+            },
+            {
+                question: "What is Click-to-dial Outbound in CCaaS Platform?",
+                options: [
+                    "Manual dialing assistance",
+                    "Feature reducing manual dialing errors and increasing agent reach",
+                    "Conference calling",
+                    "Speed dial shortcuts"
+                ],
+                correct: 1,
+                explanation: "Click-to-dial Outbound is a CCaaS Platform feature that reduces effort and errors associated with manual dialing and increases the number of customers an outbound agent can reach in a given time period."
+            },
+            {
+                question: "What is the Voice User Interface in CCaaS Platform?",
+                options: [
+                    "Agent training module",
+                    "Feature supporting inbound PSTN calls and outbound calling via dial pad or click-to-call",
+                    "Voice recording system",
+                    "Speech synthesis tool"
+                ],
+                correct: 1,
+                explanation: "Voice User Interface is a CCaaS Platform feature that supports inbound calls over PSTN as well as outbound calling using the agent dial pad or click-to-call within the CRM."
+            },
+            {
+                question: "What makes CCaaS Platform a Multichannel Cloud Contact Center?",
+                options: [
+                    "It only supports phone calls",
+                    "It integrates voice, text, social media, and chat on cloud-native software",
+                    "It requires on-premise hardware",
+                    "It only works with email"
+                ],
+                correct: 1,
+                explanation: "CCaaS Platform is a Multichannel Cloud Contact Center that integrates multiple touchpoints - including voice, text, social media, and chat - running on cloud-native software rather than on-premise hardware."
+            },
+            {
+                question: "What is Scheduled Callbacks feature?",
+                options: [
+                    "Agent break scheduling",
+                    "AI technology allowing callers to determine ideal callback time without waiting on hold",
+                    "Automatic redialing",
+                    "Meeting scheduler"
+                ],
+                correct: 1,
+                explanation: "Scheduled Callbacks is an AI technology that allows callers to determine the ideal time for an agent to call them back without waiting on hold, improving customer experience."
+            },
+            {
+                question: "What is Automatic Callback?",
+                options: [
+                    "System that calls customers back automatically every day",
+                    "Feature allowing callers to avoid long hold times by choosing a callback time",
+                    "Emergency contact system",
+                    "Voicemail notification"
+                ],
+                correct: 1,
+                explanation: "Automatic Callback is a feature that allows callers to avoid waiting on hold for long periods of time. Instead, they can choose a later time to receive a call back from a customer service agent."
+            },
+            {
+                question: "What is the Web SDK in CCaaS Platform?",
+                options: [
+                    "Website design tool",
+                    "Software development kit for deploying CX widgets on web",
+                    "Web hosting service",
+                    "Browser extension"
+                ],
+                correct: 1,
+                explanation: "The Web SDK (Software Development Kit) is a set of tools provided by CCaaS Platform to proactively engage customers at the right time, using web page views and CRM data to route visitors to the right team."
+            },
+            {
+                question: "What is Outbound IVR?",
+                options: [
+                    "Receiving incoming calls through IVR",
+                    "IVR technology for sending proactive and personalized outbound messages",
+                    "Internal company announcements",
+                    "Agent performance monitoring"
+                ],
+                correct: 1,
+                explanation: "Outbound IVR is technology that contact centers can use to send proactive and personalized outbound messages to contacts, enabling automated outreach campaigns."
+            },
+            {
+                question: "What characterizes an Agentic CX approach?",
+                options: [
+                    "Removing all human agents",
+                    "AI agents working autonomously to handle customer interactions intelligently",
+                    "Only using chatbots",
+                    "Manual processing of all requests"
+                ],
+                correct: 1,
+                explanation: "Agentic CX involves AI-powered agents (Virtual Agents, Agent Assist) that can work autonomously or semi-autonomously to handle customer interactions intelligently, making decisions and taking actions to improve customer experience."
+            },
+            {
+                question: "What role does Agent Assist play in Agentic CX?",
+                options: [
+                    "Replaces human agents entirely",
+                    "Augments human agents with AI-driven recommendations and real-time analysis",
+                    "Only records calls",
+                    "Manages agent schedules"
+                ],
+                correct: 1,
+                explanation: "In Agentic CX, Agent Assist augments human conversations with AI, providing real-time recommendations, sentiment analysis, and surfacing relevant knowledge base content to help agents deliver better customer experiences."
+            }
+        ];
+
+        // Game State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let selectedQuestions = [];
+        let answerSelected = false;
+        let gameStats = {
+            gamesPlayed: 0,
+            highScore: 0,
+            totalCorrect: 0,
+            totalQuestions: 0
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGameStats();
+            updateHighScore();
+        });
+
+        function loadGameStats() {
+            const saved = localStorage.getItem('ccaasGlossaryStats');
+            if (saved) {
+                gameStats = JSON.parse(saved);
+            }
+        }
+
+        function saveGameStats() {
+            localStorage.setItem('ccaasGlossaryStats', JSON.stringify(gameStats));
+        }
+
+        function updateHighScore() {
+            document.getElementById('highScoreValue').textContent = gameStats.highScore;
+        }
+
+        function startGame() {
+            // Reset game state
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            answerSelected = false;
+
+            // Select 20 random questions
+            selectedQuestions = shuffleArray([...quizData]).slice(0, 20);
+
+            // Update UI
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+
+            document.getElementById('totalQuestions').textContent = selectedQuestions.length;
+
+            // Load first question
+            loadQuestion();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadQuestion() {
+            const question = selectedQuestions[currentQuestionIndex];
+            answerSelected = false;
+
+            // Update stats
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('score').textContent = score;
+            document.getElementById('correctCount').textContent = correctAnswers;
+
+            // Update progress bar
+            const progress = ((currentQuestionIndex) / selectedQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // Display question
+            document.getElementById('questionText').textContent = question.question;
+
+            // Display options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            // Hide explanation and disable next button
+            document.getElementById('explanation').classList.add('hidden');
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(selectedIndex) {
+            if (answerSelected) return;
+
+            answerSelected = true;
+            const question = selectedQuestions[currentQuestionIndex];
+            const options = document.querySelectorAll('.option');
+            const explanationDiv = document.getElementById('explanation');
+
+            // Disable all options
+            options.forEach(option => option.style.pointerEvents = 'none');
+
+            // Check answer
+            if (selectedIndex === question.correct) {
+                // Correct answer
+                options[selectedIndex].classList.add('correct');
+                score += 10;
+                correctAnswers++;
+                explanationDiv.className = 'feedback excellent';
+                explanationDiv.innerHTML = `<strong>✅ Correct!</strong><br><br>${question.explanation}`;
+            } else {
+                // Incorrect answer
+                options[selectedIndex].classList.add('incorrect');
+                options[question.correct].classList.add('correct');
+                incorrectAnswers++;
+                explanationDiv.className = 'feedback poor';
+                explanationDiv.innerHTML = `<strong>❌ Incorrect!</strong><br><br>The correct answer is: <strong>${question.options[question.correct]}</strong><br><br>${question.explanation}`;
+            }
+
+            // Show explanation and enable next button
+            explanationDiv.classList.remove('hidden');
+            document.getElementById('nextBtn').disabled = false;
+
+            // Update stats
+            document.getElementById('score').textContent = score;
+            document.getElementById('correctCount').textContent = correctAnswers;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < selectedQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            // Update game stats
+            gameStats.gamesPlayed++;
+            gameStats.totalCorrect += correctAnswers;
+            gameStats.totalQuestions += selectedQuestions.length;
+            if (score > gameStats.highScore) {
+                gameStats.highScore = score;
+            }
+            saveGameStats();
+
+            // Calculate accuracy
+            const accuracy = Math.round((correctAnswers / selectedQuestions.length) * 100);
+
+            // Update UI
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            document.getElementById('finalIncorrect').textContent = incorrectAnswers;
+            document.getElementById('finalAccuracy').textContent = accuracy + '%';
+
+            // Performance feedback
+            const feedbackDiv = document.getElementById('performanceFeedback');
+            let feedbackClass = '';
+            let feedbackText = '';
+
+            if (accuracy >= 90) {
+                feedbackClass = 'excellent';
+                feedbackText = '✓ Build successful! Senior-level CCaaS Platform knowledge detected.';
+            } else if (accuracy >= 75) {
+                feedbackClass = 'good';
+                feedbackText = '✓ Quiz passed. Solid understanding of core architecture.';
+            } else if (accuracy >= 60) {
+                feedbackClass = 'average';
+                feedbackText = '⚠ Warning: Review documentation to improve knowledge.';
+            } else {
+                feedbackClass = 'poor';
+                feedbackText = '✗ Build failed. Run --verbose and review the docs.';
+            }
+
+            feedbackDiv.className = `feedback ${feedbackClass}`;
+            feedbackDiv.textContent = feedbackText;
+
+            // Achievements
+            const achievements = [];
+            if (accuracy === 100) achievements.push('✓ 100% Code Coverage');
+            if (score >= 150) achievements.push('⚡ Performance Optimized');
+            if (correctAnswers >= 15) achievements.push('🔧 System Architect');
+            if (gameStats.gamesPlayed >= 5) achievements.push('📚 Documentation Master');
+            if (score === gameStats.highScore && score > 0) achievements.push('🚀 New High Score');
+
+            if (achievements.length > 0) {
+                document.getElementById('achievementsSection').classList.remove('hidden');
+                const achievementsList = document.getElementById('achievementsList');
+                achievementsList.innerHTML = achievements.map(a => `<span class="achievement-badge">${a}</span>`).join('');
+            } else {
+                document.getElementById('achievementsSection').classList.add('hidden');
+            }
+
+            updateHighScore();
+        }
+
+        function showWelcome() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
