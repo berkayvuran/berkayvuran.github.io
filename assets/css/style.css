@@ -2132,7 +2132,6 @@ textarea.form-input::-webkit-resizer { display: none; }
    * #PORTFOLIO, BLOG 
    */
 
-  .project-img,
   .blog-banner-box { height: auto; }
 
 }
