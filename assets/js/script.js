@@ -74,6 +74,7 @@ for (let i = 0; i < selectItems.length; i++) {
       "eserlerim": "my creations",
       "koordinasyonumla": "with my coordination",
       "dahiliyetimle": "with my collaboration",
+      "vibe coding": "vibe coding",
       "all": "all",
       "certifications": "certifications",
       "my creations": "my creations", 
@@ -126,7 +127,8 @@ for (let i = 0; i < filterBtn.length; i++) {
       "sertifikalar": "certifications", 
       "eserlerim": "my creations",
       "koordinasyonumla": "with my coordination",
-      "dahiliyetimle": "with my collaboration"
+      "dahiliyetimle": "with my collaboration",
+      "vibe coding": "vibe coding"
     };
     
     // Eğer Türkçe ise mapping'e çevir
