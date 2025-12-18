@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenFocus - Flow State Timer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0a0a12;
+      --text-color: #e0e0e0;
+      --accent-color: #00ff9d;
+      --secondary-color: #bd00ff;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-display: 'Syncopate', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-mono);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: background-color 0.5s ease;
+    }
+
+    /* Ambient Background Animation */
+    .ambient-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a12 100%);
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--secondary-color);
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: var(--accent-color);
+      bottom: -150px;
+      right: -150px;
+      animation-delay: -5s;
+    }
+
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: #00d4ff;
+      top: 40%;
+      left: 60%;
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+
+    /* Main Container */
+    .app-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .back-btn {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+      opacity: 1;
+    }
+
+    /* Timer Section */
+    .timer-wrapper {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .timer-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 4px solid var(--glass-border);
+    }
+
+    .timer-progress {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 4px solid var(--accent-color);
+      border-top-color: transparent;
+      border-left-color: transparent;
+      transform: rotate(-45deg);
+      transition: all 1s linear;
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
+    }
+
+    .timer-display {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 700;
+      text-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .timer-label {
+      position: absolute;
+      bottom: 25%;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-color);
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+    }
+
+    .btn-primary {
+      background: rgba(0, 255, 157, 0.1);
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-color);
+      color: #000;
+    }
+
+    /* Sound Mixer */
+    .sound-mixer {
+      display: flex;
+      gap: 2rem;
+      background: var(--glass-bg);
+      padding: 1.5rem 2.5rem;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+    }
+
+    .sound-control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+    }
+
+    .sound-icon {
+      font-size: 1.5rem;
+      opacity: 0.5;
+      transition: all 0.3s;
+    }
+
+    .sound-control.active .sound-icon {
+      opacity: 1;
+      color: var(--secondary-color);
+      text-shadow: 0 0 10px var(--secondary-color);
+    }
+
+    .volume-slider {
+      width: 4px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .volume-fill {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 0%;
+      background: var(--secondary-color);
+      transition: height 0.2s;
+    }
+
+    .sound-name {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    /* Mode Selector */
+    .mode-selector {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-color);
+      opacity: 0.5;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      padding-bottom: 5px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .mode-btn.active {
+      opacity: 1;
+      border-bottom-color: var(--accent-color);
+    }
+
+    /* Footer */
+    footer {
+      position: absolute;
+      bottom: 1rem;
+      width: 100%;
+      text-align: center;
+      font-size: 0.7rem;
+      opacity: 0.4;
+    }
+
+    @media (max-width: 600px) {
+      .timer-wrapper {
+        width: 250px;
+        height: 250px;
+      }
+      .timer-display {
+        font-size: 3rem;
+      }
+      .sound-mixer {
+        padding: 1rem;
+        gap: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <header>
+    <a href="./index.html" class="logo">ZEN<span style="color:white">FOCUS</span></a>
+    <a href="./index.html" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Portfolio
+    </a>
+  </header>
+
+  <div class="app-container">
+    <div class="timer-wrapper">
+      <div class="timer-circle"></div>
+      <div class="timer-progress" id="progressRing"></div>
+      <div class="timer-display" id="timeDisplay">25:00</div>
+      <div class="timer-label" id="timerLabel">FOCUS</div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="resetBtn">Reset</button>
+      <button class="btn btn-primary" id="toggleBtn">Start</button>
+    </div>
+
+    <div class="sound-mixer">
+      <div class="sound-control" id="rainControl" onclick="toggleSound('rain')">
+        <div class="sound-icon">🌧️</div>
+        <div class="volume-slider">
+          <div class="volume-fill" style="height: 0%"></div>
+        </div>
+        <div class="sound-name">Rain</div>
+      </div>
+      <div class="sound-control" id="cafeControl" onclick="toggleSound('cafe')">
+        <div class="sound-icon">☕</div>
+        <div class="volume-slider">
+          <div class="volume-fill" style="height: 0%"></div>
+        </div>
+        <div class="sound-name">Cafe</div>
+      </div>
+      <div class="sound-control" id="whiteControl" onclick="toggleSound('white')">
+        <div class="sound-icon">🌊</div>
+        <div class="volume-slider">
+          <div class="volume-fill" style="height: 0%"></div>
+        </div>
+        <div class="sound-name">Flow</div>
+      </div>
+    </div>
+
+    <div class="mode-selector">
+      <button class="mode-btn active" onclick="setMode('pomodoro')">Pomodoro (25m)</button>
+      <button class="mode-btn" onclick="setMode('short')">Short Break (5m)</button>
+      <button class="mode-btn" onclick="setMode('long')">Long Break (15m)</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>Designed for Deep Work • Vibe Coding</p>
+  </footer>
+
+  <script>
+    // Audio Context & Sound Generation
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const sounds = {
+      rain: null,
+      cafe: null,
+      white: null
+    };
+
+    // Simple Noise Generator
+    function createNoiseBuffer() {
+      const bufferSize = audioCtx.sampleRate * 2; // 2 seconds
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      return buffer;
+    }
+
+    const noiseBuffer = createNoiseBuffer();
+
+    function createPinkNoise(context) {
+      const bufferSize = 4096;
+      const pinkNoise = (function() {
+          let b0, b1, b2, b3, b4, b5, b6;
+          b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
+          const node = context.createScriptProcessor(bufferSize, 1, 1);
+          node.onaudioprocess = function(e) {
+              const output = e.outputBuffer.getChannelData(0);
+              for (let i = 0; i < bufferSize; i++) {
+                  const white = Math.random() * 2 - 1;
+                  b0 = 0.99886 * b0 + white * 0.0555179;
+                  b1 = 0.99332 * b1 + white * 0.0750759;
+                  b2 = 0.96900 * b2 + white * 0.1538520;
+                  b3 = 0.86650 * b3 + white * 0.3104856;
+                  b4 = 0.55000 * b4 + white * 0.5329522;
+                  b5 = -0.7616 * b5 - white * 0.0168980;
+                  output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                  output[i] *= 0.11; // (roughly) compensate for gain
+                  b6 = white * 0.115926;
+              }
+          };
+          return node;
+      })();
+      return pinkNoise;
+    }
+
+    function createBrownNoise(context) {
+        const bufferSize = 4096;
+        const brownNoise = (function() {
+            let lastOut = 0.0;
+            const node = context.createScriptProcessor(bufferSize, 1, 1);
+            node.onaudioprocess = function(e) {
+                const output = e.outputBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    output[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = output[i];
+                    output[i] *= 3.5; // (roughly) compensate for gain
+                }
+            };
+            return node;
+        })();
+        return brownNoise;
+    }
+
+    // Sound Toggles
+    function toggleSound(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const control = document.getElementById(`${type}Control`);
+      const fill = control.querySelector('.volume-fill');
+      
+      if (sounds[type]) {
+        // Turn off
+        sounds[type].disconnect();
+        sounds[type] = null;
+        control.classList.remove('active');
+        fill.style.height = '0%';
+      } else {
+        // Turn on
+        let source;
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = 0.1;
+
+        if (type === 'rain') {
+          // Pink noise for rain
+          source = createPinkNoise(audioCtx);
+        } else if (type === 'white') {
+          // Brown noise for "Flow" (deeper)
+          source = createBrownNoise(audioCtx);
+        } else if (type === 'cafe') {
+          // Filtered noise for ambient
+           // Just regular white noise with lowpass
+           source = audioCtx.createBufferSource();
+           source.buffer = noiseBuffer;
+           source.loop = true;
+           const filter = audioCtx.createBiquadFilter();
+           filter.type = 'lowpass';
+           filter.frequency.value = 400;
+           source.connect(filter);
+           filter.connect(gainNode);
+           source.start();
+        }
+
+        if (type !== 'cafe') { // cafe handled above
+            source.connect(gainNode);
+        }
+        
+        gainNode.connect(audioCtx.destination);
+        sounds[type] = gainNode; // Store gain node to mute/disconnect? No, stored logic is messy. 
+        // Better: store the source/node to disconnect.
+        sounds[type] = { disconnect: () => { source.disconnect(); gainNode.disconnect(); } };
+
+        control.classList.add('active');
+        fill.style.height = '70%';
+      }
+    }
+
+    // Timer Logic
+    let timeLeft = 25 * 60;
+    let initialTime = 25 * 60;
+    let timerId = null;
+    let isRunning = false;
+
+    const timeDisplay = document.getElementById('timeDisplay');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const progressRing = document.getElementById('progressRing');
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateDisplay() {
+      timeDisplay.textContent = formatTime(timeLeft);
+      document.title = `${formatTime(timeLeft)} - ZenFocus`;
+      
+      // Update progress ring
+      const progress = 1 - (timeLeft / initialTime);
+      // Rotation logic for ring visualization could be added here
+    }
+
+    function startTimer() {
+      if (!isRunning) {
+        isRunning = true;
+        toggleBtn.textContent = 'Pause';
+        toggleBtn.classList.remove('btn-primary');
+        timerId = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateDisplay();
+          } else {
+            clearInterval(timerId);
+            isRunning = false;
+            toggleBtn.textContent = 'Start';
+            toggleBtn.classList.add('btn-primary');
+            alert('Flow session complete.');
+            // Play chime?
+          }
+        }, 1000);
+      } else {
+        clearInterval(timerId);
+        isRunning = false;
+        toggleBtn.textContent = 'Resume';
+        toggleBtn.classList.add('btn-primary');
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerId);
+      isRunning = false;
+      timeLeft = initialTime;
+      toggleBtn.textContent = 'Start';
+      toggleBtn.classList.add('btn-primary');
+      updateDisplay();
+    }
+
+    function setMode(mode) {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      if (mode === 'pomodoro') {
+        initialTime = 25 * 60;
+        document.getElementById('timerLabel').textContent = 'FOCUS';
+      } else if (mode === 'short') {
+        initialTime = 5 * 60;
+        document.getElementById('timerLabel').textContent = 'REST';
+      } else if (mode === 'long') {
+        initialTime = 15 * 60;
+        document.getElementById('timerLabel').textContent = 'RECHARGE';
+      }
+      resetTimer();
+    }
+
+    toggleBtn.addEventListener('click', startTimer);
+    resetBtn.addEventListener('click', resetTimer);
+
+  </script>
+</body>
+</html>
