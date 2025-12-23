@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SESTEK PMO | Lessons Learned Arcade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="lessons-learned.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-rocket"></i>
+                <span>PMO Arcade</span>
+            </div>
+            
+            <div class="user-profile-mini">
+                <div class="avatar" id="userAvatar">PM</div>
+                <div class="user-info">
+                    <h3 id="userNameDisplay">Project Manager</h3>
+                    <div class="level-badge">Lvl <span id="userLevel">1</span></div>
+                </div>
+            </div>
+
+            <div class="xp-container">
+                <div class="xp-bar">
+                    <div class="xp-fill" id="xpFill" style="width: 0%"></div>
+                </div>
+                <div class="xp-text"><span id="currentXP">0</span> / <span id="nextLevelXP">100</span> XP</div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </li>
+                <li data-tab="add-lesson">
+                    <i class="fa-solid fa-plus-circle"></i> Add Lesson
+                </li>
+                <li data-tab="leaderboard">
+                    <i class="fa-solid fa-trophy"></i> Leaderboard
+                </li>
+                <li data-tab="achievements">
+                    <i class="fa-solid fa-medal"></i> Achievements
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Lessons Learned Library</h1>
+                <div class="search-bar">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search projects, tags, issues...">
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <section id="dashboard" class="view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-box blue"><i class="fa-solid fa-book-open"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Lessons</h3>
+                            <span id="totalLessons">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box green"><i class="fa-solid fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3>Actions Taken</h3>
+                            <span id="totalActions">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box purple"><i class="fa-solid fa-lightbulb"></i></div>
+                        <div class="stat-info">
+                            <h3>Contributions</h3>
+                            <span id="userContributions">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feed-header">
+                    <h2>Recent Insights</h2>
+                    <div class="filter-tabs">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="technical">Technical</button>
+                        <button class="filter-btn" data-filter="process">Process</button>
+                        <button class="filter-btn" data-filter="people">People</button>
+                    </div>
+                </div>
+
+                <div class="lessons-grid" id="lessonsContainer">
+                    <!-- Lessons will be injected here via JS -->
+                </div>
+            </section>
+
+            <!-- Add Lesson View -->
+            <section id="add-lesson" class="view hidden">
+                <div class="form-container">
+                    <h2><i class="fa-solid fa-pen-nib"></i> Contribute Insight</h2>
+                    <p class="subtitle">Share your experience to earn XP and help the team grow.</p>
+                    
+                    <form id="lessonForm">
+                        <div class="form-group">
+                            <label>Project Name</label>
+                            <input type="text" id="projectName" required placeholder="e.g. Speech Analytics V2">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Category</label>
+                                <select id="category" required>
+                                    <option value="technical">Technical</option>
+                                    <option value="process">Process</option>
+                                    <option value="people">People & Communication</option>
+                                    <option value="financial">Financial</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group half">
+                                <label>Tags (comma separated)</label>
+                                <input type="text" id="tags" placeholder="e.g. deployment, api, delay">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>What Happened? (The Event)</label>
+                            <textarea id="whatHappened" rows="3" required placeholder="Describe the situation clearly..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Impact / Cost (The Consequence)</label>
+                            <textarea id="impact" rows="2" required placeholder="What was the effect on time, budget, or quality?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Action Taken (The Solution)</label>
+                            <textarea id="actionTaken" rows="2" required placeholder="How did you handle it immediately?"></textarea>
+                        </div>
+
+                        <div class="form-group highlight">
+                            <label><i class="fa-solid fa-wand-magic-sparkles"></i> Future Recommendation</label>
+                            <textarea id="recommendation" rows="3" required placeholder="What should we do differently next time?"></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <span>Publish Lesson</span>
+                            <span class="xp-reward">+50 XP</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Leaderboard View -->
+            <section id="leaderboard" class="view hidden">
+                <div class="leaderboard-container">
+                    <h2>Top Contributors</h2>
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <!-- Populated by JS -->
+                        <div class="leaderboard-header">
+                            <span>Rank</span>
+                            <span>User</span>
+                            <span>Level</span>
+                            <span>Points</span>
+                        </div>
+                        <!-- Items -->
+                    </div>
+                </div>
+            </section>
+
+             <!-- Achievements View -->
+             <section id="achievements" class="view hidden">
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Notification / Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-icon"><i class="fa-solid fa-check"></i></div>
+        <div class="toast-content">
+            <h4 id="toastTitle">Success!</h4>
+            <p id="toastMessage">Lesson added successfully.</p>
+        </div>
+    </div>
+
+    <script src="lessons-learned.js"></script>
+</body>
+</html>
