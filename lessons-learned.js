@@ -1,348 +1,408 @@
 // Constants & Config
-const STORAGE_KEY_LESSONS = 'sestek_pmo_lessons';
-const STORAGE_KEY_USER = 'sestek_pmo_user';
+const STORAGE_KEY_LESSONS = 'lessons_learners_data_v2';
+const STORAGE_KEY_USER = 'lessons_learners_user_v2';
 
-// Mock Data for Initial Load - REPLACED WITH REAL DATA
+// Mock Data for Initial Load - EXTENSIVE DUMMY DATA
 const INITIAL_LESSONS = [
     {
-        id: 1,
-        project: "PHP - Knovvu VA",
-        title: "HTML tags not supported on mobile",
+        id: 101,
+        project: "Project Phoenix",
+        title: "Database Indexing Strategy Failure",
         category: "Technical",
-        tags: ["Mobile", "HTML", "Markdown"],
-        whatHappened: "Some prompts in the design include certain HTML tags which are different in format between web channel and mobile application. Mobile app has its own markdown structure for the formatting changes. This is not an automated process, however we must consider future projects with Sestek mobile app package and we should be able to support same format by default, without any additional developments or efforts.",
-        impact: "We need to inform product team to take necessary action to implement related feature to VA for possible future mobile channel implementations.",
-        actionTaken: "Informed Product Team",
-        recommendation: "Implement unified formatting support for mobile and web channels in VA.",
-        region: "USA",
-        product: "Virtual Agent",
-        stage: "Deployment",
-        deploymentType: "Cloud",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open', // open, assigned, completed
-        assignedTo: null
-    },
-    {
-        id: 2,
-        project: "PHP - Knovvu VA",
-        title: "Must get approval from customer before OpenAI document training",
-        category: "Process",
-        tags: ["OpenAI", "Security", "Approval"],
-        whatHappened: "We uploaded initial version of the document provided by customer before getting approval from them.",
-        impact: "Potential security/privacy violation risk.",
-        actionTaken: "We have to make sure that the customer acknowledges any document/link provided by customer is going to become public once uploaded to open AI.",
-        recommendation: "Get official approval from customer before uploading documents to OpenAI.",
-        region: "USA",
-        product: "Virtual Agent",
-        stage: "Deployment",
-        deploymentType: "Cloud",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 3,
-        project: "PHP - Knovvu VA",
-        title: "Mobile version release to Appstore/Google Play",
-        category: "Process",
-        tags: ["Mobile", "Store", "Release"],
-        whatHappened: "We wanted to make upgrades on the mobile sdk, however it was not compatible with customer's mobile release schedule",
-        impact: "Delays in feature availability.",
-        actionTaken: "Coordinated with customer.",
-        recommendation: "Sync with customer for mobile app upgrades and releases schedules beforehand.",
-        region: "USA",
-        product: "Virtual Agent",
-        stage: "Deployment",
-        deploymentType: "Cloud",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 4,
-        project: "PHP - Knovvu VA",
-        title: "Test environment access should be mandatory for web services",
-        category: "Technical",
-        tags: ["Access", "Network", "Test Env"],
-        whatHappened: "We faced difficulties trying to implement web service integrations as the customer didn't allow us to directly send requests to their test environment from our local network (outside of US)",
-        impact: "Implementation delay and difficulty in testing.",
-        actionTaken: "Workaround used.",
-        recommendation: "Mandate relaxed access for test environments from customers in SoW.",
-        region: "USA",
-        product: "Virtual Agent",
-        stage: "Deployment",
-        deploymentType: "Cloud",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 5,
-        project: "Axa Knovvu Analytics",
-        title: "RTG enablement süreçlerinde yaşanan aksaklıklar",
-        category: "Process",
-        tags: ["RTG", "Roles", "Internal Communication"],
-        whatHappened: "On prem CA projesinde RTG ürününün kurulum sonrası konfigürasyonları ve enable edilmesi sürecinde internal ekipler arası görev tanımlarının netleştirilemediği tespit edilmiştir.",
-        impact: "Kurulum sürecinde gecikme ve iletişim kopukluğu.",
-        actionTaken: "Tenant oluşturma ve port bilgileri paylaşıldı.",
-        recommendation: "RTG süreci için App Support ve DevOps arasındaki görev dağılımı netleştirilmeli ve PM planına optional task olarak eklenmeli.",
-        region: "TR",
-        product: "Analytics",
-        stage: "Deployment",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 6,
-        project: "Corendon Airlines",
-        title: "Corendon VA - Customer Dissatisfaction",
-        category: "People",
-        tags: ["Support", "Expectation", "Operational"],
-        whatHappened: "Customer stated that our working system was not suitable for them. In the mentioned projects, external service purchases are not carried out on a project basis but operationally.",
-        impact: "Customer dissatisfaction regarding support model.",
-        actionTaken: "Feedback received.",
-        recommendation: "Add operational support process to our range of services in addition to project-oriented progress.",
-        region: "TR",
-        product: "Virtual Agent",
-        stage: "Deployment",
-        deploymentType: "Cloud",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 7,
-        project: "Fibabanka - VA",
-        title: "Fibabanka Deployment Issues (Deployment Type Changing)",
-        category: "Process",
-        tags: ["Deployment", "SoW", "Bank"],
-        whatHappened: "In By Sestek projects, Linux management is done by the customer and our disk partition methods are not accepted. The deployment type for bank projects has been determined as By Customer.",
-        impact: "Deployment method had to be changed mid-project.",
-        actionTaken: "We changed the deployment method and returned to the by customer method.",
-        recommendation: "For bank projects, default to 'By Customer' deployment or clarify strict security requirements in SoW explicitly.",
-        region: "TR",
-        product: "Virtual Agent",
-        stage: "Deployment",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 8,
-        project: "Hepsiburada Knovvu VA - Faz 2",
-        title: "Deadline Clarification and Sprint Planning Adjustment",
-        category: "Process",
-        tags: ["Planning", "Agile", "Communication"],
-        whatHappened: "Go-live deadline was initially communicated as Dec 23, but actual target was Dec 17. A blocker bug fix had to be prioritized urgently.",
-        impact: "Escalation to Product Owner and sprint replanning.",
-        actionTaken: "Priorities realigned.",
-        recommendation: "Clear and written communication of critical deadlines is essential. Early clarification of key dates.",
-        region: "TR",
-        product: "Virtual Agent",
-        stage: "Deployment",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 9,
-        project: "MyQM - Assist Digital SR&TTS POC",
-        title: "Software requirements for MRCP SR/TTS",
-        category: "Technical",
-        tags: ["Docs", "OS", "Windows"],
-        whatHappened: "In docs.knovvu, MRCP requirements state that OS of the servers should be Windows 11. This is incorrect, it should be Windows Server 2019 or higher.",
-        impact: "Misinformation in documentation.",
-        actionTaken: "Feedback was given to product team.",
-        recommendation: "Update docs.knovvu to specify Windows Server versions instead of Desktop OS.",
+        tags: ["Database", "Performance", "SQL"],
+        whatHappened: "We deployed a new feature that relied on a non-indexed column for filtering, causing the database CPU to spike to 100% during peak hours.",
+        impact: "System downtime for 20 minutes, slow response times for 2 hours.",
+        actionTaken: "Added the missing index and optimized the query.",
+        recommendation: "Review execution plans for all new queries in code review.",
         region: "EU",
-        product: "Core",
-        stage: "POC",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 10,
-        project: "Fiba Sigorta&Emeklilik",
-        title: "VA / On-prem Call-center and Positioning of Hummingbird",
-        category: "Technical",
-        tags: ["Architecture", "On-Prem", "Hybrid"],
-        whatHappened: "Hummingbird installation had been made as cloud on SESTEK side for an on-prem customer, which caused architectural issues.",
-        impact: "SIP messaging and access problems.",
-        actionTaken: "Warned by Software Architect.",
-        recommendation: "Proceed with on-premise hummingbird installation for customers which have on-prem call center.",
-        region: "TR",
-        product: "Analytics",
-        stage: "Deployment",
+        product: "Core Platform",
+        stage: "Production",
         deploymentType: "Cloud",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
+        author: "Sarah Jenkins",
+        date: "2023-11-15T10:30:00Z",
+        likes: 12,
+        recommendationStatus: 'completed',
+        assignedTo: "Mike Ross"
+    },
+    {
+        id: 102,
+        project: "Project Phoenix",
+        title: "Misaligned Stakeholder Expectations",
+        category: "People",
+        tags: ["Communication", "Stakeholders"],
+        whatHappened: "The client expected the reporting module to be real-time, but the architecture was designed for daily batch processing.",
+        impact: "Client dissatisfaction and scope creep late in the project.",
+        actionTaken: "Negotiated a phased approach to deliver near real-time updates.",
+        recommendation: "Define 'real-time' explicitly in the SOW with latency metrics.",
+        region: "US",
+        product: "Reporting",
+        stage: "UAT",
+        deploymentType: "SaaS",
+        author: "David Kim",
+        date: "2023-11-20T14:15:00Z",
+        likes: 8,
         recommendationStatus: 'open',
         assignedTo: null
     },
     {
-        id: 11,
-        project: "Hepsiburada Knovvu VA - Faz 2",
-        title: "HepsiJet VA – 401 Error Due to Expired Token",
+        id: 103,
+        project: "Alpha Mobile App",
+        title: "iOS 17 Beta Crash",
         category: "Technical",
-        tags: ["WhatsApp", "Token", "Meta"],
-        whatHappened: "During testing, 401 Unauthorized errors occurred because the Meta token valid for 60 days had expired.",
-        impact: "Service interruption in test environment.",
-        actionTaken: "Token renewed.",
-        recommendation: "Implement automated token renewal or monitoring for Meta tokens. Review long-term token docs.",
-        region: "TR",
-        product: "Virtual Agent",
-        stage: "Deployment",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
+        tags: ["Mobile", "iOS", "Beta"],
+        whatHappened: "The app crashed immediately on launch on devices running the iOS 17 developer beta due to a deprecated API usage.",
+        impact: "Negative reviews from early adopters.",
+        actionTaken: "Hotfix released within 24 hours.",
+        recommendation: "Include beta OS versions in the QA test matrix.",
+        region: "Global",
+        product: "Mobile App",
+        stage: "Maintenance",
+        deploymentType: "App Store",
+        author: "Emily Chen",
+        date: "2023-10-05T09:00:00Z",
+        likes: 25,
+        recommendationStatus: 'completed',
+        assignedTo: "Tom Hardy"
     },
     {
-        id: 12,
-        project: "THY Knovvu CA POC",
-        title: "DB credentials",
-        category: "Technical",
-        tags: ["DB", "Security", "Access"],
-        whatHappened: "We requested separate users for all DB's, however Core DB's (sr & lms) should be accessed with the same user.",
-        impact: "Confusion during setup.",
-        actionTaken: " Clarified requirement.",
-        recommendation: "Specify in docs that Core DBs should be accessed with the same user.",
-        region: "TR",
-        product: "Analytics",
-        stage: "POC",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 13,
-        project: "THY Knovvu CA POC",
-        title: "Deployment risks and customer requirements",
-        category: "Process",
-        tags: ["Restrictions", "POC", "Notes"],
-        whatHappened: "THY had many restrictions and requirements that affected the deployment process for the POC.",
-        impact: "Project didn't move forward to live.",
-        actionTaken: "Internal review sessions held.",
-        recommendation: "Review internal notes thoroughly before re-initiating deployment discussions with THY.",
-        region: "TR",
-        product: "Analytics",
-        stage: "POC",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 14,
-        project: "Burgan Bank",
-        title: "Call Recording - Separated Calls",
-        category: "Technical",
-        tags: ["Genesys", "Configuration", "RTP"],
-        whatHappened: "Calls were recorded as multiple separated calls because rtp.multichantimeout parameter in Genesys was 60000.",
-        impact: "Fragmented recordings.",
-        actionTaken: "Customer changed value to zero.",
-        recommendation: "Ensure rtp.multichantimeout is set to zero in Genesys integrations.",
-        region: "TR",
-        product: "Analytics",
-        stage: "Deployment",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 15,
-        project: "Axa Knovvu Analytics",
-        title: "Email Sending Failure After Version Upgrade",
-        category: "Technical",
-        tags: ["Upgrade", "Library", "Breaking Change"],
-        whatHappened: "Email sending stopped working after upgrade due to a mail kit library change and new certificate requirement.",
-        impact: "Delays in project schedule.",
-        actionTaken: "Root cause identified.",
-        recommendation: "Include library changes in release notes. Add regression tests for email sending. Proactively communicate breaking changes.",
-        region: "TR",
-        product: "Analytics",
-        stage: "Deployment",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 16,
-        project: "Halkbank CA",
-        title: "Halkbank CA - DB Issue (SR)",
-        category: "Technical",
-        tags: ["MSSQL", "Compatibility", "Version"],
-        whatHappened: "Customer prepared MSSQL 2022, but SR had issues during deployment despite docs stating 2016+ is supported.",
-        impact: "Deployment failure.",
-        actionTaken: "Software team working on a patch.",
-        recommendation: "Verify successful results with all deployment methods (DB versions) to prevent breaking changes.",
-        region: "TR",
-        product: "Analytics",
-        stage: "Deployment",
-        deploymentType: "On Prem",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
-        recommendationStatus: 'open',
-        assignedTo: null
-    },
-    {
-        id: 17,
-        project: "AvidXchange Knovvu CA",
-        title: "Internal go-live information",
-        category: "Process",
-        tags: ["Communication", "DevOps", "Cloud"],
-        whatHappened: "Devops team was not aware that actual prod calls were coming to the system for Cloud CA project.",
-        impact: "Technical problem faced due to lack of awareness.",
-        actionTaken: "New task added to project plan.",
-        recommendation: "PM must inform internal stakeholders (DevOps) once production traffic milestone is reached.",
-        region: "USA",
-        product: "Analytics",
-        stage: "Deployment",
+        id: 104,
+        project: "Data Lake Migration",
+        title: "Cost Overrun on Cloud Storage",
+        category: "Financial",
+        tags: ["Cloud", "Cost", "AWS"],
+        whatHappened: "We moved archival data to standard S3 storage instead of Glacier, resulting in a 300% higher bill than estimated.",
+        impact: "Budget variance for Q4.",
+        actionTaken: "Moved data to Glacier and set up lifecycle policies.",
+        recommendation: "Implement automated cost alerts and review storage classes before migration.",
+        region: "US",
+        product: "Data Infrastructure",
+        stage: "Migration",
         deploymentType: "Cloud",
-        author: "System",
-        date: new Date().toISOString(),
-        likes: 0,
+        author: "Michael Scott",
+        date: "2023-12-01T11:45:00Z",
+        likes: 18,
+        recommendationStatus: 'completed',
+        assignedTo: "Oscar M."
+    },
+    {
+        id: 105,
+        project: "Legacy CRM Integration",
+        title: "API Rate Limiting Bottleneck",
+        category: "Technical",
+        tags: ["API", "Integration", "Legacy"],
+        whatHappened: "The legacy CRM had a rate limit of 100 requests/minute which we hit during the initial data sync.",
+        impact: "Sync process failed and had to be restarted multiple times.",
+        actionTaken: "Implemented exponential backoff and throttling.",
+        recommendation: "Verify third-party API limits during the design phase.",
+        region: "EU",
+        product: "CRM Connector",
+        stage: "Development",
+        deploymentType: "On Prem",
+        author: "Jim Halpert",
+        date: "2023-11-28T16:20:00Z",
+        likes: 5,
         recommendationStatus: 'open',
         assignedTo: null
+    },
+    {
+        id: 106,
+        project: "Project Apollo",
+        title: "Time Zone Confusion in Scheduling",
+        category: "Process",
+        tags: ["Scheduling", "Timezones", "Global"],
+        whatHappened: "The scheduling feature saved dates in local user time instead of UTC, causing errors for international teams.",
+        impact: "Missed meetings and confusion.",
+        actionTaken: "Refactored backend to store everything in UTC.",
+        recommendation: "Always store times in UTC and convert to local time only for display.",
+        region: "APAC",
+        product: "Scheduler",
+        stage: "Testing",
+        deploymentType: "SaaS",
+        author: "Pam Beesly",
+        date: "2023-12-10T13:10:00Z",
+        likes: 15,
+        recommendationStatus: 'completed',
+        assignedTo: "Ryan H."
+    },
+    {
+        id: 107,
+        project: "SecurePay Gateway",
+        title: "Expired SSL Certificate",
+        category: "Process",
+        tags: ["Security", "Ops", "Certificate"],
+        whatHappened: "The production SSL certificate expired on a Sunday, causing browser security warnings.",
+        impact: "Loss of customer trust and transactions for 4 hours.",
+        actionTaken: "Renewed certificate manually.",
+        recommendation: "Set up auto-renewal (Let's Encrypt) or calendar reminders 30 days in advance.",
+        region: "Global",
+        product: "Payments",
+        stage: "Production",
+        deploymentType: "Cloud",
+        author: "Stanley Hudson",
+        date: "2023-09-15T08:00:00Z",
+        likes: 42,
+        recommendationStatus: 'completed',
+        assignedTo: "Kevin M."
+    },
+    {
+        id: 108,
+        project: "Project Phoenix",
+        title: "Lack of Documentation for Onboarding",
+        category: "People",
+        tags: ["Onboarding", "Docs", "Team"],
+        whatHappened: "New developers took 3 weeks to set up their environment because the README was outdated.",
+        impact: "Reduced productivity and frustration.",
+        actionTaken: "Updated the README and created a setup script.",
+        recommendation: "Make 'Update Documentation' a requirement for closing setup-related tickets.",
+        region: "US",
+        product: "Core Platform",
+        stage: "Development",
+        deploymentType: "N/A",
+        author: "Toby Flenderson",
+        date: "2023-11-05T10:00:00Z",
+        likes: 7,
+        recommendationStatus: 'open',
+        assignedTo: null
+    },
+    {
+        id: 109,
+        project: "Inventory System",
+        title: "Barcode Scanner Compatibility",
+        category: "Technical",
+        tags: ["Hardware", "Integration"],
+        whatHappened: "The new web-based system didn't support the legacy serial port scanners used in the warehouse.",
+        impact: "Warehouse operations halted for 1 day.",
+        actionTaken: "Purchased USB-to-Serial adapters as a temporary fix.",
+        recommendation: "Survey existing hardware infrastructure before software upgrades.",
+        region: "US",
+        product: "Inventory",
+        stage: "Rollout",
+        deploymentType: "On Prem",
+        author: "Darryl Philbin",
+        date: "2023-10-22T14:45:00Z",
+        likes: 9,
+        recommendationStatus: 'assigned',
+        assignedTo: "Val B."
+    },
+    {
+        id: 110,
+        project: "Marketing Site Redesign",
+        title: "Accessibility Compliance Lawsuit Risk",
+        category: "People",
+        tags: ["Accessibility", "Legal", "WCAG"],
+        whatHappened: "The new color scheme failed WCAG contrast ratios, posing a legal risk.",
+        impact: "Redesign required late in the process.",
+        actionTaken: "Adjusted color palette.",
+        recommendation: "Run automated accessibility audits (Lighthouse/Axe) in the CI/CD pipeline.",
+        region: "EU",
+        product: "Website",
+        stage: "Design",
+        deploymentType: "Web",
+        author: "Oscar Martinez",
+        date: "2023-11-30T11:00:00Z",
+        likes: 30,
+        recommendationStatus: 'completed',
+        assignedTo: "Angela M."
+    },
+    {
+        id: 111,
+        project: "HR Portal",
+        title: "GDPR Data Export Failure",
+        category: "Process",
+        tags: ["GDPR", "Compliance", "Legal"],
+        whatHappened: "We received a data subject access request and couldn't generate the export automatically.",
+        impact: "Manual work required to compile data.",
+        actionTaken: "Manually compiled data.",
+        recommendation: "Build a 'Download My Data' button for users to ensure compliance and reduce manual work.",
+        region: "EU",
+        product: "HR",
+        stage: "Production",
+        deploymentType: "SaaS",
+        author: "Holly Flax",
+        date: "2023-10-10T09:30:00Z",
+        likes: 11,
+        recommendationStatus: 'open',
+        assignedTo: null
+    },
+    {
+        id: 112,
+        project: "Video Streaming Service",
+        title: "CDN Cache Invalidation Delay",
+        category: "Technical",
+        tags: ["CDN", "Caching", "Video"],
+        whatHappened: "Users were seeing old versions of videos because the CDN cache wasn't invalidating correctly after updates.",
+        impact: "Customer complaints.",
+        actionTaken: "Manually purged cache.",
+        recommendation: "Implement versioned filenames (hashing) for assets to bust cache automatically.",
+        region: "Global",
+        product: "Streaming",
+        stage: "Production",
+        deploymentType: "Cloud",
+        author: "Kelly Kapoor",
+        date: "2023-12-05T15:00:00Z",
+        likes: 4,
+        recommendationStatus: 'assigned',
+        assignedTo: "Ryan H."
+    },
+    {
+        id: 113,
+        project: "Project Phoenix",
+        title: "Scope Creep on Search Feature",
+        category: "Process",
+        tags: ["Scope", "Management"],
+        whatHappened: "The search feature grew from a simple keyword search to a full-blown elasticsearch implementation.",
+        impact: "Project delayed by 2 weeks.",
+        actionTaken: "Descoped advanced filters.",
+        recommendation: "Stick to the MVP definition and move 'nice-to-haves' to Phase 2.",
+        region: "US",
+        product: "Core Platform",
+        stage: "Development",
+        deploymentType: "Cloud",
+        author: "Jan Levinson",
+        date: "2023-11-12T10:00:00Z",
+        likes: 14,
+        recommendationStatus: 'completed',
+        assignedTo: "Michael S."
+    },
+    {
+        id: 114,
+        project: "Logistics Dashboard",
+        title: "Map API License Violation",
+        category: "Financial",
+        tags: ["License", "Legal", "Maps"],
+        whatHappened: "We used a free tier map API for a commercial internal tool, violating terms of service.",
+        impact: "Service blocked by provider.",
+        actionTaken: "Upgraded to enterprise plan.",
+        recommendation: "Review licensing terms for all 3rd party APIs before integration.",
+        region: "Global",
+        product: "Logistics",
+        stage: "Production",
+        deploymentType: "Web",
+        author: "Andy Bernard",
+        date: "2023-09-20T13:30:00Z",
+        likes: 6,
+        recommendationStatus: 'completed',
+        assignedTo: "Dwight S."
+    },
+    {
+        id: 115,
+        project: "User Auth Service",
+        title: "Password Hashing Algorithm Weakness",
+        category: "Technical",
+        tags: ["Security", "Auth", "Crypto"],
+        whatHappened: "Security audit revealed we were using MD5 for legacy accounts.",
+        impact: "High severity vulnerability.",
+        actionTaken: "Migrated all hashes to bcrypt on next login.",
+        recommendation: "Conduct annual security audits and keep crypto libraries up to date.",
+        region: "Global",
+        product: "Auth",
+        stage: "Audit",
+        deploymentType: "Backend",
+        author: "Creed Bratton",
+        date: "2023-10-31T23:59:00Z",
+        likes: 99,
+        recommendationStatus: 'open',
+        assignedTo: null
+    },
+    {
+        id: 116,
+        project: "E-commerce Checkout",
+        title: "Payment Gateway Timeout Handling",
+        category: "Technical",
+        tags: ["Payments", "UX", "Error Handling"],
+        whatHappened: "When the payment gateway timed out, the user saw a blank screen instead of an error message.",
+        impact: "Abandoned carts and duplicate charges.",
+        actionTaken: "Added timeout handling and user feedback.",
+        recommendation: "Implement robust error handling and idempotent requests for payments.",
+        region: "EU",
+        product: "Store",
+        stage: "Production",
+        deploymentType: "Web",
+        author: "Phyllis Vance",
+        date: "2023-11-25T12:00:00Z",
+        likes: 10,
+        recommendationStatus: 'assigned',
+        assignedTo: "Bob V."
+    },
+    {
+        id: 117,
+        project: "Mobile Wallet",
+        title: "Biometric Auth Bypass",
+        category: "Technical",
+        tags: ["Security", "Mobile"],
+        whatHappened: "Biometric prompt could be dismissed, allowing access to the previous screen.",
+        impact: "Security flaw.",
+        actionTaken: "Fixed navigation stack.",
+        recommendation: "Test security flows specifically for navigation edge cases.",
+        region: "APAC",
+        product: "Wallet",
+        stage: "Testing",
+        deploymentType: "Mobile",
+        author: "Meredith Palmer",
+        date: "2023-12-15T16:00:00Z",
+        likes: 22,
+        recommendationStatus: 'completed',
+        assignedTo: "Jim H."
+    },
+    {
+        id: 118,
+        project: "Internal Wiki",
+        title: "Search Relevance Poor",
+        category: "Process",
+        tags: ["UX", "Search", "Content"],
+        whatHappened: "Users couldn't find documents because the search engine didn't index PDF contents.",
+        impact: "Low adoption of the wiki.",
+        actionTaken: "Added OCR and text extraction for attachments.",
+        recommendation: "Ensure search functionality covers all content types, including attachments.",
+        region: "Internal",
+        product: "Wiki",
+        stage: "Production",
+        deploymentType: "Intranet",
+        author: "Erin Hannon",
+        date: "2023-11-08T11:00:00Z",
+        likes: 3,
+        recommendationStatus: 'open',
+        assignedTo: null
+    },
+    {
+        id: 119,
+        project: "Customer Portal",
+        title: "Dark Mode Contrast Issues",
+        category: "People",
+        tags: ["UI/UX", "Design", "Dark Mode"],
+        whatHappened: "Dark mode implementation made some text unreadable on grey backgrounds.",
+        impact: "User complaints.",
+        actionTaken: "Revised color tokens.",
+        recommendation: "Test all UI changes in both light and dark modes.",
+        region: "US",
+        product: "Portal",
+        stage: "UAT",
+        deploymentType: "Web",
+        author: "Gabe Lewis",
+        date: "2023-10-18T14:00:00Z",
+        likes: 5,
+        recommendationStatus: 'completed',
+        assignedTo: "Kelly K."
+    },
+    {
+        id: 120,
+        project: "Project Phoenix",
+        title: "Meeting Overload",
+        category: "People",
+        tags: ["Culture", "Productivity"],
+        whatHappened: "Developers were spending 4 hours a day in meetings, reducing coding time.",
+        impact: "Velocity dropped by 20%.",
+        actionTaken: "Implemented 'No Meeting Wednesdays'.",
+        recommendation: "Protect maker time by clustering meetings or having dedicated deep work days.",
+        region: "Global",
+        product: "All",
+        stage: "Process",
+        deploymentType: "N/A",
+        author: "Kevin Malone",
+        date: "2023-09-10T09:00:00Z",
+        likes: 150,
+        recommendationStatus: 'completed',
+        assignedTo: "Michael S."
     }
 ];
 
@@ -370,6 +430,7 @@ const views = document.querySelectorAll('.view');
 const navLinks = document.querySelectorAll('.nav-links li');
 const lessonForm = document.getElementById('lessonForm');
 const lessonsContainer = document.getElementById('lessonsContainer');
+const activityList = document.getElementById('activityList'); // New element
 const toast = document.getElementById('toast');
 
 // Initialization
@@ -377,6 +438,7 @@ function init() {
     loadData();
     renderUser();
     renderStats();
+    renderActivityFeed(); // New render call
     renderFeed();
     setupEventListeners();
     checkAchievements();
@@ -416,10 +478,6 @@ function switchTab(tabId) {
     views.forEach(view => {
         view.classList.remove('active');
         if (view.id === tabId) view.classList.add('active');
-        if (view.id === tabId && !view.classList.contains('hidden')) {
-             // ensure hidden class is handled if I used it in CSS separate from active
-             // My CSS uses .view { display: none } .view.active { display: block }
-        }
     });
 
     navLinks.forEach(link => {
@@ -431,40 +489,78 @@ function switchTab(tabId) {
     if (tabId === 'leaderboard') renderLeaderboard();
     if (tabId === 'achievements') renderAchievements();
     if (tabId === 'my-tasks') renderMyTasks();
+    if (tabId === 'dashboard') {
+        renderStats();
+        renderActivityFeed();
+        renderFeed();
+    }
 }
 
 // Rendering
 function renderUser() {
-    document.getElementById('userNameDisplay').textContent = currentUser.name;
-    document.getElementById('userAvatar').textContent = currentUser.avatar;
+    document.getElementById('userNameDisplay').textContent = currentUser.name || 'Guest';
+    document.getElementById('userAvatar').textContent = currentUser.avatar || 'G';
     document.getElementById('userLevel').textContent = currentUser.level;
     document.getElementById('currentXP').textContent = currentUser.xp;
     
     const nextLevelXP = (currentUser.level + 1) * 100;
     document.getElementById('nextLevelXP').textContent = nextLevelXP;
     
-    const progress = (currentUser.xp % 100); 
-    // Simplified Leveling: Level 1 = 0-99, Level 2 = 100-199
-    // So progress in current level is just xp % 100 usually, but let's make it robust
-    // Actually simpler: 
-    // Level 1 starts at 0. Next level at 100.
-    // Level 2 starts at 100. Next level at 200.
-    // Progress % is (xp - (level-1)*100) / 100 * 100
-    
-    // Let's stick to simple 100 XP per level for demo
     const xpInLevel = currentUser.xp % 100;
     document.getElementById('xpFill').style.width = `${xpInLevel}%`;
 }
 
 function renderStats() {
     document.getElementById('totalLessons').textContent = lessons.length;
-    
-    // Count actions (just assuming every lesson has an action)
-    document.getElementById('totalActions').textContent = lessons.length;
-
-    // User contributions
+    document.getElementById('totalActions').textContent = lessons.filter(l => l.recommendationStatus === 'completed').length;
     const myLessons = lessons.filter(l => l.author === currentUser.name).length;
     document.getElementById('userContributions').textContent = myLessons;
+}
+
+// NEW: Activity Feed Rendering
+function renderActivityFeed() {
+    if (!activityList) return;
+    
+    activityList.innerHTML = '';
+    
+    // Filter for completed tasks not by current user (to show community activity)
+    // Or just all completed tasks. Let's show all completed tasks.
+    const completedTasks = lessons
+        .filter(l => l.recommendationStatus === 'completed')
+        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Most recent first
+        .slice(0, 5); // Show top 5
+
+    if (completedTasks.length === 0) {
+        activityList.innerHTML = '<p style="color: #9CA3AF; text-align: center;">No recent activity.</p>';
+        return;
+    }
+
+    completedTasks.forEach(task => {
+        const item = document.createElement('div');
+        item.className = 'activity-item';
+        
+        // Initials for avatar
+        const assignedName = task.assignedTo || 'Unknown';
+        const initials = assignedName.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+        
+        item.innerHTML = `
+            <div class="activity-avatar">${initials}</div>
+            <div class="activity-content">
+                <div>
+                    <span style="font-weight: 600; color: #111827;">${assignedName}</span> 
+                    completed a task for 
+                    <span style="font-weight: 500; color: #4F46E5;">${task.project}</span>
+                </div>
+                <div style="color: #4B5563; font-size: 0.85rem; margin-top: 0.2rem;">
+                    <i class="fa-solid fa-check-circle" style="color: #10B981;"></i> ${task.recommendation}
+                </div>
+            </div>
+            <div class="activity-time">
+                ${new Date(task.date).toLocaleDateString()}
+            </div>
+        `;
+        activityList.appendChild(item);
+    });
 }
 
 // Modal Logic
@@ -475,7 +571,6 @@ window.openDetailsModal = function(id) {
     document.getElementById('detailTitle').textContent = lesson.title || lesson.project;
     document.getElementById('detailBadge').textContent = lesson.category.toUpperCase();
     
-    // Set Badge Color
     let catColor = 'gray';
     if(lesson.category.toLowerCase() === 'technical') catColor = 'blue';
     if(lesson.category.toLowerCase() === 'process') catColor = 'green';
@@ -504,6 +599,8 @@ window.openDetailsModal = function(id) {
         taskActionHtml = `<button class="task-btn" onclick="assignTask(${lesson.id}); closeDetailsModal();"><i class="fa-solid fa-hand-point-up"></i> I'll take this task</button>`;
     } else if (lesson.recommendationStatus === 'assigned' && lesson.assignedTo === currentUser.name) {
         taskActionHtml = `<span class="task-status assigned">Assigned to You</span>`;
+    } else if (lesson.recommendationStatus === 'completed') {
+        taskActionHtml = `<span class="task-status completed">Completed by ${lesson.assignedTo}</span>`;
     }
     document.getElementById('detailTaskAction').innerHTML = taskActionHtml;
 
@@ -514,49 +611,42 @@ window.closeDetailsModal = function() {
     document.getElementById('lessonDetailsModal').classList.add('hidden');
 };
 
-// Close modal when clicking outside
 document.getElementById('lessonDetailsModal').addEventListener('click', (e) => {
     if (e.target.id === 'lessonDetailsModal') {
         closeDetailsModal();
     }
 });
 
-// Update renderFeed to add click event
 function renderFeed(filter = 'all') {
     lessonsContainer.innerHTML = '';
     
     let filteredLessons = lessons.sort((a, b) => new Date(b.date) - new Date(a.date));
     if (filter !== 'all') {
-        filteredLessons = filteredLessons.filter(l => l.category === filter);
+        filteredLessons = filteredLessons.filter(l => l.category.toLowerCase() === filter.toLowerCase());
     }
 
     filteredLessons.forEach(lesson => {
         const card = document.createElement('div');
         card.className = 'lesson-card';
         card.onclick = (e) => {
-            // Prevent opening modal if clicking specific interactive elements
             if(e.target.closest('.reaction-btn') || e.target.closest('.task-btn')) return;
             openDetailsModal(lesson.id);
         };
         
-        // Tags HTML
         const tagsHtml = lesson.tags.map(tag => `<span class="card-badge">#${tag.trim()}</span>`).join(' ');
         
-        // Category Badge Color
         let catColor = 'gray';
         if(lesson.category.toLowerCase() === 'technical') catColor = 'blue';
         if(lesson.category.toLowerCase() === 'process') catColor = 'green';
         if(lesson.category.toLowerCase() === 'people') catColor = 'purple';
         if(lesson.category.toLowerCase() === 'financial') catColor = 'yellow';
 
-        // Meta badges
         const metaBadges = `
             <span class="meta-badge"><i class="fa-solid fa-globe"></i> ${lesson.region || 'Global'}</span>
             <span class="meta-badge"><i class="fa-solid fa-box"></i> ${lesson.product || 'General'}</span>
             <span class="meta-badge"><i class="fa-solid fa-code-branch"></i> ${lesson.deploymentType || 'N/A'}</span>
         `;
 
-        // Task Button Logic
         let taskButton = '';
         if (lesson.recommendationStatus === 'open') {
             taskButton = `<button class="task-btn" onclick="assignTask(${lesson.id})"><i class="fa-solid fa-hand-point-up"></i> I'll do this</button>`;
@@ -649,18 +739,17 @@ function renderMyTasks() {
 
 function renderLeaderboard() {
     const list = document.getElementById('leaderboardList');
-    // Clear list but keep header
     const header = list.firstElementChild;
     list.innerHTML = '';
     list.appendChild(header);
 
-    // Mock other users mixed with current user
     const users = [
-        { name: "Ahmet Y.", level: 5, points: 540 },
-        { name: "Selin A.", level: 4, points: 420 },
-        { name: currentUser.name, level: currentUser.level, points: currentUser.xp },
-        { name: "Mehmet K.", level: 2, points: 210 },
-        { name: "Ayşe B.", level: 1, points: 90 }
+        { name: "Sarah J.", level: 7, points: 740 },
+        { name: "Mike T.", level: 5, points: 520 },
+        { name: currentUser.name || "You", level: currentUser.level, points: currentUser.xp },
+        { name: "Oscar M.", level: 4, points: 410 },
+        { name: "Kelly K.", level: 3, points: 350 },
+        { name: "Jim H.", level: 3, points: 310 }
     ];
 
     users.sort((a, b) => b.points - a.points);
@@ -670,7 +759,7 @@ function renderLeaderboard() {
         item.className = `leaderboard-item top-${index+1}`;
         item.innerHTML = `
             <div class="rank-circle">${index + 1}</div>
-            <div style="font-weight: 500">${u.name} ${u.name === currentUser.name ? '(You)' : ''}</div>
+            <div style="font-weight: 500">${u.name} ${u.name === (currentUser.name || 'You') ? '(You)' : ''}</div>
             <div>Lvl ${u.level}</div>
             <div>${u.points} XP</div>
         `;
@@ -683,7 +772,7 @@ function renderAchievements() {
     grid.innerHTML = '';
 
     ACHIEVEMENTS.forEach(ach => {
-        const isUnlocked = currentUser.badges.includes(ach.id);
+        const isUnlocked = currentUser.badges && currentUser.badges.includes(ach.id);
         const card = document.createElement('div');
         card.className = `achievement-card ${isUnlocked ? 'unlocked' : ''}`;
         card.innerHTML = `
@@ -714,8 +803,8 @@ function handleWelcomeSubmit(e) {
         };
         saveUser();
         renderUser();
+        renderLeaderboard(); // Update leaderboard with new name
         
-        // Hide Modal
         document.getElementById('welcomeModal').classList.add('hidden');
         showToast("Welcome!", `Great to have you here, ${nameInput.split(' ')[0]}!`);
     }
@@ -742,15 +831,16 @@ function handleLessonSubmit(e) {
         impact: document.getElementById('impact').value,
         actionTaken: document.getElementById('actionTaken').value,
         recommendation: document.getElementById('recommendation').value,
-        author: currentUser.name,
+        author: currentUser.name || "Anonymous",
         date: new Date().toISOString(),
-        likes: 0
+        likes: 0,
+        recommendationStatus: 'open',
+        assignedTo: null
     };
 
     lessons.unshift(newLesson);
     saveLessons();
 
-    // Reward User
     addXP(50);
     checkAchievements();
     
@@ -758,14 +848,11 @@ function handleLessonSubmit(e) {
     
     e.target.reset();
     switchTab('dashboard');
-    renderStats();
-    renderFeed();
 }
 
 function addXP(amount) {
-    currentUser.xp += amount;
-    // Simple level up logic
-    const newLevel = Math.floor(currentUser.xp / 100) + 1; // 0-99 = Lvl 1
+    currentUser.xp = (currentUser.xp || 0) + amount;
+    const newLevel = Math.floor(currentUser.xp / 100) + 1;
     if (newLevel > currentUser.level) {
         currentUser.level = newLevel;
         showToast("Level Up!", `Congratulations! You reached Level ${newLevel}!`);
@@ -775,15 +862,14 @@ function addXP(amount) {
 }
 
 function checkAchievements() {
+    if (!currentUser.badges) currentUser.badges = [];
     let newBadge = false;
     
-    // Check "First Step"
     if (!currentUser.badges.includes('first-step') && lessons.some(l => l.author === currentUser.name)) {
         currentUser.badges.push('first-step');
         newBadge = 'First Step';
     }
 
-    // Check "Process Guru"
     const processCount = lessons.filter(l => l.author === currentUser.name && l.category === 'process').length;
     if (!currentUser.badges.includes('process-guru') && processCount >= 3) {
         currentUser.badges.push('process-guru');
@@ -802,7 +888,6 @@ function showToast(title, message) {
     document.getElementById('toastMessage').textContent = message;
     
     t.classList.remove('hidden');
-    // Force reflow for animation
     void t.offsetWidth; 
     t.classList.add('show');
 
@@ -820,11 +905,8 @@ function setupEventListeners() {
     });
 
     lessonForm.addEventListener('submit', handleLessonSubmit);
-    
-    // Welcome Form
     document.getElementById('welcomeForm').addEventListener('submit', handleWelcomeSubmit);
 
-    // Filter Buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -833,7 +915,6 @@ function setupEventListeners() {
         });
     });
 
-    // Search
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         const cards = document.querySelectorAll('.lesson-card');
@@ -849,28 +930,24 @@ function setupEventListeners() {
     });
 }
 
-// Like functionality (mock)
 window.likeLesson = function(id) {
     const lesson = lessons.find(l => l.id === id);
     if (lesson) {
         lesson.likes = (lesson.likes || 0) + 1;
         saveLessons();
-        renderFeed(); // Re-render to show new count
-        
-        // Check "Influencer" achievement for the author of this post (if real backend)
-        // Here we just check for current user if they are the author
-        // But let's keep it simple
+        renderFeed();
     }
 };
 
-// Task Management
 window.assignTask = function(id) {
     const lesson = lessons.find(l => l.id === id);
     if (lesson && lesson.recommendationStatus === 'open') {
         lesson.recommendationStatus = 'assigned';
-        lesson.assignedTo = currentUser.name;
+        lesson.assignedTo = currentUser.name || "Guest";
         saveLessons();
         renderFeed();
+        // Update stats
+        renderStats();
         showToast("Task Assigned", "You have taken ownership of this suggestion.");
     }
 };
@@ -883,7 +960,8 @@ window.completeTask = function(id) {
         addXP(100);
         showToast("Task Completed!", "Great job implementing the suggestion. +100 XP");
         renderMyTasks();
-        renderStats(); // Update stats
+        renderStats();
+        renderActivityFeed(); // Update activity feed immediately
     }
 };
 
