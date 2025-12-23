@@ -575,3 +575,203 @@ body {
     font-size: 0.85rem;
     color: var(--text-muted);
 }
+
+/* CSS Updates for New Features */
+
+.card-meta-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.meta-badge {
+    font-size: 0.75rem;
+    background: #F3F4F6;
+    color: var(--text-muted);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #E5E7EB;
+}
+
+.recommendation-box {
+    background: #F0FDF4; 
+    padding: 1rem; 
+    border-radius: var(--radius-md); 
+    margin-top: 0.5rem; 
+    border-left: 4px solid var(--secondary-color);
+}
+
+.task-btn {
+    background: var(--text-main);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.task-btn:hover {
+    background: black;
+    transform: translateY(-1px);
+}
+
+.task-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+}
+
+.task-status.assigned {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.task-status.locked {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.task-status.completed {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    background: white;
+    border-radius: var(--radius-lg);
+    grid-column: 1 / -1;
+    border: 2px dashed var(--border-color);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    max-width: 450px;
+    width: 90%;
+    animation: slideUp 0.4s ease;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content.wide-modal {
+    max-width: 800px;
+}
+
+.modal-body-scroll {
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.modal-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.detail-section {
+    margin-bottom: 1.5rem;
+}
+
+.detail-section h4 {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Add Lesson Button Banner */
+.cta-banner {
+    display: flex;
+    justify-content: flex-end; /* or center if preferred */
+    margin-bottom: 1.5rem;
+}
+
+.main-add-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-lg);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: var(--transition);
+}
+
+.main-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.modal-header h2 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-header p {
+    color: var(--text-muted);
+}
