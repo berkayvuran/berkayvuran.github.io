@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SESTEK PMO | Lessons Learned Arcade</title>
+    <title>SESTEK PMO Legends | Lessons Learned Arcade</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="lessons-learned.css">
+    <style>
+        .lesson-card {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Sidebar / Navigation -->
         <nav class="sidebar">
             <div class="logo">
-                <i class="fa-solid fa-rocket"></i>
-                <span>PMO Arcade</span>
+                <i class="fa-solid fa-gamepad"></i>
+                <span>SESTEK PMO<br>LEGENDS</span>
             </div>
             
             <div class="user-profile-mini">
@@ -35,6 +40,9 @@
             <ul class="nav-links">
                 <li class="active" data-tab="dashboard">
                     <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </li>
+                <li data-tab="my-tasks">
+                    <i class="fa-solid fa-list-check"></i> My Tasks
                 </li>
                 <li data-tab="add-lesson">
                     <i class="fa-solid fa-plus-circle"></i> Add Lesson
@@ -60,6 +68,13 @@
 
             <!-- Dashboard View -->
             <section id="dashboard" class="view active">
+                
+                <div class="cta-banner">
+                     <button class="main-add-btn" onclick="switchTab('add-lesson')">
+                        <i class="fa-solid fa-plus"></i> Add New Insight
+                     </button>
+                </div>
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="icon-box blue"><i class="fa-solid fa-book-open"></i></div>
@@ -71,7 +86,7 @@
                     <div class="stat-card">
                         <div class="icon-box green"><i class="fa-solid fa-check-circle"></i></div>
                         <div class="stat-info">
-                            <h3>Actions Taken</h3>
+                            <h3>Tasks Completed</h3>
                             <span id="totalActions">0</span>
                         </div>
                     </div>
@@ -88,14 +103,27 @@
                     <h2>Recent Insights</h2>
                     <div class="filter-tabs">
                         <button class="filter-btn active" data-filter="all">All</button>
-                        <button class="filter-btn" data-filter="technical">Technical</button>
-                        <button class="filter-btn" data-filter="process">Process</button>
-                        <button class="filter-btn" data-filter="people">People</button>
+                        <button class="filter-btn" data-filter="Technical">Technical</button>
+                        <button class="filter-btn" data-filter="Process">Process</button>
+                        <button class="filter-btn" data-filter="People">People</button>
+                        <button class="filter-btn" data-filter="Financial">Financial</button>
                     </div>
                 </div>
 
                 <div class="lessons-grid" id="lessonsContainer">
                     <!-- Lessons will be injected here via JS -->
+                </div>
+            </section>
+
+            <!-- My Tasks View -->
+            <section id="my-tasks" class="view hidden">
+                <div class="feed-header">
+                    <h2><i class="fa-solid fa-clipboard-check"></i> My Active Tasks</h2>
+                    <p class="subtitle" style="margin-bottom: 0;">Turn recommendations into reality and earn XP.</p>
+                </div>
+                <div class="lessons-grid" id="myTasksContainer">
+                    <!-- Tasks will be injected here via JS -->
+                    <div class="empty-state">No active tasks. Go to Dashboard and assign recommendations to yourself!</div>
                 </div>
             </section>
 
@@ -181,6 +209,56 @@
             </section>
 
         </main>
+    </div>
+
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome to SESTEK PMO LEGENDS! 🚀</h2>
+                <p>Please enter your details to start your journey.</p>
+            </div>
+            <form id="welcomeForm">
+                <div class="form-group">
+                    <label>First Name & Last Name</label>
+                    <input type="text" id="welcomeNameInput" required placeholder="e.g. John Doe">
+                </div>
+                <button type="submit" class="submit-btn">Start Contributing</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lesson Details Modal -->
+    <div id="lessonDetailsModal" class="modal-overlay hidden">
+        <div class="modal-content wide-modal">
+            <div class="modal-header">
+                <div class="modal-top-row">
+                     <span id="detailBadge" class="card-badge">TECHNICAL</span>
+                     <button class="close-modal-btn" onclick="closeDetailsModal()"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <h2 id="detailTitle" style="text-align: left; margin-top: 0.5rem;">Lesson Title</h2>
+                <div id="detailMeta" class="card-meta-row" style="justify-content: flex-start; margin-top: 0.5rem;"></div>
+            </div>
+            <div class="modal-body-scroll">
+                <div class="detail-section">
+                    <h4><i class="fa-solid fa-triangle-exclamation"></i> What Happened</h4>
+                    <p id="detailWhatHappened"></p>
+                </div>
+                <div class="detail-section">
+                    <h4><i class="fa-solid fa-chart-line"></i> Impact</h4>
+                    <p id="detailImpact"></p>
+                </div>
+                <div class="detail-section">
+                    <h4><i class="fa-solid fa-check"></i> Action Taken</h4>
+                    <p id="detailActionTaken"></p>
+                </div>
+                <div class="recommendation-box" style="margin-top: 1.5rem;">
+                    <h4 style="margin-top:0; color: #047857"><i class="fa-solid fa-lightbulb"></i> Feature Suggestion / Recommendation</h4>
+                    <p id="detailRecommendation" style="color: #065F46"></p>
+                    <div id="detailTaskAction" style="margin-top: 1rem; text-align: right;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Notification / Toast -->
