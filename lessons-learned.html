@@ -3,13 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SESTEK PMO Legends | Lessons Learned Arcade</title>
+    <title>Lessons Learners</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="lessons-learned.css">
     <style>
         .lesson-card {
             cursor: pointer;
+        }
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-avatar {
+            width: 36px;
+            height: 36px;
+            background: #E0E7FF;
+            color: #4F46E5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .activity-content {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        .activity-time {
+            color: #9CA3AF;
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -19,7 +49,7 @@
         <nav class="sidebar">
             <div class="logo">
                 <i class="fa-solid fa-gamepad"></i>
-                <span>SESTEK PMO<br>LEGENDS</span>
+                <span>LESSONS<br>LEARNERS</span>
             </div>
             
             <div class="user-profile-mini">
@@ -59,7 +89,7 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-bar">
-                <h1>Lessons Learned Library</h1>
+                <h1>Lessons Learners</h1>
                 <div class="search-bar">
                     <i class="fa-solid fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Search projects, tags, issues...">
@@ -96,6 +126,15 @@
                             <h3>Contributions</h3>
                             <span id="userContributions">0</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="activity-feed-section" style="margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: #374151;"><i class="fa-solid fa-history"></i> Community Activity</h2>
+                    <div class="activity-list" id="activityList" style="background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                        <!-- Activity items injected here -->
+                        <p style="color: #6B7280;">Loading activity...</p>
                     </div>
                 </div>
 
@@ -215,7 +254,7 @@
     <div id="welcomeModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Welcome to SESTEK PMO LEGENDS! 🚀</h2>
+                <h2>Welcome to Lessons Learners! 🚀</h2>
                 <p>Please enter your details to start your journey.</p>
             </div>
             <form id="welcomeForm">
