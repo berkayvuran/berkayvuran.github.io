@@ -70,15 +70,24 @@ async function loadPage(pageName) {
     const currentLang = localStorage.getItem('preferredLanguage') || 'en';
     applyLanguage(currentLang, contentArea, false); // false = don't restart typewriter on every page load
     
-    // Init page-specific JS
-    if (pageName === 'cv') initCV();
-    if (pageName === 'references') initReferences();
-    if (pageName === 'showcase') initShowcase();
+    // Init page-specific JS immediately for faster interactivity
+    // Use requestAnimationFrame for CV and showcase to ensure DOM is ready
+    if (pageName === 'cv') {
+      requestAnimationFrame(() => {
+        initCV();
+      });
+    } else if (pageName === 'showcase') {
+      requestAnimationFrame(() => {
+        initShowcase();
+      });
+    } else {
+      if (pageName === 'references') initReferences();
+    }
 
     window.scrollTo(0, 0);
 
   } catch (error) {
-    if (window.location.hostname !== 'localhost') console.error("Load failed:", error);
+    if (window.location.hostname === 'localhost') console.error("Load failed:", error);
     contentArea.innerHTML = `<article class="about active"><p>Failed to load ${pageName}.</p></article>`;
     contentArea.style.opacity = "1";
   }
@@ -91,11 +100,15 @@ navigationLinks.forEach(link => {
   // Prefetch on hover - instant load when clicked
   link.addEventListener("mouseenter", () => {
     if (page !== 'about') { // about is already inline
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = `./pages/${page}.html`;
-      link.as = 'document';
-      document.head.appendChild(link);
+      const prefetchLink = document.createElement('link');
+      prefetchLink.rel = 'prefetch';
+      prefetchLink.href = `./pages/${page}.html`;
+      prefetchLink.as = 'document';
+      // Prioritize CV page prefetch
+      if (page === 'cv' && 'fetchPriority' in prefetchLink) {
+        prefetchLink.fetchPriority = 'high';
+      }
+      document.head.appendChild(prefetchLink);
     }
   }, { once: true }); // Only prefetch once per link
   
@@ -115,7 +128,7 @@ function extractImagesFromHTML(html, pageName) {
   const imageUrls = [];
   const criticalImages = [];
   
-  images.forEach(img => {
+  images.forEach((img, index) => {
     const src = img.getAttribute('src');
     if (src && src.startsWith('./assets/images/')) {
       // Convert relative path to absolute
@@ -124,6 +137,16 @@ function extractImagesFromHTML(html, pageName) {
       
       // Mark references avatars as critical
       if (pageName === 'references' && src.includes('/avatars/')) {
+        criticalImages.push(absolutePath);
+      }
+      
+      // Mark first 6 showcase images as critical (above the fold)
+      if (pageName === 'showcase' && index < 6) {
+        criticalImages.push(absolutePath);
+      }
+      
+      // Mark first 3 blog images as critical (above the fold)
+      if (pageName === 'blog' && index < 3) {
         criticalImages.push(absolutePath);
       }
     }
@@ -151,7 +174,7 @@ function preloadImage(imageUrl, priority = 'low') {
 
 // Prefetch images from all pages for instant loading
 async function prefetchAllImages() {
-  const pagesToPrefetch = ['references', 'cv', 'showcase', 'blog']; // References first (most images)
+  const pagesToPrefetch = ['references', 'showcase', 'cv', 'blog']; // References and showcase first (most images)
   const allImages = new Set();
   const criticalImages = new Set();
   
@@ -171,8 +194,40 @@ async function prefetchAllImages() {
     if (window.location.hostname === 'localhost') console.warn('Failed to prefetch references images:', error);
   }
   
+  // Load showcase second (has many images, first 6 are critical)
+  try {
+    const response = await fetch('./pages/showcase.html', { cache: 'default' });
+    if (response.ok) {
+      const html = await response.text();
+      const { imageUrls, criticalImages: crit } = extractImagesFromHTML(html, 'showcase');
+      imageUrls.forEach(url => allImages.add(url));
+      crit.forEach(url => criticalImages.add(url));
+      
+      // Immediately start loading critical showcase images
+      crit.forEach(imageUrl => preloadImage(imageUrl, 'high'));
+    }
+  } catch (error) {
+    if (window.location.hostname === 'localhost') console.warn('Failed to prefetch showcase images:', error);
+  }
+  
+  // Load blog third (has many images, first 3 are critical)
+  try {
+    const response = await fetch('./pages/blog.html', { cache: 'default' });
+    if (response.ok) {
+      const html = await response.text();
+      const { imageUrls, criticalImages: crit } = extractImagesFromHTML(html, 'blog');
+      imageUrls.forEach(url => allImages.add(url));
+      crit.forEach(url => criticalImages.add(url));
+      
+      // Immediately start loading critical blog images
+      crit.forEach(imageUrl => preloadImage(imageUrl, 'high'));
+    }
+  } catch (error) {
+    if (window.location.hostname === 'localhost') console.warn('Failed to prefetch blog images:', error);
+  }
+  
   // Load other pages in parallel
-  const otherPages = ['cv', 'showcase', 'blog'];
+  const otherPages = ['cv'];
   const fetchPromises = otherPages.map(async (page) => {
     try {
       const response = await fetch(`./pages/${page}.html`, { cache: 'default' });
@@ -200,12 +255,17 @@ async function prefetchAllImages() {
 // Prefetch all pages on initial load for instant navigation
 window.addEventListener('DOMContentLoaded', () => {
   // Prefetch all pages except about (already inline)
+  // Prioritize CV page for faster loading
   const pagesToPrefetch = ['cv', 'references', 'showcase', 'blog'];
-  pagesToPrefetch.forEach(page => {
+  pagesToPrefetch.forEach((page, index) => {
     const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = `./pages/${page}.html`;
     link.as = 'document';
+    // Add fetchpriority for CV page (most important after about)
+    if (page === 'cv' && 'fetchPriority' in link) {
+      link.fetchPriority = 'high';
+    }
     document.head.appendChild(link);
   });
   
@@ -406,7 +466,11 @@ function initReferences() {
       const modalImg = document.querySelector("[data-modal-img]");
       const modalTitle = document.querySelector("[data-modal-title]");
       const modalText = document.querySelector("[data-modal-text]");
-      if (modalImg) modalImg.src = this.querySelector("[data-testimonials-avatar]")?.src || '';
+      const avatarImg = this.querySelector("[data-testimonials-avatar]");
+      if (modalImg && avatarImg && avatarImg.src) {
+        modalImg.src = avatarImg.src;
+        modalImg.alt = avatarImg.alt || '';
+      }
       if (modalTitle) modalTitle.innerHTML = this.querySelector("[data-testimonials-title]")?.innerHTML || '';
       if (modalText) modalText.innerHTML = this.querySelector("[data-testimonials-text]")?.innerHTML || '';
       toggle();
