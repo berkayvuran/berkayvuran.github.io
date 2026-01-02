@@ -1,496 +1,260 @@
 'use strict';
 
-// element toggle function
-const elementToggleFunc = function (elem) { elem.classList.toggle("active"); }
+// 1. Core Utilities
+const elementToggleFunc = (elem) => elem && elem.classList.toggle("active");
 
-// sidebar variables
+// 2. Sidebar Logic
 const sidebar = document.querySelector("[data-sidebar]");
 const sidebarBtn = document.querySelector("[data-sidebar-btn]");
+if (sidebarBtn) sidebarBtn.addEventListener("click", () => elementToggleFunc(sidebar));
 
-// sidebar toggle functionality for mobile
-if (sidebarBtn) {
-  sidebarBtn.addEventListener("click", function () { elementToggleFunc(sidebar); });
-}
-
-// testimonials variables
-const testimonialsItem = document.querySelectorAll("[data-testimonials-item]");
-const modalContainer = document.querySelector("[data-modal-container]");
-const modalCloseBtn = document.querySelector("[data-modal-close-btn]");
-const overlay = document.querySelector("[data-overlay]");
-
-// modal variable
-const modalImg = document.querySelector("[data-modal-img]");
-const modalTitle = document.querySelector("[data-modal-title]");
-const modalText = document.querySelector("[data-modal-text]");
-
-// modal toggle function
-const testimonialsModalFunc = function () {
-  if (modalContainer && overlay) {
-    modalContainer.classList.toggle("active");
-    overlay.classList.toggle("active");
-  }
-}
-
-// add click event to all modal items
-for (let i = 0; i < testimonialsItem.length; i++) {
-  testimonialsItem[i].addEventListener("click", function () {
-    if (modalImg && modalTitle && modalText) {
-      modalImg.src = this.querySelector("[data-testimonials-avatar]").src;
-      modalImg.alt = this.querySelector("[data-testimonials-avatar]").alt;
-      modalTitle.innerHTML = this.querySelector("[data-testimonials-title]").innerHTML;
-      modalText.innerHTML = this.querySelector("[data-testimonials-text]").innerHTML;
-      testimonialsModalFunc();
-    }
-  });
-}
-
-// add click event to modal close button
-if (modalCloseBtn) {
-  modalCloseBtn.addEventListener("click", testimonialsModalFunc);
-}
-if (overlay) {
-  overlay.addEventListener("click", testimonialsModalFunc);
-}
-
-// custom select variables
-const select = document.querySelector("[data-select]");
-const selectItems = document.querySelectorAll("[data-select-item]");
-const selectValue = document.querySelector("[data-selecct-value]");
-const filterBtn = document.querySelectorAll("[data-filter-btn]");
-
-if (select) {
-  select.addEventListener("click", function () { elementToggleFunc(this); });
-}
-
-// add event in all select items
-for (let i = 0; i < selectItems.length; i++) {
-  selectItems[i].addEventListener("click", function () {
-    let selectedValue = this.innerText.toLowerCase().trim();
-    
-    // Türkçe-İngilizce mapping
-    const categoryMapping = {
-      "tümü": "all",
-      "sertifikalar": "certifications", 
-      "eserlerim": "my creations",
-      "koordinasyonumla": "with my coordination",
-      "dahiliyetimle": "with my collaboration",
-      "vibe coding": "vibe coding",
-      "all": "all",
-      "certifications": "certifications",
-      "my creations": "my creations", 
-      "with my coordination": "with my coordination",
-      "with my collaboration": "with my collaboration"
-    };
-    
-    const mappedValue = categoryMapping[selectedValue] || selectedValue;
-    
-    // Select value'yu güncelle
-    const selectValues = document.querySelectorAll("[data-selecct-value]");
-    selectValues.forEach(sv => {
-      if (sv) sv.innerText = this.innerText;
-    });
-    
-    if (select) {
-      elementToggleFunc(select);
-    }
-    filterFunc(mappedValue);
-  });
-}
-
-// filter variables
-const filterItems = document.querySelectorAll("[data-filter-item]");
-
-const filterFunc = function (selectedValue) {
-  for (let i = 0; i < filterItems.length; i++) {
-    const itemCategory = filterItems[i].dataset.category;
-    
-    if (selectedValue === "all" || selectedValue === "tümü") {
-      filterItems[i].classList.add("active");
-    } else if (selectedValue === itemCategory) {
-      filterItems[i].classList.add("active");
-    } else {
-      filterItems[i].classList.remove("active");
-    }
-  }
-}
-
-// add event in all filter button items for large screen
-let lastClickedBtn = filterBtn[0];
-
-for (let i = 0; i < filterBtn.length; i++) {
-  filterBtn[i].addEventListener("click", function () {
-    let selectedValue = this.innerText.toLowerCase();
-    
-    // Türkçe kategori mapping - HTML'deki data-category değerleriyle eşleştirildi
-    const categoryMapping = {
-      "tümü": "all",
-      "sertifikalar": "certifications", 
-      "eserlerim": "my creations",
-      "koordinasyonumla": "with my coordination",
-      "dahiliyetimle": "with my collaboration",
-      "vibe coding": "vibe coding"
-    };
-    
-    // Eğer Türkçe ise mapping'e çevir
-    if (categoryMapping[selectedValue]) {
-      selectedValue = categoryMapping[selectedValue];
-    }
-    
-    if (selectValue) {
-      selectValue.innerText = this.innerText;
-    }
-    filterFunc(selectedValue);
-
-    if (lastClickedBtn) {
-      lastClickedBtn.classList.remove("active");
-    }
-    this.classList.add("active");
-    lastClickedBtn = this;
-  });
-}
-
-// contact form variables
-const form = document.querySelector("[data-form]");
-const formInputs = document.querySelectorAll("[data-form-input]");
-const formBtn = document.querySelector("[data-form-btn]");
-
-// add event to all form input field
-for (let i = 0; i < formInputs.length; i++) {
-  formInputs[i].addEventListener("input", function () {
-    // check form validation
-    if (form && form.checkValidity()) {
-      formBtn.removeAttribute("disabled");
-    } else {
-      formBtn.setAttribute("disabled", "");
-    }
-  });
-}
-
-// page navigation variables
+// 3. Dynamic Page Loading
+const contentArea = document.querySelector("#content-area");
 const navigationLinks = document.querySelectorAll("[data-nav-link]");
-const navigationLinksMap = Array.from(navigationLinks).reduce((acc, link) => {
-  acc[link.innerHTML.toLowerCase()] = link;
-  return acc;
-}, {});
-const pages = document.querySelectorAll("[data-page]");
-const pagesMap = Array.from(pages).reduce((acc, page) => {
-  acc[page.dataset.page] = page;
-  return acc;
-}, {});
 
-// add event to all nav link
-for (let i = 0; i < navigationLinks.length; i++) {
-  navigationLinks[i].addEventListener("click", function () {
-    const langAttribute = this.getAttribute("data-lang");
-    const innerHTML = this.innerHTML.toLowerCase();
-    
-    // İyileştirilmiş Türkçe-İngilizce mapping
-    const elementTextMap = {
-      "hakkımda": "about",
-      "cv": "cv", 
-      "referanslar": "references",
-      "vitrin": "showcase",
-      "blog": "blog"
-    };
-    
-    const elementText = langAttribute === "tr" ? elementTextMap[innerHTML] : innerHTML;
+async function loadPage(pageName) {
+  if (!contentArea) return;
+  
+  // Normalize page name
+  const validPages = ['about', 'cv', 'references', 'showcase', 'blog'];
+  if (!validPages.includes(pageName)) pageName = 'about';
 
-    const relatedPage = pagesMap[elementText];
-    const relatedLink = navigationLinksMap[elementText];
-
-    // Tüm sayfaları gizle
-    for (let j = 0; j < pages.length; j++) {
-      pages[j].classList.remove("active");
-    }
+  try {
+    // Visual feedback
+    contentArea.style.opacity = "0";
     
-    // Tüm nav linklerinden active'i kaldır
-    for (let k = 0; k < navigationLinks.length; k++) {
-      navigationLinks[k].classList.remove("active");
-    }
-
-    // İlgili sayfayı göster
-    if (relatedPage) {
-      relatedPage.classList.add("active");
-    }
+    const response = await fetch(`./pages/${pageName}.html`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const html = await response.text();
     
-    // Şu anki linki active yap
-    this.classList.add("active");
+    // Inject content
+    contentArea.innerHTML = html;
     
-    // Aynı sayfanın diğer dildeki linkini de active yap
-    const currentPageName = elementText;
-    navigationLinks.forEach(link => {
-      const linkLang = link.getAttribute("data-lang");
-      const linkText = link.innerHTML.toLowerCase();
-      
-      if (linkLang === "en" && linkText === currentPageName) {
-        link.classList.add("active");
-      } else if (linkLang === "tr") {
-        const trToEnMap = Object.keys(elementTextMap).find(key => elementTextMap[key] === currentPageName);
-        if (trToEnMap && linkText === trToEnMap) {
-          link.classList.add("active");
-        }
-      }
+    // Ensure nested articles are active/visible
+    const articles = contentArea.querySelectorAll('article');
+    articles.forEach(art => {
+      art.classList.add('active');
+      art.style.display = 'block';
     });
+
+    // Update Nav UI
+    navigationLinks.forEach(link => {
+      const linkPage = link.getAttribute('data-nav-link');
+      link.classList.toggle('active', linkPage === pageName);
+    });
+
+    // Re-apply current language
+    const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+    applyLanguage(currentLang, contentArea, false); // false = don't restart typewriter on every page load
+    
+    // Init page-specific JS
+    if (pageName === 'cv') initCV();
+    if (pageName === 'references') initReferences();
+    if (pageName === 'showcase') initShowcase();
+
+    // Finalize transition
+    setTimeout(() => {
+      contentArea.style.opacity = "1";
+    }, 50);
 
     window.scrollTo(0, 0);
-  });
+
+  } catch (error) {
+    console.error("Load failed:", error);
+    contentArea.innerHTML = `<article class="about active"><p>Failed to load ${pageName}.</p></article>`;
+    contentArea.style.opacity = "1";
+  }
 }
 
-// accordion functionality
-var acc = document.getElementsByClassName("accordion"); 
-var i;
+// Nav Click Events
+navigationLinks.forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    const page = link.getAttribute("data-nav-link");
+    loadPage(page);
+    history.pushState(null, null, `#${page}`);
+  });
+});
 
-for (i = 0; i < acc.length; i++) {
-  acc[i].addEventListener("click", function() {
-    // Toggle between adding and removing the "active" class
-    this.classList.toggle("active");
+// Initial Load Handler
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash.replace('#', '') || 'about';
+  loadPage(hash);
+});
 
-    // Toggle between hiding and showing the active panel
-    var panel = this.nextElementSibling;
-    if (panel.style.display === "block") {
-      panel.style.display = "none";
-    } else {
-      panel.style.display = "block";
+// Popstate (Back/Forward buttons)
+window.addEventListener('popstate', () => {
+  const hash = window.location.hash.replace('#', '') || 'about';
+  loadPage(hash);
+});
+
+// 4. Language Management
+function applyLanguage(lang, scope = document.body, shouldRestartTypewriter = true) {
+  const elements = scope.querySelectorAll('[data-lang]');
+  elements.forEach(el => {
+    const isTarget = el.getAttribute('data-lang') === lang;
+    el.style.display = isTarget ? '' : 'none';
+    if (isTarget && el.tagName === 'SPAN' && el.classList.contains('cursor')) {
+      el.style.display = 'inline-block';
     }
   });
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+
+  localStorage.setItem('preferredLanguage', lang);
+  if (shouldRestartTypewriter && window.typewriter) window.typewriter.restart();
 }
 
-// Language switching functionality
-document.addEventListener('DOMContentLoaded', () => {
-  // Dil değiştirme fonksiyonu
-  const switchLanguage = (lang) => {
-    // Tüm data-lang elementlerini kontrol et
-    document.querySelectorAll('[data-lang]').forEach(el => {
-      const elementLang = el.getAttribute('data-lang');
-      if (elementLang === lang) {
-        el.style.display = '';
-        // Eğer bu bir button ise ve active class'ı varsa, karşılık gelen button'u da active yap
-        if (el.tagName === 'BUTTON' && el.classList.contains('active')) {
-          // Aynı parent içindeki diğer dil versiyonunu da active yap
-          const parent = el.parentElement;
-          if (parent) {
-            const otherLangButtons = parent.querySelectorAll(`[data-lang]:not([data-lang="${lang}"])`);
-            otherLangButtons.forEach(btn => btn.classList.remove('active'));
-          }
-        }
-      } else {
-        el.style.display = 'none';
-      }
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    applyLanguage(btn.getAttribute('data-lang'));
+  });
+});
+
+// 5. Theme Management
+const themeBtns = document.querySelectorAll('.theme-btn');
+const htmlEl = document.documentElement;
+
+function setTheme(theme) {
+  htmlEl.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  themeBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-theme') === theme));
+}
+
+themeBtns.forEach(btn => btn.onclick = () => setTheme(btn.getAttribute('data-theme')));
+setTheme(localStorage.getItem('theme') || 'dark');
+
+// 6. Page-Specific Components
+function initCV() {
+  document.querySelectorAll(".accordion").forEach(acc => {
+    acc.onclick = function() {
+      this.classList.toggle("active");
+      const panel = this.nextElementSibling;
+      if (panel) panel.style.display = panel.style.display === "block" ? "none" : "block";
+    };
+  });
+}
+
+function initReferences() {
+  const modal = document.querySelector("[data-modal-container]");
+  const overlay = document.querySelector("[data-overlay]");
+  if (!modal || !overlay) return;
+
+  const toggle = () => { modal.classList.toggle("active"); overlay.classList.toggle("active"); };
+
+  document.querySelectorAll("[data-testimonials-item]").forEach(item => {
+    item.onclick = function() {
+      document.querySelector("[data-modal-img]").src = this.querySelector("[data-testimonials-avatar]").src;
+      document.querySelector("[data-modal-title]").innerHTML = this.querySelector("[data-testimonials-title]").innerHTML;
+      document.querySelector("[data-modal-text]").innerHTML = this.querySelector("[data-testimonials-text]").innerHTML;
+      toggle();
+    };
+  });
+
+  const close = document.querySelector("[data-modal-close-btn]");
+  if (close) close.onclick = toggle;
+  overlay.onclick = toggle;
+}
+
+function initShowcase() {
+  const select = document.querySelector("[data-select]");
+  const selectValue = document.querySelector("[data-selecct-value]");
+  const filterBtns = document.querySelectorAll("[data-filter-btn]");
+  const filterItems = document.querySelectorAll("[data-filter-item]");
+
+  if (select) select.onclick = () => elementToggleFunc(select);
+
+  const filter = (val) => {
+    filterItems.forEach(item => {
+      const cat = item.dataset.category;
+      item.classList.toggle('active', val === 'all' || val === 'tümü' || val === cat);
     });
-    
-    // Language switcher butonlarının active state'ini güncelle
-    const langBtns = document.querySelectorAll('.lang-btn');
-    langBtns.forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.getAttribute('data-lang') === lang) {
-        btn.classList.add('active');
-      }
-    });
-    
-    // Local storage'a kaydet
-    localStorage.setItem('preferredLanguage', lang);
   };
 
-  // Language switcher event listener
-  const langBtns = document.querySelectorAll('.lang-btn');
-  
-  langBtns.forEach((btn, index) => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const lang = this.getAttribute('data-lang');
-      switchLanguage(lang);
-    });
+  const map = { "tümü": "all", "sertifikalar": "certifications", "eserlerim": "my creations", "koordinasyonumla": "with my coordination", "dahiliyetimle": "with my collaboration" };
+
+  document.querySelectorAll("[data-select-item]").forEach(item => {
+    item.onclick = function() {
+      const val = this.innerText.toLowerCase().trim();
+      if (selectValue) selectValue.innerText = this.innerText;
+      filter(map[val] || val);
+      elementToggleFunc(select);
+    };
   });
 
-  // Sayfa yüklendiğinde saved language'ı uygula
-  const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
-  switchLanguage(savedLanguage);
-});
-
-// Light mode toggle functionality
-const themeSwitcher = document.querySelector('.theme-switcher');
-const themeBtns = document.querySelectorAll('.theme-btn');
-const html = document.documentElement;
-
-// Check for saved theme preference or default to dark mode
-const currentTheme = localStorage.getItem('theme') || 'dark';
-html.setAttribute('data-theme', currentTheme);
-
-// Update active button state
-themeBtns.forEach(btn => {
-  btn.classList.remove('active');
-  if (btn.getAttribute('data-theme') === currentTheme) {
-    btn.classList.add('active');
-  }
-});
-
-// Theme toggle function
-function setTheme(theme) {
-  html.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-  
-  // Update active button state
-  themeBtns.forEach(btn => {
-    btn.classList.remove('active');
-    if (btn.getAttribute('data-theme') === theme) {
-      btn.classList.add('active');
-    }
+  filterBtns.forEach(btn => {
+    btn.onclick = function() {
+      const val = this.innerText.toLowerCase().trim();
+      if (selectValue) selectValue.innerText = this.innerText;
+      filter(map[val] || val);
+      filterBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    };
   });
 }
 
-// Add click event to theme buttons
-themeBtns.forEach(btn => {
-  btn.addEventListener('click', function() {
-    const theme = this.getAttribute('data-theme');
-    setTheme(theme);
-  });
-});
-
-// Add keyboard shortcut for theme switching (Ctrl/Cmd + T)
-document.addEventListener('keydown', function(e) {
-  if ((e.ctrlKey || e.metaKey) && e.key === 't') {
-    e.preventDefault();
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-  }
-});
-
-// Add system theme detection
-function detectSystemTheme() {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-    return 'light';
-  }
-  return 'dark';
-}
-
-// Listen for system theme changes
-if (window.matchMedia) {
-  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
-    if (!localStorage.getItem('theme')) { // Only auto-switch if user hasn't manually set a preference
-      const newTheme = e.matches ? 'light' : 'dark';
-      setTheme(newTheme);
-    }
-  });
-}
-
-// Initialize theme on page load
-document.addEventListener('DOMContentLoaded', function() {
-  // If no theme is saved, use system preference
-  if (!localStorage.getItem('theme')) {
-    const systemTheme = detectSystemTheme();
-    setTheme(systemTheme);
-  }
-});
-
-// Typewriter effect functionality
+// 7. Typewriter Effect
 class TypewriterEffect {
   constructor() {
-    this.typewriterEn = document.getElementById('typewriter-en');
-    this.typewriterTr = document.getElementById('typewriter-tr');
-    this.currentIndex = 0;
-    this.currentTextIndex = 0;
+    this.currentIndex = 0; 
+    this.currentTextIndex = 0; 
     this.isDeleting = false;
-    this.typingSpeed = 150; // Speed of typing
-    this.deletingSpeed = 75; // Speed of deleting
-    this.pauseTime = 2000; // Pause between words
-    
-    // Different titles to cycle through
-    this.titlesEn = [
-      'Product Manager',
-      'Product Owner',
-      'UX Researcher', 
-      'Data Analyst',
-      'Scrum Master',
-      'Digital Strategist',
-      'Innovation Catalyst',
-      'Problem Solver'
-    ];
-    
-    this.titlesTr = [
-      'Ürün Müdürü',
-      'Ürün Sahibi',
-      'UX Araştırmacısı',
-      'Veri Analisti', 
-      'Scrum Master',
-      'Dijital Stratejist',
-      'İnovasyon Katalizörü',
-      'Problem Çözücü'
-    ];
-    
+    this.timeoutId = null;
+    this.titlesEn = ['Product Manager', 'Product Owner', 'UX Researcher', 'Data Analyst', 'Scrum Master', 'Digital Strategist', 'Innovation Catalyst', 'Problem Solver'];
+    this.titlesTr = ['Ürün Müdürü', 'Ürün Sahibi', 'UX Araştırmacısı', 'Veri Analisti', 'Scrum Master', 'Dijital Stratejist', 'İnovasyon Katalizörü', 'Problem Çözücü'];
     this.init();
   }
   
-  init() {
-    if (this.typewriterEn && this.typewriterTr) {
-      this.startTypewriter();
-    }
+  init() { 
+    this.elEn = document.getElementById('typewriter-en'); 
+    this.elTr = document.getElementById('typewriter-tr'); 
+    if (this.elEn || this.elTr) this.start(); 
   }
-  
-  startTypewriter() {
-    const currentLang = localStorage.getItem('preferredLanguage') || 'en';
-    const titles = currentLang === 'tr' ? this.titlesTr : this.titlesEn;
-    const element = currentLang === 'tr' ? this.typewriterTr : this.typewriterEn;
+
+  start() {
+    if (this.timeoutId) clearTimeout(this.timeoutId);
     
-    if (!element) return;
-    
-    const currentTitle = titles[this.currentIndex];
+    const lang = localStorage.getItem('preferredLanguage') || 'en';
+    const titles = lang === 'tr' ? this.titlesTr : this.titlesEn;
+    const el = lang === 'tr' ? this.elTr : this.elEn;
+    if (!el) return;
+
+    const full = titles[this.currentIndex];
     
     if (this.isDeleting) {
-      // Delete text
-      element.textContent = currentTitle.substring(0, this.currentTextIndex - 1);
+      el.textContent = full.substring(0, this.currentTextIndex - 1);
       this.currentTextIndex--;
-      
-      if (this.currentTextIndex === 0) {
-        this.isDeleting = false;
-        this.currentIndex = (this.currentIndex + 1) % titles.length;
-        setTimeout(() => this.startTypewriter(), 500);
-        return;
+      if (this.currentTextIndex === 0) { 
+        this.isDeleting = false; 
+        this.currentIndex = (this.currentIndex + 1) % titles.length; 
+        this.timeoutId = setTimeout(() => this.start(), 500); 
+        return; 
       }
-      
-      setTimeout(() => this.startTypewriter(), this.deletingSpeed);
+      this.timeoutId = setTimeout(() => this.start(), 100);
     } else {
-      // Type text
-      element.textContent = currentTitle.substring(0, this.currentTextIndex + 1);
+      el.textContent = full.substring(0, this.currentTextIndex + 1);
       this.currentTextIndex++;
-      
-      if (this.currentTextIndex === currentTitle.length) {
-        this.isDeleting = true;
-        setTimeout(() => this.startTypewriter(), this.pauseTime);
-        return;
+      if (this.currentTextIndex === full.length) { 
+        this.isDeleting = true; 
+        this.timeoutId = setTimeout(() => this.start(), 2000); 
+        return; 
       }
-      
-      setTimeout(() => this.startTypewriter(), this.typingSpeed);
+      this.timeoutId = setTimeout(() => this.start(), 200);
     }
   }
-  
-  // Method to restart typewriter when language changes
-  restart() {
-    this.currentIndex = 0;
-    this.currentTextIndex = 0;
-    this.isDeleting = false;
-    
-    // Clear both elements
-    if (this.typewriterEn) this.typewriterEn.textContent = '';
-    if (this.typewriterTr) this.typewriterTr.textContent = '';
-    
-    // Start with a small delay
-    setTimeout(() => this.startTypewriter(), 300);
+
+  restart() { 
+    if (this.timeoutId) clearTimeout(this.timeoutId);
+    this.currentIndex = 0; 
+    this.currentTextIndex = 0; 
+    this.isDeleting = false; 
+    if (this.elEn) this.elEn.textContent = ''; 
+    if (this.elTr) this.elTr.textContent = ''; 
+    this.timeoutId = setTimeout(() => this.start(), 300); 
   }
 }
 
-// Initialize typewriter effect
-let typewriter;
-
-document.addEventListener('DOMContentLoaded', function() {
-  typewriter = new TypewriterEffect();
-});
-
-// Restart typewriter when language changes
-const originalSwitchLanguage = switchLanguage;
-switchLanguage = function(lang) {
-  originalSwitchLanguage(lang);
-  if (typewriter) {
-    setTimeout(() => typewriter.restart(), 100);
-  }
-};
+window.addEventListener('DOMContentLoaded', () => { window.typewriter = new TypewriterEffect(); });
