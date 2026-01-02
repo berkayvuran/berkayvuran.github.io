@@ -150,6 +150,41 @@ function initCV() {
 }
 
 function initReferences() {
+  const referencesArticle = document.querySelector('.references');
+  if (!referencesArticle) return;
+
+  // Create unified grid container
+  const grid = document.createElement('div');
+  grid.className = 'references-grid';
+
+  // Move all testimonial items into single grid with company badges
+  document.querySelectorAll('.references .testimonials').forEach(section => {
+    const companyTitle = section.querySelector('.service-title');
+    const companyName = companyTitle ? companyTitle.textContent.replace('Testimonials from ', '').replace(' Referansları', '').trim() : '';
+    
+    section.querySelectorAll('.testimonials-item').forEach(item => {
+      // Add company badge to each card
+      const card = item.querySelector('.content-card');
+      if (card && companyName) {
+        const badge = document.createElement('span');
+        badge.className = 'company-badge';
+        badge.textContent = companyName;
+        card.appendChild(badge);
+      }
+      grid.appendChild(item);
+    });
+  });
+
+  // Replace sections with unified grid
+  const firstSection = referencesArticle.querySelector('.testimonials');
+  if (firstSection) {
+    firstSection.parentNode.insertBefore(grid, firstSection);
+  }
+  
+  // Remove old sections
+  referencesArticle.querySelectorAll('.testimonials').forEach(s => s.remove());
+
+  // Modal functionality
   const modal = document.querySelector("[data-modal-container]");
   const overlay = document.querySelector("[data-overlay]");
   if (!modal || !overlay) return;
@@ -158,9 +193,12 @@ function initReferences() {
 
   document.querySelectorAll("[data-testimonials-item]").forEach(item => {
     item.onclick = function() {
-      document.querySelector("[data-modal-img]").src = this.querySelector("[data-testimonials-avatar]").src;
-      document.querySelector("[data-modal-title]").innerHTML = this.querySelector("[data-testimonials-title]").innerHTML;
-      document.querySelector("[data-modal-text]").innerHTML = this.querySelector("[data-testimonials-text]").innerHTML;
+      const modalImg = document.querySelector("[data-modal-img]");
+      const modalTitle = document.querySelector("[data-modal-title]");
+      const modalText = document.querySelector("[data-modal-text]");
+      if (modalImg) modalImg.src = this.querySelector("[data-testimonials-avatar]")?.src || '';
+      if (modalTitle) modalTitle.innerHTML = this.querySelector("[data-testimonials-title]")?.innerHTML || '';
+      if (modalText) modalText.innerHTML = this.querySelector("[data-testimonials-text]")?.innerHTML || '';
       toggle();
     };
   });
@@ -294,4 +332,43 @@ class TypewriterEffect {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => { window.typewriter = new TypewriterEffect(); });
+// 8. CV Timeline Bullet Formatting
+function formatTimelineBullets() {
+  document.querySelectorAll('.timeline-text').forEach(el => {
+    const html = el.innerHTML;
+    // Check if content has bullet arrows
+    if (html.includes('⇢')) {
+      // Split by <br><br> and format as list
+      const parts = html.split(/<br\s*\/?><br\s*\/?>/gi);
+      if (parts.length > 1) {
+        let intro = '';
+        let bullets = [];
+        
+        parts.forEach((part, index) => {
+          const trimmed = part.trim();
+          if (trimmed.startsWith('⇢')) {
+            // Remove the arrow and add as bullet
+            bullets.push(trimmed.replace(/^⇢\s*/, ''));
+          } else if (trimmed && index === 0) {
+            intro = trimmed;
+          }
+        });
+        
+        if (bullets.length > 0) {
+          let newHtml = intro ? `<p class="cv-intro">${intro}</p>` : '';
+          newHtml += '<ul class="cv-bullets">';
+          bullets.forEach(bullet => {
+            newHtml += `<li>${bullet}</li>`;
+          });
+          newHtml += '</ul>';
+          el.innerHTML = newHtml;
+        }
+      }
+    }
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => { 
+  window.typewriter = new TypewriterEffect();
+  formatTimelineBullets();
+});

@@ -8,6 +8,59 @@
  */
 
 /*-----------------------------------*\
+  #PERFORMANCE OPTIMIZATIONS
+\*-----------------------------------*/
+
+/* Reserve space for ion-icons to prevent layout shift */
+ion-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  min-width: 1em;
+  min-height: 1em;
+  font-size: inherit;
+  vertical-align: middle;
+}
+
+/* Specific icon sizes - consistent sizing */
+.contacts-list ion-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.social-link ion-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.icon-box ion-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+/* Icon box consistent styling */
+.icon-box {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*-----------------------------------*\
   #CUSTOM PROPERTY
 \*-----------------------------------*/
 
@@ -439,11 +492,6 @@
 
 
 
-[data-theme="light"] .navbar-link.active {
-  color: var(--white-1);
-  background: hsl(0, 0%, 20%);
-}
-
 [data-theme="light"] .navbar-link:hover:not(.active) {
   color: hsl(0, 0%, 8%);
   background: rgba(0, 0, 0, 0.05);
@@ -453,18 +501,19 @@
 
 
 
-/* Icons - ONLY colors */
+/* Icons - consistent light mode styling */
 [data-theme="light"] .icon-box,
 [data-theme="light"] .tt-icon-box,
 [data-theme="light"] .ip-icon-box {
-  background: rgba(0, 122, 255, 0.1);
-  border: 1px solid rgba(0, 122, 255, 0.2);
+  background: hsl(210, 100%, 95%);
+  border: 1px solid hsl(210, 100%, 85%);
+  border-radius: 12px;
 }
 
 [data-theme="light"] .icon-box::before,
 [data-theme="light"] .tt-icon-box::before,
 [data-theme="light"] .ip-icon-box::before {
-  background: rgba(0, 122, 255, 0.05);
+  background: transparent;
 }
 
 [data-theme="light"] .resume-icon-box {
@@ -602,17 +651,6 @@
   filter: grayscale(0) invert(0);
 }
 
-/* Timeline - ONLY colors */
-[data-theme="light"] .timeline-item::after {
-  background: var(--orange-yellow-crayola);
-  border: 3px solid var(--white-1);
-}
-
-[data-theme="light"] .timeline-item::before {
-  background: var(--orange-yellow-crayola);
-  border: 3px solid var(--white-1);
-}
-
 /* Skills - ONLY colors */
 [data-theme="light"] .skill-progress-bg {
   background: rgba(0, 0, 0, 0.1);
@@ -625,11 +663,6 @@
 /* Separator - ONLY colors */
 [data-theme="light"] .separator {
   background: rgba(0, 0, 0, 0.1);
-}
-
-/* Timeline list - ONLY colors */
-[data-theme="light"] .timeline-list {
-  border-left: 2px solid rgba(0, 0, 0, 0.1);
 }
 
 /* Testimonials avatar - ONLY colors */
@@ -1343,13 +1376,13 @@ main {
 \*-----------------------------------*/
 
 .navbar {
-  position:relative;
+  position: relative;
   top: 10px;
   left: 0;
   width: 100%;
+  min-height: 50px; /* Prevent layout shift */
   background: hsla(220, 15%, 18%, 0.85);
   backdrop-filter: blur(10px);
-  /* border: 1px solid var(--jet); */
   border-radius: 2px 2px 0 0;
   box-shadow: var(--shadow-2);
   z-index: 5;
@@ -2951,14 +2984,6 @@ textarea.form-input::-webkit-resizer { display: none; }
 
 
 
-/* Light mode accordion improvements */
-/* Light mode accordion - matching dark mode layout */
-[data-theme="light"] .accordion {
-  background: linear-gradient(145deg, hsl(0, 0%, 98%), hsl(0, 0%, 95%));
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
 /* Light mode resume button improvements */
 [data-theme="light"] .resume-button {
   background: var(--white-1);
@@ -3025,13 +3050,6 @@ textarea.form-input::-webkit-resizer { display: none; }
   box-shadow: var(--shadow-2);
 }
 
-/* Light mode timeline improvements */
-[data-theme="light"] .timeline-item::after {
-  background: var(--orange-yellow-crayola);
-  border: 3px solid var(--white-1);
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-}
-
 /* Light mode skills improvements */
 [data-theme="light"] .skill-progress-bg {
   background: rgba(0, 0, 0, 0.1);
@@ -3082,11 +3100,9 @@ textarea.form-input::-webkit-resizer { display: none; }
   box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
 }
 
-/* Light mode icon box improvements - consistent with dark mode structure */
-[data-theme="light"] .icon-box {
-  background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-  color: #1976d2;
-  border: 1px solid #90caf9;
+/* Light mode icon box - already defined above */
+[data-theme="light"] .icon-box ion-icon {
+  color: hsl(210, 80%, 45%);
   box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
 }
 
@@ -3284,11 +3300,11 @@ textarea.form-input::-webkit-resizer { display: none; }
 /* Light mode navbar active state fix - ONLY color, no layout changes */
 [data-theme="light"] .navbar-link.active {
   color: var(--white-1);
-  background: hsl(0, 0%, 20%);
+  background: var(--orange-yellow-crayola);
 }
 
 [data-theme="light"] .navbar-link.active:hover {
-  background: hsl(0, 0%, 25%);
+  background: hsl(40, 100%, 45%);
 }
 
 /* Light mode navbar hover state fix - ONLY color, no layout changes */
@@ -3312,4 +3328,621 @@ textarea.form-input::-webkit-resizer { display: none; }
 #content-area {
   transition: opacity 0.3s ease-in-out;
   opacity: 1;
+}
+
+
+/* ==========================================
+   MODERN CV PAGE STYLES
+   ========================================== */
+
+/* Modern Timeline Container */
+.timeline {
+  margin-bottom: 24px;
+}
+
+/* Modern Accordion Header */
+.accordion {
+  background: linear-gradient(135deg, var(--eerie-black-2) 0%, var(--eerie-black-1) 100%);
+  border: 1px solid var(--jet);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.accordion::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--jet);
+  border-radius: 3px 0 0 3px;
+  transition: background 0.3s ease;
+}
+
+.accordion:hover::before,
+.accordion.active::before {
+  background: var(--orange-yellow-crayola);
+}
+
+.accordion:hover {
+  border-color: var(--jet);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.accordion .icon-box {
+  width: 40px;
+  height: 40px;
+  background: var(--jet);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.accordion:hover .icon-box {
+  background: var(--orange-yellow-crayola);
+}
+
+.accordion .icon-box ion-icon {
+  color: var(--light-gray);
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.accordion:hover .icon-box ion-icon {
+  color: var(--smoky-black);
+}
+
+.accordion .article-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Expand/Collapse Indicator */
+.accordion::after {
+  content: '+';
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: var(--light-gray);
+  transition: all 0.3s ease;
+  font-weight: 300;
+}
+
+.accordion.active::after {
+  content: '−';
+  color: var(--orange-yellow-crayola);
+}
+
+/* Modern Timeline List */
+.timeline-list {
+  margin-left: 24px;
+  padding: 0 0 0 24px;
+  border-left: 2px solid var(--jet);
+  display: none;
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modern Timeline Item Card */
+.timeline-item {
+  position: relative;
+  background: var(--eerie-black-2);
+  border: 1px solid var(--jet);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.timeline-item:hover {
+  border-color: var(--jet);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Timeline Dot - Subtle Style */
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: -31px;
+  height: 8px;
+  width: 8px;
+  background: var(--jet);
+  border: 2px solid var(--light-gray);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.timeline-item:hover::after {
+  background: var(--orange-yellow-crayola);
+  border-color: var(--orange-yellow-crayola);
+}
+
+/* Remove the vertical line pseudo-element - using border-left instead */
+.timeline-item:not(:last-child)::before {
+  display: none;
+}
+
+/* Modern Title Styling */
+.timeline-item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  color: var(--white-1);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Company Badge - Extract @Company from title */
+.timeline-item-title::after {
+  content: '';
+}
+
+/* Date Badge */
+.timeline-list > li > span {
+  display: inline-block;
+  color: var(--orange-yellow-crayola);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+/* Modern Timeline Text */
+.timeline-text {
+  color: var(--light-gray);
+  font-weight: 400;
+  line-height: 1.7;
+  font-size: 0.9rem;
+}
+
+/* Better paragraph spacing for timeline text */
+.timeline-text {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+/* CV Intro paragraph */
+.cv-intro {
+  color: var(--light-gray);
+  line-height: 1.7;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--jet);
+}
+
+[data-theme="light"] .cv-intro {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+/* CV Bullet List - Simple Styled */
+.cv-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cv-bullets li {
+  position: relative;
+  padding-left: 16px;
+  color: var(--light-gray);
+  line-height: 1.7;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.cv-bullets li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--light-gray);
+  font-size: 0.9rem;
+}
+
+[data-theme="light"] .cv-bullets li {
+  color: hsl(0, 0%, 35%);
+}
+
+[data-theme="light"] .cv-bullets li::before {
+  color: hsl(0, 0%, 50%);
+}
+
+/* Add visual separation for company descriptions vs bullet points */
+.timeline-item .timeline-text:first-of-type {
+  margin-bottom: 0;
+}
+
+/* Highlight key achievements/bullets */
+.timeline-item .timeline-text b,
+.timeline-item .timeline-text strong {
+  color: var(--white-1);
+  font-weight: 600;
+}
+
+/* Links in timeline */
+.timeline-item a {
+  color: var(--orange-yellow-crayola);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.timeline-item a:hover {
+  border-bottom-color: var(--orange-yellow-crayola);
+}
+
+/* Education specific styling */
+.timeline-item .timeline-text a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* CV Header with Download */
+.cv-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.cv-header > div {
+  flex-shrink: 0;
+}
+
+.cv-header .article-title {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.cv-header .article-title::after {
+  display: none;
+}
+
+.cv-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--orange-yellow-crayola);
+  color: var(--smoky-black);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.cv-download-btn ion-icon {
+  font-size: 18px;
+}
+
+.cv-download-btn:hover {
+  background: var(--vegas-gold);
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .cv-download-btn {
+  background: var(--orange-yellow-crayola);
+  color: var(--smoky-black);
+}
+
+/* Resume Download Button - Simple (legacy, can remove if unused) */
+.resume-button {
+  display: none; /* Hidden, replaced by cv-download-btn */
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.resume-button:hover {
+  border-color: var(--orange-yellow-crayola);
+}
+
+.resume-icon-box {
+  width: 40px;
+  height: 40px;
+  background: var(--jet);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.resume-button:hover .resume-icon-box {
+  background: var(--orange-yellow-crayola);
+}
+
+.resume-icon-box ion-icon {
+  font-size: 24px;
+  color: var(--smoky-black);
+}
+
+.resume-article-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white-1);
+}
+
+/* ==========================================
+   CV LIGHT MODE OVERRIDES
+   ========================================== */
+
+[data-theme="light"] .accordion {
+  background: linear-gradient(135deg, var(--white-1) 0%, hsl(0, 0%, 96%) 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .accordion::before {
+  background: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] .accordion:hover {
+  border-color: var(--orange-yellow-crayola);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .accordion::after {
+  color: var(--eerie-black-2);
+}
+
+[data-theme="light"] .accordion.active::after {
+  color: var(--orange-yellow-crayola);
+}
+
+/* Light mode accordion icon-box */
+[data-theme="light"] .accordion .icon-box {
+  background: hsl(210, 100%, 95%);
+  border: 1px solid hsl(210, 100%, 85%);
+}
+
+[data-theme="light"] .accordion .icon-box ion-icon {
+  color: hsl(210, 80%, 45%);
+}
+
+[data-theme="light"] .accordion:hover .icon-box {
+  background: var(--orange-yellow-crayola);
+  border-color: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] .accordion:hover .icon-box ion-icon {
+  color: var(--smoky-black);
+}
+
+[data-theme="light"] .timeline-list {
+  border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .timeline-item {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .timeline-item:hover {
+  background: hsl(0, 0%, 99%);
+}
+
+[data-theme="light"] .timeline-item::after {
+  background: var(--white-1);
+  border: 2px solid hsl(0, 0%, 70%);
+}
+
+[data-theme="light"] .timeline-item:hover::after {
+  background: var(--orange-yellow-crayola);
+  border-color: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] .timeline-item-title {
+  color: var(--eerie-black-1);
+}
+
+[data-theme="light"] .timeline-text {
+  color: hsl(0, 0%, 35%);
+}
+
+[data-theme="light"] .timeline-item .timeline-text b,
+[data-theme="light"] .timeline-item .timeline-text strong {
+  color: var(--eerie-black-1);
+}
+
+[data-theme="light"] .resume-button {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .resume-button:hover {
+  border-color: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] .resume-icon-box {
+  background: hsl(210, 100%, 95%);
+  border: 1px solid hsl(210, 100%, 85%);
+}
+
+[data-theme="light"] .resume-icon-box ion-icon {
+  color: hsl(210, 80%, 45%);
+}
+
+[data-theme="light"] .resume-button:hover .resume-icon-box {
+  background: var(--orange-yellow-crayola);
+  border-color: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] .resume-button:hover .resume-icon-box ion-icon {
+  color: var(--smoky-black);
+}
+
+[data-theme="light"] .resume-article-title {
+  color: var(--eerie-black-1);
+}
+
+/* ==========================================
+   CV RESPONSIVE ADJUSTMENTS
+   ========================================== */
+
+@media (min-width: 580px) {
+  .timeline-item {
+    padding: 28px;
+  }
+  
+  .timeline-list {
+    margin-left: 32px;
+    padding-left: 32px;
+  }
+  
+  .timeline-item::after {
+    left: -41px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .timeline-item {
+    padding: 32px;
+  }
+  
+  .accordion {
+    padding: 24px 32px;
+  }
+  
+  .timeline-text {
+    max-width: none;
+  }
+}
+
+/* ==========================================
+   REFERENCES PAGE - CLEAN REFACTOR
+   ========================================== */
+
+/* Hide section titles */
+.references .service-title { display: none; }
+.references .testimonials { margin-bottom: 0; }
+.references .testimonials-list { display: contents; }
+
+/* Grid container */
+.references-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* Card base */
+.references .testimonials-item { min-width: unset; }
+
+.references .content-card {
+  padding: 20px 16px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 200px;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+}
+
+.references .content-card::before { border-radius: 12px; }
+.references .content-card:hover { transform: translateY(-2px); }
+
+/* Avatar */
+.references .testimonials-avatar-box {
+  position: static;
+  transform: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  background: var(--jet);
+  flex-shrink: 0;
+}
+
+.references .testimonials-avatar-box img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Name */
+.references .testimonials-item-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Role - just show the b tag content */
+.references .testimonials-text {
+  text-align: center;
+  width: 100%;
+}
+
+.references .testimonials-text p { display: none !important; }
+.references .testimonials-text p:has(b) { display: block !important; }
+.references .testimonials-text p[data-lang="tr"]:has(b) { display: none !important; }
+html[data-lang="tr"] .references .testimonials-text p[data-lang="en"]:has(b) { display: none !important; }
+html[data-lang="tr"] .references .testimonials-text p[data-lang="tr"]:has(b) { display: block !important; }
+
+.references .testimonials-text b {
+  font-size: 0.8rem;
+  color: var(--orange-yellow-crayola);
+  font-weight: 500;
+}
+
+/* Company badge */
+.references .company-badge {
+  font-size: 0.7rem;
+  color: var(--light-gray);
+  margin-top: auto;
+  opacity: 0.7;
+}
+
+/* Light mode */
+[data-theme="light"] .references .content-card { background: var(--white-1); }
+[data-theme="light"] .references .testimonials-avatar-box { background: hsl(0, 0%, 92%); }
+[data-theme="light"] .references .company-badge { color: hsl(0, 0%, 55%); }
+
+/* Responsive */
+@media (min-width: 580px) {
+  .references-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .references-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .references .testimonials-avatar-box,
+  .references .testimonials-avatar-box img { width: 72px; height: 72px; }
+  .references .testimonials-item-title { font-size: 1rem; }
+  .references .content-card { height: 210px; }
 }
