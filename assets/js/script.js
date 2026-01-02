@@ -236,6 +236,41 @@ window.addEventListener('DOMContentLoaded', () => {
     // Fallback for browsers without requestIdleCallback
     setTimeout(prefetchImages, 500);
   }
+  
+  // Prevent prefetching of appendices (PDFs) and projects - lazy load only on click
+  const preventPrefetch = () => {
+    // Find all PDF links and project links
+    const pdfLinks = document.querySelectorAll('a[href*="appendices"], a[href*=".pdf"]');
+    const projectLinks = document.querySelectorAll('a[href*="projects/"]');
+    
+    // Add click handler to load only on click (no prefetch)
+    [...pdfLinks, ...projectLinks].forEach(link => {
+      // Ensure no prefetch happens
+      if (!link.hasAttribute('data-lazy-loaded')) {
+        link.setAttribute('data-lazy-loaded', 'true');
+        // Remove any existing prefetch hints
+        const href = link.getAttribute('href');
+        if (href) {
+          const existingPrefetch = document.querySelector(`link[rel="prefetch"][href="${href}"]`);
+          if (existingPrefetch) {
+            existingPrefetch.remove();
+          }
+        }
+      }
+    });
+  };
+  
+  // Run immediately and also after page loads
+  preventPrefetch();
+  
+  // Re-run when new content is loaded (e.g., when switching pages)
+  const observer = new MutationObserver(() => {
+    preventPrefetch();
+  });
+  
+  if (contentArea) {
+    observer.observe(contentArea, { childList: true, subtree: true });
+  }
 });
 
 // Popstate (Back/Forward buttons)
