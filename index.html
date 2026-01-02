@@ -33,9 +33,38 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <!-- Preload ionicons for faster icon display -->
-  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js">
+  <!-- Preload critical fonts for instant text rendering -->
+  <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrJJfecg.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLEj6Z1xlFQ.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLGT9Z1xlFQ.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLBT5Z1xlFQ.woff2" as="font" type="font/woff2" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=block" rel="stylesheet">
+  <!-- Preload ionicons aggressively for instant display -->
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" as="script">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" as="script" crossorigin>
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js" as="script" crossorigin>
+  <!-- Load ionicons immediately - blocking load ensures icons render instantly -->
+  <script>
+    // Force immediate icon loading - no async delay
+    (function() {
+      const script1 = document.createElement('script');
+      script1.type = 'module';
+      script1.src = 'https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js';
+      script1.setAttribute('fetchpriority', 'high');
+      document.head.insertBefore(script1, document.head.firstChild);
+      
+      const script2 = document.createElement('script');
+      script2.setAttribute('nomodule', '');
+      script2.src = 'https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js';
+      script2.setAttribute('fetchpriority', 'high');
+      document.head.insertBefore(script2, script1.nextSibling);
+    })();
+  </script>
+  <!-- Fallback standard load -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <!-- Load main script early but defer execution -->
+  <script src="./assets/js/script.js" defer></script>
   <!-- Hotjar Tracking Code for Berkay Vuran -->
   <script>
     (function (h, o, t, j, a, r) {
@@ -185,14 +214,18 @@
             <button class="navbar-link" data-nav-link="blog" data-lang="tr" style="display: none;">Blog</button>
           </li>
           <li class="navbar-item navbar-controls">
-            <button class="theme-toggle-btn" role="switch" aria-label="Toggle theme" title="Toggle dark/light mode">
-              <ion-icon name="moon" class="theme-icon-dark"></ion-icon>
-              <ion-icon name="sunny" class="theme-icon-light"></ion-icon>
-            </button>
+            <div class="theme-toggle-wrapper">
+              <input type="checkbox" id="theme-toggle" class="theme-toggle-input" aria-label="Toggle theme">
+              <label for="theme-toggle" class="theme-toggle-label">
+                <span class="theme-toggle-slider"></span>
+                <ion-icon name="moon" class="theme-icon-dark"></ion-icon>
+                <ion-icon name="sunny" class="theme-icon-light"></ion-icon>
+              </label>
+            </div>
             <span class="controls-divider"></span>
             <button class="lang-toggle-btn" role="switch" aria-label="Toggle language" title="Switch language">
-              <span class="lang-label lang-en">EN</span>
-              <span class="lang-label lang-tr">TR</span>
+              <span class="lang-flag lang-flag-tr">🇹🇷</span>
+              <span class="lang-flag lang-flag-en">🇬🇧</span>
             </button>
           </li>
         </ul>
@@ -200,23 +233,98 @@
 
       <!-- Dynamic Content Area -->
       <div id="content-area" style="min-height: 500px; width: 100%;">
-        <!-- Content will be loaded here -->
+        <!-- Initial content loaded inline for instant display -->
+        <article class="about" data-page="about">
+          <h2 class="h2 article-title" data-lang="en">About me</h2>
+          <h2 class="h2 article-title" data-lang="tr" style="display: none;">Hakkımda</h2>
+          <section class="about-text">
+            <p data-lang="en">In a world where AI is redefining our relationship with technology, my passion lies in shaping the next generation of intelligent products. I delve into the evolving realms of conversational and generative AI—not simply to follow trends, but to set them. Each project I take on transforms cutting-edge innovation into meaningful, real-world outcomes that drive measurable business impact.</p>
+            <p data-lang="en">Results-driven product leader with 7+ years of experience across AI, PropTech, telco, logistics, and enterprise software sectors. I specialize in product strategy, user experience design, and data-driven decision-making. My track record includes expanding operations to 230 countries across 3 continents, managing platforms serving 6+ million users, and delivering 150% revenue growth while significantly improving customer satisfaction metrics.</p>
+            <p data-lang="en">At SESTEK, I lead the strategic direction of the Conversational Analytics Product Analysis team, defining analytical standards and aligning with product vision. Previously at Emlakjet, I catalyzed the organization's Agile transformation while spearheading ML, NLP, and generative AI implementations in the PropTech domain. At Navlungo, I managed four critical business domains and led the end-to-end development of deliver.ist—a global ship & shop service—from concept to launch in just 3 months.</p>
+            <p data-lang="en">I hold PMP and Professional Scrum certifications (PSPO, PSM, PSU, PSD, PSFS, PAL), complemented by an MSc in Organizational Behavior and a BSc in Psychology from Hacettepe University. This unique combination allows me to bridge technical expertise with deep understanding of user needs and team dynamics—essential for building products that truly resonate with people.</p>
+            
+            <p data-lang="tr" style="display: none;">AI'nın teknoloji ile ilişkimizi yeniden tanımladığı bir dünyada, tutkum akıllı ürünlerin gelecek nesline şekil vermekte yatıyor. Konuşma ve üretici AI'nın gelişen alanlarına dalıyorum—sadece trendleri takip etmek için değil, onları belirlemek için. Üstlendiğim her proje, son teknoloji inovasyonu ölçülebilir iş etkisi yaratan anlamlı, gerçek dünya sonuçlarına dönüştürür.</p>
+            <p data-lang="tr" style="display: none;">AI, PropTech, telekomünikasyon, lojistik ve kurumsal yazılım sektörlerinde 7+ yıllık deneyime sahip sonuç odaklı ürün lideriyim. Ürün stratejisi, kullanıcı deneyimi tasarımı ve veri odaklı karar alma konularında uzmanlaştım. Operasyonları 3 kıtada 230 ülkeye genişletme, 6+ milyon kullanıcıya hizmet eden platformları yönetme ve müşteri memnuniyetini önemli ölçüde artırırken %150 gelir büyümesi sağlama gibi kanıtlanmış başarılarım bulunuyor.</p>
+            <p data-lang="tr" style="display: none;">SESTEK'te Konuşma Analitiği Ürün Analizi takımının stratejik yönünü belirliyorum, analiz standartlarını oluşturuyor ve ürün vizyonuyla uyum sağlıyorum. Daha önce Emlakjet'te organizasyonun Agile dönüşümünü katalize ederken PropTech alanında ML, NLP ve üretici AI uygulamalarına öncülük ettim. Navlungo'da dört kritik iş alanını yönettim ve küresel ship & shop hizmeti olan deliver.ist'in konseptten lansmanına kadar tüm sürecini sadece 3 ayda tamamladım.</p>
+            <p data-lang="tr" style="display: none;">PMP ve Professional Scrum sertifikalarına (PSPO, PSM, PSU, PSD, PSFS, PAL) sahibim; bunlar Hacettepe Üniversitesi'nden aldığım Örgütsel Davranış yüksek lisansı ve Psikoloji lisans dereceleriyle tamamlanıyor. Bu benzersiz kombinasyon, teknik uzmanlığı kullanıcı ihtiyaçları ve ekip dinamiklerinin derin anlayışıyla birleştirmemi sağlıyor—insanlarla gerçekten rezonans kuran ürünler inşa etmek için vazgeçilmez bir yetkinlik.</p>
+          </section>
+          <section class="service">
+            <h3 class="h3 service-title" data-lang="en">What i'm doing</h3>
+            <h3 class="h3 service-title" data-lang="tr" style="display: none;">Neler yapıyorum</h3>
+            <ul class="service-list">
+              <li class="service-item">
+                <div id="123" class="service-icon-box">
+                  <img src="./assets/images/what-i-m-doing/icon-design.svg" alt="design icon" width="40">
+                </div>
+                <div class="service-content-box">
+                  <h4 class="h4 service-item-title" data-lang="en">Product Management</h4>
+                  <h4 class="h4 service-item-title" data-lang="tr" style="display: none;">Ürün Yönetimi</h4>
+                  <p class="service-item-text" data-lang="en">
+                    Product enthusiast with 7+ years of experience in sectors that AI, telco, health, logistics, and
+                    proptech.
+                  </p>
+                  <p class="service-item-text" data-lang="tr" style="display: none;">
+                    Telekomünikasyon, sağlık, lojistik, AI ve proptech sektörlerinde 7+ yıllık deneyime sahip ürün
+                    tutkunuyum.
+                  </p>
+                </div>
+              </li>
+              <li class="service-item">
+                <div class="service-icon-box">
+                  <img src="./assets/images/what-i-m-doing/icon-dev.svg" alt="Web development icon" width="40">
+                </div>
+                <div class="service-content-box">
+                  <h4 class="h4 service-item-title" data-lang="en">Data & BI Analysis & SQL</h4>
+                  <h4 class="h4 service-item-title" data-lang="tr" style="display: none;">Veri Analizi & İş Zekası</h4>
+                  <p class="service-item-text" data-lang="en">
+                    Have a data-driven mindset with my business intelligence, data analysis, and SQL competencies.
+                  </p>
+                  <p class="service-item-text" data-lang="tr" style="display: none;">
+                    İş zekası, veri analizi ve SQL yetkinliklerim ile veri odaklı bir zihniyete sahibim.
+                  </p>
+                </div>
+              </li>
+              <li class="service-item">
+                <div class="service-icon-box">
+                  <img src="./assets/images/what-i-m-doing/icon-tent.svg" alt="mobile app icon" width="40">
+                </div>
+                <div class="service-content-box">
+                  <h4 class="h4 service-item-title" data-lang="en">Hobbies</h4>
+                  <h4 class="h4 service-item-title" data-lang="tr" style="display: none;">Hobiler</h4>
+                  <p class="service-item-text" data-lang="en">
+                    I love kickbox, cinema, music, camping, trekking, canoeing and running. I live minimalist and proud of
+                    it.
+                  </p>
+                  <p class="service-item-text" data-lang="tr" style="display: none;">
+                    Kick boksu, sinemayı, müziği, kamp yapmayı, trekking'i, kanoyu ve koşmayı seviyorum. Minimalist
+                    yaşıyorum.
+                  </p>
+                </div>
+              </li>
+              <li class="service-item">
+                <div class="service-icon-box">
+                  <img src="./assets/images/what-i-m-doing/icon-vegan.svg" alt="camera icon" width="40">
+                </div>
+                <div class="service-content-box">
+                  <h4 class="h4 service-item-title" data-lang="en">Nature Advocacy</h4>
+                  <h4 class="h4 service-item-title" data-lang="tr" style="display: none;">Doğa Tutkunu</h4>
+                  <p class="service-item-text" data-lang="en">
+                    I love cinema, music, camping, trekking, canoeing and running. I live minimalist and proud of it.
+                  </p>
+                  <p class="service-item-text" data-lang="tr" style="display: none;">
+                    Ben bir doğa tutkunuyum. Ayrımcılığın, zorbalığın ve istismarın her türlüsüne karşıyım.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </section>
+        </article>
       </div>
 
     </div>
   </main>
 
-  <!--
-    - custom js link
-  -->
-  <script src="./assets/js/script.js"></script>
-
-  <!--
-    - ionicon link (jsdelivr CDN - faster)
-  -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-
+  <!-- Script moved to head for faster loading -->
 </body>
 
 </html>
