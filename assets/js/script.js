@@ -19,15 +19,34 @@ async function loadPage(pageName) {
   const validPages = ['about', 'cv', 'references', 'showcase', 'blog'];
   if (!validPages.includes(pageName)) pageName = 'about';
 
-  try {
-    // Visual feedback
-    contentArea.style.opacity = "0";
+  // If about page is already loaded inline, skip fetch
+  if (pageName === 'about' && contentArea.querySelector('article.about')) {
+    // Content already loaded inline, just ensure it's active
+    const articles = contentArea.querySelectorAll('article');
+    articles.forEach(art => {
+      art.classList.add('active');
+      art.style.display = 'block';
+    });
     
+    // Update Nav UI
+    navigationLinks.forEach(link => {
+      const linkPage = link.getAttribute('data-nav-link');
+      link.classList.toggle('active', linkPage === pageName);
+    });
+    
+    // Re-apply current language
+    const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+    applyLanguage(currentLang, contentArea, false);
+    return;
+  }
+
+  try {
+    // No opacity animation - instant display
     const response = await fetch(`./pages/${pageName}.html`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const html = await response.text();
     
-    // Inject content
+    // Inject content immediately
     contentArea.innerHTML = html;
     
     // Ensure nested articles are active/visible
@@ -51,11 +70,6 @@ async function loadPage(pageName) {
     if (pageName === 'cv') initCV();
     if (pageName === 'references') initReferences();
     if (pageName === 'showcase') initShowcase();
-
-    // Finalize transition
-    setTimeout(() => {
-      contentArea.style.opacity = "1";
-    }, 50);
 
     window.scrollTo(0, 0);
 
@@ -121,12 +135,15 @@ document.documentElement.setAttribute('data-lang', savedLang);
 applyLanguage(savedLang, document.body, false);
 
 // 5. Theme Management
-const themeToggleBtn = document.querySelector('.theme-toggle-btn');
+const themeToggleInput = document.querySelector('#theme-toggle');
 const htmlEl = document.documentElement;
 
 function setTheme(theme) {
   htmlEl.setAttribute('data-theme', theme);
   localStorage.setItem('theme', theme);
+  if (themeToggleInput) {
+    themeToggleInput.checked = theme === 'light';
+  }
 }
 
 function toggleTheme() {
@@ -135,7 +152,9 @@ function toggleTheme() {
   setTheme(next);
 }
 
-if (themeToggleBtn) themeToggleBtn.onclick = toggleTheme;
+if (themeToggleInput) {
+  themeToggleInput.addEventListener('change', toggleTheme);
+}
 setTheme(localStorage.getItem('theme') || 'dark');
 
 // 6. Page-Specific Components
