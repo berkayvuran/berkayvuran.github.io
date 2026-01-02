@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackerTyper Clone | Vibe Coding</title>
+    <meta name="description" content="A fun HackerTyper clone - type anything and watch code appear like a real hacker!">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --matrix-green: #00ff00;
+            --bg-color: #000000;
+            --text-color: #00ff00;
+            --border-color: #00ff00;
+            --speed: 3;
+            --font-size: 13;
+            --font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #000000;
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--matrix-green);
+            text-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            color: var(--matrix-green);
+            padding: 6px 12px;
+            border-radius: 0;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            transition: all 0.2s;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .status {
+            font-size: 11px;
+            color: var(--matrix-green);
+            padding: 0 10px;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .editor-container {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            background: var(--bg-color);
+        }
+
+        .editor {
+            padding: 20px;
+            font-size: calc(var(--font-size) * 1px);
+            line-height: 1.6;
+            white-space: pre;
+            font-family: var(--font-family);
+            min-height: 100%;
+            color: var(--text-color);
+            text-shadow: 0 0 3px var(--matrix-green);
+        }
+
+        .keyword { color: var(--matrix-green); text-shadow: 0 0 5px var(--matrix-green); }
+        .string { color: var(--matrix-green); opacity: 0.8; }
+        .comment { color: var(--matrix-green); opacity: 0.6; font-style: italic; }
+        .function { color: var(--matrix-green); text-shadow: 0 0 8px var(--matrix-green); }
+        .variable { color: var(--matrix-green); opacity: 0.9; }
+        .number { color: var(--matrix-green); opacity: 0.7; }
+        .operator { color: var(--matrix-green); }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: calc(var(--font-size) * 1.2px);
+            background: var(--matrix-green);
+            animation: blink 1s infinite;
+            margin-left: 2px;
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .footer {
+            background: #000000;
+            border-top: 2px solid var(--border-color);
+            padding: 8px 20px;
+            font-size: 11px;
+            color: var(--matrix-green);
+            display: flex;
+            justify-content: space-between;
+            flex-shrink: 0;
+            text-shadow: 0 0 5px var(--matrix-green);
+            box-shadow: 0 -2px 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .footer-info {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Settings Modal */
+        .settings-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000000;
+            border: 2px solid var(--matrix-green);
+            z-index: 2000;
+            padding: 30px;
+            min-width: 500px;
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+            display: none;
+        }
+
+        .settings-modal.active {
+            display: block;
+        }
+
+        .settings-title {
+            color: var(--matrix-green);
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px var(--matrix-green);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        .settings-label {
+            color: var(--matrix-green);
+            min-width: 100px;
+            font-size: 12px;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 5px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--matrix-green);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .color-option.active {
+            border-width: 3px;
+            box-shadow: 0 0 15px var(--matrix-green);
+        }
+
+        .color-input {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            color: var(--matrix-green);
+            padding: 5px 10px;
+            font-family: inherit;
+            font-size: 11px;
+            width: 100px;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .slider-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: #000000;
+            border: 1px solid var(--border-color);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--matrix-green);
+            border: 1px solid var(--matrix-green);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: var(--matrix-green);
+            border: 1px solid var(--matrix-green);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .slider-value {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            color: var(--matrix-green);
+            padding: 5px 10px;
+            font-family: inherit;
+            font-size: 11px;
+            width: 60px;
+            text-align: center;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .select {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            color: var(--matrix-green);
+            padding: 5px 10px;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            color: var(--matrix-green);
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .file-label:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .file-name {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            color: var(--matrix-green);
+            padding: 5px 10px;
+            font-size: 11px;
+            flex: 1;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .settings-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000000;
+            border: 2px solid var(--matrix-green);
+            padding: 30px 40px;
+            text-align: center;
+            z-index: 1000;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+
+        .warning h2 {
+            color: var(--matrix-green);
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .warning p {
+            color: var(--matrix-green);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1500;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .settings-modal {
+                min-width: 90%;
+                padding: 20px;
+            }
+
+            .settings-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .settings-label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚡ HACKERTYPER CLONE ⚡</h1>
+        <div class="controls">
+            <span class="status" id="status">Ready</span>
+            <button class="btn" onclick="openSettings()">Settings</button>
+            <button class="btn" onclick="clearCode()">Clear</button>
+            <button class="btn" onclick="toggleFullscreen()">Fullscreen</button>
+        </div>
+    </div>
+
+    <div class="editor-container">
+        <div class="editor" id="editor"></div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-info">
+            <span>Lines: <span id="lineCount">0</span></span>
+            <span>Chars: <span id="charCount">0</span></span>
+            <span>Speed: <span id="speed">0</span> chars/sec</span>
+        </div>
+        <div>
+            <span>Press any key to start hacking!</span>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="overlay" id="overlay" onclick="closeSettings()"></div>
+    <div class="settings-modal" id="settingsModal">
+        <h2 class="settings-title">Settings</h2>
+        
+        <div class="settings-row">
+            <label class="settings-label">Color:</label>
+            <div class="color-picker">
+                <div class="color-option active" style="background: #00ff00;" data-color="#00ff00" onclick="setColor('#00ff00')"></div>
+                <div class="color-option" style="background: #ff0000;" data-color="#ff0000" onclick="setColor('#ff0000')"></div>
+                <div class="color-option" style="background: #0080ff;" data-color="#0080ff" onclick="setColor('#0080ff')"></div>
+                <div class="color-option" style="background: #8000ff;" data-color="#8000ff" onclick="setColor('#8000ff')"></div>
+                <div class="color-option" style="background: #ffff00;" data-color="#ffff00" onclick="setColor('#ffff00')"></div>
+                <div class="color-option" style="background: #ff8000;" data-color="#ff8000" onclick="setColor('#ff8000')"></div>
+            </div>
+            <input type="text" class="color-input" id="colorInput" value="#00ff00" onchange="setColorFromInput(this.value)">
+        </div>
+
+        <div class="settings-row">
+            <label class="settings-label">Speed:</label>
+            <div class="slider-container">
+                <input type="range" class="slider" id="speedSlider" min="1" max="10" value="3" oninput="updateSpeed(this.value)">
+                <input type="text" class="slider-value" id="speedValue" value="3" onchange="updateSpeedFromInput(this.value)">
+            </div>
+        </div>
+
+        <div class="settings-row">
+            <label class="settings-label">Font Size:</label>
+            <div class="slider-container">
+                <input type="range" class="slider" id="fontSizeSlider" min="10" max="20" value="13" oninput="updateFontSize(this.value)">
+                <input type="text" class="slider-value" id="fontSizeValue" value="13" onchange="updateFontSizeFromInput(this.value)">
+            </div>
+        </div>
+
+        <div class="settings-row">
+            <label class="settings-label">Font:</label>
+            <select class="select" id="fontSelect" onchange="updateFont(this.value)">
+                <option value="'Courier New', 'Monaco', 'Menlo', monospace">Courier</option>
+                <option value="'Consolas', 'Monaco', monospace">Consolas</option>
+                <option value="'Lucida Console', 'Monaco', monospace">Lucida Console</option>
+                <option value="'Monaco', 'Menlo', monospace">Monaco</option>
+            </select>
+        </div>
+
+        <div class="settings-row">
+            <label class="settings-label">File:</label>
+            <div class="file-input-wrapper">
+                <input type="file" class="file-input" id="fileInput" accept=".txt,.js,.py,.html,.css,.json" onchange="handleFileSelect(event)">
+                <label for="fileInput" class="file-label">Choose File</label>
+                <input type="text" class="file-name" id="fileName" value="No file chosen" readonly>
+                <button class="btn" onclick="resetFile()">Reset</button>
+            </div>
+        </div>
+
+        <div class="settings-actions">
+            <button class="btn" onclick="closeSettings()">Close</button>
+        </div>
+    </div>
+
+    <div class="warning" id="warning" style="display: none;">
+        <h2>⚠️ Warning</h2>
+        <p>This is a fun simulation. No actual hacking is happening. Just type and enjoy the show!</p>
+        <button class="btn" onclick="document.getElementById('warning').style.display='none'">Got it!</button>
+    </div>
+
+    <script>
+        // Configuration
+        let config = {
+            color: '#00ff00',
+            speed: 3,
+            fontSize: 13,
+            fontFamily: "'Courier New', 'Monaco', 'Menlo', monospace",
+            customFile: null
+        };
+
+        // Code snippets database
+        const codeSnippets = [
+            `[ERROR ] Bu bir ceza mı?
+[WARN  ] ÇileAlgılandı: yıllardır_nöbette = true
+[INFO  ] Bekleyiş servisi çalışıyor… bitiş zamanı belirsiz
+
+[STATE ] ben = KüçükKarTanesi
+[EVENT ] avuç_teması -> erime()
+
+[REQUEST] dön(bebeğim)
+[ERROR ] kanatlar.eridi = true
+[DENY  ] rüyalarına_uçuş reddedildi
+
+[INIT  ] sonsuzluk(with=sen)
+[SCOPE ] küçük_dünya
+[NOTE  ] çıkışta: yarım_kaldım = true
+
+[ENV   ] konum=çöl    durum=yanıyorum
+[ENV   ] konum=kutup  durum=üşüyorum
+
+[EXCEPT] CezaBenimException: yüklenici=ben
+[TRY   ] uzan()
+[CATCH ] tutamıyorum
+[LOOP  ] özle() -> ağla()
+
+[CHECK ] yasak_mısın ? bilinmiyor
+[PLEA  ] ne_olur_dön()
+
+[DEPEND] sesin bulunamadı
+[COND  ] sevmesen_bile -> özlüyorum
+[PARADOX] git_de() ama gitme()
+
+[QUERY ] yılların_bekleyişi = hasret_mi | çile_mi ?
+
+[SECURE] bana_haram_mısın ? permission_denied
+
+[ALIAS ] bebeğim = hayalet_sevgilim
+[LOG   ] bebeğim benim, hayalet sevgilim
+[LOG   ] hayalet sevgilim`,
+        ];
+
+        let currentCode = '';
+        let charIndex = 0;
+        let startTime = null;
+        let charCount = 0;
+        let isTyping = false;
+
+        const editor = document.getElementById('editor');
+        const status = document.getElementById('status');
+        const lineCountEl = document.getElementById('lineCount');
+        const charCountEl = document.getElementById('charCount');
+        const speedEl = document.getElementById('speed');
+
+        // Apply configuration to CSS
+        function applyConfig() {
+            document.documentElement.style.setProperty('--matrix-green', config.color);
+            document.documentElement.style.setProperty('--font-size', config.fontSize);
+            document.documentElement.style.setProperty('--font-family', config.fontFamily);
+        }
+
+        // Settings functions
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        function setColor(color) {
+            config.color = color;
+            document.getElementById('colorInput').value = color;
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.dataset.color === color) {
+                    opt.classList.add('active');
+                }
+            });
+            applyConfig();
+        }
+
+        function setColorFromInput(value) {
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                setColor(value);
+            }
+        }
+
+        function updateSpeed(value) {
+            config.speed = parseInt(value);
+            document.getElementById('speedValue').value = value;
+        }
+
+        function updateSpeedFromInput(value) {
+            const num = parseInt(value);
+            if (num >= 1 && num <= 10) {
+                config.speed = num;
+                document.getElementById('speedSlider').value = num;
+            }
+        }
+
+        function updateFontSize(value) {
+            config.fontSize = parseInt(value);
+            document.getElementById('fontSizeValue').value = value;
+            applyConfig();
+        }
+
+        function updateFontSizeFromInput(value) {
+            const num = parseInt(value);
+            if (num >= 10 && num <= 20) {
+                config.fontSize = num;
+                document.getElementById('fontSizeSlider').value = num;
+                applyConfig();
+            }
+        }
+
+        function updateFont(value) {
+            config.fontFamily = value;
+            applyConfig();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    config.customFile = e.target.result;
+                    document.getElementById('fileName').value = file.name;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function resetFile() {
+            config.customFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileName').value = 'No file chosen';
+        }
+
+        // Initialize
+        function init() {
+            editor.innerHTML = '<span class="cursor"></span>';
+            updateStats();
+            applyConfig();
+        }
+
+        // Add code - multiple characters per keystroke
+        function addCode() {
+            if (charIndex >= currentCode.length) {
+                // Get new random snippet or use custom file
+                if (config.customFile) {
+                    currentCode = config.customFile + '\n\n';
+                } else {
+                    const randomSnippet = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+                    currentCode = randomSnippet + '\n\n';
+                }
+                charIndex = 0;
+            }
+
+            // Add multiple characters based on speed setting
+            const charsToAdd = Math.min(config.speed, currentCode.length - charIndex);
+            
+            for (let i = 0; i < charsToAdd; i++) {
+                if (charIndex >= currentCode.length) break;
+                
+                const char = currentCode[charIndex];
+                const span = document.createElement('span');
+                
+                if (char === '\n') {
+                    span.innerHTML = '<br>';
+                } else {
+                    span.textContent = char;
+                    applySyntaxHighlight(span, char, currentCode, charIndex);
+                }
+                
+                editor.insertBefore(span, editor.querySelector('.cursor'));
+                charIndex++;
+                charCount++;
+            }
+            
+            updateStats();
+            scrollToBottom();
+        }
+
+        // Simple syntax highlighting
+        function applySyntaxHighlight(span, char, code, index) {
+            if (/[0-9]/.test(char)) {
+                span.className = 'number';
+            } else if (char === '"' || char === "'") {
+                span.className = 'string';
+            } else if (char === '/' && (code[index + 1] === '/' || code[index + 1] === '*')) {
+                span.className = 'comment';
+            } else if (/[+\-*/=<>!&|]/.test(char)) {
+                span.className = 'operator';
+            }
+        }
+
+        // Keyboard event handler
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                addCode();
+                return;
+            }
+            
+            if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter' || e.key === 'Space') {
+                e.preventDefault();
+                
+                if (!isTyping) {
+                    isTyping = true;
+                    startTime = Date.now();
+                    status.textContent = 'Hacking...';
+                }
+                
+                if (e.key === 'Backspace') {
+                    const spans = editor.querySelectorAll('span:not(.cursor)');
+                    const toRemove = Math.min(config.speed, spans.length);
+                    for (let i = 0; i < toRemove; i++) {
+                        if (spans[spans.length - 1 - i]) {
+                            spans[spans.length - 1 - i].remove();
+                            charCount = Math.max(0, charCount - 1);
+                        }
+                    }
+                    updateStats();
+                } else {
+                    addCode();
+                }
+            }
+
+            // ESC to close settings
+            if (e.key === 'Escape') {
+                closeSettings();
+            }
+        });
+
+        // Update statistics
+        function updateStats() {
+            const lines = editor.textContent.split('\n').length;
+            lineCountEl.textContent = lines;
+            charCountEl.textContent = charCount;
+            
+            if (startTime && charCount > 0) {
+                const elapsed = (Date.now() - startTime) / 1000;
+                const speed = Math.round(charCount / elapsed);
+                speedEl.textContent = speed;
+            }
+        }
+
+        // Scroll to bottom
+        function scrollToBottom() {
+            editor.parentElement.scrollTop = editor.parentElement.scrollHeight;
+        }
+
+        // Clear code
+        function clearCode() {
+            editor.innerHTML = '<span class="cursor"></span>';
+            currentCode = '';
+            charIndex = 0;
+            charCount = 0;
+            isTyping = false;
+            startTime = null;
+            status.textContent = 'Ready';
+            updateStats();
+        }
+
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Fullscreen error:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Show warning on first load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('warning').style.display = 'block';
+            }, 1000);
+        });
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
