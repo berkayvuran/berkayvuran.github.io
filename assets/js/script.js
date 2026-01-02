@@ -78,7 +78,7 @@ async function loadPage(pageName) {
     window.scrollTo(0, 0);
 
   } catch (error) {
-    console.error("Load failed:", error);
+    if (window.location.hostname !== 'localhost') console.error("Load failed:", error);
     contentArea.innerHTML = `<article class="about active"><p>Failed to load ${pageName}.</p></article>`;
     contentArea.style.opacity = "1";
   }
@@ -168,7 +168,7 @@ async function prefetchAllImages() {
       crit.forEach(imageUrl => preloadImage(imageUrl, 'high'));
     }
   } catch (error) {
-    console.warn('Failed to prefetch references images:', error);
+    if (window.location.hostname === 'localhost') console.warn('Failed to prefetch references images:', error);
   }
   
   // Load other pages in parallel
@@ -181,7 +181,7 @@ async function prefetchAllImages() {
       const { imageUrls } = extractImagesFromHTML(html, page);
       imageUrls.forEach(url => allImages.add(url));
     } catch (error) {
-      console.warn(`Failed to prefetch images from ${page}:`, error);
+      if (window.location.hostname === 'localhost') console.warn(`Failed to prefetch images from ${page}:`, error);
     }
   });
   
@@ -194,7 +194,7 @@ async function prefetchAllImages() {
     }
   });
   
-  console.log(`Prefetched ${allImages.size} images (${criticalImages.size} critical) from all pages`);
+  if (window.location.hostname === 'localhost') console.log(`Prefetched ${allImages.size} images (${criticalImages.size} critical) from all pages`);
 }
 
 // Prefetch all pages on initial load for instant navigation

@@ -34,26 +34,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=block" rel="stylesheet">
-  <!-- Load ionicons immediately - blocking load ensures icons render instantly -->
-  <script>
-    // Force immediate icon loading - no async delay
-    (function() {
-      const script1 = document.createElement('script');
-      script1.type = 'module';
-      script1.src = 'https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js';
-      script1.setAttribute('fetchpriority', 'high');
-      document.head.insertBefore(script1, document.head.firstChild);
-      
-      const script2 = document.createElement('script');
-      script2.setAttribute('nomodule', '');
-      script2.src = 'https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js';
-      script2.setAttribute('fetchpriority', 'high');
-      document.head.insertBefore(script2, script1.nextSibling);
-    })();
-  </script>
-  <!-- Fallback standard load -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <!-- Load ionicons immediately with high priority -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" fetchpriority="high"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js" fetchpriority="high"></script>
   <!-- Load main script early but defer execution -->
   <script src="./assets/js/script.js" defer></script>
   <!-- Hotjar Tracking Code for Berkay Vuran -->
