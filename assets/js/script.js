@@ -107,6 +107,96 @@ navigationLinks.forEach(link => {
   });
 });
 
+// Extract images from HTML content
+function extractImagesFromHTML(html, pageName) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const images = doc.querySelectorAll('img[src]');
+  const imageUrls = [];
+  const criticalImages = [];
+  
+  images.forEach(img => {
+    const src = img.getAttribute('src');
+    if (src && src.startsWith('./assets/images/')) {
+      // Convert relative path to absolute
+      const absolutePath = new URL(src, window.location.origin).href;
+      imageUrls.push(absolutePath);
+      
+      // Mark references avatars as critical
+      if (pageName === 'references' && src.includes('/avatars/')) {
+        criticalImages.push(absolutePath);
+      }
+    }
+  });
+  
+  return { imageUrls, criticalImages };
+}
+
+// Preload images with priority
+function preloadImage(imageUrl, priority = 'low') {
+  // Use link preload
+  const link = document.createElement('link');
+  link.rel = 'preload';
+  link.as = 'image';
+  link.href = imageUrl;
+  if (priority === 'high' && 'fetchPriority' in link) {
+    link.fetchPriority = 'high';
+  }
+  document.head.appendChild(link);
+  
+  // Also preload using Image objects for better browser compatibility
+  const img = new Image();
+  img.src = imageUrl;
+}
+
+// Prefetch images from all pages for instant loading
+async function prefetchAllImages() {
+  const pagesToPrefetch = ['references', 'cv', 'showcase', 'blog']; // References first (most images)
+  const allImages = new Set();
+  const criticalImages = new Set();
+  
+  // Load references first (most critical - has many avatars)
+  try {
+    const response = await fetch('./pages/references.html', { cache: 'default' });
+    if (response.ok) {
+      const html = await response.text();
+      const { imageUrls, criticalImages: crit } = extractImagesFromHTML(html, 'references');
+      imageUrls.forEach(url => allImages.add(url));
+      crit.forEach(url => criticalImages.add(url));
+      
+      // Immediately start loading critical images
+      crit.forEach(imageUrl => preloadImage(imageUrl, 'high'));
+    }
+  } catch (error) {
+    console.warn('Failed to prefetch references images:', error);
+  }
+  
+  // Load other pages in parallel
+  const otherPages = ['cv', 'showcase', 'blog'];
+  const fetchPromises = otherPages.map(async (page) => {
+    try {
+      const response = await fetch(`./pages/${page}.html`, { cache: 'default' });
+      if (!response.ok) return;
+      const html = await response.text();
+      const { imageUrls } = extractImagesFromHTML(html, page);
+      imageUrls.forEach(url => allImages.add(url));
+    } catch (error) {
+      console.warn(`Failed to prefetch images from ${page}:`, error);
+    }
+  });
+  
+  await Promise.all(fetchPromises);
+  
+  // Preload remaining images with lower priority
+  allImages.forEach(imageUrl => {
+    if (!criticalImages.has(imageUrl)) {
+      preloadImage(imageUrl, 'low');
+    }
+  });
+  
+  console.log(`Prefetched ${allImages.size} images (${criticalImages.size} critical) from all pages`);
+}
+
 // Prefetch all pages on initial load for instant navigation
 window.addEventListener('DOMContentLoaded', () => {
   // Prefetch all pages except about (already inline)
@@ -131,6 +221,21 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   
   loadPage(hash);
+  
+  // Prefetch images after page load - use requestIdleCallback if available, otherwise setTimeout
+  const prefetchImages = () => {
+    // Wait a bit to ensure main page is fully rendered
+    setTimeout(() => {
+      prefetchAllImages();
+    }, 100);
+  };
+  
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(prefetchImages, { timeout: 2000 });
+  } else {
+    // Fallback for browsers without requestIdleCallback
+    setTimeout(prefetchImages, 500);
+  }
 });
 
 // Popstate (Back/Forward buttons)
