@@ -38,27 +38,9 @@
   <!--
     - custom css link - preload for faster rendering
   -->
-  <!-- Critical CSS inline or preload for faster FCP on mobile -->
+  <!-- CSS preload for faster loading, then render-blocking stylesheet to prevent FOUC -->
   <link rel="preload" href="./assets/css/style.css" as="style" fetchpriority="high">
-  <link rel="stylesheet" href="./assets/css/style.css" media="print" onload="this.media='all';this.onload=null">
-  <noscript><link rel="stylesheet" href="./assets/css/style.css"></noscript>
-  <script>
-    // Aggressive fallback for CSS loading - critical for mobile
-    (function(){
-      var l=document.querySelector('link[href*="style.css"][media="print"]');
-      if(l){
-        // Immediate fallback for mobile
-        setTimeout(function(){
-          if(l.media==='print'){
-            l.media='all';
-            l.onload=null;
-          }
-        },100);
-        // Also set onload handler
-        l.onload=function(){this.media='all';this.onload=null;};
-      }
-    })();
-  </script>
+  <link rel="stylesheet" href="./assets/css/style.css">
   <!--
     - google font link
   -->
@@ -69,27 +51,9 @@
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://static.hotjar.com">
-  <!-- Google Fonts with optimized loading for mobile -->
+  <!-- Google Fonts with preload for faster loading, then render-blocking to prevent FOUC -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" as="style">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
-  <script>
-    // Aggressive fallback for Google Fonts loading - critical for mobile
-    (function(){
-      var l=document.querySelector('link[href*="fonts.googleapis.com"][media="print"]');
-      if(l){
-        // Immediate fallback for mobile
-        setTimeout(function(){
-          if(l.media==='print'){
-            l.media='all';
-            l.onload=null;
-          }
-        },100);
-        // Also set onload handler
-        l.onload=function(){this.media='all';this.onload=null;};
-      }
-    })();
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <!-- Load ionicons immediately with high priority -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" fetchpriority="high"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js" fetchpriority="high"></script>
