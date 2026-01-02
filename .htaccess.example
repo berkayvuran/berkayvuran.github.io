@@ -1,0 +1,20 @@
+# Security Headers Configuration
+# Note: GitHub Pages does not support .htaccess files
+# This file is for reference if you move to a server that supports Apache
+# For GitHub Pages, consider using Cloudflare or another CDN that supports header modification
+
+# Content Security Policy
+# Adjust as needed for your site's requirements
+<IfModule mod_headers.c>
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://static.hotjar.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://static.hotjar.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+  
+  # X-Frame-Options (already set via meta tag, but HTTP header is preferred)
+  Header set X-Frame-Options "DENY"
+  
+  # Cross-Origin-Opener-Policy (already set via meta tag, but HTTP header is preferred)
+  Header set Cross-Origin-Opener-Policy "same-origin"
+  
+  # Strict Transport Security (HSTS) - requires HTTPS
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+

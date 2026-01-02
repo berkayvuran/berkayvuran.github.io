@@ -11,10 +11,10 @@
   #PERFORMANCE OPTIMIZATIONS
 \*-----------------------------------*/
 
-/* Font loading optimization - instant text display */
+/* Font loading optimization - swap for better FCP/LCP */
 @font-face {
   font-family: 'Poppins';
-  font-display: block; /* Block rendering until font loads - prevents FOUT */
+  font-display: swap; /* Swap to fallback immediately, then swap when font loads - better for performance */
 }
 
 /* Reserve space for ion-icons to prevent layout shift - always visible */
