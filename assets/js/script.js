@@ -1,5 +1,7 @@
 'use strict';
 
+// Hash check is now handled by inline script in HTML for immediate execution
+
 // 1. Core Utilities
 const elementToggleFunc = (elem) => elem && elem.classList.toggle("active");
 
@@ -41,12 +43,14 @@ async function loadPage(pageName) {
   }
 
   try {
-    // No opacity animation - instant display
-    const response = await fetch(`./pages/${pageName}.html`);
+    // Fetch with cache for instant loading
+    const response = await fetch(`./pages/${pageName}.html`, {
+      cache: 'default'
+    });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const html = await response.text();
     
-    // Inject content immediately
+    // Inject content immediately - no delay
     contentArea.innerHTML = html;
     
     // Ensure nested articles are active/visible
@@ -80,19 +84,52 @@ async function loadPage(pageName) {
   }
 }
 
-// Nav Click Events
+// Prefetch pages on hover for instant loading
 navigationLinks.forEach(link => {
+  const page = link.getAttribute("data-nav-link");
+  
+  // Prefetch on hover - instant load when clicked
+  link.addEventListener("mouseenter", () => {
+    if (page !== 'about') { // about is already inline
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = `./pages/${page}.html`;
+      link.as = 'document';
+      document.head.appendChild(link);
+    }
+  }, { once: true }); // Only prefetch once per link
+  
+  // Click handler
   link.addEventListener("click", (e) => {
     e.preventDefault();
-    const page = link.getAttribute("data-nav-link");
     loadPage(page);
     history.pushState(null, null, `#${page}`);
   });
 });
 
-// Initial Load Handler
+// Prefetch all pages on initial load for instant navigation
 window.addEventListener('DOMContentLoaded', () => {
+  // Prefetch all pages except about (already inline)
+  const pagesToPrefetch = ['cv', 'references', 'showcase', 'blog'];
+  pagesToPrefetch.forEach(page => {
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = `./pages/${page}.html`;
+    link.as = 'document';
+    document.head.appendChild(link);
+  });
+  
+  // Load initial page
   const hash = window.location.hash.replace('#', '') || 'about';
+  
+  // Clear inline about if hash is not about (backup check - inline script should handle it)
+  if (hash !== 'about' && contentArea) {
+    const inlineAbout = contentArea.querySelector('#inline-about-content');
+    if (inlineAbout) {
+      inlineAbout.remove();
+    }
+  }
+  
   loadPage(hash);
 });
 

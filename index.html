@@ -233,8 +233,17 @@
 
       <!-- Dynamic Content Area -->
       <div id="content-area" style="min-height: 500px; width: 100%;">
-        <!-- Initial content loaded inline for instant display -->
-        <article class="about" data-page="about">
+        <!-- Initial content loaded inline for instant display - hidden if hash is not about -->
+        <script>
+          // Immediate hash check - hide inline content before render
+          (function() {
+            const hash = window.location.hash.replace('#', '') || 'about';
+            if (hash !== 'about') {
+              document.write('<style>#content-area > article { display: none !important; }</style>');
+            }
+          })();
+        </script>
+        <article class="about" data-page="about" id="inline-about-content">
           <h2 class="h2 article-title" data-lang="en">About me</h2>
           <h2 class="h2 article-title" data-lang="tr" style="display: none;">Hakkımda</h2>
           <section class="about-text">
@@ -254,7 +263,7 @@
             <ul class="service-list">
               <li class="service-item">
                 <div id="123" class="service-icon-box">
-                  <img src="./assets/images/what-i-m-doing/icon-design.svg" alt="design icon" width="40">
+                  <img src="./assets/images/what-i-m-doing/icon-design.svg" alt="design icon" width="40" height="40" loading="lazy" decoding="async">
                 </div>
                 <div class="service-content-box">
                   <h4 class="h4 service-item-title" data-lang="en">Product Management</h4>
@@ -271,7 +280,7 @@
               </li>
               <li class="service-item">
                 <div class="service-icon-box">
-                  <img src="./assets/images/what-i-m-doing/icon-dev.svg" alt="Web development icon" width="40">
+                  <img src="./assets/images/what-i-m-doing/icon-dev.svg" alt="Web development icon" width="40" height="40" loading="lazy" decoding="async">
                 </div>
                 <div class="service-content-box">
                   <h4 class="h4 service-item-title" data-lang="en">Data & BI Analysis & SQL</h4>
@@ -286,7 +295,7 @@
               </li>
               <li class="service-item">
                 <div class="service-icon-box">
-                  <img src="./assets/images/what-i-m-doing/icon-tent.svg" alt="mobile app icon" width="40">
+                  <img src="./assets/images/what-i-m-doing/icon-tent.svg" alt="mobile app icon" width="40" height="40" loading="lazy" decoding="async">
                 </div>
                 <div class="service-content-box">
                   <h4 class="h4 service-item-title" data-lang="en">Hobbies</h4>
@@ -303,7 +312,7 @@
               </li>
               <li class="service-item">
                 <div class="service-icon-box">
-                  <img src="./assets/images/what-i-m-doing/icon-vegan.svg" alt="camera icon" width="40">
+                  <img src="./assets/images/what-i-m-doing/icon-vegan.svg" alt="camera icon" width="40" height="40" loading="lazy" decoding="async">
                 </div>
                 <div class="service-content-box">
                   <h4 class="h4 service-item-title" data-lang="en">Nature Advocacy</h4>
