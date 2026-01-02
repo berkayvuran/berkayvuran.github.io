@@ -3903,12 +3903,12 @@ textarea.form-input::-webkit-resizer { display: none; }
 /* Business card style - horizontal layout */
 .references .content-card {
   padding: 0;
-  border-radius: 10px;
+  border-radius: 14px;
   cursor: pointer;
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  height: 120px;
+  height: 140px;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   background: var(--eerie-black-2);
@@ -3927,14 +3927,14 @@ textarea.form-input::-webkit-resizer { display: none; }
 .references .testimonials-avatar-box {
   position: static;
   transform: none;
-  width: 120px;
-  min-width: 120px;
+  width: 110px;
+  min-width: 110px;
   height: 100%;
   border-radius: 0;
   background: var(--jet);
   flex-shrink: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 
@@ -3943,23 +3943,24 @@ textarea.form-input::-webkit-resizer { display: none; }
   height: 100%;
   border-radius: 0;
   object-fit: cover;
+  object-position: top center;
 }
 
 /* Info section - right side */
 .references .card-info {
   flex: 1;
-  padding: 16px 20px;
+  padding: 16px 20px 16px 16px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   text-align: left;
 }
 
 /* Name */
 .references .testimonials-item-title {
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   color: var(--white-1);
   line-height: 1.2;
 }
@@ -3967,7 +3968,7 @@ textarea.form-input::-webkit-resizer { display: none; }
 /* Role */
 .references .testimonials-text {
   text-align: left;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .references .testimonials-text p { display: none !important; }
@@ -3984,10 +3985,11 @@ html[data-lang="tr"] .references .testimonials-text p[data-lang="tr"]:has(b) { d
 
 /* Company badge */
 .references .company-badge {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--light-gray);
-  opacity: 0.7;
+  opacity: 0.6;
   margin-top: auto;
+  padding-top: 12px;
 }
 
 /* Light mode */
