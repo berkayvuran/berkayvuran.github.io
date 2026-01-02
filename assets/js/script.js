@@ -99,32 +99,43 @@ function applyLanguage(lang, scope = document.body, shouldRestartTypewriter = tr
     }
   });
 
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-  });
+  // Update language toggle button display
+  document.documentElement.setAttribute('data-lang', lang);
 
   localStorage.setItem('preferredLanguage', lang);
   if (shouldRestartTypewriter && window.typewriter) window.typewriter.restart();
 }
 
-document.querySelectorAll('.lang-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    applyLanguage(btn.getAttribute('data-lang'));
-  });
-});
+function toggleLanguage() {
+  const current = localStorage.getItem('preferredLanguage') || 'en';
+  const next = current === 'en' ? 'tr' : 'en';
+  applyLanguage(next);
+}
+
+const langToggleBtn = document.querySelector('.lang-toggle-btn');
+if (langToggleBtn) langToggleBtn.onclick = toggleLanguage;
+
+// Apply saved language on page load
+const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+document.documentElement.setAttribute('data-lang', savedLang);
+applyLanguage(savedLang, document.body, false);
 
 // 5. Theme Management
-const themeBtns = document.querySelectorAll('.theme-btn');
+const themeToggleBtn = document.querySelector('.theme-toggle-btn');
 const htmlEl = document.documentElement;
 
 function setTheme(theme) {
   htmlEl.setAttribute('data-theme', theme);
   localStorage.setItem('theme', theme);
-  themeBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-theme') === theme));
 }
 
-themeBtns.forEach(btn => btn.onclick = () => setTheme(btn.getAttribute('data-theme')));
+function toggleTheme() {
+  const current = htmlEl.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  setTheme(next);
+}
+
+if (themeToggleBtn) themeToggleBtn.onclick = toggleTheme;
 setTheme(localStorage.getItem('theme') || 'dark');
 
 // 6. Page-Specific Components
@@ -203,8 +214,34 @@ class TypewriterEffect {
     this.currentTextIndex = 0; 
     this.isDeleting = false;
     this.timeoutId = null;
-    this.titlesEn = ['Product Manager', 'Product Owner', 'UX Researcher', 'Data Analyst', 'Scrum Master', 'Digital Strategist', 'Innovation Catalyst', 'Problem Solver'];
-    this.titlesTr = ['Ürün Müdürü', 'Ürün Sahibi', 'UX Araştırmacısı', 'Veri Analisti', 'Scrum Master', 'Dijital Stratejist', 'İnovasyon Katalizörü', 'Problem Çözücü'];
+    this.titlesEn = [
+      'Product Leader', 
+      'AI Product Enthusiast', 
+      'Conversational AI Specialist',
+      'Agile Coach',
+      'UX Strategist', 
+      'Data-Driven PM',
+      'Scrum Master',
+      'PropTech Innovator',
+      'Team Builder',
+      'Digital Transformer',
+      'Growth Hacker',
+      'Psychology + Tech'
+    ];
+    this.titlesTr = [
+      'Ürün Lideri', 
+      'AI Ürün Tutkunu', 
+      'Konuşma AI Uzmanı',
+      'Çevik Koç',
+      'UX Stratejisti', 
+      'Veri Odaklı ÜY',
+      'Scrum Master',
+      'PropTech Yenilikçisi',
+      'Takım Kurucusu',
+      'Dijital Dönüştürücü',
+      'Büyüme Hackeri',
+      'Psikoloji + Teknoloji'
+    ];
     this.init();
   }
   
@@ -230,19 +267,19 @@ class TypewriterEffect {
       if (this.currentTextIndex === 0) { 
         this.isDeleting = false; 
         this.currentIndex = (this.currentIndex + 1) % titles.length; 
-        this.timeoutId = setTimeout(() => this.start(), 500); 
+        this.timeoutId = setTimeout(() => this.start(), 300); 
         return; 
       }
-      this.timeoutId = setTimeout(() => this.start(), 100);
+      this.timeoutId = setTimeout(() => this.start(), 40);
     } else {
       el.textContent = full.substring(0, this.currentTextIndex + 1);
       this.currentTextIndex++;
       if (this.currentTextIndex === full.length) { 
         this.isDeleting = true; 
-        this.timeoutId = setTimeout(() => this.start(), 2000); 
+        this.timeoutId = setTimeout(() => this.start(), 1500); 
         return; 
       }
-      this.timeoutId = setTimeout(() => this.start(), 200);
+      this.timeoutId = setTimeout(() => this.start(), 80);
     }
   }
 
