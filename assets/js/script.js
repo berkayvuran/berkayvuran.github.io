@@ -157,19 +157,33 @@ function initReferences() {
   const grid = document.createElement('div');
   grid.className = 'references-grid';
 
-  // Move all testimonial items into single grid with company badges
+  // Move all testimonial items into single grid with business card layout
   document.querySelectorAll('.references .testimonials').forEach(section => {
     const companyTitle = section.querySelector('.service-title');
     const companyName = companyTitle ? companyTitle.textContent.replace('Testimonials from ', '').replace(' Referansları', '').trim() : '';
     
     section.querySelectorAll('.testimonials-item').forEach(item => {
-      // Add company badge to each card
       const card = item.querySelector('.content-card');
-      if (card && companyName) {
-        const badge = document.createElement('span');
-        badge.className = 'company-badge';
-        badge.textContent = companyName;
-        card.appendChild(badge);
+      if (card) {
+        // Create card-info wrapper for business card layout
+        const cardInfo = document.createElement('div');
+        cardInfo.className = 'card-info';
+        
+        // Move title, text to card-info
+        const title = card.querySelector('.testimonials-item-title');
+        const text = card.querySelector('.testimonials-text');
+        if (title) cardInfo.appendChild(title);
+        if (text) cardInfo.appendChild(text);
+        
+        // Add company badge
+        if (companyName) {
+          const badge = document.createElement('span');
+          badge.className = 'company-badge';
+          badge.textContent = companyName;
+          cardInfo.appendChild(badge);
+        }
+        
+        card.appendChild(cardInfo);
       }
       grid.appendChild(item);
     });

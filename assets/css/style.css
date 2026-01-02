@@ -1390,10 +1390,11 @@ main {
 
 .navbar-list {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: center;
   padding: 0 10px;
+  gap: 8px;
 }
 
 .navbar-link {
@@ -2903,16 +2904,51 @@ textarea.form-input::-webkit-resizer { display: none; }
               box-shadow var(--transition-1);
 }
 
-/* Navbar controls responsive */
+/* Navbar controls responsive - floating on mobile */
 @media (max-width: 768px) {
+  .navbar-list {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+  
+  .navbar-link {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* Float controls outside navbar on mobile */
+  .navbar-item.navbar-controls {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+    top: auto !important;
+    margin-left: 0 !important;
+    z-index: 1000 !important;
+    background: var(--eerie-black-2) !important;
+    border: 1px solid var(--jet) !important;
+    border-radius: 50px !important;
+    padding: 10px 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  [data-theme="light"] .navbar-item.navbar-controls {
+    background: var(--white-1);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+  
   .navbar-controls {
-    padding: 3px 6px;
-    gap: 4px;
+    padding: 0;
+    gap: 6px;
+    background: transparent;
+    border: none;
   }
   
   .theme-toggle-btn {
-    padding: 4px;
-    font-size: 14px;
+    padding: 6px;
+    font-size: 16px;
   }
   
   .lang-toggle-btn {
@@ -3838,7 +3874,7 @@ textarea.form-input::-webkit-resizer { display: none; }
 }
 
 /* ==========================================
-   REFERENCES PAGE - CLEAN REFACTOR
+   REFERENCES PAGE - BUSINESS CARD STYLE
    ========================================== */
 
 /* Hide section titles */
@@ -3846,67 +3882,92 @@ textarea.form-input::-webkit-resizer { display: none; }
 .references .testimonials { margin-bottom: 0; }
 .references .testimonials-list { display: contents; }
 
-/* Grid container */
+/* 3-column grid */
 .references-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
+}
+
+@media (min-width: 580px) {
+  .references-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .references-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
 }
 
 /* Card base */
 .references .testimonials-item { min-width: unset; }
 
+/* Business card style - horizontal layout */
 .references .content-card {
-  padding: 20px 16px;
-  border-radius: 12px;
-  text-align: center;
+  padding: 0;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 200px;
+  flex-direction: row;
+  align-items: stretch;
+  height: 120px;
   overflow: hidden;
-  transition: transform 0.15s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--eerie-black-2);
+  border: 1px solid var(--jet);
 }
 
-.references .content-card::before { border-radius: 12px; }
-.references .content-card:hover { transform: translateY(-2px); }
+.references .content-card::before { display: none; }
 
-/* Avatar */
+.references .content-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--orange-yellow-crayola);
+}
+
+/* Photo section - left side */
 .references .testimonials-avatar-box {
   position: static;
   transform: none;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  margin-bottom: 12px;
+  width: 120px;
+  min-width: 120px;
+  height: 100%;
+  border-radius: 0;
   background: var(--jet);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .references .testimonials-avatar-box img {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
   object-fit: cover;
+}
+
+/* Info section - right side */
+.references .card-info {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
 }
 
 /* Name */
 .references .testimonials-item-title {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  margin-bottom: 4px;
-  text-align: center;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  margin-bottom: 6px;
+  color: var(--white-1);
+  line-height: 1.2;
 }
 
-/* Role - just show the b tag content */
+/* Role */
 .references .testimonials-text {
-  text-align: center;
-  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
 }
 
 .references .testimonials-text p { display: none !important; }
@@ -3916,33 +3977,29 @@ html[data-lang="tr"] .references .testimonials-text p[data-lang="en"]:has(b) { d
 html[data-lang="tr"] .references .testimonials-text p[data-lang="tr"]:has(b) { display: block !important; }
 
 .references .testimonials-text b {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--orange-yellow-crayola);
   font-weight: 500;
 }
 
 /* Company badge */
 .references .company-badge {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--light-gray);
-  margin-top: auto;
   opacity: 0.7;
+  margin-top: auto;
 }
 
 /* Light mode */
-[data-theme="light"] .references .content-card { background: var(--white-1); }
+[data-theme="light"] .references .content-card {
+  background: var(--white-1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .references .content-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
 [data-theme="light"] .references .testimonials-avatar-box { background: hsl(0, 0%, 92%); }
-[data-theme="light"] .references .company-badge { color: hsl(0, 0%, 55%); }
-
-/* Responsive */
-@media (min-width: 580px) {
-  .references-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (min-width: 1024px) {
-  .references-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
-  .references .testimonials-avatar-box,
-  .references .testimonials-avatar-box img { width: 72px; height: 72px; }
-  .references .testimonials-item-title { font-size: 1rem; }
-  .references .content-card { height: 210px; }
-}
+[data-theme="light"] .references .testimonials-item-title { color: var(--eerie-black-1); }
+[data-theme="light"] .references .company-badge { color: hsl(0, 0%, 50%); }
