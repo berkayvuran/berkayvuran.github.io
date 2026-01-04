@@ -38,7 +38,13 @@
   <link rel="preload" href="./assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
   <link rel="preload" href="./assets/fonts/poppins-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="./assets/fonts/poppins.css">
+  <!-- Inline critical font CSS to reduce render blocking -->
+  <style>
+    @font-face{font-family:'Poppins';font-style:normal;font-weight:300;font-display:swap;src:url('./assets/fonts/poppins-300.woff2') format('woff2'),url('./assets/fonts/poppins-300.ttf') format('truetype');}
+    @font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url('./assets/fonts/poppins-400.woff2') format('woff2'),url('./assets/fonts/poppins-400.ttf') format('truetype');}
+    @font-face{font-family:'Poppins';font-style:normal;font-weight:500;font-display:swap;src:url('./assets/fonts/poppins-500.woff2') format('woff2'),url('./assets/fonts/poppins-500.ttf') format('truetype');}
+    @font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url('./assets/fonts/poppins-600.woff2') format('woff2'),url('./assets/fonts/poppins-600.ttf') format('truetype');}
+  </style>
   <!-- Load ionicons with preload and async for faster rendering -->
   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js">
   <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" async></script>
