@@ -259,8 +259,13 @@ window.addEventListener('DOMContentLoaded', () => {
     link.rel = 'prefetch';
     link.href = `./pages/${page}.html`;
     link.as = 'document';
-    // Add fetchpriority for CV page (most important after about)
-    if (page === 'cv' && 'fetchPriority' in link) {
+    // Use preload for CV and showcase pages (higher priority)
+    if (page === 'cv' || page === 'showcase') {
+      link.rel = 'preload';
+      if ('fetchPriority' in link) {
+        link.fetchPriority = 'high';
+      }
+    } else if (page === 'cv' && 'fetchPriority' in link) {
       link.fetchPriority = 'high';
     }
     document.head.appendChild(link);
