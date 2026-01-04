@@ -3200,6 +3200,44 @@ textarea.form-input::-webkit-resizer { display: none; }
     justify-content: center;
   }
   
+  /* Mobile optimizations for better performance */
+  main {
+    margin-top: 40px;
+    margin-bottom: 60px;
+  }
+  
+  .sidebar {
+    max-height: 160px;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar.active {
+    max-height: 600px;
+  }
+  
+  .avatar-box img {
+    width: 100px;
+  }
+  
+  .info-content .name {
+    font-size: var(--fs-2);
+  }
+  
+  .contact-info {
+    max-width: calc(100% - 60px);
+    width: calc(100% - 60px);
+  }
+  
+  .social-list {
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .social-link {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
   .theme-toggle-label {
     width: 56px;
     min-height: 44px;
