@@ -378,12 +378,31 @@ const savedLang = localStorage.getItem('preferredLanguage') || 'en';
 document.documentElement.setAttribute('data-lang', savedLang);
 applyLanguage(savedLang, document.body, false);
 
-// 5. Theme Management - 4 Themes Support
-const themeSelect = document.querySelector('#theme-select');
+// 5. Theme Management - 4 Themes Support with Creative Names
 const htmlEl = document.documentElement;
 
-// Valid themes
+// Valid themes in order (for cycling)
 const validThemes = ['dark', 'light', 'matrix', 'high-contrast'];
+
+// Creative and funny theme names in different languages
+const themeNames = {
+  'dark': { 
+    'en': '🌙 Night Owl', 
+    'tr': '🌙 Gece Baykuşu' 
+  },
+  'light': { 
+    'en': '☀️ Sunshine Mode', 
+    'tr': '☀️ Güneş Modu' 
+  },
+  'matrix': { 
+    'en': '💚 Matrix Vibes', 
+    'tr': '💚 Matrix Ruhu' 
+  },
+  'high-contrast': { 
+    'en': '⚡ Zap Mode', 
+    'tr': '⚡ Şimşek Modu' 
+  }
+};
 
 function setTheme(theme) {
   // Validate theme
@@ -396,66 +415,71 @@ function setTheme(theme) {
     htmlEl.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     
-    // Update select dropdown
-    if (themeSelect) {
-      themeSelect.value = theme;
-      // Update visible options based on language
-      updateThemeSelectOptions();
+    // Update theme toggle button text
+    updateThemeToggleButton();
+  });
+}
+
+function getNextTheme(currentTheme) {
+  const currentIndex = validThemes.indexOf(currentTheme);
+  const nextIndex = (currentIndex + 1) % validThemes.length;
+  return validThemes[nextIndex];
+}
+
+function updateThemeToggleButton() {
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  const themeToggleTexts = document.querySelectorAll('.theme-toggle-text');
+  if (!themeToggleBtn) return;
+  
+  const currentTheme = htmlEl.getAttribute('data-theme') || 'dark';
+  const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+  
+  // Update button text based on current theme and language
+  themeToggleTexts.forEach(textEl => {
+    const lang = textEl.getAttribute('data-lang');
+    if (lang === currentLang) {
+      textEl.textContent = themeNames[currentTheme][currentLang];
+      textEl.style.display = 'inline';
+    } else {
+      textEl.style.display = 'none';
     }
   });
 }
 
-// Theme names in different languages
-const themeNames = {
-  'dark': { 'en': 'Dark Mode', 'tr': 'Karanlık Mod' },
-  'light': { 'en': 'Light Mode', 'tr': 'Aydınlık Mod' },
-  'matrix': { 'en': 'Matrix', 'tr': 'Matrix' },
-  'high-contrast': { 'en': 'High Contrast', 'tr': 'Yüksek Kontrast' }
-};
-
-function updateThemeSelectOptions() {
-  if (!themeSelect) return;
-  const currentLang = localStorage.getItem('preferredLanguage') || 'en';
-  const currentTheme = themeSelect.value;
+// Initialize theme toggle button
+function initThemeToggle() {
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  if (!themeToggleBtn) return;
   
-  // Update option texts based on current language
-  validThemes.forEach(theme => {
-    const option = themeSelect.querySelector(`option[value="${theme}"]`);
-    if (option && themeNames[theme]) {
-      option.textContent = themeNames[theme][currentLang];
-    }
+  // Load saved theme or default to dark
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  setTheme(savedTheme);
+  
+  // Add click handler to cycle through themes
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = htmlEl.getAttribute('data-theme') || 'dark';
+    const nextTheme = getNextTheme(currentTheme);
+    setTheme(nextTheme);
   });
-  
-  // Ensure current theme is selected
-  themeSelect.value = currentTheme;
 }
 
 // Initialize theme on load
 const savedTheme = localStorage.getItem('theme') || 'dark';
 setTheme(savedTheme);
 
-// Theme select change handler
-if (themeSelect) {
-  themeSelect.addEventListener('change', (e) => {
-    setTheme(e.target.value);
-  });
+// Initialize theme toggle button
+window.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle();
   
-  // Update options when language changes
+  // Update theme button when language changes
   document.addEventListener('languageChanged', () => {
-    updateThemeSelectOptions();
+    updateThemeToggleButton();
   });
-  
-  // Initialize theme select options on page load
-  window.addEventListener('DOMContentLoaded', () => {
-    updateThemeSelectOptions();
-  });
-  
-  // Also update immediately if DOM is already loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateThemeSelectOptions);
-  } else {
-    updateThemeSelectOptions();
-  }
+});
+
+// Also initialize immediately if DOM is already loaded
+if (document.readyState !== 'loading') {
+  initThemeToggle();
 }
 
 // 6. Page-Specific Components
@@ -680,6 +704,18 @@ class TypewriterEffect {
   }
 
   start() {
+    // Check if ADHD mode is enabled - if so, show static text
+    const adhdMode = localStorage.getItem('adhdMode') === 'true';
+    if (adhdMode) {
+      const lang = localStorage.getItem('preferredLanguage') || 'en';
+      const titles = lang === 'tr' ? this.titlesTr : this.titlesEn;
+      const el = lang === 'tr' ? this.elTr : this.elEn;
+      if (el && titles.length > 0) {
+        el.textContent = titles[0]; // Show first title statically
+      }
+      return; // Don't animate
+    }
+    
     if (this.timeoutId) clearTimeout(this.timeoutId);
     
     const lang = localStorage.getItem('preferredLanguage') || 'en';
@@ -922,16 +958,21 @@ function initAudioMode() {
     return;
   }
   
-  const audioToggle = document.getElementById('audio-mode-toggle');
-  if (!audioToggle) {
-    console.warn('Audio toggle not found');
+  const screenReaderToggle = document.getElementById('screen-reader-toggle');
+  if (!screenReaderToggle) {
+    console.warn('Screen reader toggle not found');
     return;
   }
   
-  // Load saved state
-  audioModeEnabled = localStorage.getItem('audioMode') === 'true';
-  audioToggle.checked = audioModeEnabled;
-  console.log('Audio mode initial state:', audioModeEnabled);
+  // Load saved state (check both old and new key for migration)
+  audioModeEnabled = localStorage.getItem('screenReaderMode') === 'true' || localStorage.getItem('audioMode') === 'true';
+  if (localStorage.getItem('audioMode') === 'true' && !localStorage.getItem('screenReaderMode')) {
+    // Migrate old key to new key
+    localStorage.setItem('screenReaderMode', 'true');
+    localStorage.removeItem('audioMode');
+  }
+  screenReaderToggle.checked = audioModeEnabled;
+  console.log('Screen reader mode initial state:', audioModeEnabled);
   
   // Reading speed control
   const readingSpeedSlider = document.getElementById('reading-speed');
@@ -986,11 +1027,11 @@ function initAudioMode() {
     });
   }
   
-  // Toggle handler - user interaction required for speech
-  audioToggle.addEventListener('change', (e) => {
+  // Screen Reader Mode toggle handler
+  screenReaderToggle.addEventListener('change', (e) => {
     audioModeEnabled = e.target.checked;
-    localStorage.setItem('audioMode', audioModeEnabled);
-    console.log('Audio mode toggled:', audioModeEnabled);
+    localStorage.setItem('screenReaderMode', audioModeEnabled);
+    console.log('Screen reader mode toggled:', audioModeEnabled);
     
     // Show/hide reading speed control
     if (readingSpeedItem) {
@@ -1011,7 +1052,7 @@ function initAudioMode() {
   }
   
   // Also add click handler to ensure user interaction
-  audioToggle.addEventListener('click', (e) => {
+  screenReaderToggle.addEventListener('click', (e) => {
     // This ensures user interaction is registered
     if (audioModeEnabled && speechSynthesis) {
       // Test if we can speak
@@ -1377,4 +1418,77 @@ window.addEventListener('DOMContentLoaded', () => {
   } else {
     console.warn('Speech synthesis not supported');
   }
+  
+  // Initialize Colorblind Mode
+  initColorblindMode();
+  
+  // Initialize ADHD Mode
+  initADHDMode();
 });
+
+// 11. Colorblind Mode
+function initColorblindMode() {
+  // Apply saved state immediately on page load
+  const colorblindEnabled = localStorage.getItem('colorblindMode') === 'true';
+  if (colorblindEnabled) {
+    applyColorblindMode();
+  }
+  
+  const colorblindToggle = document.getElementById('colorblind-toggle');
+  if (!colorblindToggle) return;
+  
+  colorblindToggle.checked = colorblindEnabled;
+  
+  colorblindToggle.addEventListener('change', (e) => {
+    const enabled = e.target.checked;
+    localStorage.setItem('colorblindMode', enabled);
+    
+    if (enabled) {
+      applyColorblindMode();
+    } else {
+      removeColorblindMode();
+    }
+  });
+}
+
+function applyColorblindMode() {
+  document.documentElement.setAttribute('data-colorblind', 'true');
+}
+
+function removeColorblindMode() {
+  document.documentElement.removeAttribute('data-colorblind');
+}
+
+// 12. ADHD Mode
+function initADHDMode() {
+  // Apply saved state immediately on page load
+  const adhdEnabled = localStorage.getItem('adhdMode') === 'true';
+  if (adhdEnabled) {
+    applyADHDMode();
+  }
+  
+  const adhdToggle = document.getElementById('adhd-toggle');
+  if (!adhdToggle) return;
+  
+  adhdToggle.checked = adhdEnabled;
+  
+  adhdToggle.addEventListener('change', (e) => {
+    const enabled = e.target.checked;
+    localStorage.setItem('adhdMode', enabled);
+    
+    if (enabled) {
+      applyADHDMode();
+    } else {
+      removeADHDMode();
+    }
+  });
+}
+
+function applyADHDMode() {
+  document.documentElement.setAttribute('data-adhd', 'true');
+}
+
+function removeADHDMode() {
+  document.documentElement.removeAttribute('data-adhd');
+}
+
