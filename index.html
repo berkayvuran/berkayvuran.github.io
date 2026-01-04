@@ -14,6 +14,9 @@
   <!-- X-Frame-Options removed: must be set via HTTP header, not meta tag -->
   <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
   <title>Berkay Vuran | Multi Disciplinary Product Enthusiast</title>
+  <!-- Critical LCP image preload - must be in head for immediate discovery -->
+  <link rel="preload" href="./assets/images/avatars/my-avatar-80.webp" as="image" fetchpriority="high" imagesrcset="./assets/images/avatars/my-avatar-80.webp 80w, ./assets/images/avatars/my-avatar-160.webp 160w" imagesizes="(max-width: 480px) 80px, (max-width: 768px) 160px, 160px">
+  <link rel="preload" href="./assets/images/avatars/my-avatar-160.webp" as="image" fetchpriority="high">
   <!--
     - favicon
   -->
@@ -27,13 +30,17 @@
   <!--
     - local font link
   -->
-  <!-- Preload critical avatar image for LCP -->
-  <link rel="preload" href="./assets/images/avatars/my-avatar.png" as="image" fetchpriority="high">
+  <!-- Preload critical avatar image for LCP - inline in head for immediate discovery -->
+  <link rel="preload" href="./assets/images/avatars/my-avatar-80.webp" as="image" fetchpriority="high" imagesrcset="./assets/images/avatars/my-avatar-80.webp 80w, ./assets/images/avatars/my-avatar-160.webp 160w" imagesizes="(max-width: 480px) 80px, (max-width: 768px) 160px, 160px">
+  <!-- Inline critical avatar for instant LCP -->
+  <link rel="preload" href="./assets/images/avatars/my-avatar-160.webp" as="image" fetchpriority="high">
   <!-- Preload all critical font weights to prevent FOUT -->
   <link rel="preload" href="./assets/fonts/poppins-300.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
   <link rel="preload" href="./assets/fonts/poppins-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Preload avatar for faster LCP on About page -->
+  <link rel="preload" href="./assets/images/avatars/my-avatar-80.webp" as="image" fetchpriority="high" imagesrcset="./assets/images/avatars/my-avatar-80.webp 80w, ./assets/images/avatars/my-avatar-160.webp 160w" imagesizes="(max-width: 480px) 80px, (max-width: 768px) 160px, 160px">
   <!-- Preload CV page for faster navigation -->
   <link rel="preload" href="./pages/cv.html" as="document" fetchpriority="high">
   <!-- Preload showcase page and critical images for faster LCP -->
@@ -70,7 +77,16 @@
       <div class="sidebar-info">
         <figure class="avatar-box">
           <a href="https://berkayvuran.com" aria-label="Visit berkayvuran.com">
-            <img src="./assets/images/avatars/my-avatar.png" alt="Berkay Vuran" width="80" height="80" fetchpriority="high" decoding="auto"></a>
+            <img src="./assets/images/avatars/my-avatar-160.webp" 
+                 srcset="./assets/images/avatars/my-avatar-80.webp 80w, ./assets/images/avatars/my-avatar-160.webp 160w" 
+                 sizes="(max-width: 480px) 80px, (max-width: 768px) 160px, 160px"
+                 alt="Berkay Vuran" 
+                 width="80" 
+                 height="80" 
+                 fetchpriority="high" 
+                 decoding="async"
+                 loading="eager">
+          </a>
         </figure>
         <div class="info-content">
           <h1 class="name" title="Berkay Vuran">Berkay Vuran</h1>
