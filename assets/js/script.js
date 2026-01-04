@@ -93,32 +93,8 @@ async function loadPage(pageName) {
   }
 }
 
-// Prefetch pages on hover for instant loading
-navigationLinks.forEach(link => {
-  const page = link.getAttribute("data-nav-link");
-  
-  // Prefetch on hover - instant load when clicked
-  link.addEventListener("mouseenter", () => {
-    if (page !== 'about') { // about is already inline
-      const prefetchLink = document.createElement('link');
-      prefetchLink.rel = 'prefetch';
-      prefetchLink.href = `./pages/${page}.html`;
-      prefetchLink.as = 'document';
-      // Prioritize CV page prefetch
-      if (page === 'cv' && 'fetchPriority' in prefetchLink) {
-        prefetchLink.fetchPriority = 'high';
-      }
-      document.head.appendChild(prefetchLink);
-    }
-  }, { once: true }); // Only prefetch once per link
-  
-  // Click handler
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    loadPage(page);
-    history.pushState(null, null, `#${page}`);
-  });
-});
+// Prefetch pages on hover for instant loading (optimized for performance)
+// This will be initialized in DOMContentLoaded to ensure navigationLinks exists
 
 // Extract images from HTML content
 function extractImagesFromHTML(html, pageName) {
@@ -135,10 +111,7 @@ function extractImagesFromHTML(html, pageName) {
       const absolutePath = new URL(src, window.location.origin).href;
       imageUrls.push(absolutePath);
       
-      // Mark references avatars as critical
-      if (pageName === 'references' && src.includes('/avatars/')) {
-        criticalImages.push(absolutePath);
-      }
+      // Skip references avatars - they're lazy loaded (optimization)
       
       // Mark first 6 showcase images as critical (above the fold)
       if (pageName === 'showcase' && index < 6) {
@@ -167,35 +140,19 @@ function preloadImage(imageUrl, priority = 'low') {
   }
   document.head.appendChild(link);
   
-  // Also preload using Image objects for better browser compatibility
-  const img = new Image();
-  img.src = imageUrl;
+  // Skip Image object preload - link preload is sufficient (optimization)
 }
 
-// Prefetch images from all pages for instant loading
+// Prefetch images from all pages for instant loading (optimized - only critical images)
 async function prefetchAllImages() {
   // Skip CV page as it has minimal images - optimize for other pages
-  const pagesToPrefetch = ['references', 'showcase', 'blog']; // References and showcase first (most images)
+  const pagesToPrefetch = ['showcase', 'blog']; // Skip references - avatars are lazy loaded
   const allImages = new Set();
   const criticalImages = new Set();
   
-  // Load references first (most critical - has many avatars)
-  try {
-    const response = await fetch('./pages/references.html', { cache: 'default' });
-    if (response.ok) {
-      const html = await response.text();
-      const { imageUrls, criticalImages: crit } = extractImagesFromHTML(html, 'references');
-      imageUrls.forEach(url => allImages.add(url));
-      crit.forEach(url => criticalImages.add(url));
-      
-      // Immediately start loading critical images
-      crit.forEach(imageUrl => preloadImage(imageUrl, 'high'));
-    }
-  } catch (error) {
-    if (window.location.hostname === 'localhost') console.warn('Failed to prefetch references images:', error);
-  }
+  // Skip references page prefetch - avatars are small and lazy loaded
   
-  // Load showcase second (has many images, first 6 are critical)
+  // Load showcase first (has many images, first 6 are critical)
   try {
     const response = await fetch('./pages/showcase.html', { cache: 'default' });
     if (response.ok) {
@@ -227,14 +184,7 @@ async function prefetchAllImages() {
     if (window.location.hostname === 'localhost') console.warn('Failed to prefetch blog images:', error);
   }
   
-  // Preload remaining images with lower priority
-  allImages.forEach(imageUrl => {
-    if (!criticalImages.has(imageUrl)) {
-      preloadImage(imageUrl, 'low');
-    }
-  });
-  
-  if (window.location.hostname === 'localhost') console.log(`Prefetched ${allImages.size} images (${criticalImages.size} critical) from all pages`);
+  // Skip non-critical image prefetching - only critical images are preloaded (optimization)
 }
 
 // Prefetch all pages on initial load for instant navigation
@@ -242,6 +192,35 @@ window.addEventListener('DOMContentLoaded', () => {
   // Ensure contentArea and navigationLinks are available
   if (!contentArea) contentArea = document.querySelector("#content-area");
   if (!navigationLinks || navigationLinks.length === 0) navigationLinks = document.querySelectorAll("[data-nav-link]");
+  
+  // Initialize navigation link prefetching
+  if (navigationLinks && navigationLinks.length > 0) {
+    navigationLinks.forEach(link => {
+      const page = link.getAttribute("data-nav-link");
+      
+      // Prefetch on hover - instant load when clicked
+      link.addEventListener("mouseenter", () => {
+        if (page !== 'about') { // about is already inline
+          const prefetchLink = document.createElement('link');
+          prefetchLink.rel = 'prefetch';
+          prefetchLink.href = `./pages/${page}.html`;
+          prefetchLink.as = 'document';
+          // Prioritize CV page prefetch
+          if (page === 'cv' && 'fetchPriority' in prefetchLink) {
+            prefetchLink.fetchPriority = 'high';
+          }
+          document.head.appendChild(prefetchLink);
+        }
+      }, { once: true }); // Only prefetch once per link
+      
+      // Click handler
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        loadPage(page);
+        history.pushState(null, null, `#${page}`);
+      });
+    });
+  }
   
   // Load initial page
   const hash = window.location.hash.replace('#', '') || 'about';
@@ -286,22 +265,13 @@ window.addEventListener('DOMContentLoaded', () => {
     console.error('Content area not found');
   }
   
-  // Prefetch images after page load - only if not on CV page (CV has minimal images)
-  // Use requestIdleCallback if available, otherwise setTimeout
-  const prefetchImages = () => {
-    // Skip prefetching if on CV page to reduce initial load
-    if (hash === 'cv') return;
-    // Wait a bit to ensure main page is fully rendered
-    setTimeout(() => {
-      prefetchAllImages();
-    }, 100);
-  };
-  
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(prefetchImages, { timeout: 3000 });
-  } else {
-    // Fallback for browsers without requestIdleCallback - delay longer for CV page
-    setTimeout(prefetchImages, hash === 'cv' ? 2000 : 500);
+  // Optimized: Only prefetch images for showcase/blog, skip CV and references
+  if (hash !== 'cv' && hash !== 'references') {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => prefetchAllImages(), { timeout: 2000 });
+    } else {
+      setTimeout(() => prefetchAllImages(), 1000);
+    }
   }
   
   // Prevent prefetching of appendices (PDFs) and projects - lazy load only on click
