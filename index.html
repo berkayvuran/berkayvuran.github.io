@@ -42,18 +42,16 @@
   <link rel="preload" href="./assets/css/style.css" as="style" fetchpriority="high">
   <link rel="stylesheet" href="./assets/css/style.css">
   <!--
-    - google font link
+    - local font link
   -->
   <!-- Resource hints for faster loading -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://static.hotjar.com">
-  <!-- Google Fonts with preload for faster loading, then render-blocking to prevent FOUC -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" as="style">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Local fonts with preload for faster loading, then render-blocking to prevent FOUC -->
+  <link rel="preload" href="./assets/fonts/poppins.css" as="style">
+  <link rel="stylesheet" href="./assets/fonts/poppins.css">
   <!-- Load ionicons immediately with high priority -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" fetchpriority="high"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js" fetchpriority="high"></script>
