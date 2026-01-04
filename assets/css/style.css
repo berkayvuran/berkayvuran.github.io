@@ -210,50 +210,58 @@ ion-icon:defined {
 .theme-toggle-label .theme-icon-light,
 .theme-toggle-label svg {
   position: absolute;
-  font-size: 14px;
   width: 14px;
   height: 14px;
-  z-index: 1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 3;
+  transition: opacity 0.3s ease;
+  display: block;
+  pointer-events: none;
+  top: 50%;
+  margin-top: -7px;
 }
 
 .theme-toggle-label .theme-icon-dark,
 .theme-toggle-label svg.theme-icon-dark {
-  color: var(--orange-yellow-crayola);
-  fill: var(--orange-yellow-crayola);
-  opacity: 1;
+  color: var(--orange-yellow-crayola) !important;
+  opacity: 1 !important;
   left: 8px;
+}
+
+.theme-toggle-label .theme-icon-dark path,
+.theme-toggle-label svg.theme-icon-dark path {
+  fill: var(--orange-yellow-crayola) !important;
 }
 
 .theme-toggle-label .theme-icon-light,
 .theme-toggle-label svg.theme-icon-light {
-  color: #ff9500;
-  fill: #ff9500;
-  opacity: 0;
+  color: #ff9500 !important;
+  opacity: 0 !important;
   right: 8px;
+}
+
+.theme-toggle-label .theme-icon-light path,
+.theme-toggle-label svg.theme-icon-light path {
+  fill: #ff9500 !important;
 }
 
 .theme-toggle-input:checked + .theme-toggle-label .theme-icon-dark,
 .theme-toggle-input:checked + .theme-toggle-label svg.theme-icon-dark {
-  opacity: 0;
+  opacity: 0 !important;
 }
 
 .theme-toggle-input:checked + .theme-toggle-label .theme-icon-light,
 .theme-toggle-input:checked + .theme-toggle-label svg.theme-icon-light {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
 [data-theme="light"] .theme-toggle-label .theme-icon-dark,
 [data-theme="light"] .theme-toggle-label svg.theme-icon-dark {
-  opacity: 0;
+  opacity: 0 !important;
 }
 
 [data-theme="light"] .theme-toggle-label .theme-icon-light,
 [data-theme="light"] .theme-toggle-label svg.theme-icon-light {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
 /* Language toggle button with flags */
