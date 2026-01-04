@@ -62,7 +62,8 @@ ion-icon:defined {
   height: 22px;
 }
 
-.social-link ion-icon {
+.social-link ion-icon,
+.social-link svg {
   font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
@@ -78,10 +79,21 @@ ion-icon:defined {
   object-fit: contain !important;
 }
 
-.icon-box ion-icon {
+.social-link svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon-box ion-icon,
+.icon-box svg {
   font-size: 22px;
   width: 22px;
   height: 22px;
+}
+
+.icon-box svg {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* Icon box consistent styling */
@@ -195,9 +207,12 @@ ion-icon:defined {
 }
 
 .theme-toggle-label .theme-icon-dark,
-.theme-toggle-label .theme-icon-light {
+.theme-toggle-label .theme-icon-light,
+.theme-toggle-label svg {
   position: absolute;
   font-size: 14px;
+  width: 14px;
+  height: 14px;
   z-index: 1;
   transition: opacity 0.3s ease, transform 0.3s ease;
   display: flex;
@@ -205,31 +220,39 @@ ion-icon:defined {
   justify-content: center;
 }
 
-.theme-toggle-label .theme-icon-dark {
+.theme-toggle-label .theme-icon-dark,
+.theme-toggle-label svg.theme-icon-dark {
   color: var(--orange-yellow-crayola);
+  fill: var(--orange-yellow-crayola);
   opacity: 1;
   left: 8px;
 }
 
-.theme-toggle-label .theme-icon-light {
+.theme-toggle-label .theme-icon-light,
+.theme-toggle-label svg.theme-icon-light {
   color: #ff9500;
+  fill: #ff9500;
   opacity: 0;
   right: 8px;
 }
 
-.theme-toggle-input:checked + .theme-toggle-label .theme-icon-dark {
+.theme-toggle-input:checked + .theme-toggle-label .theme-icon-dark,
+.theme-toggle-input:checked + .theme-toggle-label svg.theme-icon-dark {
   opacity: 0;
 }
 
-.theme-toggle-input:checked + .theme-toggle-label .theme-icon-light {
+.theme-toggle-input:checked + .theme-toggle-label .theme-icon-light,
+.theme-toggle-input:checked + .theme-toggle-label svg.theme-icon-light {
   opacity: 1;
 }
 
-[data-theme="light"] .theme-toggle-label .theme-icon-dark {
+[data-theme="light"] .theme-toggle-label .theme-icon-dark,
+[data-theme="light"] .theme-toggle-label svg.theme-icon-dark {
   opacity: 0;
 }
 
-[data-theme="light"] .theme-toggle-label .theme-icon-light {
+[data-theme="light"] .theme-toggle-label .theme-icon-light,
+[data-theme="light"] .theme-toggle-label svg.theme-icon-light {
   opacity: 1;
 }
 
@@ -1429,6 +1452,14 @@ main {
   border-radius: 5px;
   margin: 0 auto;
   text-align: center;
+}
+
+.info_more-btn svg {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
 }
 
 .info_more-btn {
@@ -3933,8 +3964,14 @@ textarea.form-input::-webkit-resizer { display: none; }
   margin-top: 20px;
 }
 
-.cv-download-btn ion-icon {
+.cv-download-btn ion-icon,
+.cv-download-btn svg {
   font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 .cv-download-btn:hover {
