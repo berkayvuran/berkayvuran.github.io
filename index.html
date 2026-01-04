@@ -34,6 +34,14 @@
   <link rel="preload" href="./assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
   <link rel="preload" href="./assets/fonts/poppins-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Preload CV page for faster navigation -->
+  <link rel="preload" href="./pages/cv.html" as="document" fetchpriority="high">
+  <!-- Preload showcase page and critical images for faster LCP -->
+  <link rel="preload" href="./pages/showcase.html" as="document" fetchpriority="high">
+  <link rel="preload" href="./assets/images/abonerez-screenshots/dashboard-screen-400.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="./assets/images/abonerez-screenshots/dashboard-screen-800.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="./assets/images/portfolio/ccaas-glossary-400.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="./assets/images/portfolio/ccaas-glossary-800.webp" as="image" fetchpriority="high">
   <!-- Inline critical font CSS to reduce render blocking -->
   <style>
     @font-face{font-family:'Poppins';font-style:normal;font-weight:300;font-display:swap;src:url('./assets/fonts/poppins-300.woff2') format('woff2'),url('./assets/fonts/poppins-300.ttf') format('truetype');}
