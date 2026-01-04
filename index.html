@@ -361,6 +361,33 @@
             <span class="lang-flag lang-flag-en">🇬🇧</span>
           </button>
         </div>
+        <div class="floating-settings-item">
+          <label class="floating-settings-label" for="audio-mode-toggle" data-lang="en">Accessibility Mode</label>
+          <label class="floating-settings-label" for="audio-mode-toggle" data-lang="tr" style="display: none;">Görme Engelli Dostu</label>
+          <div class="audio-mode-toggle-wrapper">
+            <input type="checkbox" id="audio-mode-toggle" class="audio-mode-toggle-input" aria-label="Toggle accessibility mode">
+            <label for="audio-mode-toggle" class="audio-mode-toggle-label">
+              <span class="audio-mode-toggle-slider"></span>
+              <svg class="audio-mode-icon-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              <svg class="audio-mode-icon-off" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
+            </label>
+          </div>
+        </div>
+        <div class="floating-settings-item" id="reading-speed-item" style="display: none;">
+          <label class="floating-settings-label" for="reading-speed" data-lang="en">Reading Speed</label>
+          <label class="floating-settings-label" for="reading-speed" data-lang="tr" style="display: none;">Okuma Hızı</label>
+          <div class="reading-speed-control">
+            <input type="range" id="reading-speed" min="0.5" max="2" step="0.1" value="1" aria-label="Reading speed">
+            <span class="reading-speed-value" id="reading-speed-value">1.0x</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

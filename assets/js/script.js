@@ -85,6 +85,13 @@ async function loadPage(pageName) {
     }
 
     window.scrollTo(0, 0);
+    
+    // Read page content if audio mode is enabled - always trigger on page change
+    if (audioModeEnabled) {
+      setTimeout(() => {
+        readPageContent();
+      }, 800);
+    }
 
   } catch (error) {
     if (window.location.hostname === 'localhost') console.error("Load failed:", error);
@@ -314,6 +321,13 @@ window.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('popstate', () => {
   const hash = window.location.hash.replace('#', '') || 'about';
   loadPage(hash);
+  
+  // Read page content if audio mode is enabled
+  if (audioModeEnabled) {
+    setTimeout(() => {
+      readPageContent();
+    }, 800);
+  }
 });
 
 // 4. Language Management
@@ -886,3 +900,481 @@ function initFloatingSettingsMenu() {
     e.stopPropagation();
   });
 }
+
+// 10. Audio Mode (Text-to-Speech) - Accessibility Mode
+let audioModeEnabled = false;
+let speechSynthesis = null;
+let currentUtterance = null;
+let contentObserver = null;
+let readingSpeed = parseFloat(localStorage.getItem('readingSpeed')) || 1.0;
+let currentText = ''; // Store current text being read
+let currentLang = 'en'; // Store current language
+let speechStartTime = 0; // Track when speech started
+let speechCharIndex = 0; // Track character position
+
+// Initialize Speech Synthesis
+function initAudioMode() {
+  if ('speechSynthesis' in window) {
+    speechSynthesis = window.speechSynthesis;
+    console.log('Speech synthesis initialized');
+  } else {
+    console.warn('Speech synthesis not supported in this browser');
+    return;
+  }
+  
+  const audioToggle = document.getElementById('audio-mode-toggle');
+  if (!audioToggle) {
+    console.warn('Audio toggle not found');
+    return;
+  }
+  
+  // Load saved state
+  audioModeEnabled = localStorage.getItem('audioMode') === 'true';
+  audioToggle.checked = audioModeEnabled;
+  console.log('Audio mode initial state:', audioModeEnabled);
+  
+  // Reading speed control
+  const readingSpeedSlider = document.getElementById('reading-speed');
+  const readingSpeedValue = document.getElementById('reading-speed-value');
+  const readingSpeedItem = document.getElementById('reading-speed-item');
+  
+  if (readingSpeedSlider && readingSpeedValue) {
+    readingSpeedSlider.value = readingSpeed;
+    readingSpeedValue.textContent = readingSpeed.toFixed(1) + 'x';
+    
+    readingSpeedSlider.addEventListener('input', (e) => {
+      const newSpeed = parseFloat(e.target.value);
+      const oldSpeed = readingSpeed;
+      readingSpeed = newSpeed;
+      readingSpeedValue.textContent = readingSpeed.toFixed(1) + 'x';
+      localStorage.setItem('readingSpeed', readingSpeed);
+      
+      // If currently speaking, continue from current position with new speed
+      if (audioModeEnabled && speechSynthesis && speechSynthesis.speaking && currentText && speechStartTime > 0) {
+        // Calculate how much has been read based on time and old speed
+        const elapsedTime = (Date.now() - speechStartTime) / 1000; // in seconds
+        
+        // More accurate estimation: average speaking rate is ~150 words/min
+        // Average word length is ~5 characters, so ~750 chars/min = ~12.5 chars/sec at 1x speed
+        // But we need to account for pauses, so use a more conservative estimate
+        const charsPerSecond = 10 * oldSpeed; // Conservative estimate
+        const estimatedCharsRead = Math.floor(elapsedTime * charsPerSecond);
+        
+        // Update character index (don't exceed text length)
+        speechCharIndex = Math.min(estimatedCharsRead + speechCharIndex, currentText.length);
+        
+        // Get remaining text (skip already read part)
+        const remainingText = currentText.substring(speechCharIndex).trim();
+        
+        if (remainingText.length > 10) { // Only continue if there's substantial text left
+          console.log('Speed changed. Continuing from position:', speechCharIndex, '/', currentText.length, 'Remaining:', remainingText.substring(0, 50));
+          
+          // Stop current speech
+          speechSynthesis.cancel();
+          
+          // Update character index to mark what we've read
+          // We'll update it again when this utterance ends
+          
+          // Continue with remaining text at new speed
+          setTimeout(() => {
+            continueSpeaking(remainingText, currentLang, true);
+          }, 150);
+        } else {
+          console.log('Not enough text remaining to continue');
+        }
+      }
+    });
+  }
+  
+  // Toggle handler - user interaction required for speech
+  audioToggle.addEventListener('change', (e) => {
+    audioModeEnabled = e.target.checked;
+    localStorage.setItem('audioMode', audioModeEnabled);
+    console.log('Audio mode toggled:', audioModeEnabled);
+    
+    // Show/hide reading speed control
+    if (readingSpeedItem) {
+      readingSpeedItem.style.display = audioModeEnabled ? 'flex' : 'none';
+    }
+    
+    if (audioModeEnabled) {
+      // User interaction happened, safe to start
+      startAudioMode();
+    } else {
+      stopAudioMode();
+    }
+  });
+  
+  // Show reading speed if already enabled
+  if (audioModeEnabled && readingSpeedItem) {
+    readingSpeedItem.style.display = 'flex';
+  }
+  
+  // Also add click handler to ensure user interaction
+  audioToggle.addEventListener('click', (e) => {
+    // This ensures user interaction is registered
+    if (audioModeEnabled && speechSynthesis) {
+      // Test if we can speak
+      const testUtterance = new SpeechSynthesisUtterance('');
+      testUtterance.volume = 0;
+      speechSynthesis.speak(testUtterance);
+      speechSynthesis.cancel();
+    }
+  });
+  
+  // Start if enabled
+  if (audioModeEnabled) {
+    setTimeout(() => {
+      startAudioMode();
+    }, 500);
+  }
+}
+
+function startAudioMode() {
+  console.log('Starting audio mode');
+  // Stop any current speech
+  if (speechSynthesis && speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
+  
+  // Read current page
+  setTimeout(() => {
+    readPageContent();
+  }, 300);
+  
+  // Observe content changes
+  observeContentChanges();
+}
+
+function stopAudioMode() {
+  // Stop speech
+  if (speechSynthesis && speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
+  
+  // Stop observing
+  if (contentObserver) {
+    contentObserver.disconnect();
+    contentObserver = null;
+  }
+}
+
+function readPageContent() {
+  console.log('Reading page content, audioModeEnabled:', audioModeEnabled);
+  if (!speechSynthesis || !audioModeEnabled) {
+    console.log('Speech synthesis not available or audio mode disabled');
+    return;
+  }
+  
+  const contentArea = document.querySelector('#content-area');
+  if (!contentArea) {
+    console.log('Content area not found');
+    return;
+  }
+  
+  // Get current language
+  const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+  
+  // Extract page summary
+  const summary = extractPageSummary(contentArea, currentLang);
+  console.log('Page summary extracted:', summary);
+  
+  if (summary) {
+    speakText(summary, currentLang);
+  } else {
+    console.log('No summary extracted');
+  }
+}
+
+function extractPageSummary(contentArea, lang) {
+  if (!contentArea) {
+    console.log('extractPageSummary: contentArea not found');
+    return '';
+  }
+  
+  // Try multiple selectors to find the article
+  let activeArticle = contentArea.querySelector('article.active');
+  if (!activeArticle) {
+    activeArticle = contentArea.querySelector('article[data-page]');
+  }
+  if (!activeArticle) {
+    activeArticle = contentArea.querySelector('article');
+  }
+  
+  if (!activeArticle) {
+    console.log('extractPageSummary: No article found');
+    return '';
+  }
+  
+  const pageName = activeArticle.getAttribute('data-page') || 'about';
+  console.log('extractPageSummary: pageName:', pageName);
+  
+  // Get title - try multiple selectors
+  let title = activeArticle.querySelector('.article-title');
+  if (!title) title = activeArticle.querySelector('h2');
+  if (!title) title = activeArticle.querySelector('h1');
+  const titleText = title ? title.textContent.trim() : '';
+  console.log('extractPageSummary: titleText:', titleText);
+  
+  // Get ALL visible content - not just summary
+  // Use a recursive function to extract text in order
+  function extractTextRecursive(element, lang) {
+    let text = '';
+    
+    // Check if element is visible
+    const style = window.getComputedStyle(element);
+    if (style.display === 'none' || style.visibility === 'hidden') {
+      return '';
+    }
+    
+    // Check language attribute
+    const elementLang = element.getAttribute('data-lang');
+    if (elementLang && elementLang !== lang) {
+      return '';
+    }
+    
+    // Process children first
+    const children = Array.from(element.childNodes);
+    for (const child of children) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const textContent = child.textContent.trim();
+        if (textContent) {
+          text += textContent + ' ';
+        }
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        const childText = extractTextRecursive(child, lang);
+        if (childText) {
+          text += childText;
+        }
+      }
+    }
+    
+    // Add punctuation based on element type
+    if (element.tagName && element.tagName.match(/^H[1-6]$/)) {
+      text = text.trim() + '. ';
+    } else if (element.tagName === 'P' || element.tagName === 'LI') {
+      text = text.trim() + '. ';
+    }
+    
+    return text;
+  }
+  
+  // Extract all text from article
+  let fullContent = extractTextRecursive(activeArticle, lang);
+  
+  // Clean up multiple spaces and periods
+  fullContent = fullContent.replace(/\s+/g, ' ').replace(/\.\.+/g, '.').trim();
+  
+  console.log('extractPageSummary: full content length:', fullContent.length);
+  
+  // Build full text with page context
+  let fullText = '';
+  if (lang === 'tr') {
+    switch(pageName) {
+      case 'about':
+        fullText = 'Hakkımda sayfası. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      case 'cv':
+        fullText = 'CV sayfası. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      case 'references':
+        fullText = 'Referanslar sayfası. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      case 'showcase':
+        fullText = 'Vitrin sayfası. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      case 'blog':
+        fullText = 'Blog sayfası. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      default:
+        fullText = (titleText ? titleText + '. ' : '') + fullContent;
+    }
+  } else {
+    switch(pageName) {
+      case 'about':
+        fullText = 'About page. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      case 'cv':
+        fullText = 'CV page. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      case 'references':
+        fullText = 'References page. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      case 'showcase':
+        fullText = 'Showcase page. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      case 'blog':
+        fullText = 'Blog page. ' + (titleText ? titleText + '. ' : '') + fullContent;
+        break;
+      default:
+        fullText = (titleText ? titleText + '. ' : '') + fullContent;
+    }
+  }
+  
+  const finalText = fullText.trim();
+  console.log('extractPageSummary: final text length:', finalText.length);
+  return finalText;
+}
+
+function speakText(text, lang) {
+  // Reset position tracking for new text
+  speechCharIndex = 0;
+  currentText = text;
+  currentLang = lang;
+  
+  continueSpeaking(text, lang);
+}
+
+function continueSpeaking(text, lang, isContinuation = false) {
+  console.log('Speaking text:', text.substring(0, 50) + '...', 'Lang:', lang, 'Speed:', readingSpeed, 'Continuation:', isContinuation);
+  
+  // Ensure speechSynthesis is available
+  if (!('speechSynthesis' in window)) {
+    console.error('Speech synthesis not supported');
+    return;
+  }
+  
+  if (!speechSynthesis) {
+    speechSynthesis = window.speechSynthesis;
+  }
+  
+  if (!speechSynthesis || !text) {
+    console.log('Cannot speak: speechSynthesis:', !!speechSynthesis, 'text:', !!text);
+    return;
+  }
+  
+  // Cancel any ongoing speech
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
+  
+  // Wait a bit for cancel to complete
+  setTimeout(() => {
+    try {
+      // Create utterance with current reading speed
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang === 'tr' ? 'tr-TR' : 'en-US';
+      utterance.rate = readingSpeed; // Use configured reading speed
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      // Store utterance reference
+      currentUtterance = utterance;
+      
+      // Event handlers
+      utterance.onstart = () => {
+        console.log('Speech started at speed:', readingSpeed);
+        speechStartTime = Date.now(); // Track start time (reset for continuation)
+      };
+      utterance.onend = () => {
+        console.log('Speech ended');
+        currentUtterance = null;
+        speechStartTime = 0;
+        
+        // Update character index - if continuation, we already updated it before speaking
+        // If not continuation and we finished, we've read everything
+        if (!isContinuation) {
+          speechCharIndex = currentText.length; // Mark as fully read
+        }
+        
+        // Only clear if we've read everything
+        if (speechCharIndex >= currentText.length) {
+          currentText = '';
+          speechCharIndex = 0;
+        }
+      };
+      utterance.onerror = (e) => {
+        console.error('Speech error:', e);
+        currentUtterance = null;
+        speechStartTime = 0;
+      };
+      
+      // Select voice based on language - get voices safely
+      let voices = [];
+      try {
+        voices = speechSynthesis.getVoices();
+        console.log('Available voices:', voices.length);
+      } catch (e) {
+        console.warn('Could not get voices:', e);
+      }
+      
+      if (voices.length > 0) {
+        const preferredVoice = voices.find(voice => {
+          if (lang === 'tr') {
+            return voice.lang.startsWith('tr');
+          } else {
+            return voice.lang.startsWith('en');
+          }
+        });
+        
+        if (preferredVoice) {
+          utterance.voice = preferredVoice;
+          console.log('Using voice:', preferredVoice.name);
+        } else {
+          console.log('No preferred voice found, using default');
+        }
+      }
+      
+      speechSynthesis.speak(utterance);
+      console.log('Speech synthesis.speak() called at speed:', readingSpeed);
+    } catch (e) {
+      console.error('Error creating/speaking utterance:', e);
+    }
+  }, 100);
+}
+
+function observeContentChanges() {
+  if (contentObserver) {
+    contentObserver.disconnect();
+  }
+  
+  const contentArea = document.querySelector('#content-area');
+  if (!contentArea) return;
+  
+  // Observe changes in content area
+  contentObserver = new MutationObserver((mutations) => {
+    // Check if content actually changed (not just style/class changes)
+    let contentChanged = false;
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+        // Check if actual content was added
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1 && (node.tagName === 'ARTICLE' || node.querySelector('article'))) {
+            contentChanged = true;
+          }
+        });
+      }
+    });
+    
+    if (contentChanged && audioModeEnabled) {
+      // Wait a bit for content to render
+      setTimeout(() => {
+        readPageContent();
+      }, 500);
+    }
+  });
+  
+  contentObserver.observe(contentArea, {
+    childList: true,
+    subtree: true
+  });
+}
+
+// Initialize audio mode when DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+  // Wait for voices to load
+  if ('speechSynthesis' in window) {
+    speechSynthesis = window.speechSynthesis;
+    // Some browsers need voices to be loaded
+    const voices = speechSynthesis.getVoices();
+    if (voices.length === 0) {
+      speechSynthesis.addEventListener('voiceschanged', () => {
+        initAudioMode();
+      }, { once: true });
+    } else {
+      initAudioMode();
+    }
+  } else {
+    console.warn('Speech synthesis not supported');
+  }
+});
