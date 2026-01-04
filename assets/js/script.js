@@ -350,8 +350,12 @@ function applyLanguage(lang, scope = document.body, shouldRestartTypewriter = tr
     }
   });
 
-  // Update language toggle button display
+  // Update language toggle button display and aria-checked
   document.documentElement.setAttribute('data-lang', lang);
+  const langToggleBtn = document.querySelector('.lang-toggle-btn');
+  if (langToggleBtn) {
+    langToggleBtn.setAttribute('aria-checked', lang === 'tr' ? 'true' : 'false');
+  }
 
   localStorage.setItem('preferredLanguage', lang);
   if (shouldRestartTypewriter && window.typewriter) window.typewriter.restart();
