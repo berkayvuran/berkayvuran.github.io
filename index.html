@@ -2,23 +2,6 @@
 <html lang="en">
 
 <head>
-  <!-- Analytics scripts deferred for mobile performance -->
-  <script>
-    // Defer analytics loading until after page load
-    window.addEventListener('load', function() {
-      var script = document.createElement('script');
-      script.async = true;
-      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-3NJVF8W51K';
-      document.head.appendChild(script);
-      
-      script.onload = function() {
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-3NJVF8W51K');
-      };
-    });
-  </script>
   <meta charset="UTF-8">
   <meta name="description"
     content="As a passionate and driven product professional, I have a strong foundation in the intersection of psychology, technology, and business.">
@@ -47,8 +30,6 @@
   <!-- Resource hints for faster loading -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
-  <link rel="dns-prefetch" href="https://static.hotjar.com">
   <!-- Local fonts with preload for faster loading, then render-blocking to prevent FOUC -->
   <!-- Preload only critical font (400 weight) for FCP/LCP, others load on demand -->
   <link rel="preload" href="./assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
@@ -58,20 +39,6 @@
   <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js" fetchpriority="high"></script>
   <!-- Load main script early but defer execution -->
   <script src="./assets/js/script.js" defer></script>
-  <!-- Hotjar Tracking Code for Berkay Vuran - Deferred for mobile performance -->
-  <script>
-    // Defer Hotjar loading until after page load
-    window.addEventListener('load', function() {
-      (function (h, o, t, j, a, r) {
-        h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
-        h._hjSettings = { hjid: 3099574, hjsv: 6 };
-        a = o.getElementsByTagName('head')[0];
-        r = o.createElement('script'); r.async = 1;
-        r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
-        a.appendChild(r);
-      })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
-    });
-  </script>
 </head>
 
 <body>
@@ -219,7 +186,7 @@
               </label>
             </div>
             <span class="controls-divider"></span>
-            <button class="lang-toggle-btn" role="switch" aria-label="Toggle language" title="Switch language">
+            <button class="lang-toggle-btn" role="switch" aria-label="Toggle language" aria-checked="false" title="Switch language">
               <span class="lang-flag lang-flag-tr">🇹🇷</span>
               <span class="lang-flag lang-flag-en">🇬🇧</span>
             </button>
