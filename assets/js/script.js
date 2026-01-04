@@ -345,6 +345,9 @@ function applyLanguage(lang, scope = document.body, shouldRestartTypewriter = tr
 
   localStorage.setItem('preferredLanguage', lang);
   if (shouldRestartTypewriter && window.typewriter) window.typewriter.restart();
+  
+  // Dispatch event for theme select update
+  document.dispatchEvent(new CustomEvent('languageChanged'));
 }
 
 function toggleLanguage() {
@@ -361,28 +364,85 @@ const savedLang = localStorage.getItem('preferredLanguage') || 'en';
 document.documentElement.setAttribute('data-lang', savedLang);
 applyLanguage(savedLang, document.body, false);
 
-// 5. Theme Management
-const themeToggleInput = document.querySelector('#theme-toggle');
+// 5. Theme Management - 4 Themes Support
+const themeSelect = document.querySelector('#theme-select');
 const htmlEl = document.documentElement;
 
+// Valid themes
+const validThemes = ['dark', 'light', 'matrix', 'high-contrast'];
+
 function setTheme(theme) {
-  htmlEl.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-  if (themeToggleInput) {
-    themeToggleInput.checked = theme === 'light';
+  // Validate theme
+  if (!validThemes.includes(theme)) {
+    theme = 'dark';
+  }
+  
+  // Use requestAnimationFrame for smooth theme transition (performance optimization)
+  requestAnimationFrame(() => {
+    htmlEl.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    // Update select dropdown
+    if (themeSelect) {
+      themeSelect.value = theme;
+      // Update visible options based on language
+      updateThemeSelectOptions();
+    }
+  });
+}
+
+// Theme names in different languages
+const themeNames = {
+  'dark': { 'en': 'Dark Mode', 'tr': 'Karanlık Mod' },
+  'light': { 'en': 'Light Mode', 'tr': 'Aydınlık Mod' },
+  'matrix': { 'en': 'Matrix', 'tr': 'Matrix' },
+  'high-contrast': { 'en': 'High Contrast', 'tr': 'Yüksek Kontrast' }
+};
+
+function updateThemeSelectOptions() {
+  if (!themeSelect) return;
+  const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+  const currentTheme = themeSelect.value;
+  
+  // Update option texts based on current language
+  validThemes.forEach(theme => {
+    const option = themeSelect.querySelector(`option[value="${theme}"]`);
+    if (option && themeNames[theme]) {
+      option.textContent = themeNames[theme][currentLang];
+    }
+  });
+  
+  // Ensure current theme is selected
+  themeSelect.value = currentTheme;
+}
+
+// Initialize theme on load
+const savedTheme = localStorage.getItem('theme') || 'dark';
+setTheme(savedTheme);
+
+// Theme select change handler
+if (themeSelect) {
+  themeSelect.addEventListener('change', (e) => {
+    setTheme(e.target.value);
+  });
+  
+  // Update options when language changes
+  document.addEventListener('languageChanged', () => {
+    updateThemeSelectOptions();
+  });
+  
+  // Initialize theme select options on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    updateThemeSelectOptions();
+  });
+  
+  // Also update immediately if DOM is already loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateThemeSelectOptions);
+  } else {
+    updateThemeSelectOptions();
   }
 }
-
-function toggleTheme() {
-  const current = htmlEl.getAttribute('data-theme') || 'dark';
-  const next = current === 'dark' ? 'light' : 'dark';
-  setTheme(next);
-}
-
-if (themeToggleInput) {
-  themeToggleInput.addEventListener('change', toggleTheme);
-}
-setTheme(localStorage.getItem('theme') || 'dark');
 
 // 6. Page-Specific Components
 function initCV() {
@@ -684,7 +744,145 @@ function formatTimelineBullets() {
   });
 }
 
+// Initialize floating settings menu - try multiple times to ensure it works
+function initFloatingSettingsMenuWithRetry() {
+  const settingsBtn = document.getElementById('floating-settings-btn');
+  const settingsMenu = document.getElementById('floating-settings-menu');
+  
+  if (!settingsBtn || !settingsMenu) {
+    // Retry after a short delay if elements not found
+    setTimeout(initFloatingSettingsMenuWithRetry, 100);
+    return;
+  }
+  
+  // Elements found, initialize menu
+  initFloatingSettingsMenu();
+}
+
 window.addEventListener('DOMContentLoaded', () => { 
   window.typewriter = new TypewriterEffect();
   formatTimelineBullets();
+  
+  // Floating Settings Menu - initialize with retry mechanism
+  initFloatingSettingsMenuWithRetry();
 });
+
+// Also try to initialize immediately if DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  setTimeout(initFloatingSettingsMenuWithRetry, 1);
+}
+
+// 9. Floating Settings Menu
+function initFloatingSettingsMenu() {
+  const settingsBtn = document.getElementById('floating-settings-btn');
+  const settingsMenu = document.getElementById('floating-settings-menu');
+  const settingsClose = document.getElementById('floating-settings-close');
+  
+  if (!settingsBtn || !settingsMenu) {
+    return;
+  }
+  
+  // Store references
+  const btn = settingsBtn;
+  const menu = settingsMenu;
+  
+  function openMenu() {
+    console.log('Opening menu...');
+    settingsMenu.classList.add('active');
+    // Force inline styles to ensure menu is visible
+    settingsMenu.style.opacity = '1';
+    settingsMenu.style.visibility = 'visible';
+    settingsMenu.style.transform = 'translateY(0) scale(1) translateZ(0)';
+    settingsMenu.style.pointerEvents = 'all';
+    settingsMenu.style.display = 'block';
+    btn.setAttribute('aria-expanded', 'true');
+    console.log('Menu classes:', settingsMenu.className);
+    console.log('Menu computed opacity:', window.getComputedStyle(settingsMenu).opacity);
+    console.log('Menu computed visibility:', window.getComputedStyle(settingsMenu).visibility);
+    // Prevent body scroll when menu is open on mobile
+    if (window.innerWidth <= 768) {
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  
+  function closeMenu() {
+    console.log('Closing menu...');
+    settingsMenu.classList.remove('active');
+    // Reset inline styles
+    settingsMenu.style.opacity = '';
+    settingsMenu.style.visibility = '';
+    settingsMenu.style.transform = '';
+    settingsMenu.style.pointerEvents = '';
+    settingsMenu.style.display = '';
+    btn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  
+  function toggleMenu() {
+    console.log('Toggle menu called, current state:', settingsMenu.classList.contains('active'));
+    if (settingsMenu.classList.contains('active')) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  }
+  
+  // Flag to prevent immediate closing when opening
+  let isOpening = false;
+  
+  // Add click event listener - use capture phase to ensure it fires
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    isOpening = true;
+    console.log('Button clicked, menu state before:', settingsMenu.classList.contains('active'));
+    toggleMenu();
+    console.log('Menu state after:', settingsMenu.classList.contains('active'));
+    console.log('Menu element:', settingsMenu);
+    // Reset flag after a short delay
+    setTimeout(() => {
+      isOpening = false;
+    }, 200);
+  }, true); // Use capture phase
+  
+  // Touch support for mobile
+  btn.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    isOpening = true;
+    toggleMenu();
+    setTimeout(() => {
+      isOpening = false;
+    }, 200);
+  }, true);
+  
+  if (settingsClose) {
+    settingsClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeMenu();
+    });
+  }
+  
+  // Close menu when clicking outside (but not when opening)
+  document.addEventListener('click', (e) => {
+    if (isOpening) return;
+    
+    if (settingsMenu.classList.contains('active') && 
+        !settingsMenu.contains(e.target) && 
+        !settingsBtn.contains(e.target)) {
+      closeMenu();
+    }
+  });
+  
+  // Close menu on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && settingsMenu.classList.contains('active')) {
+      closeMenu();
+    }
+  });
+  
+  // Prevent menu from closing when clicking inside it
+  settingsMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+}
