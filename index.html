@@ -50,10 +50,8 @@
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://static.hotjar.com">
   <!-- Local fonts with preload for faster loading, then render-blocking to prevent FOUC -->
-  <link rel="preload" href="./assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="./assets/fonts/poppins-300.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="./assets/fonts/poppins-500.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="./assets/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Preload only critical font (400 weight) for FCP/LCP, others load on demand -->
+  <link rel="preload" href="./assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
   <link rel="stylesheet" href="./assets/fonts/poppins.css">
   <!-- Load ionicons immediately with high priority -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" fetchpriority="high"></script>
@@ -93,7 +91,7 @@
       <div class="sidebar-info">
         <figure class="avatar-box">
           <a href="https://berkayvuran.com">
-            <img src="./assets/images/avatars/my-avatar.png" alt="Berkay Vuran" width="80"></a>
+            <img src="./assets/images/avatars/my-avatar.png" alt="Berkay Vuran" width="80" height="80"></a>
         </figure>
         <div class="info-content">
           <h1 class="name" title="Berkay Vuran">Berkay Vuran</h1>
