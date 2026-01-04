@@ -1356,14 +1356,16 @@ main {
   border: 2px solid var(--orange-yellow-crayola);
   box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
   padding: 4px;
+  display: inline-block;
+  overflow: hidden;
 }
 
 .avatar-box img {
-  aspect-ratio: 1;
+  display: block;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
   border-radius: 50%;
-  width: 100%;
-  height: 100%;
 }
 
 /* Removed - controls now in navbar */
@@ -2457,8 +2459,6 @@ textarea.form-input::-webkit-resizer { display: none; }
   .sidebar-info { gap: 25px; }
 
   .avatar-box { border-radius: 100px; }
-  .avatar-box img { width: 120px; height: 120px; }
-
   .avatar-box img { width: 120px; height: 120px; }
 
   .info-content .name { margin-bottom: 15px; }
