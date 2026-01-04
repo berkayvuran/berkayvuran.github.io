@@ -356,6 +356,15 @@ function applyLanguage(lang, scope = document.body, shouldRestartTypewriter = tr
   if (langToggleBtn) {
     langToggleBtn.setAttribute('aria-checked', lang === 'tr' ? 'true' : 'false');
   }
+  
+  // Update info_more-btn aria-label based on language
+  const infoMoreBtn = document.querySelector('.info_more-btn');
+  if (infoMoreBtn) {
+    const ariaLabel = lang === 'tr' 
+      ? infoMoreBtn.getAttribute('data-aria-label-tr') || 'İletişim bilgilerini göster'
+      : infoMoreBtn.getAttribute('data-aria-label-en') || 'Show contacts';
+    infoMoreBtn.setAttribute('aria-label', ariaLabel);
+  }
 
   localStorage.setItem('preferredLanguage', lang);
   if (shouldRestartTypewriter && window.typewriter) window.typewriter.restart();
