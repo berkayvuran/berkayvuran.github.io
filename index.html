@@ -28,7 +28,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Security Headers (CSP should be set via server HTTP headers for better control) -->
-  <meta http-equiv="X-Frame-Options" content="DENY">
+  <!-- X-Frame-Options removed: must be set via HTTP header, not meta tag -->
   <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
   <title>Berkay Vuran | Multi Disciplinary Product Enthusiast</title>
   <!--
@@ -50,7 +50,10 @@
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://static.hotjar.com">
   <!-- Local fonts with preload for faster loading, then render-blocking to prevent FOUC -->
-  <link rel="preload" href="./assets/fonts/poppins.css" as="style">
+  <link rel="preload" href="./assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/poppins-300.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/poppins-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./assets/fonts/poppins.css">
   <!-- Load ionicons immediately with high priority -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" fetchpriority="high"></script>
