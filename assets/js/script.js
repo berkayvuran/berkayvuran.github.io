@@ -11,8 +11,8 @@ const sidebarBtn = document.querySelector("[data-sidebar-btn]");
 if (sidebarBtn) sidebarBtn.addEventListener("click", () => elementToggleFunc(sidebar));
 
 // 3. Dynamic Page Loading
-const contentArea = document.querySelector("#content-area");
-const navigationLinks = document.querySelectorAll("[data-nav-link]");
+let contentArea = document.querySelector("#content-area");
+let navigationLinks = document.querySelectorAll("[data-nav-link]");
 
 async function loadPage(pageName) {
   if (!contentArea) return;
@@ -174,7 +174,8 @@ function preloadImage(imageUrl, priority = 'low') {
 
 // Prefetch images from all pages for instant loading
 async function prefetchAllImages() {
-  const pagesToPrefetch = ['references', 'showcase', 'cv', 'blog']; // References and showcase first (most images)
+  // Skip CV page as it has minimal images - optimize for other pages
+  const pagesToPrefetch = ['references', 'showcase', 'blog']; // References and showcase first (most images)
   const allImages = new Set();
   const criticalImages = new Set();
   
@@ -226,22 +227,6 @@ async function prefetchAllImages() {
     if (window.location.hostname === 'localhost') console.warn('Failed to prefetch blog images:', error);
   }
   
-  // Load other pages in parallel
-  const otherPages = ['cv'];
-  const fetchPromises = otherPages.map(async (page) => {
-    try {
-      const response = await fetch(`./pages/${page}.html`, { cache: 'default' });
-      if (!response.ok) return;
-      const html = await response.text();
-      const { imageUrls } = extractImagesFromHTML(html, page);
-      imageUrls.forEach(url => allImages.add(url));
-    } catch (error) {
-      if (window.location.hostname === 'localhost') console.warn(`Failed to prefetch images from ${page}:`, error);
-    }
-  });
-  
-  await Promise.all(fetchPromises);
-  
   // Preload remaining images with lower priority
   allImages.forEach(imageUrl => {
     if (!criticalImages.has(imageUrl)) {
@@ -254,10 +239,22 @@ async function prefetchAllImages() {
 
 // Prefetch all pages on initial load for instant navigation
 window.addEventListener('DOMContentLoaded', () => {
-  // Prefetch all pages except about (already inline)
+  // Ensure contentArea and navigationLinks are available
+  if (!contentArea) contentArea = document.querySelector("#content-area");
+  if (!navigationLinks || navigationLinks.length === 0) navigationLinks = document.querySelectorAll("[data-nav-link]");
+  
+  // Load initial page
+  const hash = window.location.hash.replace('#', '') || 'about';
+  
+  // Prefetch all pages except about (already inline) and current page
   // Prioritize CV page for faster loading
   const pagesToPrefetch = ['cv', 'references', 'showcase', 'blog'];
-  pagesToPrefetch.forEach((page, index) => {
+  
+  // Only prefetch other pages if not already on that page
+  pagesToPrefetch.forEach((page) => {
+    // Skip prefetching current page
+    if (page === hash) return;
+    
     const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = `./pages/${page}.html`;
@@ -269,9 +266,6 @@ window.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(link);
   });
   
-  // Load initial page
-  const hash = window.location.hash.replace('#', '') || 'about';
-  
   // Clear inline about if hash is not about (backup check - inline script should handle it)
   if (hash !== 'about' && contentArea) {
     const inlineAbout = contentArea.querySelector('#inline-about-content');
@@ -280,10 +274,18 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  loadPage(hash);
+  // Load page with error handling
+  if (contentArea) {
+    loadPage(hash);
+  } else {
+    console.error('Content area not found');
+  }
   
-  // Prefetch images after page load - use requestIdleCallback if available, otherwise setTimeout
+  // Prefetch images after page load - only if not on CV page (CV has minimal images)
+  // Use requestIdleCallback if available, otherwise setTimeout
   const prefetchImages = () => {
+    // Skip prefetching if on CV page to reduce initial load
+    if (hash === 'cv') return;
     // Wait a bit to ensure main page is fully rendered
     setTimeout(() => {
       prefetchAllImages();
@@ -291,10 +293,10 @@ window.addEventListener('DOMContentLoaded', () => {
   };
   
   if ('requestIdleCallback' in window) {
-    requestIdleCallback(prefetchImages, { timeout: 2000 });
+    requestIdleCallback(prefetchImages, { timeout: 3000 });
   } else {
-    // Fallback for browsers without requestIdleCallback
-    setTimeout(prefetchImages, 500);
+    // Fallback for browsers without requestIdleCallback - delay longer for CV page
+    setTimeout(prefetchImages, hash === 'cv' ? 2000 : 500);
   }
   
   // Prevent prefetching of appendices (PDFs) and projects - lazy load only on click
@@ -422,9 +424,10 @@ function initReferences() {
   const referencesArticle = document.querySelector('.references');
   if (!referencesArticle) return;
 
-  // Create unified grid container
-  const grid = document.createElement('div');
+  // Create unified grid container with proper list structure for accessibility
+  const grid = document.createElement('ul');
   grid.className = 'references-grid';
+  grid.setAttribute('role', 'list');
 
   // Move all testimonial items into single grid with business card layout
   document.querySelectorAll('.references .testimonials').forEach(section => {
@@ -434,21 +437,45 @@ function initReferences() {
     section.querySelectorAll('.testimonials-item').forEach(item => {
       const card = item.querySelector('.content-card');
       if (card) {
+        // Ensure role is set for accessibility
+        if (!card.getAttribute('role')) {
+          card.setAttribute('role', 'article');
+        }
+        
+        // Get title for aria-labelledby and fix heading hierarchy (h4 -> h3)
+        const title = card.querySelector('.testimonials-item-title');
+        if (title && title.tagName === 'H4') {
+          // Change h4 to h3 for proper heading hierarchy
+          const h3 = document.createElement('h3');
+          h3.className = title.className;
+          h3.setAttribute('data-testimonials-title', title.getAttribute('data-testimonials-title') || '');
+          h3.textContent = title.textContent;
+          if (title.id) h3.id = title.id;
+          title.parentNode.replaceChild(h3, title);
+        }
+        const titleElement = card.querySelector('.testimonials-item-title');
+        const titleText = titleElement ? titleElement.textContent.trim() : '';
+        const titleId = titleText.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-title';
+        if (titleElement && !titleElement.id) {
+          titleElement.id = titleId;
+          card.setAttribute('aria-labelledby', titleId);
+        }
+        
         // Create card-info wrapper for business card layout
         const cardInfo = document.createElement('div');
         cardInfo.className = 'card-info';
         
         // Move title, text to card-info
-        const title = card.querySelector('.testimonials-item-title');
+        if (titleElement) cardInfo.appendChild(titleElement);
         const text = card.querySelector('.testimonials-text');
-        if (title) cardInfo.appendChild(title);
         if (text) cardInfo.appendChild(text);
         
-        // Add company badge
+        // Add company badge with accessibility
         if (companyName) {
           const badge = document.createElement('span');
           badge.className = 'company-badge';
           badge.textContent = companyName;
+          badge.setAttribute('aria-label', `Company: ${companyName}`);
           cardInfo.appendChild(badge);
         }
         
@@ -501,7 +528,34 @@ function initShowcase() {
   const filterBtns = document.querySelectorAll("[data-filter-btn]");
   const filterItems = document.querySelectorAll("[data-filter-item]");
 
-  if (select) select.onclick = () => elementToggleFunc(select);
+  // Add aria-labels to project links for accessibility
+  const projectLinks = document.querySelectorAll('.project-item > a');
+  projectLinks.forEach(link => {
+    if (!link.getAttribute('aria-label')) {
+      const title = link.querySelector('.project-title');
+      const category = link.querySelector('.project-category[data-lang="en"]') || link.querySelector('.project-category');
+      const titleText = title ? title.textContent.trim() : 'project';
+      const categoryText = category ? category.textContent.trim() : '';
+      const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+      
+      if (currentLang === 'tr') {
+        const categoryTr = link.querySelector('.project-category[data-lang="tr"]');
+        const categoryTextTr = categoryTr ? categoryTr.textContent.trim() : categoryText;
+        link.setAttribute('aria-label', `${titleText} projesini görüntüle${categoryTextTr ? ` - ${categoryTextTr}` : ''}`);
+      } else {
+        link.setAttribute('aria-label', `View ${titleText} project${categoryText ? ` - ${categoryText}` : ''}`);
+      }
+    }
+  });
+
+  // Update aria-expanded for select button
+  if (select) {
+    select.onclick = () => {
+      const isActive = select.classList.contains('active');
+      select.setAttribute('aria-expanded', isActive ? 'false' : 'true');
+      elementToggleFunc(select);
+    };
+  }
 
   const filter = (val) => {
     filterItems.forEach(item => {
