@@ -86,6 +86,11 @@ async function loadPage(pageName) {
 
     window.scrollTo(0, 0);
     
+    // Initialize component audio buttons
+    setTimeout(() => {
+      initComponentAudioButtons();
+    }, 300);
+    
     // Read page content if audio mode is enabled - always trigger on page change
     if (audioModeEnabled) {
       setTimeout(() => {
@@ -1586,12 +1591,230 @@ function observeContentChanges() {
         readPageContent();
       }, 500);
     }
+    
+    // Re-initialize audio buttons when content changes
+    if (contentChanged) {
+      setTimeout(() => {
+        initComponentAudioButtons();
+      }, 300);
+    }
   });
   
   contentObserver.observe(contentArea, {
     childList: true,
     subtree: true
   });
+}
+
+// 11. Component-based Audio (Individual component text-to-speech)
+function initComponentAudioButtons() {
+  // Remove existing audio buttons to avoid duplicates
+  document.querySelectorAll('.audio-play-btn').forEach(btn => btn.remove());
+  
+  // Find all components that should have audio buttons
+  const audioComponents = document.querySelectorAll(`
+    .about-text p,
+    .service-item,
+    .timeline-item,
+    .testimonials-item .content-card,
+    .blog-post-item > a,
+    .project-item > a,
+    [data-audio="true"]
+  `);
+  
+  audioComponents.forEach((component, index) => {
+    // Skip if already has audio button
+    if (component.querySelector('.audio-play-btn')) {
+      return;
+    }
+    
+    // Create audio button
+    const audioBtn = document.createElement('button');
+    audioBtn.className = 'audio-play-btn';
+    audioBtn.setAttribute('aria-label', 'Play audio for this component');
+    audioBtn.setAttribute('title', 'Play audio');
+    audioBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      </svg>
+    `;
+    
+    // Add click handler
+    audioBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      playComponentAudio(component);
+    });
+    
+    // Insert button at the beginning of component
+    if (component.style.position !== 'absolute' && component.style.position !== 'fixed') {
+      component.style.position = 'relative';
+    }
+    component.insertBefore(audioBtn, component.firstChild);
+  });
+}
+
+function playComponentAudio(component) {
+  if (!speechSynthesis) {
+    if ('speechSynthesis' in window) {
+      speechSynthesis = window.speechSynthesis;
+    } else {
+      console.warn('Speech synthesis not supported');
+      return;
+    }
+  }
+  
+  // Stop any current speech
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
+  
+  // Get current language
+  const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+  
+  // Extract text from component
+  const text = extractComponentText(component, currentLang);
+  
+  if (!text || text.trim().length === 0) {
+    console.warn('No text found in component');
+    return;
+  }
+  
+  // Update button state
+  const audioBtn = component.querySelector('.audio-play-btn');
+  if (audioBtn) {
+    audioBtn.classList.add('playing');
+    audioBtn.setAttribute('aria-label', 'Stop audio');
+    audioBtn.setAttribute('title', 'Stop audio');
+  }
+  
+  // Speak the text
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = currentLang === 'tr' ? 'tr-TR' : 'en-US';
+  utterance.rate = readingSpeed;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+  
+  // Select voice
+  let voices = [];
+  try {
+    voices = speechSynthesis.getVoices();
+  } catch (e) {
+    console.warn('Could not get voices:', e);
+  }
+  
+  if (voices.length > 0) {
+    const preferredVoice = voices.find(voice => {
+      if (currentLang === 'tr') {
+        return voice.lang.startsWith('tr');
+      } else {
+        return voice.lang.startsWith('en');
+      }
+    });
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+  }
+  
+  // Event handlers
+  utterance.onstart = () => {
+    if (audioBtn) {
+      audioBtn.classList.add('playing');
+    }
+  };
+  
+  utterance.onend = () => {
+    if (audioBtn) {
+      audioBtn.classList.remove('playing');
+      audioBtn.setAttribute('aria-label', 'Play audio for this component');
+      audioBtn.setAttribute('title', 'Play audio');
+    }
+  };
+  
+  utterance.onerror = (e) => {
+    console.error('Speech error:', e);
+    if (audioBtn) {
+      audioBtn.classList.remove('playing');
+      audioBtn.setAttribute('aria-label', 'Play audio for this component');
+      audioBtn.setAttribute('title', 'Play audio');
+    }
+  };
+  
+  speechSynthesis.speak(utterance);
+}
+
+function extractComponentText(component, lang) {
+  if (!component) return '';
+  
+  function extractTextRecursive(element, targetLang) {
+    let text = '';
+    
+    // Check if element is visible
+    const style = window.getComputedStyle(element);
+    if (style.display === 'none' || style.visibility === 'hidden') {
+      return '';
+    }
+    
+    // Check language attribute
+    const elementLang = element.getAttribute('data-lang');
+    if (elementLang && elementLang !== targetLang) {
+      return '';
+    }
+    
+    // Skip audio button
+    if (element.classList && element.classList.contains('audio-play-btn')) {
+      return '';
+    }
+    
+    // Process children
+    const children = Array.from(element.childNodes);
+    for (const child of children) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const textContent = child.textContent.trim();
+        if (textContent) {
+          text += textContent + ' ';
+        }
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        const childText = extractTextRecursive(child, targetLang);
+        if (childText) {
+          text += childText;
+        }
+      }
+    }
+    
+    // Add punctuation based on element type
+    if (element.tagName && element.tagName.match(/^H[1-6]$/)) {
+      text = text.trim() + '. ';
+    } else if (element.tagName === 'P' || element.tagName === 'LI') {
+      text = text.trim() + '. ';
+    }
+    
+    return text;
+  }
+  
+  let text = extractTextRecursive(component, lang);
+  text = text.replace(/\s+/g, ' ').replace(/\.\.+/g, '.').trim();
+  
+  return text;
+}
+
+// Initialize component audio buttons when DOM is ready
+function initializeComponentAudio() {
+  if (document.querySelector('#content-area')) {
+    initComponentAudioButtons();
+  }
+}
+
+// Initialize on page load
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(initializeComponentAudio, 500);
+});
+
+// Also initialize after content changes
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  setTimeout(initializeComponentAudio, 500);
 }
 
 // Initialize audio mode when DOM is ready

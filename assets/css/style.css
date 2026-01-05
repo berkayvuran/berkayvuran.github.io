@@ -6096,6 +6096,138 @@ html[data-lang="tr"] .references .testimonials-text p[data-lang="tr"]:has(strong
   background: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* Component Audio Buttons */
+.audio-play-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--light-gray);
+  z-index: 10;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.audio-play-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+/* Show audio button on hover */
+.about-text:hover .audio-play-btn,
+.about-text p:hover .audio-play-btn,
+.service-item:hover .audio-play-btn,
+.timeline-item:hover .audio-play-btn,
+.testimonials-item .content-card:hover .audio-play-btn,
+.blog-post-item > a:hover .audio-play-btn,
+.project-item > a:hover .audio-play-btn,
+[data-audio="true"]:hover .audio-play-btn {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Always show on touch devices */
+@media (hover: none) {
+  .audio-play-btn {
+    opacity: 0.7;
+    pointer-events: all;
+  }
+}
+
+.audio-play-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--orange-yellow-crayola);
+  transform: scale(1.1);
+}
+
+.audio-play-btn:active {
+  transform: scale(0.95);
+}
+
+.audio-play-btn.playing {
+  background: rgba(90, 200, 250, 0.2);
+  border-color: rgba(90, 200, 250, 0.4);
+  color: #5AC8FA;
+  animation: pulse-audio 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-audio {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+[data-theme="light"] .audio-play-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: hsl(0, 0%, 40%);
+}
+
+[data-theme="light"] .audio-play-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.2);
+  color: var(--orange-yellow-crayola);
+}
+
+[data-theme="light"] .audio-play-btn.playing {
+  background: rgba(25, 118, 210, 0.1);
+  border-color: rgba(25, 118, 210, 0.3);
+  color: #1976d2;
+}
+
+/* Ensure components with audio buttons have relative positioning */
+.about-text {
+  position: relative;
+}
+
+.about-text p {
+  position: relative;
+  padding-right: 40px;
+}
+
+.service-item,
+.timeline-item,
+.testimonials-item .content-card,
+.blog-post-item > a,
+.project-item > a,
+[data-audio="true"] {
+  position: relative;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .audio-play-btn {
+    width: 36px;
+    height: 36px;
+    top: 6px;
+    right: 6px;
+    opacity: 0.8;
+    pointer-events: all;
+  }
+  
+  .audio-play-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
 /* Remove all decorative elements */
 [data-adhd="true"] .service-icon-box img,
 [data-adhd="true"] .icon-box svg,
