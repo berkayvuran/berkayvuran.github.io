@@ -3900,16 +3900,36 @@ textarea.form-input::-webkit-resizer { display: none; }
 }
 
 /* Matrix theme specific styles */
+[data-theme="matrix"] body {
+  background-image: url('https://i.pinimg.com/originals/c5/9a/d2/c59ad2bd4ad2fbacd04017debc679ddb.gif');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: hsl(120, 100%, 3%);
+}
+
 [data-theme="matrix"] .sidebar {
-  background: var(--onyx);
+  background: rgba(0, 20, 0, 0.85);
   border: 1px solid rgba(0, 255, 0, 0.3);
   box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+  backdrop-filter: blur(2px);
+}
+
+[data-theme="matrix"] article {
+  background: rgba(0, 20, 0, 0.75);
+  backdrop-filter: blur(2px);
+}
+
+[data-theme="matrix"] .main-content {
+  background: transparent;
 }
 
 [data-theme="matrix"] .navbar {
-  background: var(--onyx);
+  background: rgba(0, 20, 0, 0.85);
   border: 1px solid rgba(0, 255, 0, 0.3);
   box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+  backdrop-filter: blur(2px);
 }
 
 [data-theme="matrix"] .navbar-link:hover,
@@ -3928,10 +3948,12 @@ textarea.form-input::-webkit-resizer { display: none; }
   box-shadow: 0 6px 16px rgba(0, 255, 0, 0.5), 0 0 30px rgba(0, 255, 0, 0.4);
 }
 
-[data-theme="matrix"] .floating-settings-menu {
-  background: var(--onyx);
+[data-theme="matrix"] .floating-settings-menu,
+[data-theme="matrix"] .navbar-settings-menu {
+  background: rgba(0, 20, 0, 0.9);
   border: 1px solid rgba(0, 255, 0, 0.4);
   box-shadow: 0 8px 24px rgba(0, 255, 0, 0.3);
+  backdrop-filter: blur(4px);
 }
 
 [data-theme="matrix"] .floating-settings-header {
@@ -6124,15 +6146,9 @@ html[data-lang="tr"] .references .testimonials-text p[data-lang="tr"]:has(strong
   stroke: currentColor;
 }
 
-/* Show audio button on hover */
+/* Show audio button on hover - only for About Me section */
 .about-text:hover .audio-play-btn,
-.about-text p:hover .audio-play-btn,
-.service-item:hover .audio-play-btn,
-.timeline-item:hover .audio-play-btn,
-.testimonials-item .content-card:hover .audio-play-btn,
-.blog-post-item > a:hover .audio-play-btn,
-.project-item > a:hover .audio-play-btn,
-[data-audio="true"]:hover .audio-play-btn {
+.about-text p:hover .audio-play-btn {
   opacity: 1;
   pointer-events: all;
 }
@@ -6192,7 +6208,7 @@ html[data-lang="tr"] .references .testimonials-text p[data-lang="tr"]:has(strong
   color: #1976d2;
 }
 
-/* Ensure components with audio buttons have relative positioning */
+/* Ensure components with audio buttons have relative positioning - only About Me */
 .about-text {
   position: relative;
 }
@@ -6202,13 +6218,55 @@ html[data-lang="tr"] .references .testimonials-text p[data-lang="tr"]:has(strong
   padding-right: 40px;
 }
 
-.service-item,
-.timeline-item,
-.testimonials-item .content-card,
-.blog-post-item > a,
-.project-item > a,
-[data-audio="true"] {
+/* Audio character highlighting - layout preserving */
+.audio-char-span {
+  display: inline !important;
+  transition: background-color 0.1s ease, color 0.1s ease;
   position: relative;
+  /* Preserve layout - absolutely no layout changes */
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  outline: none !important;
+  line-height: inherit !important;
+  vertical-align: baseline !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: inherit !important;
+  word-spacing: inherit !important;
+  text-transform: inherit !important;
+  text-decoration: none !important;
+  /* Preserve whitespace exactly */
+  white-space: pre-wrap !important;
+  /* Ensure no box model changes */
+  box-sizing: content-box !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  /* No display changes */
+  float: none !important;
+  clear: none !important;
+  /* No transforms */
+  transform: none !important;
+  /* Preserve text rendering */
+  text-rendering: inherit !important;
+  -webkit-font-smoothing: inherit !important;
+  -moz-osx-font-smoothing: inherit !important;
+}
+
+.audio-char-span.audio-highlight {
+  background-color: rgba(90, 200, 250, 0.25);
+  color: #5AC8FA;
+  /* Use only color and background - no borders, outlines, or decorations that change layout */
+  border-radius: 0;
+  /* Absolutely no layout-affecting properties */
+}
+
+[data-theme="light"] .audio-char-span.audio-highlight {
+  background-color: rgba(25, 118, 210, 0.2);
+  color: #1976d2;
 }
 
 /* Mobile adjustments */

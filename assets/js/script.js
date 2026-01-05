@@ -1291,6 +1291,9 @@ function stopAudioMode() {
     speechSynthesis.cancel();
   }
   
+  // Clear highlights
+  clearHighlight();
+  
   // Stop observing
   if (contentObserver) {
     contentObserver.disconnect();
@@ -1611,15 +1614,9 @@ function initComponentAudioButtons() {
   // Remove existing audio buttons to avoid duplicates
   document.querySelectorAll('.audio-play-btn').forEach(btn => btn.remove());
   
-  // Find all components that should have audio buttons
+  // Find all components that should have audio buttons - only About Me section
   const audioComponents = document.querySelectorAll(`
-    .about-text p,
-    .service-item,
-    .timeline-item,
-    .testimonials-item .content-card,
-    .blog-post-item > a,
-    .project-item > a,
-    [data-audio="true"]
+    .about-text p
   `);
   
   audioComponents.forEach((component, index) => {
@@ -1640,11 +1637,11 @@ function initComponentAudioButtons() {
       </svg>
     `;
     
-    // Add click handler
+    // Add click handler with pause/resume functionality
     audioBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
-      playComponentAudio(component);
+      toggleComponentAudio(component, audioBtn);
     });
     
     // Insert button at the beginning of component
@@ -1655,7 +1652,15 @@ function initComponentAudioButtons() {
   });
 }
 
-function playComponentAudio(component) {
+// Global variables for highlighting and component audio
+let currentHighlightInterval = null;
+let currentHighlightedComponent = null;
+let currentHighlightedSpans = [];
+let currentComponentUtterance = null;
+let isComponentAudioPaused = false;
+let pausedCharIndex = 0;
+
+function toggleComponentAudio(component, audioBtn) {
   if (!speechSynthesis) {
     if ('speechSynthesis' in window) {
       speechSynthesis = window.speechSynthesis;
@@ -1665,15 +1670,182 @@ function playComponentAudio(component) {
     }
   }
   
-  // Stop any current speech
-  if (speechSynthesis.speaking) {
+  // Check if this component is currently playing
+  const isCurrentlyPlaying = currentHighlightedComponent === component && 
+                             (speechSynthesis.speaking || isComponentAudioPaused);
+  
+  if (isCurrentlyPlaying) {
+    // Toggle pause/resume
+    if (isComponentAudioPaused) {
+      resumeComponentAudio(component, audioBtn);
+    } else {
+      pauseComponentAudio(component, audioBtn);
+    }
+  } else {
+    // Start playing (this will stop any other component)
+    playComponentAudio(component, audioBtn);
+  }
+}
+
+function pauseComponentAudio(component, audioBtn) {
+  if (!speechSynthesis) return;
+  
+  // Check if this is the current component
+  if (currentHighlightedComponent !== component) {
+    // If different component, stop it and start this one
+    playComponentAudio(component, audioBtn);
+    return;
+  }
+  
+  if (speechSynthesis.speaking && currentComponentUtterance) {
+    try {
+      speechSynthesis.pause();
+      isComponentAudioPaused = true;
+    } catch (e) {
+      console.warn('Could not pause speech:', e);
+      // Fallback: cancel and mark as paused
+      speechSynthesis.cancel();
+      isComponentAudioPaused = true;
+    }
+    
+    // Clear interval
+    if (currentHighlightInterval) {
+      clearInterval(currentHighlightInterval);
+      currentHighlightInterval = null;
+    }
+    
+    // Update button icon to play
+    if (audioBtn) {
+      audioBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+      `;
+      audioBtn.setAttribute('aria-label', 'Resume audio');
+      audioBtn.setAttribute('title', 'Resume audio');
+      audioBtn.classList.add('paused');
+    }
+  }
+}
+
+function resumeComponentAudio(component, audioBtn) {
+  if (!speechSynthesis) return;
+  
+  // Check if this is the current component
+  if (currentHighlightedComponent !== component) return;
+  
+  if (isComponentAudioPaused && currentComponentUtterance) {
+    speechSynthesis.resume();
+    isComponentAudioPaused = false;
+    
+    // Get current language
+    const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+    
+    // Calculate character timing
+    const charsPerSecond = 12.5 * readingSpeed;
+    const charDelay = Math.max(50, 1000 / charsPerSecond);
+    
+    // Resume highlighting from paused position
+    let resumeIndex = pausedCharIndex;
+    currentHighlightInterval = setInterval(() => {
+      if (resumeIndex < currentHighlightedSpans.length) {
+        // Remove previous highlight
+        if (resumeIndex > 0) {
+          currentHighlightedSpans[resumeIndex - 1].classList.remove('audio-highlight');
+        }
+        
+        // Add highlight to current character
+        if (resumeIndex < currentHighlightedSpans.length) {
+          currentHighlightedSpans[resumeIndex].classList.add('audio-highlight');
+          
+          // Scroll into view if needed
+          if (resumeIndex % 10 === 0) {
+            const span = currentHighlightedSpans[resumeIndex];
+            const rect = span.getBoundingClientRect();
+            if (rect.top < 0 || rect.bottom > window.innerHeight) {
+              span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }
+        
+        resumeIndex++;
+        pausedCharIndex = resumeIndex;
+      } else {
+        clearInterval(currentHighlightInterval);
+        currentHighlightInterval = null;
+      }
+    }, charDelay);
+    
+    // Update button icon to pause
+    if (audioBtn) {
+      audioBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="4" width="4" height="16"></rect>
+          <rect x="14" y="4" width="4" height="16"></rect>
+        </svg>
+      `;
+      audioBtn.setAttribute('aria-label', 'Pause audio');
+      audioBtn.setAttribute('title', 'Pause audio');
+      audioBtn.classList.remove('paused');
+    }
+  }
+}
+
+function playComponentAudio(component, audioBtn) {
+  if (!speechSynthesis) {
+    if ('speechSynthesis' in window) {
+      speechSynthesis = window.speechSynthesis;
+    } else {
+      console.warn('Speech synthesis not supported');
+      return;
+    }
+  }
+  
+  // Stop any current speech from previous component
+  if (speechSynthesis.speaking || isComponentAudioPaused) {
     speechSynthesis.cancel();
   }
+  
+  // Clear interval if running
+  if (currentHighlightInterval) {
+    clearInterval(currentHighlightInterval);
+    currentHighlightInterval = null;
+  }
+  
+  // If there was a previous component (different from current), restore its text and clear highlights
+  if (currentHighlightedComponent && currentHighlightedComponent !== component) {
+    clearHighlight();
+    restoreComponentText(currentHighlightedComponent);
+    
+    // Reset previous component's button
+    const prevBtn = currentHighlightedComponent.querySelector('.audio-play-btn');
+    if (prevBtn) {
+      prevBtn.classList.remove('playing', 'paused');
+      prevBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      `;
+      prevBtn.setAttribute('aria-label', 'Play audio for this component');
+      prevBtn.setAttribute('title', 'Play audio');
+    }
+  }
+  
+  // Clear any existing highlights
+  clearHighlight();
+  
+  // Reset pause state
+  isComponentAudioPaused = false;
+  pausedCharIndex = 0;
+  currentComponentUtterance = null;
   
   // Get current language
   const currentLang = localStorage.getItem('preferredLanguage') || 'en';
   
-  // Extract text from component
+  // IMPORTANT: Extract text BEFORE preparing for highlight
+  // If component already has span's from previous highlight, extract will handle them
+  // Extract text from component (extractComponentText now handles span's correctly)
   const text = extractComponentText(component, currentLang);
   
   if (!text || text.trim().length === 0) {
@@ -1681,13 +1853,27 @@ function playComponentAudio(component) {
     return;
   }
   
+  // Get or create audio button
+  if (!audioBtn) {
+    audioBtn = component.querySelector('.audio-play-btn');
+  }
+  
   // Update button state
-  const audioBtn = component.querySelector('.audio-play-btn');
   if (audioBtn) {
     audioBtn.classList.add('playing');
-    audioBtn.setAttribute('aria-label', 'Stop audio');
-    audioBtn.setAttribute('title', 'Stop audio');
+    audioBtn.classList.remove('paused');
+    audioBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="6" y="4" width="4" height="16"></rect>
+        <rect x="14" y="4" width="4" height="16"></rect>
+      </svg>
+    `;
+    audioBtn.setAttribute('aria-label', 'Pause audio');
+    audioBtn.setAttribute('title', 'Pause audio');
   }
+  
+  // Prepare component for highlighting (after text extraction)
+  prepareComponentForHighlight(component, currentLang);
   
   // Speak the text
   const utterance = new SpeechSynthesisUtterance(text);
@@ -1695,6 +1881,9 @@ function playComponentAudio(component) {
   utterance.rate = readingSpeed;
   utterance.pitch = 1.0;
   utterance.volume = 1.0;
+  
+  // Store utterance reference
+  currentComponentUtterance = utterance;
   
   // Select voice
   let voices = [];
@@ -1718,16 +1907,113 @@ function playComponentAudio(component) {
     }
   }
   
+  // Calculate character timing based on reading speed
+  // Average speaking rate: ~150 words/min = ~12.5 chars/sec at 1x speed
+  const charsPerSecond = 12.5 * readingSpeed;
+  const charDelay = Math.max(50, 1000 / charsPerSecond); // milliseconds per character, min 50ms
+  
+  let currentCharIndex = 0;
+  let lastBoundaryIndex = 0;
+  
   // Event handlers
   utterance.onstart = () => {
     if (audioBtn) {
       audioBtn.classList.add('playing');
     }
+    
+    // Start highlighting
+    currentHighlightedComponent = component;
+    currentCharIndex = 0;
+    lastBoundaryIndex = 0;
+    pausedCharIndex = 0;
+    
+    // Highlight characters one by one
+    currentHighlightInterval = setInterval(() => {
+      if (currentCharIndex < currentHighlightedSpans.length) {
+        // Remove previous highlight (only one character at a time)
+        if (currentCharIndex > 0) {
+          currentHighlightedSpans[currentCharIndex - 1].classList.remove('audio-highlight');
+        }
+        
+        // Add highlight to current character
+        if (currentCharIndex < currentHighlightedSpans.length) {
+          currentHighlightedSpans[currentCharIndex].classList.add('audio-highlight');
+          
+          // Scroll into view if needed (every 10 characters for performance)
+          if (currentCharIndex % 10 === 0) {
+            const span = currentHighlightedSpans[currentCharIndex];
+            const rect = span.getBoundingClientRect();
+            if (rect.top < 0 || rect.bottom > window.innerHeight) {
+              span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }
+        
+        currentCharIndex++;
+        pausedCharIndex = currentCharIndex; // Update paused index
+      } else {
+        // Finished highlighting
+        clearInterval(currentHighlightInterval);
+        currentHighlightInterval = null;
+      }
+    }, charDelay);
+  };
+  
+  utterance.onboundary = (e) => {
+    // Use boundary events to sync highlighting more accurately
+    // e.charIndex gives us the character position
+    if (e.charIndex !== undefined && currentHighlightedSpans.length > 0) {
+      const targetIndex = Math.min(e.charIndex, currentHighlightedSpans.length - 1);
+      
+      // Update current index to match boundary
+      if (targetIndex > lastBoundaryIndex) {
+        // Clear highlights from last boundary to current
+        for (let i = lastBoundaryIndex; i < targetIndex; i++) {
+          if (i < currentHighlightedSpans.length) {
+            currentHighlightedSpans[i].classList.remove('audio-highlight');
+          }
+        }
+        
+        // Highlight current character
+        if (targetIndex < currentHighlightedSpans.length) {
+          currentHighlightedSpans[targetIndex].classList.add('audio-highlight');
+          
+          // Scroll into view
+          const span = currentHighlightedSpans[targetIndex];
+          const rect = span.getBoundingClientRect();
+          if (rect.top < 0 || rect.bottom > window.innerHeight) {
+            span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+        
+        lastBoundaryIndex = targetIndex;
+        currentCharIndex = targetIndex + 1;
+        pausedCharIndex = currentCharIndex; // Update paused index
+      }
+    }
   };
   
   utterance.onend = () => {
+    // Clear all highlights after a short delay
+    setTimeout(() => {
+      clearHighlight();
+      // Restore original text structure
+      restoreComponentText(component);
+    }, 300);
+    
+    // Reset state
+    isComponentAudioPaused = false;
+    pausedCharIndex = 0;
+    currentComponentUtterance = null;
+    
     if (audioBtn) {
-      audioBtn.classList.remove('playing');
+      audioBtn.classList.remove('playing', 'paused');
+      audioBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      `;
       audioBtn.setAttribute('aria-label', 'Play audio for this component');
       audioBtn.setAttribute('title', 'Play audio');
     }
@@ -1735,14 +2021,153 @@ function playComponentAudio(component) {
   
   utterance.onerror = (e) => {
     console.error('Speech error:', e);
+    clearHighlight();
+    
+    // Reset state
+    isComponentAudioPaused = false;
+    pausedCharIndex = 0;
+    currentComponentUtterance = null;
+    
+    // Restore original text structure
+    restoreComponentText(component);
+    
     if (audioBtn) {
-      audioBtn.classList.remove('playing');
+      audioBtn.classList.remove('playing', 'paused');
+      audioBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      `;
       audioBtn.setAttribute('aria-label', 'Play audio for this component');
       audioBtn.setAttribute('title', 'Play audio');
     }
   };
   
   speechSynthesis.speak(utterance);
+}
+
+function prepareComponentForHighlight(component, lang) {
+  // Clear previous highlights
+  clearHighlight();
+  
+  // Remove existing highlight spans
+  component.querySelectorAll('.audio-char-span').forEach(span => {
+    const parent = span.parentNode;
+    while (span.firstChild) {
+      parent.insertBefore(span.firstChild, span);
+    }
+    parent.removeChild(span);
+  });
+  
+  // Function to wrap text nodes with character spans - layout preserving
+  function wrapTextNodes(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      // Include all characters including spaces and newlines
+      if (text.length === 0) {
+        return;
+      }
+      
+      const parent = node.parentNode;
+      if (!parent) return;
+      
+      const fragment = document.createDocumentFragment();
+      
+      // Split text into characters and wrap each
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const span = document.createElement('span');
+        span.className = 'audio-char-span';
+        
+        // Preserve whitespace exactly as is - no inline styles
+        if (char === ' ') {
+          // Use regular space to preserve layout
+          span.textContent = ' ';
+        } else if (char === '\n') {
+          // Create a br element for newlines
+          const br = document.createElement('br');
+          fragment.appendChild(br);
+          continue;
+        } else if (char === '\t') {
+          // Handle tabs
+          span.textContent = '\t';
+        } else {
+          span.textContent = char;
+        }
+        
+        fragment.appendChild(span);
+      }
+      
+      parent.replaceChild(fragment, node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      // Skip audio button and already processed elements
+      if (node.classList && (
+        node.classList.contains('audio-play-btn') ||
+        node.classList.contains('audio-char-span')
+      )) {
+        return;
+      }
+      
+      // Check language attribute
+      const elementLang = node.getAttribute('data-lang');
+      if (elementLang && elementLang !== lang) {
+        return;
+      }
+      
+      // Skip certain elements that shouldn't be highlighted
+      const skipTags = ['SCRIPT', 'STYLE', 'SVG', 'PATH'];
+      if (node.tagName && skipTags.includes(node.tagName)) {
+        return;
+      }
+      
+      // Process children (create array copy to avoid live node list issues)
+      const children = Array.from(node.childNodes);
+      children.forEach(child => wrapTextNodes(child));
+    }
+  }
+  
+  // Wrap all text nodes in component
+  wrapTextNodes(component);
+  
+  // Collect all character spans
+  currentHighlightedSpans = Array.from(component.querySelectorAll('.audio-char-span'));
+}
+
+function clearHighlight() {
+  // Clear interval
+  if (currentHighlightInterval) {
+    clearInterval(currentHighlightInterval);
+    currentHighlightInterval = null;
+  }
+  
+  // Remove highlights from all spans
+  if (currentHighlightedSpans && currentHighlightedSpans.length > 0) {
+    currentHighlightedSpans.forEach(span => {
+      if (span && span.classList) {
+        span.classList.remove('audio-highlight');
+      }
+    });
+  }
+}
+
+function restoreComponentText(component) {
+  // Remove all character spans and restore original text
+  component.querySelectorAll('.audio-char-span').forEach(span => {
+    const parent = span.parentNode;
+    if (parent) {
+      // Get text content
+      const text = span.textContent || span.innerHTML;
+      
+      // Replace span with text node
+      const textNode = document.createTextNode(text === '&nbsp;' ? ' ' : text);
+      parent.replaceChild(textNode, span);
+    }
+  });
+  
+  // Reset variables
+  currentHighlightedComponent = null;
+  currentHighlightedSpans = [];
 }
 
 function extractComponentText(component, lang) {
@@ -1768,18 +2193,34 @@ function extractComponentText(component, lang) {
       return '';
     }
     
+    // IMPORTANT: Skip audio-char-span elements to avoid character-by-character reading
+    // Instead, get the text directly from the element's textContent
+    if (element.classList && element.classList.contains('audio-char-span')) {
+      // Return the character content directly, but don't process children
+      return element.textContent || '';
+    }
+    
     // Process children
     const children = Array.from(element.childNodes);
     for (const child of children) {
       if (child.nodeType === Node.TEXT_NODE) {
-        const textContent = child.textContent.trim();
+        // Get full text content, preserving spaces
+        const textContent = child.textContent;
         if (textContent) {
-          text += textContent + ' ';
+          text += textContent;
         }
       } else if (child.nodeType === Node.ELEMENT_NODE) {
-        const childText = extractTextRecursive(child, targetLang);
-        if (childText) {
-          text += childText;
+        // Skip audio-char-span elements - they're just for highlighting
+        if (child.classList && child.classList.contains('audio-char-span')) {
+          // Just add the text content, don't recurse
+          const spanText = child.textContent || '';
+          text += spanText;
+        } else {
+          // Recurse for other elements
+          const childText = extractTextRecursive(child, targetLang);
+          if (childText) {
+            text += childText;
+          }
         }
       }
     }
@@ -1795,6 +2236,7 @@ function extractComponentText(component, lang) {
   }
   
   let text = extractTextRecursive(component, lang);
+  // Clean up multiple spaces but preserve single spaces
   text = text.replace(/\s+/g, ' ').replace(/\.\.+/g, '.').trim();
   
   return text;
