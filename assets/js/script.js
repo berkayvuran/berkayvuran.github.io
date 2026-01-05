@@ -334,6 +334,10 @@ window.addEventListener('popstate', () => {
 function applyLanguage(lang, scope = document.body, shouldRestartTypewriter = true) {
   const elements = scope.querySelectorAll('[data-lang]');
   elements.forEach(el => {
+    // Skip dropdown items - they should always be visible
+    if (el.classList.contains('lang-dropdown-item') || el.closest('.lang-dropdown-menu')) {
+      return;
+    }
     const isTarget = el.getAttribute('data-lang') === lang;
     el.style.display = isTarget ? '' : 'none';
     if (isTarget && el.tagName === 'SPAN' && el.classList.contains('cursor')) {
@@ -346,6 +350,11 @@ function applyLanguage(lang, scope = document.body, shouldRestartTypewriter = tr
   const langToggleBtn = document.querySelector('.lang-toggle-btn');
   if (langToggleBtn) {
     langToggleBtn.setAttribute('aria-checked', lang === 'tr' ? 'true' : 'false');
+  }
+  
+  // Update language dropdown display
+  if (typeof updateLangDropdownDisplay === 'function') {
+    updateLangDropdownDisplay();
   }
   
   // Update info_more-btn aria-label based on language
@@ -370,14 +379,134 @@ function toggleLanguage() {
   applyLanguage(next);
 }
 
+function setLanguage(lang) {
+  applyLanguage(lang);
+  closeLangDropdown();
+  updateLangDropdownDisplay();
+}
+
+function openLangDropdown() {
+  const dropdown = document.querySelector('.lang-dropdown');
+  const btn = document.querySelector('.lang-dropdown-btn');
+  if (dropdown && btn) {
+    dropdown.setAttribute('data-open', 'true');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
+
+function closeLangDropdown() {
+  const dropdown = document.querySelector('.lang-dropdown');
+  const btn = document.querySelector('.lang-dropdown-btn');
+  if (dropdown && btn) {
+    dropdown.setAttribute('data-open', 'false');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+function toggleLangDropdown() {
+  const dropdown = document.querySelector('.lang-dropdown');
+  if (!dropdown) return;
+  const isOpen = dropdown.getAttribute('data-open') === 'true';
+  if (isOpen) {
+    closeLangDropdown();
+  } else {
+    openLangDropdown();
+  }
+}
+
+function updateLangDropdownDisplay() {
+  const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+  const dropdownItems = document.querySelectorAll('.lang-dropdown-item');
+  
+  // Update active state in dropdown menu
+  dropdownItems.forEach(item => {
+    const itemLang = item.getAttribute('data-lang');
+    item.setAttribute('data-active', itemLang === currentLang ? 'true' : 'false');
+  });
+}
+
+// Initialize language dropdown - only once
+let langDropdownInitialized = false;
+
+function initLangDropdown() {
+  if (langDropdownInitialized) return;
+  
+  const dropdownBtn = document.querySelector('.lang-dropdown-btn');
+  const dropdownItems = document.querySelectorAll('.lang-dropdown-item');
+  
+  if (!dropdownBtn) return;
+  
+  langDropdownInitialized = true;
+  
+  // Toggle dropdown on button click
+  dropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    toggleLangDropdown();
+  });
+  
+  // Handle language selection
+  dropdownItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const lang = item.getAttribute('data-lang');
+      setLanguage(lang);
+    });
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    const dropdown = document.querySelector('.lang-dropdown');
+    if (dropdown && !dropdown.contains(e.target)) {
+      closeLangDropdown();
+    }
+  });
+  
+  // Close dropdown on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeLangDropdown();
+    }
+  });
+  
+  // Update display on language change
+  updateLangDropdownDisplay();
+}
+
 // Support both old and new language toggle buttons
-const langToggleBtn = document.querySelector('.lang-toggle-btn') || document.querySelector('.navbar-lang-btn');
+const langToggleBtn = document.querySelector('.lang-toggle-btn');
 if (langToggleBtn) langToggleBtn.onclick = toggleLanguage;
+
+// Initialize dropdown - handle both cases
+function initializeLangDropdownWhenReady() {
+  const dropdown = document.querySelector('.lang-dropdown');
+  if (dropdown) {
+    // Ensure initial state is closed
+    dropdown.setAttribute('data-open', 'false');
+    initLangDropdown();
+    updateLangDropdownDisplay();
+  }
+}
+
+// Try immediately if DOM is ready
+if (document.readyState === 'loading') {
+  // DOM is still loading, wait for DOMContentLoaded
+  window.addEventListener('DOMContentLoaded', initializeLangDropdownWhenReady);
+} else {
+  // DOM is already loaded
+  initializeLangDropdownWhenReady();
+}
 
 // Apply saved language on page load
 const savedLang = localStorage.getItem('preferredLanguage') || 'en';
 document.documentElement.setAttribute('data-lang', savedLang);
 applyLanguage(savedLang, document.body, false);
+
+// Initialize dropdown after language is applied
+setTimeout(() => {
+  initializeLangDropdownWhenReady();
+}, 0);
 
 // 5. Theme Management - 4 Themes Support with Creative Names
 const htmlEl = document.documentElement;

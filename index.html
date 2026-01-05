@@ -217,10 +217,23 @@
             <button class="navbar-link" data-nav-link="blog" data-lang="tr" style="display: none;">Blog</button>
           </li>
           <li class="navbar-item navbar-lang-toggle">
-            <button class="navbar-lang-btn" role="switch" aria-label="Toggle language" aria-checked="false" title="Switch language">
-              <span class="navbar-lang-flag navbar-lang-flag-tr">🇹🇷</span>
-              <span class="navbar-lang-flag navbar-lang-flag-en">🇬🇧</span>
-            </button>
+            <div class="lang-dropdown">
+              <button class="lang-dropdown-btn" aria-label="Select language" aria-expanded="false" aria-haspopup="true" title="Select language">
+                <svg class="lang-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              </button>
+              <div class="lang-dropdown-menu" role="menu">
+                <button class="lang-dropdown-item" data-lang="en" role="menuitem">
+                  <span class="lang-dropdown-item-text">English</span>
+                </button>
+                <button class="lang-dropdown-item" data-lang="tr" role="menuitem">
+                  <span class="lang-dropdown-item-text">Türkçe</span>
+                </button>
+              </div>
+            </div>
           </li>
         </ul>
       </nav>
