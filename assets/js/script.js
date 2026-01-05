@@ -879,32 +879,39 @@ function initFloatingSettingsMenu() {
   
   // Flag to prevent immediate closing when opening
   let isOpening = false;
+  let lastToggleTime = 0;
   
-  // Add click event listener - use capture phase to ensure it fires
-  btn.addEventListener('click', (e) => {
+  // Handle button click/touch - toggle menu
+  function handleButtonInteraction(e) {
     e.stopPropagation();
     e.stopImmediatePropagation();
+    if (e.type === 'touchend') {
+      e.preventDefault(); // Prevent double-tap zoom and click event
+    }
+    
+    // Prevent rapid toggling (debounce)
+    const now = Date.now();
+    if (now - lastToggleTime < 100) {
+      return;
+    }
+    lastToggleTime = now;
+    
     isOpening = true;
     console.log('Button clicked, menu state before:', settingsMenu.classList.contains('active'));
     toggleMenu();
     console.log('Menu state after:', settingsMenu.classList.contains('active'));
-    console.log('Menu element:', settingsMenu);
+    
     // Reset flag after a short delay
     setTimeout(() => {
       isOpening = false;
     }, 200);
-  }, true); // Use capture phase
+  }
+  
+  // Add click event listener - use capture phase to ensure it fires
+  btn.addEventListener('click', handleButtonInteraction, true);
   
   // Touch support for mobile
-  btn.addEventListener('touchend', (e) => {
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    isOpening = true;
-    toggleMenu();
-    setTimeout(() => {
-      isOpening = false;
-    }, 200);
-  }, true);
+  btn.addEventListener('touchend', handleButtonInteraction, true);
   
   if (settingsClose) {
     settingsClose.addEventListener('click', (e) => {
@@ -915,14 +922,19 @@ function initFloatingSettingsMenu() {
   
   // Close menu when clicking outside (but not when opening)
   document.addEventListener('click', (e) => {
-    if (isOpening) return;
+    // If clicking on the button itself, toggleMenu already handled it
+    if (settingsBtn.contains(e.target)) {
+      return;
+    }
     
+    // If menu is open and clicking outside, close it
     if (settingsMenu.classList.contains('active') && 
         !settingsMenu.contains(e.target) && 
-        !settingsBtn.contains(e.target)) {
+        !settingsBtn.contains(e.target) &&
+        !isOpening) {
       closeMenu();
     }
-  });
+  }, true); // Use capture phase
   
   // Close menu on escape key
   document.addEventListener('keydown', (e) => {
