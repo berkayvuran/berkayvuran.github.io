@@ -370,7 +370,8 @@ function toggleLanguage() {
   applyLanguage(next);
 }
 
-const langToggleBtn = document.querySelector('.lang-toggle-btn');
+// Support both old and new language toggle buttons
+const langToggleBtn = document.querySelector('.lang-toggle-btn') || document.querySelector('.navbar-lang-btn');
 if (langToggleBtn) langToggleBtn.onclick = toggleLanguage;
 
 // Apply saved language on page load
