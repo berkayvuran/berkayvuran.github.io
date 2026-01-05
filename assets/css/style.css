@@ -3687,9 +3687,48 @@ textarea.form-input::-webkit-resizer { display: none; }
   .navbar-settings-menu {
     right: 0;
     left: auto;
-    min-width: 260px;
-    max-width: 90vw;
+    min-width: 220px;
+    max-width: 85vw;
     top: calc(100% + 6px);
+  }
+  
+  .navbar-settings-header {
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+  
+  .navbar-settings-content {
+    padding: 8px !important;
+  }
+  
+  .navbar-settings-item {
+    margin-bottom: 12px !important;
+  }
+  
+  .navbar-settings-label {
+    font-size: 12px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .theme-toggle-btn {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+  
+  .accessibility-mode-toggle-wrapper {
+    transform: scale(0.9);
+  }
+  
+  .reading-speed-control {
+    font-size: 12px !important;
+  }
+  
+  .reading-speed-control input[type="range"] {
+    height: 4px !important;
+  }
+  
+  .reading-speed-value {
+    font-size: 11px !important;
   }
   
   .lang-dropdown-btn {
@@ -5100,6 +5139,38 @@ html[data-lang="tr"] .references .testimonials-text p[data-lang="tr"]:has(strong
   .lang-icon {
     width: 16px !important;
     height: 16px !important;
+  }
+  
+  .navbar-settings-menu {
+    min-width: 200px !important;
+    max-width: 80vw !important;
+  }
+  
+  .navbar-settings-header {
+    padding: 10px !important;
+    font-size: 13px !important;
+  }
+  
+  .navbar-settings-content {
+    padding: 6px !important;
+  }
+  
+  .navbar-settings-item {
+    margin-bottom: 10px !important;
+  }
+  
+  .navbar-settings-label {
+    font-size: 11px !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .theme-toggle-btn {
+    font-size: 11px !important;
+    padding: 5px 8px !important;
+  }
+  
+  .accessibility-mode-toggle-wrapper {
+    transform: scale(0.85);
   }
   
   .lang-icon {
