@@ -924,35 +924,86 @@ function formatTimelineBullets() {
   });
 }
 
-// Initialize floating settings menu - try multiple times to ensure it works
-function initFloatingSettingsMenuWithRetry() {
-  const settingsBtn = document.getElementById('floating-settings-btn');
-  const settingsMenu = document.getElementById('floating-settings-menu');
-  
-  if (!settingsBtn || !settingsMenu) {
-    // Retry after a short delay if elements not found
-    setTimeout(initFloatingSettingsMenuWithRetry, 100);
-    return;
-  }
-  
-  // Elements found, initialize menu
-  initFloatingSettingsMenu();
-}
-
 window.addEventListener('DOMContentLoaded', () => { 
   window.typewriter = new TypewriterEffect();
   formatTimelineBullets();
   
-  // Floating Settings Menu - initialize with retry mechanism
-  initFloatingSettingsMenuWithRetry();
+  // Navbar Settings Menu - initialize
+  initializeNavbarSettingsWhenReady();
 });
 
 // Also try to initialize immediately if DOM is already loaded
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  setTimeout(initFloatingSettingsMenuWithRetry, 1);
+  setTimeout(initializeNavbarSettingsWhenReady, 1);
 }
 
-// 9. Floating Settings Menu
+// 9. Navbar Settings Menu
+function initNavbarSettingsMenu() {
+  const settingsBtn = document.getElementById('navbar-settings-btn');
+  const settingsMenu = document.getElementById('navbar-settings-menu');
+  const settingsDropdown = document.querySelector('.navbar-settings-dropdown');
+  
+  if (!settingsBtn || !settingsMenu || !settingsDropdown) {
+    return;
+  }
+  
+  function openSettingsMenu() {
+    settingsDropdown.setAttribute('data-open', 'true');
+    settingsBtn.setAttribute('aria-expanded', 'true');
+  }
+  
+  function closeSettingsMenu() {
+    settingsDropdown.setAttribute('data-open', 'false');
+    settingsBtn.setAttribute('aria-expanded', 'false');
+  }
+  
+  function toggleSettingsMenu() {
+    const isOpen = settingsDropdown.getAttribute('data-open') === 'true';
+    if (isOpen) {
+      closeSettingsMenu();
+    } else {
+      openSettingsMenu();
+    }
+  }
+  
+  // Toggle dropdown on button click
+  settingsBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    toggleSettingsMenu();
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (settingsDropdown && !settingsDropdown.contains(e.target)) {
+      closeSettingsMenu();
+    }
+  });
+  
+  // Close dropdown on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeSettingsMenu();
+    }
+  });
+  
+  // Prevent menu from closing when clicking inside it
+  settingsMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+}
+
+// Initialize navbar settings menu when DOM is ready
+function initializeNavbarSettingsWhenReady() {
+  if (document.querySelector('.navbar-settings-dropdown')) {
+    initNavbarSettingsMenu();
+  }
+}
+
+// Also initialize after a short delay to ensure everything is loaded
+setTimeout(initializeNavbarSettingsWhenReady, 100);
+
+// Legacy Floating Settings Menu (kept for compatibility but not used)
 function initFloatingSettingsMenu() {
   const settingsBtn = document.getElementById('floating-settings-btn');
   const settingsMenu = document.getElementById('floating-settings-menu');
