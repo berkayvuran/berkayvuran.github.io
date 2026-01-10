@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implicit Sexism Scale | Örtük Cinsiyetçilik Ölçeği</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --accent: #ff3366;
+            --accent-glow: rgba(255, 51, 102, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6a6a7a;
+            --border: #2a2a3a;
+            --success: #00cc88;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 1000;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 0%, rgba(255, 51, 102, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(102, 51, 255, 0.1) 0%, transparent 50%),
+                var(--bg-primary);
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* INTRO SCREEN */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
+        .intro-screen {
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            background: rgba(255, 51, 102, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 51, 102, 0.3);
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .language-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .lang-btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .info-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .privacy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 204, 136, 0.1);
+            border: 1px solid rgba(0, 204, 136, 0.3);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .privacy-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .start-btn {
+            padding: 1.25rem 3rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent) 0%, #cc2952 100%);
+            border: none;
+            border-radius: 1rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        /* QUESTION SCREEN */
+        .question-screen {
+            text-align: center;
+        }
+
+        .progress-container {
+            margin-bottom: 3rem;
+        }
+
+        .progress-text {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-card);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #ff6699);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .question-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 3rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100px;
+        }
+
+        .likert-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .likert-btn {
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            color: var(--text-secondary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .likert-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateX(5px);
+        }
+
+        .likert-btn .number {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            width: 24px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .likert-btn:hover .number {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* RESULT SCREEN - MANIFESTO */
+        .result-screen {
+            text-align: center;
+        }
+
+        .manifesto-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 3rem 2rem;
+            margin: 2rem 0;
+        }
+
+        .manifesto-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .manifesto-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .manifesto-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            line-height: 2;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .manifesto-text p {
+            margin-bottom: 1.5rem;
+        }
+
+        .manifesto-text strong {
+            color: var(--text-primary);
+        }
+
+        .manifesto-text em {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .manifesto-quote {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .manifesto-footer {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .reset-btn {
+            padding: 1rem 2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 2rem;
+        }
+
+        .reset-btn:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .share-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .share-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .methodology {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            text-align: left;
+        }
+
+        .methodology h3 {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .methodology p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .references {
+            margin-top: 1rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Space Mono', monospace;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .question-text {
+                font-size: 1.2rem;
+            }
+
+            .manifesto-container {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="gradient-bg"></div>
+
+    <div class="container">
+        <!-- INTRO SCREEN -->
+        <div class="screen intro-screen active" id="intro-screen">
+            <div class="badge" data-i18n="badge">#KörNokta</div>
+            <h1 data-i18n="title">Örtük Cinsiyetçilik Ölçeği</h1>
+            <p class="subtitle" data-i18n="subtitle">Teknoloji sektöründe örtük cinsiyetçi tutumları ölçmek için geliştirilmiş bilimsel bir değerlendirme aracı.</p>
+            
+            <div class="language-selector">
+                <button class="lang-btn active" data-lang="tr">Türkçe</button>
+                <button class="lang-btn" data-lang="en">English</button>
+                <button class="lang-btn" data-lang="es">Español</button>
+                <button class="lang-btn" data-lang="fr">Français</button>
+                <button class="lang-btn" data-lang="de">Deutsch</button>
+                <button class="lang-btn" data-lang="pt">Português</button>
+                <button class="lang-btn" data-lang="zh">中文</button>
+                <button class="lang-btn" data-lang="ar">العربية</button>
+                <button class="lang-btn" data-lang="hi">हिन्दी</button>
+                <button class="lang-btn" data-lang="ja">日本語</button>
+            </div>
+
+            <div class="info-box">
+                <h3 data-i18n="info-title">⚠️ ÖNEMLİ BİLGİ</h3>
+                <p data-i18n="info-text">Bu test, örtük (bilinçdışı) cinsiyetçi tutumları ölçmek için tasarlanmıştır. Sorular kasıtlı olarak tartışmalı ifadeler içerir. Bu bir farkındalık aracıdır, klinik teşhis değildir.</p>
+                <div class="privacy-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <span data-i18n="privacy">Hiçbir veri kaydedilmez veya gönderilmez</span>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startTest()" data-i18n="start">TESTE BAŞLA</button>
+        </div>
+
+        <!-- QUESTION SCREEN -->
+        <div class="screen question-screen" id="question-screen">
+            <div class="progress-container">
+                <div class="progress-text"><span id="current-q">1</span> / 10</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
+                </div>
+            </div>
+
+            <div class="question-number" id="question-number">SORU 1</div>
+            <div class="question-text" id="question-text"></div>
+
+            <div class="likert-options" id="likert-options"></div>
+        </div>
+
+        <!-- RESULT SCREEN - MANIFESTO -->
+        <div class="screen result-screen" id="result-screen">
+            <div class="manifesto-container">
+                <div class="manifesto-icon">🪞</div>
+                <h2 class="manifesto-title" data-i18n="manifesto-title">Ayna</h2>
+                <div class="manifesto-text" id="manifesto-text"></div>
+                <div class="manifesto-footer" data-i18n="manifesto-footer">Bu test bir puan vermez. Çünkü amaç yargılamak değil, farkındalık yaratmaktır.</div>
+            </div>
+
+            <button class="reset-btn" onclick="resetTest()" data-i18n="reset">Testi Tekrarla</button>
+
+            <div class="methodology">
+                <h3 data-i18n="methodology-title">📚 Metodoloji</h3>
+                <p data-i18n="methodology-text">Bu ölçek, güncel uluslararası literatürdeki geçerliliği kanıtlanmış çalışmalardan uyarlanmıştır. Sorular özellikle teknoloji sektöründeki örtük cinsiyetçiliği tespit etmeye yöneliktir.</p>
+                <div class="references">
+                    <p>Charlesworth, T. E. S., & Banaji, M. R. (2022). Patterns of implicit and explicit stereotypes III. SPPS.</p>
+                    <p>Galos, D. R., & Coppock, A. (2023). Gender composition predicts gender bias. Science Advances.</p>
+                    <p>Panerati, S., et al. (2025). The 'Perfection Bias' Scale. European J. of Social Psychology.</p>
+                    <p>Cunningham, G. (2022). Managers exhibit bias. Frontiers in Psychology.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            tr: {
+                badge: "#KörNokta",
+                title: "Örtük Cinsiyetçilik Ölçeği",
+                subtitle: "Teknoloji sektöründe örtük cinsiyetçi tutumları ölçmek için geliştirilmiş bilimsel bir değerlendirme aracı.",
+                "info-title": "⚠️ ÖNEMLİ BİLGİ",
+                "info-text": "Bu test, örtük (bilinçdışı) cinsiyetçi tutumları ölçmek için tasarlanmıştır. Sorular kasıtlı olarak tartışmalı ifadeler içerir. Bu bir farkındalık aracıdır, klinik teşhis değildir.",
+                privacy: "Hiçbir veri kaydedilmez veya gönderilmez",
+                start: "TESTE BAŞLA",
+                reset: "Testi Tekrarla",
+                "methodology-title": "📚 Metodoloji",
+                "methodology-text": "Bu ölçek, güncel uluslararası literatürdeki geçerliliği kanıtlanmış çalışmalardan uyarlanmıştır. Sorular özellikle teknoloji sektöründeki örtük cinsiyetçiliği tespit etmeye yöneliktir.",
+                questionLabel: "SORU",
+                scale: ["Kesinlikle Katılmıyorum", "Katılmıyorum", "Kararsızım", "Katılıyorum", "Kesinlikle Katılıyorum"],
+                questions: [
+                    "Erkekler doğal olarak kadınlardan daha iyi programcıdır.",
+                    "Bir kadın mühendis teknik bir hata yaptığında, bunun cinsiyetiyle ilgili olduğunu düşünürüm.",
+                    "Teknoloji şirketlerinde liderlik pozisyonlarında erkeklerin olması daha doğaldır.",
+                    "Bir iş görüşmesinde, erkek adayın 'kültürel uyum' açısından daha uygun olacağını varsayarım.",
+                    "Kadın mühendislere teknik konularda yardım etme ihtiyacı hissederim, erkek mühendislere hissettiğimden daha fazla.",
+                    "Teknoloji sektöründe kadınlar zaten erkeklerle eşit maaş alıyorlar.",
+                    "Kariyer kesintisi vermiş bir kadın adayı, aynı kesintiye sahip erkek adaya göre daha olumsuz değerlendiririm.",
+                    "Kadınlar duygusal karar vermeye daha yatkın olduğu için kritik teknik kararlarda erkeklerin sözü daha ağır basmalıdır.",
+                    "Kadınlar teknik rollerden ziyade insan kaynakları veya iletişim gibi 'yumuşak' alanlarda daha başarılıdır.",
+                    "Günümüzde teknoloji sektöründe artık kadınlara yönelik bir ayrımcılık kalmamıştır."
+                ],
+                "manifesto-title": "Ayna",
+                "manifesto-footer": "Bu test bir puan vermez. Çünkü amaç yargılamak değil, farkındalık yaratmaktır.",
+                manifesto: `
+                    <p>Bu test sona erdi ama asıl yolculuk şimdi başlıyor.</p>
+                    
+                    <p>Az önce cevapladığın her soru, teknoloji sektöründe her gün sessizce yeniden üretilen <strong>örtük cinsiyetçiliğin</strong> bir yansımasıydı. Bu sorular laboratuvarda icat edilmedi; <em>gerçek iş görüşmelerinden</em>, <em>performans değerlendirmelerinden</em>, <em>terfi toplantılarından</em> damıtıldı.</p>
+
+                    <div class="manifesto-quote">"Ama ben cinsiyetçi değilim" diye düşünüyor olabilirsin. İşte tam da bu noktada örtük önyargılar devreye giriyor.</div>
+
+                    <p><strong>Örtük cinsiyetçilik</strong>, nefret etmekle ilgili değil. Farkında olmadan <em>varsaymakla</em> ilgili. Kadın mühendise "yardım etme" dürtüsü hissetmek. Erkek adayın "daha iyi uyum sağlayacağını" düşünmek. Kariyer arasını erkekte "deneyim", kadında "risk" olarak okumak.</p>
+
+                    <p>Teknoloji sektörü kendini <em>meritokrasi</em> olarak pazarlar: "Burada sadece yetenek konuşur." Ama veriler farklı söylüyor. Aynı özgeçmiş, farklı isimlerle gönderildiğinde farklı sonuçlar alıyor. Aynı kod, farklı profil fotoğraflarıyla farklı değerlendiriliyor.</p>
+
+                    <p><strong>Bu test seni puanlamadı.</strong> Çünkü mesele "ne kadar cinsiyetçisin" değil. Mesele şu: <em>Hangi varsayımların farkında değilsin?</em></p>
+
+                    <p>Şimdi yapabileceğin tek şey: <strong>Bir sonraki kararında dur ve sor.</strong></p>
+                    
+                    <p><em>"Bu kararı cinsiyetten bağımsız mı veriyorum?"</em></p>
+                    
+                    <p>Farkındalık, değişimin ilk adımıdır. Ve sen az önce o adımı attın.</p>
+                `
+            },
+            en: {
+                badge: "#BlindSpot",
+                title: "Implicit Sexism Scale",
+                subtitle: "A scientific assessment tool designed to measure implicit sexist attitudes in the technology sector.",
+                "info-title": "⚠️ IMPORTANT NOTICE",
+                "info-text": "This test is designed to measure implicit (unconscious) sexist attitudes. Questions intentionally contain controversial statements. This is an awareness tool, not a clinical diagnosis.",
+                privacy: "No data is stored or transmitted",
+                start: "START TEST",
+                reset: "Retake Test",
+                "methodology-title": "📚 Methodology",
+                "methodology-text": "This scale is adapted from validated contemporary research. Questions are specifically designed to detect implicit sexism in the technology sector.",
+                questionLabel: "QUESTION",
+                scale: ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"],
+                questions: [
+                    "Men are naturally better programmers than women.",
+                    "When a female engineer makes a technical mistake, I think it might be related to her gender.",
+                    "It's more natural for men to hold leadership positions in tech companies.",
+                    "In a job interview, I would assume a male candidate is a better 'cultural fit.'",
+                    "I feel the need to help female engineers with technical issues more than I do with male engineers.",
+                    "Women in tech already earn equal pay to men.",
+                    "I would evaluate a female candidate with a career gap more negatively than a male candidate with the same gap.",
+                    "Men should have more say in critical technical decisions because women are more prone to emotional decision-making.",
+                    "Women are more successful in 'soft' areas like HR or communications rather than technical roles.",
+                    "There is no longer any discrimination against women in the technology sector today."
+                ],
+                "manifesto-title": "Mirror",
+                "manifesto-footer": "This test doesn't give you a score. Because the goal isn't to judge—it's to create awareness.",
+                manifesto: `
+                    <p>This test is over, but the real journey begins now.</p>
+                    
+                    <p>Every question you just answered was a reflection of <strong>implicit sexism</strong> that is silently reproduced every day in the tech sector. These questions weren't invented in a lab; they were distilled from <em>real job interviews</em>, <em>performance reviews</em>, and <em>promotion meetings</em>.</p>
+
+                    <div class="manifesto-quote">"But I'm not sexist," you might be thinking. That's exactly where implicit bias comes in.</div>
+
+                    <p><strong>Implicit sexism</strong> isn't about hatred. It's about <em>assuming</em> without realizing. Feeling the urge to "help" a female engineer. Thinking a male candidate would "fit better." Reading a career gap as "experience" for men and "risk" for women.</p>
+
+                    <p>The tech sector markets itself as a <em>meritocracy</em>: "Here, only talent speaks." But the data says otherwise. The same resume with different names gets different results. The same code with different profile photos gets different reviews.</p>
+
+                    <p><strong>This test didn't score you.</strong> Because it's not about "how sexist you are." The question is: <em>Which assumptions are you unaware of?</em></p>
+
+                    <p>The only thing you can do now: <strong>Stop and ask before your next decision.</strong></p>
+                    
+                    <p><em>"Am I making this decision independent of gender?"</em></p>
+                    
+                    <p>Awareness is the first step toward change. And you just took that step.</p>
+                `
+            },
+            es: {
+                badge: "#PuntoCiego",
+                title: "Escala de Sexismo Implícito",
+                subtitle: "Una herramienta de evaluación científica diseñada para medir actitudes sexistas implícitas en el sector tecnológico.",
+                "info-title": "⚠️ AVISO IMPORTANTE",
+                "info-text": "Esta prueba está diseñada para medir actitudes sexistas implícitas (inconscientes). Las preguntas contienen intencionalmente declaraciones controvertidas. Esta es una herramienta de concientización, no un diagnóstico clínico.",
+                privacy: "No se almacena ni transmite ningún dato",
+                start: "INICIAR PRUEBA",
+                reset: "Repetir Prueba",
+                "methodology-title": "📚 Metodología",
+                "methodology-text": "Esta escala está adaptada de investigaciones contemporáneas validadas. Las preguntas están específicamente diseñadas para detectar sexismo implícito en el sector tecnológico.",
+                questionLabel: "PREGUNTA",
+                scale: ["Muy en Desacuerdo", "En Desacuerdo", "Neutral", "De Acuerdo", "Muy de Acuerdo"],
+                questions: [
+                    "Los hombres son naturalmente mejores programadores que las mujeres.",
+                    "Cuando una ingeniera comete un error técnico, pienso que podría estar relacionado con su género.",
+                    "Es más natural que los hombres ocupen puestos de liderazgo en empresas tecnológicas.",
+                    "En una entrevista de trabajo, asumiría que un candidato masculino tiene mejor 'ajuste cultural.'",
+                    "Siento la necesidad de ayudar a las ingenieras con problemas técnicos más que a los ingenieros.",
+                    "Las mujeres en tecnología ya ganan el mismo salario que los hombres.",
+                    "Evaluaría más negativamente a una candidata con una pausa en su carrera que a un candidato con la misma pausa.",
+                    "Los hombres deberían tener más voz en decisiones técnicas críticas porque las mujeres son más propensas a tomar decisiones emocionales.",
+                    "Las mujeres son más exitosas en áreas 'blandas' como RRHH o comunicaciones que en roles técnicos.",
+                    "Ya no existe discriminación contra las mujeres en el sector tecnológico actual."
+                ],
+                "manifesto-title": "Espejo",
+                "manifesto-footer": "Esta prueba no te da una puntuación. Porque el objetivo no es juzgar—es crear conciencia.",
+                manifesto: `
+                    <p>Esta prueba terminó, pero el verdadero viaje comienza ahora.</p>
+                    
+                    <p>Cada pregunta que acabas de responder era un reflejo del <strong>sexismo implícito</strong> que se reproduce silenciosamente cada día en el sector tecnológico. Estas preguntas no se inventaron en un laboratorio; se destilaron de <em>entrevistas de trabajo reales</em>, <em>evaluaciones de desempeño</em> y <em>reuniones de promoción</em>.</p>
+
+                    <div class="manifesto-quote">"Pero yo no soy sexista," podrías estar pensando. Ahí es exactamente donde entra el sesgo implícito.</div>
+
+                    <p><strong>El sexismo implícito</strong> no se trata de odio. Se trata de <em>asumir</em> sin darte cuenta. Sentir el impulso de "ayudar" a una ingeniera. Pensar que un candidato masculino "encajaría mejor." Leer una pausa en la carrera como "experiencia" para hombres y "riesgo" para mujeres.</p>
+
+                    <p>El sector tecnológico se vende como una <em>meritocracia</em>: "Aquí, solo habla el talento." Pero los datos dicen lo contrario.</p>
+
+                    <p><strong>Esta prueba no te puntuó.</strong> Porque no se trata de "qué tan sexista eres." La pregunta es: <em>¿De qué suposiciones no eres consciente?</em></p>
+
+                    <p>Lo único que puedes hacer ahora: <strong>Detente y pregunta antes de tu próxima decisión.</strong></p>
+                    
+                    <p><em>"¿Estoy tomando esta decisión independiente del género?"</em></p>
+                    
+                    <p>La conciencia es el primer paso hacia el cambio. Y acabas de dar ese paso.</p>
+                `
+            },
+            fr: {
+                badge: "#AngleMort",
+                title: "Échelle de Sexisme Implicite",
+                subtitle: "Un outil d'évaluation scientifique conçu pour mesurer les attitudes sexistes implicites dans le secteur technologique.",
+                "info-title": "⚠️ AVIS IMPORTANT",
+                "info-text": "Ce test est conçu pour mesurer les attitudes sexistes implicites (inconscientes). Les questions contiennent intentionnellement des déclarations controversées. C'est un outil de sensibilisation, pas un diagnostic clinique.",
+                privacy: "Aucune donnée n'est stockée ou transmise",
+                start: "COMMENCER LE TEST",
+                reset: "Refaire le Test",
+                "methodology-title": "📚 Méthodologie",
+                "methodology-text": "Cette échelle est adaptée de recherches contemporaines validées. Les questions sont spécifiquement conçues pour détecter le sexisme implicite dans le secteur technologique.",
+                questionLabel: "QUESTION",
+                scale: ["Pas du Tout d'Accord", "Pas d'Accord", "Neutre", "D'Accord", "Tout à Fait d'Accord"],
+                questions: [
+                    "Les hommes sont naturellement de meilleurs programmeurs que les femmes.",
+                    "Quand une ingénieure fait une erreur technique, je pense que cela pourrait être lié à son genre.",
+                    "Il est plus naturel que les hommes occupent des postes de direction dans les entreprises technologiques.",
+                    "Dans un entretien d'embauche, je supposerais qu'un candidat masculin a une meilleure 'adéquation culturelle.'",
+                    "Je ressens le besoin d'aider les ingénieures avec des problèmes techniques plus que les ingénieurs.",
+                    "Les femmes dans la tech gagnent déjà le même salaire que les hommes.",
+                    "J'évaluerais plus négativement une candidate avec une interruption de carrière qu'un candidat avec la même interruption.",
+                    "Les hommes devraient avoir plus de poids dans les décisions techniques critiques car les femmes sont plus enclines aux décisions émotionnelles.",
+                    "Les femmes réussissent mieux dans les domaines 'soft' comme les RH ou la communication que dans les rôles techniques.",
+                    "Il n'y a plus de discrimination contre les femmes dans le secteur technologique aujourd'hui."
+                ],
+                "manifesto-title": "Miroir",
+                "manifesto-footer": "Ce test ne vous donne pas de score. Parce que l'objectif n'est pas de juger—c'est de créer une prise de conscience.",
+                manifesto: `
+                    <p>Ce test est terminé, mais le vrai voyage commence maintenant.</p>
+                    
+                    <p>Chaque question à laquelle vous venez de répondre était un reflet du <strong>sexisme implicite</strong> qui se reproduit silencieusement chaque jour dans le secteur technologique. Ces questions n'ont pas été inventées en laboratoire; elles ont été distillées à partir d'<em>entretiens d'embauche réels</em>, d'<em>évaluations de performance</em> et de <em>réunions de promotion</em>.</p>
+
+                    <div class="manifesto-quote">"Mais je ne suis pas sexiste," pensez-vous peut-être. C'est exactement là que le biais implicite entre en jeu.</div>
+
+                    <p><strong>Le sexisme implicite</strong> ne concerne pas la haine. Il s'agit de <em>supposer</em> sans s'en rendre compte. Ressentir le besoin d'"aider" une ingénieure. Penser qu'un candidat masculin "s'intégrerait mieux." Lire une pause de carrière comme "expérience" pour les hommes et "risque" pour les femmes.</p>
+
+                    <p>Le secteur technologique se vend comme une <em>méritocratie</em>: "Ici, seul le talent compte." Mais les données disent le contraire.</p>
+
+                    <p><strong>Ce test ne vous a pas noté.</strong> Parce qu'il ne s'agit pas de "à quel point vous êtes sexiste." La question est: <em>De quelles suppositions n'êtes-vous pas conscient?</em></p>
+
+                    <p>La seule chose que vous pouvez faire maintenant: <strong>Arrêtez-vous et posez-vous la question avant votre prochaine décision.</strong></p>
+                    
+                    <p><em>"Est-ce que je prends cette décision indépendamment du genre?"</em></p>
+                    
+                    <p>La prise de conscience est le premier pas vers le changement. Et vous venez de faire ce pas.</p>
+                `
+            },
+            de: {
+                badge: "#BlinderFleck",
+                title: "Skala für Impliziten Sexismus",
+                subtitle: "Ein wissenschaftliches Bewertungsinstrument zur Messung impliziter sexistischer Einstellungen im Technologiesektor.",
+                "info-title": "⚠️ WICHTIGER HINWEIS",
+                "info-text": "Dieser Test misst implizite (unbewusste) sexistische Einstellungen. Die Fragen enthalten absichtlich kontroverse Aussagen. Dies ist ein Bewusstseins-Tool, keine klinische Diagnose.",
+                privacy: "Es werden keine Daten gespeichert oder übertragen",
+                start: "TEST STARTEN",
+                reset: "Test Wiederholen",
+                "methodology-title": "📚 Methodik",
+                "methodology-text": "Diese Skala ist von aktueller validierter Forschung adaptiert. Die Fragen sind speziell darauf ausgerichtet, impliziten Sexismus im Technologiesektor zu erkennen.",
+                questionLabel: "FRAGE",
+                scale: ["Stimme Gar Nicht Zu", "Stimme Nicht Zu", "Neutral", "Stimme Zu", "Stimme Voll Zu"],
+                questions: [
+                    "Männer sind von Natur aus bessere Programmierer als Frauen.",
+                    "Wenn eine Ingenieurin einen technischen Fehler macht, denke ich, dass es mit ihrem Geschlecht zusammenhängen könnte.",
+                    "Es ist natürlicher, dass Männer Führungspositionen in Tech-Unternehmen besetzen.",
+                    "In einem Vorstellungsgespräch würde ich annehmen, dass ein männlicher Kandidat besser zur Unternehmenskultur passt.",
+                    "Ich fühle den Bedarf, Ingenieurinnen bei technischen Problemen mehr zu helfen als Ingenieuren.",
+                    "Frauen in der Tech-Branche verdienen bereits das gleiche Gehalt wie Männer.",
+                    "Ich würde eine Kandidatin mit einer Karrierepause negativer bewerten als einen Kandidaten mit derselben Pause.",
+                    "Männer sollten bei kritischen technischen Entscheidungen mehr Mitsprache haben, weil Frauen eher emotionale Entscheidungen treffen.",
+                    "Frauen sind in 'weichen' Bereichen wie HR oder Kommunikation erfolgreicher als in technischen Rollen.",
+                    "Es gibt heute keine Diskriminierung von Frauen mehr im Technologiesektor."
+                ],
+                "manifesto-title": "Spiegel",
+                "manifesto-footer": "Dieser Test gibt Ihnen keine Punktzahl. Denn das Ziel ist nicht zu urteilen—sondern Bewusstsein zu schaffen.",
+                manifesto: `
+                    <p>Dieser Test ist vorbei, aber die eigentliche Reise beginnt jetzt.</p>
+                    
+                    <p>Jede Frage, die Sie gerade beantwortet haben, war ein Spiegelbild des <strong>impliziten Sexismus</strong>, der täglich stillschweigend im Tech-Sektor reproduziert wird. Diese Fragen wurden nicht im Labor erfunden; sie wurden aus <em>echten Vorstellungsgesprächen</em>, <em>Leistungsbeurteilungen</em> und <em>Beförderungsmeetings</em> destilliert.</p>
+
+                    <div class="manifesto-quote">"Aber ich bin nicht sexistisch," denken Sie vielleicht. Genau hier kommt der implizite Bias ins Spiel.</div>
+
+                    <p><strong>Impliziter Sexismus</strong> handelt nicht von Hass. Es geht darum, unbewusst <em>anzunehmen</em>. Den Drang zu verspüren, einer Ingenieurin zu "helfen". Zu denken, ein männlicher Kandidat würde "besser passen". Eine Karrierepause bei Männern als "Erfahrung" und bei Frauen als "Risiko" zu lesen.</p>
+
+                    <p>Der Tech-Sektor vermarktet sich als <em>Meritokratie</em>: "Hier zählt nur Talent." Aber die Daten sagen etwas anderes.</p>
+
+                    <p><strong>Dieser Test hat Sie nicht bewertet.</strong> Denn es geht nicht darum, "wie sexistisch Sie sind." Die Frage ist: <em>Welche Annahmen sind Ihnen nicht bewusst?</em></p>
+
+                    <p>Das Einzige, was Sie jetzt tun können: <strong>Halten Sie inne und fragen Sie vor Ihrer nächsten Entscheidung.</strong></p>
+                    
+                    <p><em>"Treffe ich diese Entscheidung unabhängig vom Geschlecht?"</em></p>
+                    
+                    <p>Bewusstsein ist der erste Schritt zur Veränderung. Und Sie haben diesen Schritt gerade getan.</p>
+                `
+            },
+            pt: {
+                badge: "#PontoCego",
+                title: "Escala de Sexismo Implícito",
+                subtitle: "Uma ferramenta de avaliação científica projetada para medir atitudes sexistas implícitas no setor de tecnologia.",
+                "info-title": "⚠️ AVISO IMPORTANTE",
+                "info-text": "Este teste é projetado para medir atitudes sexistas implícitas (inconscientes). As perguntas contêm intencionalmente declarações controversas. Esta é uma ferramenta de conscientização, não um diagnóstico clínico.",
+                privacy: "Nenhum dado é armazenado ou transmitido",
+                start: "INICIAR TESTE",
+                reset: "Refazer Teste",
+                "methodology-title": "📚 Metodologia",
+                "methodology-text": "Esta escala é adaptada de pesquisas contemporâneas validadas. As perguntas são especificamente projetadas para detectar sexismo implícito no setor de tecnologia.",
+                questionLabel: "PERGUNTA",
+                scale: ["Discordo Totalmente", "Discordo", "Neutro", "Concordo", "Concordo Totalmente"],
+                questions: [
+                    "Os homens são naturalmente melhores programadores do que as mulheres.",
+                    "Quando uma engenheira comete um erro técnico, penso que pode estar relacionado ao seu gênero.",
+                    "É mais natural que os homens ocupem cargos de liderança em empresas de tecnologia.",
+                    "Em uma entrevista de emprego, eu assumiria que um candidato masculino tem melhor 'adequação cultural.'",
+                    "Sinto a necessidade de ajudar engenheiras com problemas técnicos mais do que engenheiros.",
+                    "As mulheres em tecnologia já ganham salários iguais aos dos homens.",
+                    "Avaliaria mais negativamente uma candidata com uma pausa na carreira do que um candidato com a mesma pausa.",
+                    "Os homens devem ter mais voz em decisões técnicas críticas porque as mulheres são mais propensas a tomar decisões emocionais.",
+                    "As mulheres são mais bem-sucedidas em áreas 'soft' como RH ou comunicação do que em funções técnicas.",
+                    "Não há mais discriminação contra mulheres no setor de tecnologia hoje."
+                ],
+                "manifesto-title": "Espelho",
+                "manifesto-footer": "Este teste não te dá uma pontuação. Porque o objetivo não é julgar—é criar consciência.",
+                manifesto: `
+                    <p>Este teste acabou, mas a verdadeira jornada começa agora.</p>
+                    
+                    <p>Cada pergunta que você acabou de responder era um reflexo do <strong>sexismo implícito</strong> que é silenciosamente reproduzido todos os dias no setor de tecnologia. Essas perguntas não foram inventadas em laboratório; foram destiladas de <em>entrevistas de emprego reais</em>, <em>avaliações de desempenho</em> e <em>reuniões de promoção</em>.</p>
+
+                    <div class="manifesto-quote">"Mas eu não sou sexista," você pode estar pensando. É exatamente aí que o viés implícito entra.</div>
+
+                    <p><strong>O sexismo implícito</strong> não é sobre ódio. É sobre <em>assumir</em> sem perceber. Sentir o impulso de "ajudar" uma engenheira. Pensar que um candidato masculino "se encaixaria melhor." Ler uma pausa na carreira como "experiência" para homens e "risco" para mulheres.</p>
+
+                    <p>O setor de tecnologia se vende como uma <em>meritocracia</em>: "Aqui, só o talento fala." Mas os dados dizem o contrário.</p>
+
+                    <p><strong>Este teste não te pontuou.</strong> Porque não se trata de "quão sexista você é." A questão é: <em>De quais suposições você não tem consciência?</em></p>
+
+                    <p>A única coisa que você pode fazer agora: <strong>Pare e pergunte antes da sua próxima decisão.</strong></p>
+                    
+                    <p><em>"Estou tomando essa decisão independente do gênero?"</em></p>
+                    
+                    <p>A consciência é o primeiro passo para a mudança. E você acabou de dar esse passo.</p>
+                `
+            },
+            zh: {
+                badge: "#盲点",
+                title: "隐性性别歧视量表",
+                subtitle: "一种用于测量科技行业隐性性别歧视态度的科学评估工具。",
+                "info-title": "⚠️ 重要说明",
+                "info-text": "此测试旨在测量隐性（无意识）性别歧视态度。问题故意包含有争议的陈述。这是一个意识工具，而非临床诊断。",
+                privacy: "不存储或传输任何数据",
+                start: "开始测试",
+                reset: "重新测试",
+                "methodology-title": "📚 方法论",
+                "methodology-text": "该量表改编自经过验证的当代研究。问题专门设计用于检测科技行业中的隐性性别歧视。",
+                questionLabel: "问题",
+                scale: ["非常不同意", "不同意", "中立", "同意", "非常同意"],
+                questions: [
+                    "男性天生比女性更擅长编程。",
+                    "当女工程师犯技术错误时，我认为这可能与她的性别有关。",
+                    "男性在科技公司担任领导职位更自然。",
+                    "在工作面试中，我会假设男性候选人更符合'企业文化'。",
+                    "我觉得需要帮助女工程师解决技术问题，比帮助男工程师更多。",
+                    "科技行业的女性已经获得与男性相同的薪酬。",
+                    "我会对有职业中断的女性候选人评价更负面，相比有同样中断的男性候选人。",
+                    "在关键技术决策中男性应该有更大的发言权，因为女性更容易做出情绪化的决定。",
+                    "女性在人力资源或沟通等'软性'领域比技术角色更成功。",
+                    "如今科技行业已不存在对女性的歧视。"
+                ],
+                "manifesto-title": "镜子",
+                "manifesto-footer": "这个测试不会给你评分。因为目的不是评判——而是创造意识。",
+                manifesto: `
+                    <p>测试结束了，但真正的旅程现在开始。</p>
+                    
+                    <p>你刚刚回答的每一个问题，都是科技行业每天默默重复的<strong>隐性性别歧视</strong>的反映。这些问题不是在实验室里发明的；它们是从<em>真实的工作面试</em>、<em>绩效评估</em>和<em>晋升会议</em>中提炼出来的。</p>
+
+                    <div class="manifesto-quote">"但我不是性别歧视者，"你可能在想。这正是隐性偏见发挥作用的地方。</div>
+
+                    <p><strong>隐性性别歧视</strong>不是关于仇恨。它是关于无意识地<em>假设</em>。感到想要"帮助"女工程师的冲动。认为男性候选人会"更合适"。把职业中断在男性身上解读为"经验"，在女性身上解读为"风险"。</p>
+
+                    <p>科技行业把自己包装成<em>精英主义</em>："在这里，只有才能说话。"但数据说的是另一回事。</p>
+
+                    <p><strong>这个测试没有给你打分。</strong>因为问题不是"你有多性别歧视"。问题是：<em>你没有意识到哪些假设？</em></p>
+
+                    <p>你现在唯一能做的：<strong>在下一个决定之前停下来问问自己。</strong></p>
+                    
+                    <p><em>"我做这个决定是否与性别无关？"</em></p>
+                    
+                    <p>意识是改变的第一步。你刚刚迈出了这一步。</p>
+                `
+            },
+            ar: {
+                badge: "#نقطة_عمياء",
+                title: "مقياس التحيز الجنسي الضمني",
+                subtitle: "أداة تقييم علمية مصممة لقياس المواقف التمييزية الجنسية الضمنية في قطاع التكنولوجيا.",
+                "info-title": "⚠️ إشعار مهم",
+                "info-text": "تم تصميم هذا الاختبار لقياس المواقف التمييزية الجنسية الضمنية (اللاواعية). تحتوي الأسئلة عمداً على عبارات مثيرة للجدل. هذه أداة توعية، وليست تشخيصاً سريرياً.",
+                privacy: "لا يتم تخزين أو إرسال أي بيانات",
+                start: "ابدأ الاختبار",
+                reset: "إعادة الاختبار",
+                "methodology-title": "📚 المنهجية",
+                "methodology-text": "تم تكييف هذا المقياس من أبحاث معاصرة موثقة. تم تصميم الأسئلة خصيصاً للكشف عن التحيز الجنسي الضمني في قطاع التكنولوجيا.",
+                questionLabel: "سؤال",
+                scale: ["أرفض بشدة", "أرفض", "محايد", "أوافق", "أوافق بشدة"],
+                questions: [
+                    "الرجال بطبيعتهم مبرمجون أفضل من النساء.",
+                    "عندما ترتكب مهندسة خطأً تقنياً، أعتقد أنه قد يكون مرتبطاً بجنسها.",
+                    "من الطبيعي أكثر أن يشغل الرجال مناصب قيادية في شركات التكنولوجيا.",
+                    "في مقابلة عمل، سأفترض أن المرشح الذكر أكثر 'ملاءمة ثقافية'.",
+                    "أشعر بالحاجة لمساعدة المهندسات في المشاكل التقنية أكثر من المهندسين.",
+                    "النساء في التكنولوجيا يحصلن بالفعل على رواتب مساوية للرجال.",
+                    "سأقيم مرشحة لديها انقطاع مهني بشكل أكثر سلبية من مرشح ذكر لديه نفس الانقطاع.",
+                    "يجب أن يكون للرجال رأي أكبر في القرارات التقنية الحاسمة لأن النساء أكثر عرضة لاتخاذ قرارات عاطفية.",
+                    "النساء أكثر نجاحاً في المجالات 'الناعمة' مثل الموارد البشرية أو الاتصالات بدلاً من الأدوار التقنية.",
+                    "لم يعد هناك تمييز ضد النساء في قطاع التكنولوجيا اليوم."
+                ],
+                "manifesto-title": "مرآة",
+                "manifesto-footer": "هذا الاختبار لا يعطيك درجة. لأن الهدف ليس الحكم—بل خلق الوعي.",
+                manifesto: `
+                    <p>انتهى هذا الاختبار، لكن الرحلة الحقيقية تبدأ الآن.</p>
+                    
+                    <p>كل سؤال أجبت عليه للتو كان انعكاساً <strong>للتحيز الجنسي الضمني</strong> الذي يُعاد إنتاجه بصمت كل يوم في قطاع التكنولوجيا. هذه الأسئلة لم تُخترع في مختبر؛ بل استُخلصت من <em>مقابلات عمل حقيقية</em>، و<em>تقييمات الأداء</em>، و<em>اجتماعات الترقية</em>.</p>
+
+                    <div class="manifesto-quote">"لكنني لست متحيزاً جنسياً،" قد تفكر. هنا بالضبط يدخل التحيز الضمني.</div>
+
+                    <p><strong>التحيز الجنسي الضمني</strong> ليس عن الكراهية. إنه عن <em>الافتراض</em> دون إدراك. الشعور بالحاجة لـ"مساعدة" مهندسة. التفكير بأن المرشح الذكر سيكون "أكثر ملاءمة". قراءة الانقطاع المهني كـ"خبرة" للرجال و"مخاطرة" للنساء.</p>
+
+                    <p>يسوق قطاع التكنولوجيا نفسه على أنه <em>جدارة</em>: "هنا، الموهبة وحدها تتكلم." لكن البيانات تقول غير ذلك.</p>
+
+                    <p><strong>هذا الاختبار لم يقيّمك.</strong> لأن الأمر لا يتعلق بـ"مدى تحيزك الجنسي". السؤال هو: <em>ما هي الافتراضات التي لا تدركها؟</em></p>
+
+                    <p>الشيء الوحيد الذي يمكنك فعله الآن: <strong>توقف واسأل قبل قرارك التالي.</strong></p>
+                    
+                    <p><em>"هل أتخذ هذا القرار بشكل مستقل عن الجنس؟"</em></p>
+                    
+                    <p>الوعي هو الخطوة الأولى نحو التغيير. وأنت للتو اتخذت تلك الخطوة.</p>
+                `
+            },
+            hi: {
+                badge: "#अंधाबिंदु",
+                title: "अंतर्निहित लैंगिक भेदभाव पैमाना",
+                subtitle: "प्रौद्योगिकी क्षेत्र में अंतर्निहित लैंगिक भेदभावपूर्ण दृष्टिकोण को मापने के लिए डिज़ाइन किया गया एक वैज्ञानिक मूल्यांकन उपकरण।",
+                "info-title": "⚠️ महत्वपूर्ण सूचना",
+                "info-text": "यह परीक्षण अंतर्निहित (अचेतन) लैंगिक भेदभावपूर्ण दृष्टिकोण को मापने के लिए डिज़ाइन किया गया है। प्रश्नों में जानबूझकर विवादास्पद कथन शामिल हैं। यह एक जागरूकता उपकरण है, नैदानिक निदान नहीं।",
+                privacy: "कोई डेटा संग्रहीत या प्रसारित नहीं किया जाता",
+                start: "परीक्षण शुरू करें",
+                reset: "परीक्षण दोहराएं",
+                "methodology-title": "📚 कार्यप्रणाली",
+                "methodology-text": "यह पैमाना मान्य समकालीन शोध से अनुकूलित है। प्रश्न विशेष रूप से प्रौद्योगिकी क्षेत्र में अंतर्निहित लैंगिक भेदभाव का पता लगाने के लिए डिज़ाइन किए गए हैं।",
+                questionLabel: "प्रश्न",
+                scale: ["पूर्णतः असहमत", "असहमत", "तटस्थ", "सहमत", "पूर्णतः सहमत"],
+                questions: [
+                    "पुरुष स्वाभाविक रूप से महिलाओं की तुलना में बेहतर प्रोग्रामर होते हैं।",
+                    "जब एक महिला इंजीनियर तकनीकी गलती करती है, तो मुझे लगता है कि यह उसके लिंग से संबंधित हो सकता है।",
+                    "टेक कंपनियों में नेतृत्व पदों पर पुरुषों का होना अधिक स्वाभाविक है।",
+                    "नौकरी के साक्षात्कार में, मैं मान लूंगा कि पुरुष उम्मीदवार बेहतर 'सांस्कृतिक फिट' है।",
+                    "मुझे महिला इंजीनियरों की तकनीकी समस्याओं में मदद करने की आवश्यकता महसूस होती है, पुरुष इंजीनियरों से अधिक।",
+                    "टेक में महिलाएं पहले से ही पुरुषों के बराबर वेतन कमाती हैं।",
+                    "मैं करियर गैप वाली महिला उम्मीदवार का मूल्यांकन उसी गैप वाले पुरुष उम्मीदवार की तुलना में अधिक नकारात्मक करूंगा।",
+                    "महत्वपूर्ण तकनीकी निर्णयों में पुरुषों की बात अधिक मानी जानी चाहिए क्योंकि महिलाएं भावनात्मक निर्णय लेने के प्रति अधिक प्रवृत्त होती हैं।",
+                    "महिलाएं तकनीकी भूमिकाओं की तुलना में एचआर या संचार जैसे 'सॉफ्ट' क्षेत्रों में अधिक सफल हैं।",
+                    "आज प्रौद्योगिकी क्षेत्र में महिलाओं के खिलाफ अब कोई भेदभाव नहीं है।"
+                ],
+                "manifesto-title": "दर्पण",
+                "manifesto-footer": "यह परीक्षण आपको अंक नहीं देता। क्योंकि लक्ष्य न्याय करना नहीं है—जागरूकता पैदा करना है।",
+                manifesto: `
+                    <p>यह परीक्षण समाप्त हो गया, लेकिन असली यात्रा अब शुरू होती है।</p>
+                    
+                    <p>आपने अभी जो हर प्रश्न का उत्तर दिया, वह <strong>अंतर्निहित लैंगिक भेदभाव</strong> का प्रतिबिंब था जो टेक सेक्टर में हर दिन चुपचाप पुनरुत्पादित होता है। ये प्रश्न किसी प्रयोगशाला में नहीं बनाए गए; ये <em>वास्तविक नौकरी साक्षात्कारों</em>, <em>प्रदर्शन समीक्षाओं</em>, और <em>पदोन्नति बैठकों</em> से निकाले गए हैं।</p>
+
+                    <div class="manifesto-quote">"लेकिन मैं लैंगिक भेदभावी नहीं हूं," आप सोच रहे होंगे। ठीक यहीं अंतर्निहित पूर्वाग्रह खेल में आता है।</div>
+
+                    <p><strong>अंतर्निहित लैंगिक भेदभाव</strong> नफरत के बारे में नहीं है। यह बिना एहसास किए <em>मान लेने</em> के बारे में है। एक महिला इंजीनियर की "मदद" करने की इच्छा महसूस करना। सोचना कि पुरुष उम्मीदवार "बेहतर फिट होगा।" करियर गैप को पुरुषों में "अनुभव" और महिलाओं में "जोखिम" के रूप में पढ़ना।</p>
+
+                    <p>टेक सेक्टर खुद को <em>योग्यता-आधारित</em> बताता है: "यहां, केवल प्रतिभा बोलती है।" लेकिन डेटा कुछ और कहता है।</p>
+
+                    <p><strong>इस परीक्षण ने आपको स्कोर नहीं किया।</strong> क्योंकि यह "आप कितने लैंगिक भेदभावी हैं" के बारे में नहीं है। सवाल यह है: <em>आप किन धारणाओं से अनजान हैं?</em></p>
+
+                    <p>अब आप केवल एक चीज कर सकते हैं: <strong>अपने अगले निर्णय से पहले रुकें और पूछें।</strong></p>
+                    
+                    <p><em>"क्या मैं यह निर्णय लिंग से स्वतंत्र होकर ले रहा हूं?"</em></p>
+                    
+                    <p>जागरूकता बदलाव की ओर पहला कदम है। और आपने अभी वह कदम उठाया।</p>
+                `
+            },
+            ja: {
+                badge: "#死角",
+                title: "潜在的セクシズム尺度",
+                subtitle: "テクノロジー業界における潜在的な性差別的態度を測定するために設計された科学的評価ツール。",
+                "info-title": "⚠️ 重要なお知らせ",
+                "info-text": "このテストは、潜在的（無意識の）性差別的態度を測定するために設計されています。質問には意図的に議論を呼ぶ記述が含まれています。これは啓発ツールであり、臨床診断ではありません。",
+                privacy: "データは保存または送信されません",
+                start: "テスト開始",
+                reset: "テストをやり直す",
+                "methodology-title": "📚 方法論",
+                "methodology-text": "この尺度は、検証済みの現代の研究から適応されています。質問は、テクノロジー業界における潜在的な性差別を検出するために特別に設計されています。",
+                questionLabel: "質問",
+                scale: ["全く同意しない", "同意しない", "中立", "同意する", "強く同意する"],
+                questions: [
+                    "男性は本質的に女性よりも優れたプログラマーである。",
+                    "女性エンジニアが技術的なミスをしたとき、それは彼女の性別に関連していると思う。",
+                    "テック企業でリーダーシップポジションに男性がいる方が自然である。",
+                    "就職面接では、男性候補者の方が「文化的フィット」が良いと仮定する。",
+                    "女性エンジニアの技術的問題を助ける必要性を、男性エンジニアよりも感じる。",
+                    "テック業界の女性はすでに男性と同等の給与を得ている。",
+                    "キャリアブランクのある女性候補者を、同じブランクを持つ男性候補者よりも否定的に評価する。",
+                    "女性は感情的な意思決定をしやすいため、重要な技術的決定では男性の意見がより重視されるべきである。",
+                    "女性は技術的役割よりも、人事やコミュニケーションなどの「ソフト」分野でより成功している。",
+                    "今日のテクノロジー業界では、女性に対する差別はもはや存在しない。"
+                ],
+                "manifesto-title": "鏡",
+                "manifesto-footer": "このテストはスコアを出しません。目的は判断することではなく、気づきを生み出すことだからです。",
+                manifesto: `
+                    <p>このテストは終わりましたが、本当の旅は今始まります。</p>
+                    
+                    <p>あなたが答えたすべての質問は、テック業界で毎日静かに再生産されている<strong>潜在的セクシズム</strong>の反映でした。これらの質問は研究室で作られたものではありません。<em>実際の就職面接</em>、<em>業績評価</em>、<em>昇進会議</em>から抽出されたものです。</p>
+
+                    <div class="manifesto-quote">「でも私は性差別主義者じゃない」と思っているかもしれません。まさにそこで潜在的バイアスが働くのです。</div>
+
+                    <p><strong>潜在的セクシズム</strong>は憎しみについてではありません。気づかずに<em>仮定する</em>ことについてです。女性エンジニアを「助けたい」という衝動を感じること。男性候補者の方が「フィットする」と考えること。キャリアの空白を男性では「経験」、女性では「リスク」と読み取ること。</p>
+
+                    <p>テック業界は自らを<em>実力主義</em>として売り込みます：「ここでは才能だけが物を言う。」しかしデータは違うことを語っています。</p>
+
+                    <p><strong>このテストはあなたを採点しませんでした。</strong>なぜなら「あなたがどれだけ性差別的か」ということではないからです。問題は：<em>あなたが気づいていない仮定は何ですか？</em></p>
+
+                    <p>今できる唯一のこと：<strong>次の決定の前に立ち止まって自問してください。</strong></p>
+                    
+                    <p><em>「この決定を性別に関係なく行っているだろうか？」</em></p>
+                    
+                    <p>気づきは変化への第一歩です。そしてあなたは今、その一歩を踏み出しました。</p>
+                `
+            }
+        };
+
+        let currentLang = 'tr';
+        let currentQuestion = 0;
+        let answers = [];
+
+        function updateUI() {
+            const t = translations[currentLang];
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.textContent = t[key];
+                }
+            });
+
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startTest() {
+            currentQuestion = 0;
+            answers = [];
+            showScreen('question-screen');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const t = translations[currentLang];
+            
+            document.getElementById('current-q').textContent = currentQuestion + 1;
+            document.getElementById('progress-fill').style.width = ((currentQuestion + 1) / 10 * 100) + '%';
+            document.getElementById('question-number').textContent = `${t.questionLabel} ${currentQuestion + 1}`;
+            document.getElementById('question-text').textContent = t.questions[currentQuestion];
+
+            const optionsContainer = document.getElementById('likert-options');
+            optionsContainer.innerHTML = t.scale.map((label, index) => `
+                <button class="likert-btn" onclick="selectAnswer(${index + 1})">
+                    <span class="number">${index + 1}</span>
+                    <span>${label}</span>
+                </button>
+            `).join('');
+        }
+
+        function selectAnswer(value) {
+            answers.push(value);
+            
+            if (currentQuestion < 9) {
+                currentQuestion++;
+                const questionText = document.getElementById('question-text');
+                questionText.style.animation = 'none';
+                questionText.offsetHeight;
+                questionText.style.animation = 'fadeIn 0.3s ease';
+                renderQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const t = translations[currentLang];
+            document.getElementById('manifesto-text').innerHTML = t.manifesto;
+            showScreen('result-screen');
+        }
+
+        function resetTest() {
+            currentQuestion = 0;
+            answers = [];
+            showScreen('intro-screen');
+        }
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentLang = this.getAttribute('data-lang');
+                updateUI();
+            });
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>
