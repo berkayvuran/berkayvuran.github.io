@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Sprint Pulse</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;align-items:center;justify-content:center}
+.glass-container{background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.18);border-radius:20px;padding:20px 32px;box-shadow:0 8px 32px 0 rgba(0,0,0,0.37);color:#fff;animation:fadeIn 1s ease-out;position:relative;overflow:hidden;display:flex;align-items:center;gap:20px}
+.glass-container::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);animation:shimmer 4s infinite}
+@keyframes shimmer{to{left:100%}}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.pulse{font-size:32px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.content{flex:1}
+.title{font-size:15px;font-weight:700;color:#6FCACD;margin-bottom:4px;letter-spacing:0.3px}
+.message{font-size:13px;color:rgba(255,255,255,0.9);line-height:1.4;font-weight:500}
+.status{font-size:11px;color:rgba(255,255,255,0.6);margin-top:4px;font-style:italic}
+</style>
+</head>
+<body>
+<div class="glass-container">
+  <div class="pulse" id="pulse">⚡</div>
+  <div class="content">
+    <div class="title" id="title">Sprint Nabzı</div>
+    <div class="message" id="message">Yükleniyor...</div>
+    <div class="status" id="status">Takım senkronize çalışıyor</div>
+  </div>
+</div>
+<script>
+var pulses=[
+  {icon:'🚀',title:'Sprint Başlangıcı',msg:'Yeni sprint, yeni hedefler. Planning tamamlandı, işler atandı.',status:'Sprint başladı'},
+  {icon:'⚡',title:'Geliştirme Devam Ediyor',msg:'Ekip odaklanmış durumda. Daily\'ler düzenli, blocker\'lar hızla çözülüyor.',status:'Sprint ortası'},
+  {icon:'🎯',title:'Demo Hazırlığı',msg:'Sprint sonuna yaklaşıyoruz. Tamamlanan işler demo için hazırlanıyor.',status:'Sprint sonu yaklaşıyor'},
+  {icon:'📊',title:'Review & Retro Zamanı',msg:'Neler yaptık, neler öğrendik? İyileştirme fırsatlarını değerlendiriyoruz.',status:'Sprint tamamlandı'},
+  {icon:'💡',title:'Backlog Refinement',msg:'Önümüzdeki sprint için backlog gözden geçiriliyor, story\'ler detaylandırılıyor.',status:'Sprint arası'},
+  {icon:'🔥',title:'Yoğun Tempo',msg:'Birden fazla feature aynı anda geliştiriliyor. Koordinasyon üst düzeyde.',status:'Yoğun çalışma dönemi'}
+];
+var idx=0;
+function update(){
+  var p=pulses[idx];
+  document.getElementById('pulse').textContent=p.icon;
+  document.getElementById('title').textContent=p.title;
+  document.getElementById('message').textContent=p.msg;
+  document.getElementById('status').textContent=p.status;
+  idx=(idx+1)%pulses.length;
+}
+update();
+setInterval(update,7000);
+</script>
+</body>
+</html>

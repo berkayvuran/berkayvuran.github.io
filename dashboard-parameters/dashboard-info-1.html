@@ -25,7 +25,6 @@ canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity
 .card .top{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
 .card .title{font-size:14px;color:#0ff;font-weight:700;text-shadow:0 0 10px rgba(0,255,255,.5)}
 .card .tag{font-size:9px;color:#0a0;letter-spacing:1px}
-.card .subtitle{font-size:11px;color:#0f0;margin-bottom:5px;opacity:.9}
 .card .desc{font-size:11px;color:#0f0;line-height:1.45;opacity:1;padding-right:5px}
 .container::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 3px);z-index:10;pointer-events:none}
 @keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}96%{opacity:.92}97%{opacity:1}}
@@ -46,25 +45,21 @@ canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity
 
       <div class="card">
         <div class="top"><span class="title">Cycle Time</span><span class="tag">[ 01 ]</span></div>
-        <div class="subtitle">Döngü Süresi</div>
         <div class="desc">Bir işin aktif çalışmaya başladığı andan tamamlandığı ana kadar geçen ortalama süre. Ekibin görevi ne kadar hızlı teslim edebildiğini ölçer.</div>
       </div>
 
       <div class="card">
         <div class="top"><span class="title">Lead Time</span><span class="tag">[ 02 ]</span></div>
-        <div class="subtitle">Teslim Süresi</div>
         <div class="desc">Bir işin sisteme girildiği andan tamamlandığı ana kadar geçen toplam süre. Müşteri bakış açısından bekleme süresini gösterir ve darboğazları ortaya çıkarır.</div>
       </div>
 
       <div class="card">
         <div class="top"><span class="title">Original Estimates</span><span class="tag">[ 03 ]</span></div>
-        <div class="subtitle">Orijinal Tahminler</div>
         <div class="desc">Sprint başlangıcında yapılan iş yükü tahminlerinin ekip üyeleri arasındaki dağılımı. Tahmin doğruluğu ve iş dağılımı dengesini değerlendirir.</div>
       </div>
 
       <div class="card">
         <div class="top"><span class="title">Completed Works</span><span class="tag">[ 04 ]</span></div>
-        <div class="subtitle">Tamamlanan İşler</div>
         <div class="desc">Belirtilen dönemde tamamlanan işlerin ekip üyeleri bazında dağılımı. Bireysel ve ekip üretkenliğini somut olarak gösterir.</div>
       </div>
 

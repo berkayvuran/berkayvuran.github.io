@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Team Mood</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;align-items:center;justify-content:center}
+.container{text-align:center;padding:20px;animation:fadeIn 1s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.mood-emoji{font-size:80px;margin-bottom:16px;animation:pulse 2s ease-in-out infinite;cursor:pointer;transition:transform .2s}
+.mood-emoji:hover{transform:scale(1.1)}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.title{font-size:20px;font-weight:700;color:#1d1d1f;margin-bottom:8px}
+.subtitle{font-size:14px;color:#424245;opacity:.85}
+.mood-bar{width:200px;height:6px;background:rgba(255,255,255,.5);border-radius:3px;margin:16px auto 8px;overflow:hidden}
+.mood-fill{height:100%;background:linear-gradient(90deg,#ff6b6b,#4ecdc4,#45b7d1);border-radius:3px;width:0%;animation:fillBar 2s ease-out forwards}
+@keyframes fillBar{to{width:var(--mood-level)}}
+.mood-label{font-size:12px;color:#1d1d1f;font-weight:600;opacity:.7}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="mood-emoji" id="emoji">😊</div>
+  <div class="title" id="status">Takım Morali: Yüksek!</div>
+  <div class="subtitle" id="message">Sprint gidiyor, kahve akıyor ☕</div>
+  <div class="mood-bar"><div class="mood-fill" id="fill"></div></div>
+  <div class="mood-label" id="percent">85%</div>
+</div>
+<script>
+var moods=[
+  {emoji:'😊',status:'Takım Morali: Yüksek!',msg:'Sprint gidiyor, kahve akıyor ☕',level:85},
+  {emoji:'🚀',status:'Takım Morali: Füze Gibi!',msg:'Bugün Production\'a 5 bug göndermedik! 🎉',level:95},
+  {emoji:'😅',status:'Takım Morali: Idare Eder',msg:'Meeting sayısı: 7. Gün henüz bitmedi...',level:60},
+  {emoji:'🔥',status:'Takım Morali: Ateş Gibi!',msg:'Zero bugs, full coffee, pure magic ✨',level:100},
+  {emoji:'😴',status:'Takım Morali: Uykulu',msg:'Pazartesi sabahı. Yeterli açıklama.',level:45},
+  {emoji:'🎯',status:'Takım Morali: Odaklanmış',msg:'Deep work mode: ON. Bildirimler: OFF.',level:90}
+];
+var current=0;
+function update(){
+  var m=moods[current];
+  document.getElementById('emoji').textContent=m.emoji;
+  document.getElementById('status').textContent=m.status;
+  document.getElementById('message').textContent=m.msg;
+  document.getElementById('percent').textContent=m.level+'%';
+  var fill=document.getElementById('fill');
+  fill.style.setProperty('--mood-level',m.level+'%');
+  fill.style.animation='none';
+  setTimeout(function(){fill.style.animation='fillBar 2s ease-out forwards'},10);
+  current=(current+1)%moods.length;
+}
+update();
+setInterval(update,6000);
+document.getElementById('emoji').addEventListener('click',update);
+</script>
+</body>
+</html>

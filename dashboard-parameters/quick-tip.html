@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Quick Insight</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;align-items:center;justify-content:center;padding:12px}
+.glass-card{background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);border-radius:16px;padding:18px 22px;box-shadow:0 8px 32px 0 rgba(0,0,0,0.3);text-align:center;animation:slideIn .8s ease-out;position:relative;overflow:hidden}
+.glass-card::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);opacity:0;transition:opacity .5s}
+.glass-card:hover::after{opacity:1}
+@keyframes slideIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.icon{font-size:36px;margin-bottom:10px;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.2))}
+.title{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;letter-spacing:0.3px}
+.insight{font-size:13px;color:rgba(255,255,255,0.9);line-height:1.5;font-weight:500}
+</style>
+</head>
+<body>
+<div class="glass-card">
+  <div class="icon" id="icon">💡</div>
+  <div class="title" id="title">Hızlı İpucu</div>
+  <div class="insight" id="insight">Yükleniyor...</div>
+</div>
+<script>
+var insights=[
+  {icon:'📊',title:'Metrik Takibi',text:'Cycle time artışı genellikle WIP (Work in Progress) fazlalığının işaretidir.'},
+  {icon:'🎯',title:'Teslimat İpucu',text:'Lead time, müşteri perspektifinden gerçek teslim sürenizi gösterir.'},
+  {icon:'⚡',title:'Hız İpucu',text:'Sprint velocity tutarlılığı, tahmin güvenilirliğinin temel göstergesidir.'},
+  {icon:'🔍',title:'Darboğaz Uyarısı',text:'Uzun cycle time, ekip workflow\'unda darboğaz olduğunu işaret eder.'},
+  {icon:'📈',title:'Büyüme Sinyali',text:'Innovation metrics, teknik borç azaltma ve sürdürülebilir büyümeyi dengeler.'},
+  {icon:'👥',title:'Müşteri Odağı',text:'Voice of customer metrikleri, feature prioritization doğruluğunu artırır.'}
+];
+var idx=0;
+function update(){
+  var ins=insights[idx];
+  document.getElementById('icon').textContent=ins.icon;
+  document.getElementById('title').textContent=ins.title;
+  document.getElementById('insight').textContent=ins.text;
+  idx=(idx+1)%insights.length;
+}
+update();
+setInterval(update,6000);
+</script>
+</body>
+</html>
