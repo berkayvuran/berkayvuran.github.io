@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Web Siteleri & Bloglar</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;font-family:'Courier New',monospace;color:#0f0;overflow:hidden;height:100vh}
+canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.06}
+.container{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;padding:8px 12px;overflow:hidden}
+.header{text-align:center;padding:4px 0 5px;border-bottom:1px solid rgba(0,255,0,.2);margin-bottom:6px;flex-shrink:0}
+.header h1{font-size:13px;letter-spacing:2px;color:#0f0;text-shadow:0 0 10px #0f0;display:flex;align-items:center;justify-content:center;gap:6px}
+.list{flex:1;overflow:hidden;position:relative}
+.list-inner{position:absolute;width:100%;animation:scroll 40s ease-in-out infinite;display:flex;flex-direction:column;gap:8px}
+.list:hover .list-inner{animation-play-state:paused}
+.list::before,.list::after{content:'';position:absolute;left:0;right:0;height:12px;z-index:2;pointer-events:none}
+.list::before{top:0;background:linear-gradient(#000,transparent)}
+.list::after{bottom:0;background:linear-gradient(transparent,#000)}
+.item{border:1px solid rgba(0,255,0,.12);border-left:3px solid rgba(0,255,0,.4);border-radius:3px;padding:7px 10px;background:rgba(0,255,0,.02);position:relative;transition:all .25s;flex-shrink:0}
+.item:hover{border-color:rgba(0,255,0,.5);background:rgba(0,255,0,.06);box-shadow:0 0 8px rgba(0,255,0,.1)}
+.item .name{font-size:11px;color:#0f0;font-weight:700;margin-bottom:2px;text-shadow:0 0 6px rgba(0,255,0,.3)}
+.item .url{font-size:8px;color:#060;opacity:.6;margin-bottom:3px}
+.item .desc{font-size:9px;color:#0a0;opacity:.85;line-height:1.35}
+.container::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 3px);z-index:10;pointer-events:none}
+@keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}96%{opacity:.92}97%{opacity:1}}
+.container{animation:flicker 5s infinite}
+.footer{flex-shrink:0;border-top:1px solid rgba(0,255,0,.15);margin-top:5px;padding-top:4px;display:flex;justify-content:space-between;font-size:8px;color:#060;letter-spacing:1px}
+@keyframes scroll{0%,30%{transform:translateY(0)}50%,80%{transform:translateY(var(--offset))}100%{transform:translateY(0)}}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+<div class="container">
+  <div class="header">
+    <h1><span>🌐</span> WEB SİTELERİ & BLOGLAR</h1>
+  </div>
+  <div class="list" id="area">
+    <div class="list-inner" id="inner">
+
+      <div class="item">
+        <div class="name">Mind the Product</div>
+        <div class="url">mindtheproduct.com</div>
+        <div class="desc">170,000+ üye. Makaleler, etkinlikler, eğitimler.</div>
+      </div>
+
+      <div class="item">
+        <div class="name">Silicon Valley Product Group (SVPG)</div>
+        <div class="url">svpg.com</div>
+        <div class="desc">Marty Cagan'ın kurduğu. Ürün stratejisi ve liderlik odaklı.</div>
+      </div>
+
+      <div class="item">
+        <div class="name">Lenny's Newsletter</div>
+        <div class="url">lennysnewsletter.com</div>
+        <div class="desc">Veri odaklı PM içerikleri ve araştırmalar.</div>
+      </div>
+
+      <div class="item">
+        <div class="name">Product Coalition</div>
+        <div class="url">Medium</div>
+        <div class="desc">Medium'da 100,000+ takipçi. Güncel makaleler ve topluluk içerikleri.</div>
+      </div>
+
+      <div class="item">
+        <div class="name">Reforge</div>
+        <div class="url">reforge.com</div>
+        <div class="desc">Silicon Valley liderlerinden gerçek dünya case study'leri.</div>
+      </div>
+
+      <div class="item">
+        <div class="name">Product Talk</div>
+        <div class="url">producttalk.org</div>
+        <div class="desc">Teresa Torres'in sürekli keşif (continuous discovery) üzerine içerikleri.</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="footer">
+    <span>PM RESOURCES</span>
+    <span id="clock"></span>
+    <span>SESTEK</span>
+  </div>
+</div>
+<script>
+(function(){var rc=document.getElementById('rain'),x=rc.getContext('2d');var ch='アイウエオカキクケコ0123456789';var cols,drops;function init(){rc.width=innerWidth;rc.height=innerHeight;cols=Math.floor(rc.width/14);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*rc.height/14|0}init();window.addEventListener('resize',init);setInterval(function(){x.fillStyle='rgba(0,0,0,0.05)';x.fillRect(0,0,rc.width,rc.height);x.fillStyle='#0f0';x.font='14px monospace';for(var i=0;i<cols;i++){x.fillText(ch[Math.random()*ch.length|0],i*14,drops[i]*14);if(drops[i]*14>rc.height&&Math.random()>.975)drops[i]=0;drops[i]++}},50)})();
+setInterval(function(){var d=new Date();document.getElementById('clock').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2)},1000);
+(function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 40s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)})})();
+setInterval(function(){var items=document.querySelectorAll('.item'),r=items[Math.random()*items.length|0];r.style.borderColor='rgba(0,255,0,0.5)';r.style.boxShadow='0 0 10px rgba(0,255,0,0.15)';setTimeout(function(){r.style.borderColor='';r.style.boxShadow=''},2000)},3000);
+</script>
+</body>
+</html>
