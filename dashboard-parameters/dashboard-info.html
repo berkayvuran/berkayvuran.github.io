@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>PA Dashboard Info</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;font-family:'Courier New',monospace;color:#0f0;overflow:hidden;height:100vh;position:relative}
+canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.07}
+
+.container{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;padding:14px 24px;overflow:hidden}
+
+.header{text-align:center;padding:8px 0 10px;border-bottom:1px solid rgba(0,255,0,.25);margin-bottom:10px;flex-shrink:0}
+.header h1{font-size:16px;letter-spacing:4px;color:#0f0;text-shadow:0 0 10px #0f0,0 0 20px rgba(0,255,0,.3);margin-bottom:3px}
+.header h2{font-size:11px;color:#0a0;letter-spacing:2px;font-weight:400}
+
+.scroll-area{flex:1;overflow:hidden;position:relative}
+.scroll-inner{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;position:absolute;width:100%;animation:slowScroll 30s linear infinite;padding-bottom:20px}
+.scroll-area:hover .scroll-inner{animation-play-state:paused}
+
+@keyframes slowScroll{
+  0%{transform:translateY(0)}
+  45%{transform:translateY(0)}
+  50%{transform:translateY(-50%)}
+  95%{transform:translateY(-50%)}
+  100%{transform:translateY(0)}
+}
+
+/* fade edges */
+.scroll-area::before,.scroll-area::after{content:'';position:absolute;left:0;right:0;height:20px;z-index:2;pointer-events:none}
+.scroll-area::before{top:0;background:linear-gradient(#000,transparent)}
+.scroll-area::after{bottom:0;background:linear-gradient(transparent,#000)}
+
+.card{border:1px solid rgba(0,255,0,.15);border-radius:4px;padding:10px 14px;background:rgba(0,255,0,.02);position:relative;overflow:hidden;transition:all .3s}
+.card:hover{border-color:rgba(0,255,0,.5);background:rgba(0,255,0,.06)}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:#0f0;opacity:.5;box-shadow:0 0 8px #0f0}
+
+.card .top{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}
+.card .tag{font-size:9px;color:#060;letter-spacing:1px;white-space:nowrap}
+.card .title{font-size:14px;color:#0f0;font-weight:700;text-shadow:0 0 8px rgba(0,255,0,.4)}
+.card .subtitle{font-size:11px;color:#0a0;margin-bottom:6px;opacity:.7}
+.card .desc{font-size:12px;color:#0a0;line-height:1.5;opacity:.85}
+
+/* scanlines */
+.container::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 3px);z-index:10;pointer-events:none}
+
+@keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}96%{opacity:.92}97%{opacity:1}}
+.container{animation:flicker 5s infinite}
+
+.footer{flex-shrink:0;border-top:1px solid rgba(0,255,0,.2);margin-top:8px;padding-top:6px;display:flex;justify-content:space-between;font-size:10px;color:#080;letter-spacing:1px}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+<div class="container">
+  <div class="header">
+    <h1>PA TEAM PERFORMANCE DASHBOARD 2026</h1>
+    <h2>// DASHBOARD BİLEŞENLERİ VE TANIMLARI</h2>
+  </div>
+  <div class="scroll-area">
+    <div class="scroll-inner" id="cards">
+
+      <div class="card">
+        <div class="top"><span class="title">Cycle Time</span><span class="tag">[ 01 ]</span></div>
+        <div class="subtitle">Döngü Süresi</div>
+        <div class="desc">Bir işin aktif çalışmaya başladığı andan tamamlandığı ana kadar geçen ortalama süre. Ekibin görevi ne kadar hızlı teslim edebildiğini ölçer.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Lead Time</span><span class="tag">[ 02 ]</span></div>
+        <div class="subtitle">Teslim Süresi</div>
+        <div class="desc">Bir işin sisteme girildiği andan tamamlandığı ana kadar geçen toplam süre. Müşteri bakış açısından bekleme süresini gösterir ve darboğazları ortaya çıkarır.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Original Estimates</span><span class="tag">[ 03 ]</span></div>
+        <div class="subtitle">Orijinal Tahminler</div>
+        <div class="desc">Sprint başlangıcında yapılan iş yükü tahminlerinin ekip üyeleri arasındaki dağılımı. Tahmin doğruluğu ve iş dağılımı dengesini değerlendirir.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Completed Works</span><span class="tag">[ 04 ]</span></div>
+        <div class="subtitle">Tamamlanan İşler</div>
+        <div class="desc">Belirtilen dönemde tamamlanan işlerin ekip üyeleri bazında dağılımı. Bireysel ve ekip üretkenliğini somut olarak gösterir.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Planned Estimations</span><span class="tag">[ 05 ]</span></div>
+        <div class="subtitle">Planlanmış Görev Tahminleri</div>
+        <div class="desc">Gelecek sprint için planlanmış, henüz başlamamış görevlerin tahmin edilen iş yükü dağılımı. Kapasite planlama ve kaynak yönetimi için kullanılır.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Innovation Metrics</span><span class="tag">[ 06 ]</span></div>
+        <div class="subtitle">İnovasyon Metrikleri</div>
+        <div class="desc">Yenilikçi projeler, Ar-Ge çalışmaları, teknik iyileştirmeler ve deneysel çalışmalara ayrılan zaman ve katkı miktarı.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Events & Trainings</span><span class="tag">[ 07 ]</span></div>
+        <div class="subtitle">Etkinlik ve Eğitim Metrikleri</div>
+        <div class="desc">Eğitimler, konferanslar, workshoplar ve bilgi paylaşım etkinliklerinin takibi. Sürekli öğrenme ve gelişim kültürünü ölçer.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Voice of Customer</span><span class="tag">[ 08 ]</span></div>
+        <div class="subtitle">Müşteri Sesi Metrikleri</div>
+        <div class="desc">Müşteri geri bildirimleri, kullanıcı araştırmaları, anketler ve müşteri etkileşimlerine ayrılan zaman. Ürün geliştirmenin müşteri odaklılığını gösterir.</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="footer">
+    <span>SYS: ONLINE</span>
+    <span id="clock"></span>
+    <span>SESTEK // PA TEAM</span>
+  </div>
+</div>
+<script>
+// matrix rain
+(function(){
+  var rc=document.getElementById('rain'),x=rc.getContext('2d');
+  var chars='アイウエオカキクケコサシスセソ0123456789';
+  var cols,drops;
+  function init(){rc.width=innerWidth;rc.height=innerHeight;cols=Math.floor(rc.width/14);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*rc.height/14|0}
+  init();window.addEventListener('resize',init);
+  setInterval(function(){
+    x.fillStyle='rgba(0,0,0,0.05)';x.fillRect(0,0,rc.width,rc.height);
+    x.fillStyle='#0f0';x.font='14px monospace';
+    for(var i=0;i<cols;i++){x.fillText(chars[Math.random()*chars.length|0],i*14,drops[i]*14);if(drops[i]*14>rc.height&&Math.random()>.975)drops[i]=0;drops[i]++}
+  },50);
+})();
+
+// clock
+setInterval(function(){
+  var d=new Date();
+  document.getElementById('clock').textContent=
+    ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2);
+},1000);
+
+// dynamic scroll height calculation
+(function(){
+  var area=document.querySelector('.scroll-area');
+  var inner=document.getElementById('cards');
+  function calcScroll(){
+    var areaH=area.offsetHeight;
+    var innerH=inner.scrollHeight;
+    if(innerH<=areaH){
+      inner.style.animation='none';
+      inner.style.position='relative';
+    } else {
+      var overflow=innerH-areaH;
+      var pct=(overflow/innerH*100).toFixed(1);
+      inner.style.setProperty('--scroll','translateY(-'+pct+'%)');
+      // update keyframes dynamically
+      var style=document.createElement('style');
+      style.textContent='@keyframes slowScroll{0%,40%{transform:translateY(0)}50%,90%{transform:translateY(-'+pct+'%)}100%{transform:translateY(0)}}';
+      document.head.appendChild(style);
+    }
+  }
+  setTimeout(calcScroll,100);
+  window.addEventListener('resize',function(){setTimeout(calcScroll,100)});
+})();
+
+// random card glow
+setInterval(function(){
+  var cards=document.querySelectorAll('.card');
+  var r=cards[Math.random()*cards.length|0];
+  r.style.borderColor='rgba(0,255,0,0.5)';
+  r.style.boxShadow='0 0 12px rgba(0,255,0,0.15)';
+  setTimeout(function(){r.style.borderColor='';r.style.boxShadow=''},2000);
+},2500);
+</script>
+</body>
+</html>
