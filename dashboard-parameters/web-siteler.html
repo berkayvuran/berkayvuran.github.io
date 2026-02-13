@@ -78,16 +78,12 @@ canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity
     </div>
   </div>
   <div class="footer">
-    <span>PM RESOURCES</span>
-    <span id="clock"></span>
+    <span>PM Kaynakları</span>
     <span>SESTEK</span>
   </div>
 </div>
 <script>
-(function(){var rc=document.getElementById('rain'),x=rc.getContext('2d');var ch='アイウエオカキクケコ0123456789';var cols,drops;function init(){rc.width=innerWidth;rc.height=innerHeight;cols=Math.floor(rc.width/14);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*rc.height/14|0}init();window.addEventListener('resize',init);setInterval(function(){x.fillStyle='rgba(0,0,0,0.05)';x.fillRect(0,0,rc.width,rc.height);x.fillStyle='#0f0';x.font='14px monospace';for(var i=0;i<cols;i++){x.fillText(ch[Math.random()*ch.length|0],i*14,drops[i]*14);if(drops[i]*14>rc.height&&Math.random()>.975)drops[i]=0;drops[i]++}},50)})();
-setInterval(function(){var d=new Date();document.getElementById('clock').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2)},1000);
-(function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 40s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)})})();
-setInterval(function(){var items=document.querySelectorAll('.item'),r=items[Math.random()*items.length|0];r.style.borderColor='rgba(0,255,0,0.5)';r.style.boxShadow='0 0 10px rgba(0,255,0,0.15)';setTimeout(function(){r.style.borderColor='';r.style.boxShadow=''},2000)},3000);
+(function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 35s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)})})();
 </script>
 </body>
 </html>
