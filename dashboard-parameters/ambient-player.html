@@ -12,11 +12,10 @@ body{background:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 .video-container{position:relative;width:100%;padding-bottom:56.25%;margin-bottom:16px;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
 .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%}
-.controls{display:flex;gap:12px;justify-content:center;margin-bottom:12px}
-.btn{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .3s;box-shadow:0 3px 8px rgba(102,126,234,0.3)}
-.btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(102,126,234,0.4)}
-.btn:active{transform:scale(0.95)}
-.btn.secondary{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%)}
+.controls{display:flex;gap:16px;justify-content:center;margin-bottom:12px}
+.btn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1d1d1f 0%,#424245 100%);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .25s;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.btn:active{transform:translateY(0);box-shadow:0 2px 6px rgba(0,0,0,0.1)}
 .status{font-size:13px;color:#1d1d1f;font-weight:500;margin-bottom:4px}
 .label{font-size:11px;color:#86868b}
 </style>
@@ -24,13 +23,13 @@ body{background:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 <body>
 <div class="player">
   <div class="video-container">
-    <iframe id="player" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <iframe id="player" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=1&loop=1&playlist=jfKfPfyJRdk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
   <div class="controls">
-    <button class="btn" id="playPause">⏸️</button>
-    <button class="btn secondary" id="next">⏭️</button>
+    <button class="btn" id="prev">⏮️</button>
+    <button class="btn" id="next">⏭️</button>
   </div>
-  <div class="status" id="status">Lofi Hip Hop çalıyor</div>
+  <div class="status" id="status">Lofi Hip Hop Radio</div>
   <div class="label">Rahatlatıcı müzik</div>
 </div>
 <script>
@@ -40,38 +39,28 @@ var videos=[
   {id:'lTRiuFIWV54',name:'Lofi Sleeping Music'},
   {id:'4xDzrJKXOOY',name:'Synthwave Radio'}
 ];
-var currentIdx=0,isPlaying=true;
-var btn=document.getElementById('playPause'),status=document.getElementById('status');
-var nextBtn=document.getElementById('next'),iframe=document.getElementById('player');
+var currentIdx=0;
+var status=document.getElementById('status');
+var prevBtn=document.getElementById('prev'),nextBtn=document.getElementById('next');
+var iframe=document.getElementById('player');
 
 // Otomatik başlat: sessiz başla, 800ms sonra sesi aç
 setTimeout(function(){
   iframe.src=iframe.src.replace('mute=1','mute=0');
 },800);
 
-btn.addEventListener('click',function(){
-  if(isPlaying){
-    var src=iframe.src.replace('autoplay=1','autoplay=0');
-    iframe.src=src;
-    btn.textContent='▶️';
-    status.textContent='Duraklatıldı';
-    isPlaying=false;
-  }else{
-    var src=iframe.src.replace('autoplay=0','autoplay=1');
-    iframe.src=src;
-    btn.textContent='⏸️';
-    status.textContent=videos[currentIdx].name+' çalıyor';
-    isPlaying=true;
-  }
+prevBtn.addEventListener('click',function(){
+  currentIdx=(currentIdx-1+videos.length)%videos.length;
+  var vid=videos[currentIdx];
+  iframe.src='https://www.youtube.com/embed/'+vid.id+'?autoplay=1&mute=0&controls=1&loop=1&playlist='+vid.id;
+  status.textContent=vid.name;
 });
 
 nextBtn.addEventListener('click',function(){
   currentIdx=(currentIdx+1)%videos.length;
   var vid=videos[currentIdx];
-  iframe.src='https://www.youtube.com/embed/'+vid.id+'?autoplay=1&mute=0&controls=0&loop=1&playlist='+vid.id;
-  status.textContent=vid.name+' çalıyor';
-  btn.textContent='⏸️';
-  isPlaying=true;
+  iframe.src='https://www.youtube.com/embed/'+vid.id+'?autoplay=1&mute=0&controls=1&loop=1&playlist='+vid.id;
+  status.textContent=vid.name;
 });
 </script>
 </body>
