@@ -18,10 +18,10 @@ canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity
 .list::before,.list::after{content:'';position:absolute;left:0;right:0;height:12px;z-index:2;pointer-events:none}
 .list::before{top:0;background:linear-gradient(#000,transparent)}
 .list::after{bottom:0;background:linear-gradient(transparent,#000)}
-.item{border:1px solid rgba(0,255,0,.12);border-left:3px solid rgba(0,255,0,.4);border-radius:3px;padding:7px 10px;background:rgba(0,255,0,.02);position:relative;transition:all .25s;flex-shrink:0}
+.item{border:1px solid rgba(0,255,0,.12);border-left:3px solid rgba(0,255,0,.4);border-radius:3px;padding:7px 10px;background:rgba(0,255,0,.02);position:relative;transition:all .25s;flex-shrink:0;cursor:pointer;text-decoration:none;display:block}
 .item:hover{border-color:rgba(0,255,0,.5);background:rgba(0,255,0,.06);box-shadow:0 0 8px rgba(0,255,0,.1)}
-.item .name{font-size:11px;color:#0f0;font-weight:700;margin-bottom:3px;text-shadow:0 0 6px rgba(0,255,0,.3)}
-.item .desc{font-size:9px;color:#0a0;opacity:.85;line-height:1.35}
+.item .name{font-size:11px;color:#0ff;font-weight:700;margin-bottom:3px;text-shadow:0 0 8px rgba(0,255,255,.5)}
+.item .desc{font-size:10px;color:#0f0;opacity:1;line-height:1.4;padding-right:5px}
 .container::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 3px);z-index:10;pointer-events:none}
 @keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}96%{opacity:.92}97%{opacity:1}}
 .container{animation:flicker 5s infinite}
@@ -38,35 +38,35 @@ canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity
   <div class="list" id="area">
     <div class="list-inner" id="inner">
 
-      <div class="item">
+      <a class="item" href="https://www.lennyspodcast.com/" target="_blank">
         <div class="name">Lenny's Podcast</div>
         <div class="desc">Sektörün en popüler PM podcast'i. Lenny Rachitsky'nin ürün liderleriyle derinlemesine sohbetleri.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://productschool.com/product-podcast/" target="_blank">
         <div class="name">The Product Podcast</div>
         <div class="desc">Product School tarafından. Google, Netflix, Meta gibi şirketlerden PM'lerle röportajlar. 300+ bölüm.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://melissaperri.com/podcast" target="_blank">
         <div class="name">Product Thinking</div>
         <div class="desc">Melissa Perri'nin podcast'i. "Dear Melissa" bölümleriyle pratik tavsiyeler.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://www.oneknightinproduct.com/" target="_blank">
         <div class="name">One Knight in Product</div>
         <div class="desc">Jason Knight'ın konvansiyonel olmayan bakış açıları ve cesur tartışmaları.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://mastersofscale.com/" target="_blank">
         <div class="name">Masters of Scale</div>
         <div class="desc">Reid Hoffman (LinkedIn co-founder) ile şirketlerin ölçeklenme hikayeleri.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://www.theproductmanager.com/topics/product-manager-podcast/" target="_blank">
         <div class="name">The Product Manager Podcast</div>
         <div class="desc">Hannah Clark'ın sunduğu, UX'ten AI'ya geniş kapsamlı tartışmalar.</div>
-      </div>
+      </a>
 
     </div>
   </div>

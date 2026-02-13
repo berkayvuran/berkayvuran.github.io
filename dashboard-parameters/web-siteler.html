@@ -18,11 +18,11 @@ canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity
 .list::before,.list::after{content:'';position:absolute;left:0;right:0;height:12px;z-index:2;pointer-events:none}
 .list::before{top:0;background:linear-gradient(#000,transparent)}
 .list::after{bottom:0;background:linear-gradient(transparent,#000)}
-.item{border:1px solid rgba(0,255,0,.12);border-left:3px solid rgba(0,255,0,.4);border-radius:3px;padding:7px 10px;background:rgba(0,255,0,.02);position:relative;transition:all .25s;flex-shrink:0}
+.item{border:1px solid rgba(0,255,0,.12);border-left:3px solid rgba(0,255,0,.4);border-radius:3px;padding:7px 10px;background:rgba(0,255,0,.02);position:relative;transition:all .25s;flex-shrink:0;cursor:pointer;text-decoration:none;display:block}
 .item:hover{border-color:rgba(0,255,0,.5);background:rgba(0,255,0,.06);box-shadow:0 0 8px rgba(0,255,0,.1)}
-.item .name{font-size:11px;color:#0f0;font-weight:700;margin-bottom:2px;text-shadow:0 0 6px rgba(0,255,0,.3)}
-.item .url{font-size:8px;color:#060;opacity:.6;margin-bottom:3px}
-.item .desc{font-size:9px;color:#0a0;opacity:.85;line-height:1.35}
+.item .name{font-size:11px;color:#0ff;font-weight:700;margin-bottom:2px;text-shadow:0 0 8px rgba(0,255,255,.5)}
+.item .url{font-size:8px;color:#0a0;opacity:.8;margin-bottom:3px}
+.item .desc{font-size:10px;color:#0f0;opacity:1;line-height:1.4;padding-right:5px}
 .container::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 3px);z-index:10;pointer-events:none}
 @keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}96%{opacity:.92}97%{opacity:1}}
 .container{animation:flicker 5s infinite}
@@ -39,41 +39,41 @@ canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity
   <div class="list" id="area">
     <div class="list-inner" id="inner">
 
-      <div class="item">
+      <a class="item" href="https://www.mindtheproduct.com/" target="_blank">
         <div class="name">Mind the Product</div>
         <div class="url">mindtheproduct.com</div>
         <div class="desc">170,000+ üye. Makaleler, etkinlikler, eğitimler.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://www.svpg.com/" target="_blank">
         <div class="name">Silicon Valley Product Group (SVPG)</div>
         <div class="url">svpg.com</div>
         <div class="desc">Marty Cagan'ın kurduğu. Ürün stratejisi ve liderlik odaklı.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://www.lennysnewsletter.com/" target="_blank">
         <div class="name">Lenny's Newsletter</div>
         <div class="url">lennysnewsletter.com</div>
         <div class="desc">Veri odaklı PM içerikleri ve araştırmalar.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://productcoalition.com/" target="_blank">
         <div class="name">Product Coalition</div>
         <div class="url">Medium</div>
         <div class="desc">Medium'da 100,000+ takipçi. Güncel makaleler ve topluluk içerikleri.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://www.reforge.com/" target="_blank">
         <div class="name">Reforge</div>
         <div class="url">reforge.com</div>
         <div class="desc">Silicon Valley liderlerinden gerçek dünya case study'leri.</div>
-      </div>
+      </a>
 
-      <div class="item">
+      <a class="item" href="https://www.producttalk.org/" target="_blank">
         <div class="name">Product Talk</div>
         <div class="url">producttalk.org</div>
         <div class="desc">Teresa Torres'in sürekli keşif (continuous discovery) üzerine içerikleri.</div>
-      </div>
+      </a>
 
     </div>
   </div>
