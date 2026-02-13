@@ -71,7 +71,9 @@ body{background:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
   </div>
 </div>
 <script>
-(function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 35s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)})})();
+(function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 35s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)});
+// Linkleri JavaScript ile aç
+document.querySelectorAll('.item').forEach(function(item){item.addEventListener('click',function(e){e.preventDefault();var url=this.getAttribute('href');if(url)window.open(url,'_blank')})})})();
 </script>
 </body>
 </html>
