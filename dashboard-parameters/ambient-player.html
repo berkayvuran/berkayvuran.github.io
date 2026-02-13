@@ -24,7 +24,7 @@ body{background:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 <body>
 <div class="player">
   <div class="video-container">
-    <iframe id="player" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <iframe id="player" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
   <div class="controls">
     <button class="btn" id="playPause">⏸️</button>
@@ -44,10 +44,10 @@ var currentIdx=0,isPlaying=true;
 var btn=document.getElementById('playPause'),status=document.getElementById('status');
 var nextBtn=document.getElementById('next'),iframe=document.getElementById('player');
 
-// Sessiz başlat, sonra sesi aç (tarayıcı kısıtlamalarını aşmak için)
+// Otomatik başlat: sessiz başla, 800ms sonra sesi aç
 setTimeout(function(){
   iframe.src=iframe.src.replace('mute=1','mute=0');
-},1500);
+},800);
 
 btn.addEventListener('click',function(){
   if(isPlaying){
