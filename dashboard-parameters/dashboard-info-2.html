@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>PA Dashboard Info 2</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;font-family:'Courier New',monospace;color:#0f0;overflow:hidden;height:100vh}
+canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.06}
+.container{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;padding:10px 14px;overflow:hidden}
+.header{text-align:center;padding:4px 0 6px;border-bottom:1px solid rgba(0,255,0,.2);margin-bottom:8px;flex-shrink:0}
+.header h1{font-size:11px;letter-spacing:3px;color:#0f0;text-shadow:0 0 10px #0f0}
+.header h2{font-size:9px;color:#0a0;letter-spacing:1px;font-weight:400;margin-top:2px}
+.cards{flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden;position:relative}
+.cards-inner{display:flex;flex-direction:column;gap:8px;position:absolute;width:100%;animation:scroll 24s ease-in-out infinite}
+.cards:hover .cards-inner{animation-play-state:paused}
+.cards::before,.cards::after{content:'';position:absolute;left:0;right:0;height:15px;z-index:2;pointer-events:none}
+.cards::before{top:0;background:linear-gradient(#000,transparent)}
+.cards::after{bottom:0;background:linear-gradient(transparent,#000)}
+.card{border:1px solid rgba(0,255,0,.15);border-radius:4px;padding:10px 12px 10px 16px;background:rgba(0,255,0,.02);position:relative;overflow:hidden;transition:all .3s;flex-shrink:0}
+.card:hover{border-color:rgba(0,255,0,.5);background:rgba(0,255,0,.06)}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:#0f0;opacity:.5;box-shadow:0 0 8px #0f0}
+.card .top{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.card .title{font-size:14px;color:#0f0;font-weight:700;text-shadow:0 0 8px rgba(0,255,0,.4)}
+.card .tag{font-size:9px;color:#060;letter-spacing:1px}
+.card .subtitle{font-size:11px;color:#0a0;margin-bottom:5px;opacity:.7}
+.card .desc{font-size:11px;color:#0a0;line-height:1.45;opacity:.85}
+.container::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 3px);z-index:10;pointer-events:none}
+@keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}96%{opacity:.92}97%{opacity:1}}
+.container{animation:flicker 5s infinite}
+.footer{flex-shrink:0;border-top:1px solid rgba(0,255,0,.15);margin-top:6px;padding-top:4px;display:flex;justify-content:space-between;font-size:9px;color:#060;letter-spacing:1px}
+@keyframes scroll{0%,35%{transform:translateY(0)}50%,85%{transform:translateY(var(--offset))}100%{transform:translateY(0)}}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+<div class="container">
+  <div class="header">
+    <h1>PA PERFORMANCE DASHBOARD 2026</h1>
+    <h2>// GROWTH & CUSTOMER METRICS</h2>
+  </div>
+  <div class="cards" id="area">
+    <div class="cards-inner" id="inner">
+
+      <div class="card">
+        <div class="top"><span class="title">Planned Estimations</span><span class="tag">[ 05 ]</span></div>
+        <div class="subtitle">Planlanmış Görev Tahminleri</div>
+        <div class="desc">Gelecek sprint için planlanmış, henüz başlamamış görevlerin tahmin edilen iş yükü dağılımı. Kapasite planlama ve kaynak yönetimi için kullanılır.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Innovation Metrics</span><span class="tag">[ 06 ]</span></div>
+        <div class="subtitle">İnovasyon Metrikleri</div>
+        <div class="desc">Yenilikçi projeler, Ar-Ge çalışmaları, teknik iyileştirmeler ve deneysel çalışmalara ayrılan zaman ve katkı miktarı.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Events & Trainings</span><span class="tag">[ 07 ]</span></div>
+        <div class="subtitle">Etkinlik ve Eğitim Metrikleri</div>
+        <div class="desc">Eğitimler, konferanslar, workshoplar ve bilgi paylaşım etkinliklerinin takibi. Sürekli öğrenme ve gelişim kültürünü ölçer.</div>
+      </div>
+
+      <div class="card">
+        <div class="top"><span class="title">Voice of Customer</span><span class="tag">[ 08 ]</span></div>
+        <div class="subtitle">Müşteri Sesi Metrikleri</div>
+        <div class="desc">Müşteri geri bildirimleri, kullanıcı araştırmaları, anketler ve müşteri etkileşimlerine ayrılan zaman. Ürün geliştirmenin müşteri odaklılığını gösterir.</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="footer">
+    <span>PAGE 2/2</span>
+    <span id="clock"></span>
+    <span>SESTEK // PA</span>
+  </div>
+</div>
+<script>
+(function(){var rc=document.getElementById('rain'),x=rc.getContext('2d');var ch='アイウエオカキクケコ0123456789';var cols,drops;function init(){rc.width=innerWidth;rc.height=innerHeight;cols=Math.floor(rc.width/14);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*rc.height/14|0}init();window.addEventListener('resize',init);setInterval(function(){x.fillStyle='rgba(0,0,0,0.05)';x.fillRect(0,0,rc.width,rc.height);x.fillStyle='#0f0';x.font='14px monospace';for(var i=0;i<cols;i++){x.fillText(ch[Math.random()*ch.length|0],i*14,drops[i]*14);if(drops[i]*14>rc.height&&Math.random()>.975)drops[i]=0;drops[i]++}},50)})();
+setInterval(function(){var d=new Date();document.getElementById('clock').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2)},1000);
+(function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 24s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)})})();
+setInterval(function(){var c=document.querySelectorAll('.card'),r=c[Math.random()*c.length|0];r.style.borderColor='rgba(0,255,0,0.5)';r.style.boxShadow='0 0 12px rgba(0,255,0,0.15)';setTimeout(function(){r.style.borderColor='';r.style.boxShadow=''},2000)},3000);
+</script>
+</body>
+</html>

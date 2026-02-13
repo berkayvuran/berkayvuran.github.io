@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>2026 Tatil Rehberi</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;font-family:'Courier New',monospace;color:#0f0;overflow:hidden;height:100vh}
+canvas#rain{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.06}
+.container{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;padding:8px 12px;overflow:hidden}
+.header{text-align:center;padding:4px 0 5px;border-bottom:1px solid rgba(0,255,0,.2);margin-bottom:6px;flex-shrink:0}
+.header h1{font-size:13px;letter-spacing:2px;color:#0f0;text-shadow:0 0 10px #0f0;display:flex;align-items:center;justify-content:center;gap:6px}
+.header .summary{font-size:11px;color:#0a0;margin-top:3px;font-weight:700}
+.holidays{flex:1;overflow:hidden;position:relative}
+.holidays-inner{position:absolute;width:100%;animation:scroll 40s ease-in-out infinite;display:flex;flex-direction:column;gap:6px}
+.holidays:hover .holidays-inner{animation-play-state:paused}
+.holidays::before,.holidays::after{content:'';position:absolute;left:0;right:0;height:12px;z-index:2;pointer-events:none}
+.holidays::before{top:0;background:linear-gradient(#000,transparent)}
+.holidays::after{bottom:0;background:linear-gradient(transparent,#000)}
+.holiday{border:1px solid rgba(0,255,0,.12);border-left:3px solid rgba(0,255,0,.4);border-radius:3px;padding:6px 10px;background:rgba(0,255,0,.02);position:relative;transition:all .25s;flex-shrink:0}
+.holiday:hover{border-color:rgba(0,255,0,.5);background:rgba(0,255,0,.06);box-shadow:0 0 8px rgba(0,255,0,.1)}
+.holiday .name{font-size:11px;color:#0f0;font-weight:700;margin-bottom:2px;text-shadow:0 0 6px rgba(0,255,0,.3)}
+.holiday .date{font-size:9px;color:#0a0;opacity:.7;margin-bottom:3px}
+.holiday .info{font-size:10px;color:#0a0;opacity:.8}
+.container::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 3px);z-index:10;pointer-events:none}
+@keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}96%{opacity:.92}97%{opacity:1}}
+.container{animation:flicker 5s infinite}
+.footer{flex-shrink:0;border-top:1px solid rgba(0,255,0,.15);margin-top:5px;padding-top:4px;display:flex;justify-content:space-between;font-size:8px;color:#060;letter-spacing:1px}
+@keyframes scroll{0%,30%{transform:translateY(0)}50%,80%{transform:translateY(var(--offset))}100%{transform:translateY(0)}}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+<div class="container">
+  <div class="header">
+    <h1><span>🌴</span> 2026 TATİL REHBERİ</h1>
+    <div class="summary">14 gün izin = 43 gün tatil!</div>
+  </div>
+  <div class="holidays" id="area">
+    <div class="holidays-inner" id="inner">
+
+      <div class="holiday">
+        <div class="name">Ramazan Bayramı</div>
+        <div class="date">14-22 Mart</div>
+        <div class="info">4 gün izin → 9 gün tatil</div>
+      </div>
+
+      <div class="holiday">
+        <div class="name">23 Nisan Ulusal Egemenlik ve Çocuk Bayramı</div>
+        <div class="date">23-26 Nisan</div>
+        <div class="info">1 gün izin → 4 gün tatil</div>
+      </div>
+
+      <div class="holiday">
+        <div class="name">1 Mayıs Emek ve Dayanışma Günü</div>
+        <div class="date">1-4 Mayıs</div>
+        <div class="info">1 gün izin → 4 gün tatil</div>
+      </div>
+
+      <div class="holiday">
+        <div class="name">19 Mayıs Atatürk'ü Anma, Gençlik ve Spor Bayramı</div>
+        <div class="date">16-19 Mayıs</div>
+        <div class="info">1 gün izin → 4 gün tatil</div>
+      </div>
+
+      <div class="holiday">
+        <div class="name">Kurban Bayramı</div>
+        <div class="date">23-30 Mayıs</div>
+        <div class="info">2 gün izin → 8 gün tatil</div>
+      </div>
+
+      <div class="holiday">
+        <div class="name">15 Temmuz Demokrasi ve Milli Birlik Günü</div>
+        <div class="date">10-15 Temmuz</div>
+        <div class="info">3 gün izin → 6 gün tatil</div>
+      </div>
+
+      <div class="holiday">
+        <div class="name">29 Ekim Cumhuriyet Bayramı</div>
+        <div class="date">29 Eki-1 Kas</div>
+        <div class="info">1 gün izin → 4 gün tatil</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="footer">
+    <span>TR HOLIDAYS 2026</span>
+    <span id="clock"></span>
+    <span>SESTEK</span>
+  </div>
+</div>
+<script>
+(function(){var rc=document.getElementById('rain'),x=rc.getContext('2d');var ch='アイウエオカキクケコ0123456789';var cols,drops;function init(){rc.width=innerWidth;rc.height=innerHeight;cols=Math.floor(rc.width/14);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*rc.height/14|0}init();window.addEventListener('resize',init);setInterval(function(){x.fillStyle='rgba(0,0,0,0.05)';x.fillRect(0,0,rc.width,rc.height);x.fillStyle='#0f0';x.font='14px monospace';for(var i=0;i<cols;i++){x.fillText(ch[Math.random()*ch.length|0],i*14,drops[i]*14);if(drops[i]*14>rc.height&&Math.random()>.975)drops[i]=0;drops[i]++}},50)})();
+setInterval(function(){var d=new Date();document.getElementById('clock').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2)},1000);
+(function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 40s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)})})();
+setInterval(function(){var h=document.querySelectorAll('.holiday'),r=h[Math.random()*h.length|0];r.style.borderColor='rgba(0,255,0,0.5)';r.style.boxShadow='0 0 10px rgba(0,255,0,0.15)';setTimeout(function(){r.style.borderColor='';r.style.boxShadow=''},2000)},3000);
+</script>
+</body>
+</html>
