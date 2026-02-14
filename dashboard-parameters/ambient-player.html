@@ -7,17 +7,45 @@
 <title>Lofi Player</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;align-items:center;justify-content:center}
-.player{background:#FFFFFF;padding:20px;text-align:center;animation:fadeIn 0.8s ease-out;width:100%;max-width:300px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;display:flex;align-items:center;justify-content:center;transition:background-color .3s}
+.player{padding:20px;text-align:center;animation:fadeIn 0.8s ease-out;width:100%;max-width:300px;transition:background-color .3s}
 @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
-.video-container{position:relative;width:100%;padding-bottom:56.25%;margin-bottom:16px;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.video-container{position:relative;width:100%;padding-bottom:56.25%;margin-bottom:16px;border-radius:12px;overflow:hidden;transition:box-shadow .3s}
 .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%}
 .controls{display:flex;gap:16px;justify-content:center;margin-bottom:12px}
-.btn{width:44px;height:44px;border-radius:50%;background:#f5f5f7;border:1px solid rgba(0,0,0,0.08);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:#1d1d1f;font-weight:600;transition:all .25s;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
-.btn:hover{background:#e8e8ed;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-.btn:active{transform:scale(0.96);box-shadow:0 1px 2px rgba(0,0,0,0.06)}
-.status{font-size:13px;color:#1d1d1f;font-weight:500;margin-bottom:4px}
-.label{font-size:11px;color:#86868b}
+.btn{width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;transition:all .3s}
+.status{font-size:13px;font-weight:500;margin-bottom:4px;transition:color .3s}
+.label{font-size:11px;transition:color .3s}
+
+/* Light Mode */
+body.light{background:#FFFFFF}
+body.light .player{background:#FFFFFF}
+body.light .video-container{box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+body.light .btn{background:#f5f5f7;border:1px solid rgba(0,0,0,0.08);color:#1d1d1f;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+body.light .btn:hover{background:#e8e8ed;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+body.light .btn:active{box-shadow:0 1px 2px rgba(0,0,0,0.06)}
+body.light .status{color:#1d1d1f}
+body.light .label{color:#86868b}
+
+/* Dark Mode */
+body.dark{background:#1d1d1f}
+body.dark .player{background:#1d1d1f}
+body.dark .video-container{box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+body.dark .btn{background:#2d2d2f;border:1px solid rgba(255,255,255,0.1);color:#f5f5f7;box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+body.dark .btn:hover{background:#3d3d3f;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+body.dark .btn:active{box-shadow:0 1px 2px rgba(0,0,0,0.3)}
+body.dark .status{color:#f5f5f7}
+body.dark .label{color:#98989d}
+
+/* High Contrast Mode */
+body.high-contrast{background:#000000}
+body.high-contrast .player{background:#000000}
+body.high-contrast .video-container{box-shadow:0 4px 12px rgba(255,255,255,0.3)}
+body.high-contrast .btn{background:#FFFFFF;border:2px solid #000000;color:#000000;box-shadow:0 2px 4px rgba(255,255,255,0.3)}
+body.high-contrast .btn:hover{background:#FFFF00;color:#000000}
+body.high-contrast .btn:active{box-shadow:0 1px 2px rgba(255,255,255,0.2)}
+body.high-contrast .status{color:#FFFFFF}
+body.high-contrast .label{color:#FFFF00}
 </style>
 </head>
 <body>
@@ -62,6 +90,17 @@ nextBtn.addEventListener('click',function(){
   iframe.src='https://www.youtube.com/embed/'+vid.id+'?autoplay=1&mute=0&controls=1&loop=1&playlist='+vid.id;
   status.textContent=vid.name;
 });
+
+// Theme support
+(function(){
+  var theme=localStorage.getItem('dashboard-theme')||'light';
+  document.body.className=theme;
+  window.addEventListener('storage',function(e){
+    if(e.key==='dashboard-theme'){
+      document.body.className=e.newValue||'light';
+    }
+  });
+})();
 </script>
 </body>
 </html>
