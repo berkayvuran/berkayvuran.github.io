@@ -13,7 +13,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
 .header h1{font-size:15px;letter-spacing:-0.2px;font-weight:700;transition:color .3s;line-height:1.3}
 .header h2{font-size:11px;letter-spacing:0.02em;font-weight:500;margin-top:4px;transition:color .3s;opacity:0.85}
 .cards{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;position:relative}
-.cards-inner{display:flex;flex-direction:column;gap:10px;position:absolute;width:100%;animation:scroll 30s ease-in-out infinite}
+.cards-inner{display:flex;flex-direction:column;gap:10px;position:absolute;width:100%;animation:scroll 30s ease-in-out infinite;padding-top:10px}
 .cards:hover .cards-inner{animation-play-state:paused}
 .cards::before,.cards::after{content:'';position:absolute;left:0;right:0;height:20px;z-index:2;pointer-events:none;transition:background .3s}
 .card{padding:12px 14px;transition:all .3s;flex-shrink:0}
@@ -110,8 +110,8 @@ var translations={
     headerSubtitle:'// DELIVERY & ESTIMATION METRICS',
     cycleTimeDesc:'Bir işin aktif çalışmaya başladığı andan tamamlandığı ana kadar geçen ortalama süre. Ekibin görevi ne kadar hızlı teslim edebildiğini ölçer.',
     leadTimeDesc:'Bir işin sisteme girildiği andan tamamlandığı ana kadar geçen toplam süre. Müşteri bakış açısından bekleme süresini gösterir ve darboğazları ortaya çıkarır.',
-    originalEstDesc:'Sprint başlangıcında yapılan iş yükü tahminlerinin ekip üyeleri arasındaki dağılımı. Tahmin doğruluğu ve iş dağılımı dengesini değerlendirir.',
-    completedDesc:'Belirtilen dönemde tamamlanan işlerin ekip üyeleri bazında dağılımı. Bireysel ve ekip üretkenliğini somut olarak gösterir.',
+    originalEstDesc:'Her PA tarafından belirlenen bireysel iş yükü tahminleri. Kişisel tahmin doğruluğunu değerlendirmek için kullanılır.',
+    completedDesc:'Belirtilen dönemde her PA tarafından tamamlanan işler. Bireysel üretkenlik ve teslim performansını somut olarak gösterir.',
     footerPage:'Sayfa 1/2'
   },
   en:{
@@ -119,8 +119,8 @@ var translations={
     headerSubtitle:'// DELIVERY & ESTIMATION METRICS',
     cycleTimeDesc:'Average time from when work begins to when it is completed. Measures how quickly the team can deliver tasks.',
     leadTimeDesc:'Total time from when work enters the system to completion. Shows customer wait time and reveals bottlenecks.',
-    originalEstDesc:'Distribution of estimated workload among team members at sprint start. Evaluates estimation accuracy and work distribution balance.',
-    completedDesc:'Distribution of completed work by team members in the specified period. Concretely shows individual and team productivity.',
+    originalEstDesc:'Individual workload estimates set by each PA. Used to evaluate personal estimation accuracy.',
+    completedDesc:'Work completed by each PA in the specified period. Concretely shows individual productivity and delivery performance.',
     footerPage:'Page 1/2'
   }
 };
