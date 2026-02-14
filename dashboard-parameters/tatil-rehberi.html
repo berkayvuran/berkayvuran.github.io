@@ -7,23 +7,60 @@
 <title>2026 Tatil Rehberi</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden;height:100vh}
+body{transition:background-color .3s;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden;height:100vh}
 .container{height:100vh;display:flex;flex-direction:column;padding:12px 16px;overflow:hidden}
-.header{text-align:center;padding:8px 0 10px;border-bottom:1px solid rgba(0,0,0,0.08);margin-bottom:10px;flex-shrink:0}
-.header h1{font-size:14px;letter-spacing:-0.3px;color:#1d1d1f;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
-.header .summary{font-size:11px;color:#86868b;margin-top:3px;font-weight:500}
+.header{text-align:center;padding:8px 0 10px;margin-bottom:10px;flex-shrink:0;transition:border-color .3s}
+.header h1{font-size:14px;letter-spacing:-0.3px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .3s}
+.header .summary{font-size:11px;margin-top:3px;font-weight:500;transition:color .3s}
 .holidays{flex:1;overflow:hidden;position:relative}
 .holidays-inner{position:absolute;width:100%;animation:scroll 35s ease-in-out infinite;display:flex;flex-direction:column;gap:8px}
 .holidays:hover .holidays-inner{animation-play-state:paused}
-.holidays::before,.holidays::after{content:'';position:absolute;left:0;right:0;height:20px;z-index:2;pointer-events:none}
-.holidays::before{top:0;background:linear-gradient(#FFFFFF,transparent)}
-.holidays::after{bottom:0;background:linear-gradient(transparent,#FFFFFF)}
-.holiday{padding:10px 12px;background:#FFFFFF;transition:all .2s;flex-shrink:0}
-.holiday .name{font-size:12px;color:#1d1d1f;font-weight:600;margin-bottom:3px;letter-spacing:-0.2px}
-.holiday .date{font-size:10px;color:#86868b;margin-bottom:4px}
-.holiday .info{font-size:11px;color:#424245;line-height:1.4}
-.footer{flex-shrink:0;border-top:1px solid rgba(0,0,0,0.08);margin-top:10px;padding-top:8px;display:flex;justify-content:space-between;font-size:10px;color:#86868b;letter-spacing:0}
+.holidays::before,.holidays::after{content:'';position:absolute;left:0;right:0;height:20px;z-index:2;pointer-events:none;transition:background .3s}
+.holiday{padding:10px 12px;transition:all .2s;flex-shrink:0}
+.holiday .name{font-size:12px;font-weight:600;margin-bottom:3px;letter-spacing:-0.2px;transition:color .3s}
+.holiday .date{font-size:10px;margin-bottom:4px;transition:color .3s}
+.holiday .info{font-size:11px;line-height:1.4;transition:color .3s}
+.footer{flex-shrink:0;margin-top:10px;padding-top:8px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:0;transition:border-color .3s,color .3s}
 @keyframes scroll{0%,30%{transform:translateY(0)}50%,80%{transform:translateY(var(--offset))}100%{transform:translateY(0)}}
+
+/* Light Mode */
+body.light{background:#FFFFFF}
+body.light .header{border-bottom:1px solid rgba(0,0,0,0.08)}
+body.light .header h1{color:#1d1d1f}
+body.light .header .summary{color:#86868b}
+body.light .holidays::before{background:linear-gradient(#FFFFFF,transparent)}
+body.light .holidays::after{background:linear-gradient(transparent,#FFFFFF)}
+body.light .holiday{background:#FFFFFF}
+body.light .holiday .name{color:#1d1d1f}
+body.light .holiday .date{color:#86868b}
+body.light .holiday .info{color:#424245}
+body.light .footer{border-top:1px solid rgba(0,0,0,0.08);color:#86868b}
+
+/* Dark Mode */
+body.dark{background:#1d1d1f}
+body.dark .header{border-bottom:1px solid rgba(255,255,255,0.08)}
+body.dark .header h1{color:#f5f5f7}
+body.dark .header .summary{color:#98989d}
+body.dark .holidays::before{background:linear-gradient(#1d1d1f,transparent)}
+body.dark .holidays::after{background:linear-gradient(transparent,#1d1d1f)}
+body.dark .holiday{background:#1d1d1f}
+body.dark .holiday .name{color:#f5f5f7}
+body.dark .holiday .date{color:#98989d}
+body.dark .holiday .info{color:#d1d1d6}
+body.dark .footer{border-top:1px solid rgba(255,255,255,0.08);color:#98989d}
+
+/* High Contrast Mode */
+body.high-contrast{background:#000000}
+body.high-contrast .header{border-bottom:2px solid #FFFF00}
+body.high-contrast .header h1{color:#FFFFFF}
+body.high-contrast .header .summary{color:#FFFF00}
+body.high-contrast .holidays::before{background:linear-gradient(#000000,transparent)}
+body.high-contrast .holidays::after{background:linear-gradient(transparent,#000000)}
+body.high-contrast .holiday{background:#000000}
+body.high-contrast .holiday .name{color:#FFFFFF;font-weight:700}
+body.high-contrast .holiday .date{color:#FFFF00}
+body.high-contrast .holiday .info{color:#FFFFFF}
+body.high-contrast .footer{border-top:2px solid #FFFF00;color:#FFFF00}
 </style>
 </head>
 <body>
@@ -86,6 +123,17 @@ body{background:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 </div>
 <script>
 (function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 35s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)})})();
+
+// Theme support
+(function(){
+  var theme=localStorage.getItem('dashboard-theme')||'light';
+  document.body.className=theme;
+  window.addEventListener('storage',function(e){
+    if(e.key==='dashboard-theme'){
+      document.body.className=e.newValue||'light';
+    }
+  });
+})();
 </script>
 </body>
 </html>
