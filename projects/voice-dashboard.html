@@ -396,6 +396,186 @@ h1 {
   background: #FF9500;
 }
 
+/* Onboarding Overlay */
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+  padding: 20px;
+}
+
+.onboarding-overlay.hidden {
+  display: none;
+}
+
+.onboarding-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.onboarding-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.onboarding-icon {
+  font-size: 60px;
+  margin-bottom: 16px;
+}
+
+.onboarding-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin-bottom: 8px;
+  letter-spacing: -0.8px;
+}
+
+.onboarding-subtitle {
+  font-size: 16px;
+  color: #86868b;
+  line-height: 1.4;
+}
+
+.onboarding-features {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.onboarding-feature {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.feature-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.feature-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 4px;
+}
+
+.feature-content p {
+  font-size: 14px;
+  color: #424245;
+  line-height: 1.5;
+}
+
+.onboarding-commands {
+  background: #f5f5f7;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 30px;
+}
+
+.onboarding-commands h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.command-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.command-example {
+  background: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1d1d1f;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  border: 1px solid #d2d2d7;
+}
+
+.onboarding-button {
+  width: 100%;
+  background: #1d1d1f;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.onboarding-button:hover {
+  background: #424245;
+  transform: translateY(-1px);
+}
+
+.onboarding-button:active {
+  transform: translateY(0);
+}
+
+/* Mobile Onboarding */
+@media (max-width: 768px) {
+  .onboarding-card {
+    padding: 30px 24px;
+  }
+
+  .onboarding-icon {
+    font-size: 48px;
+  }
+
+  .onboarding-title {
+    font-size: 24px;
+  }
+
+  .onboarding-subtitle {
+    font-size: 14px;
+  }
+
+  .feature-icon {
+    font-size: 28px;
+  }
+
+  .feature-content h3 {
+    font-size: 15px;
+  }
+
+  .feature-content p {
+    font-size: 13px;
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   body {
@@ -563,6 +743,56 @@ h1 {
 </style>
 </head>
 <body>
+<!-- Onboarding Overlay -->
+<div class="onboarding-overlay" id="onboardingOverlay">
+  <div class="onboarding-card">
+    <div class="onboarding-header">
+      <div class="onboarding-icon">🎙️</div>
+      <h2 class="onboarding-title">Welcome to Voice Analytics</h2>
+      <p class="onboarding-subtitle">Control your dashboard entirely with your voice. No clicking required!</p>
+    </div>
+
+    <div class="onboarding-features">
+      <div class="onboarding-feature">
+        <div class="feature-icon">🎤</div>
+        <div class="feature-content">
+          <h3>Voice Commands</h3>
+          <p>Click "Listen" and speak your filter preferences. The dashboard updates automatically.</p>
+        </div>
+      </div>
+
+      <div class="onboarding-feature">
+        <div class="feature-icon">🔊</div>
+        <div class="feature-content">
+          <h3>Audio Results</h3>
+          <p>Click "Read" to hear a natural summary of your filtered data without looking at the screen.</p>
+        </div>
+      </div>
+
+      <div class="onboarding-feature">
+        <div class="feature-icon">📊</div>
+        <div class="feature-content">
+          <h3>Manual Controls</h3>
+          <p>Prefer the traditional way? Use the dropdown filters anytime.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="onboarding-commands">
+      <h4>Try These Commands</h4>
+      <div class="command-examples">
+        <span class="command-example">"today"</span>
+        <span class="command-example">"yesterday"</span>
+        <span class="command-example">"agent John"</span>
+        <span class="command-example">"completed"</span>
+        <span class="command-example">"show all"</span>
+      </div>
+    </div>
+
+    <button class="onboarding-button" id="onboardingStart">Get Started 🚀</button>
+  </div>
+</div>
+
 <div class="container">
   <header>
     <h1>Voice Analytics</h1>
@@ -727,23 +957,45 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     console.log('🎤 Speech recognized:', transcript);
     document.getElementById('transcript').textContent = `You said: "${transcript}"`;
 
+    // Detect mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    console.log('📱 Is mobile device:', isMobile);
+
     // Voice confirmation - repeat what was heard
-    if ('speechSynthesis' in window) {
+    if ('speechSynthesis' in window && !isMobile) {
       console.log('🔊 Speaking confirmation...');
       const confirmation = new SpeechSynthesisUtterance(`You said: ${transcript}`);
       confirmation.rate = 1.2;
       confirmation.pitch = 1;
       confirmation.volume = 0.8;
-      speechSynthesis.speak(confirmation);
 
-      // Process command after confirmation
+      let processed = false;
+
+      // Fallback timeout in case onend doesn't fire (especially on mobile browsers)
+      const fallbackTimer = setTimeout(function() {
+        if (!processed) {
+          console.log('⚠️ Confirmation timeout - processing anyway');
+          processed = true;
+          processVoiceCommand(transcript);
+        }
+      }, 3000);
+
       confirmation.onend = function() {
-        console.log('✅ Confirmation finished, processing command...');
-        processVoiceCommand(transcript);
+        clearTimeout(fallbackTimer);
+        if (!processed) {
+          console.log('✅ Confirmation finished, processing command...');
+          processed = true;
+          processVoiceCommand(transcript);
+        }
       };
+
+      speechSynthesis.speak(confirmation);
     } else {
-      console.log('⚠️ No TTS support, processing command directly...');
-      processVoiceCommand(transcript);
+      // On mobile or no TTS support, process immediately
+      console.log('📱 Mobile device or no TTS - processing immediately');
+      setTimeout(function() {
+        processVoiceCommand(transcript);
+      }, 500);
     }
   };
 
@@ -761,19 +1013,32 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 function resetListenButton() {
   isListening = false;
   document.getElementById('listenBtn').classList.remove('listening');
-  document.getElementById('listenBtnText').textContent = 'Start Listening';
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  document.getElementById('listenBtnText').textContent = isMobile ? 'Listen' : 'Start Listening';
 }
 
 document.getElementById('listenBtn').addEventListener('click', function() {
   if (!recognition) {
-    alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile && /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)) {
+      alert('Speech recognition is not supported in Safari on iOS. Please use Chrome or Edge.');
+    } else {
+      alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
+    }
     return;
   }
 
   if (isListening) {
     recognition.stop();
   } else {
-    recognition.start();
+    try {
+      recognition.start();
+      console.log('🎤 Recognition started');
+    } catch (error) {
+      console.error('Error starting recognition:', error);
+      document.getElementById('transcript').textContent = 'Error starting microphone. Please check permissions.';
+      resetListenButton();
+    }
   }
 });
 
@@ -781,6 +1046,10 @@ document.getElementById('listenBtn').addEventListener('click', function() {
 function processVoiceCommand(command) {
   console.log('🎤 Processing voice command:', command);
   console.log('📊 Filters BEFORE:', JSON.stringify(filters));
+
+  // Show processing feedback
+  document.getElementById('commandResult').textContent = '⏳ Processing...';
+  document.getElementById('commandResult').style.color = '#FF9500';
 
   let executed = false;
 
@@ -853,9 +1122,11 @@ function processVoiceCommand(command) {
     syncManualControls();
     console.log('✅ Dashboard and controls updated');
     document.getElementById('commandResult').textContent = '✓ Filters applied successfully';
+    document.getElementById('commandResult').style.color = '#34C759';
   } else {
     console.log('❌ No command matched');
     document.getElementById('commandResult').textContent = '⚠️ Command not recognized. Try again.';
+    document.getElementById('commandResult').style.color = '#FF3B30';
   }
 }
 
@@ -1116,6 +1387,47 @@ document.getElementById('statusFilter').addEventListener('change', function() {
 // Initialize
 updateDashboard();
 syncManualControls();
+
+// Onboarding
+(function() {
+  const overlay = document.getElementById('onboardingOverlay');
+  const startBtn = document.getElementById('onboardingStart');
+  const hasSeenOnboarding = localStorage.getItem('voice-dashboard-onboarding-seen');
+
+  // Show onboarding if first visit
+  if (!hasSeenOnboarding) {
+    overlay.classList.remove('hidden');
+    console.log('👋 Showing onboarding for first-time user');
+  } else {
+    overlay.classList.add('hidden');
+    console.log('✓ User has seen onboarding before');
+  }
+
+  // Handle start button click
+  startBtn.addEventListener('click', function() {
+    console.log('✓ User completed onboarding');
+    localStorage.setItem('voice-dashboard-onboarding-seen', 'true');
+    overlay.classList.add('hidden');
+  });
+
+  // Close on overlay click (outside card)
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      console.log('✓ User dismissed onboarding');
+      localStorage.setItem('voice-dashboard-onboarding-seen', 'true');
+      overlay.classList.add('hidden');
+    }
+  });
+
+  // ESC key to close
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !overlay.classList.contains('hidden')) {
+      console.log('✓ User dismissed onboarding with ESC');
+      localStorage.setItem('voice-dashboard-onboarding-seen', 'true');
+      overlay.classList.add('hidden');
+    }
+  });
+})();
 </script>
 </body>
 </html>
