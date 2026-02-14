@@ -40,15 +40,34 @@ body.high-contrast .insight{color:#FFFF00}
   <div class="insight" id="insight">Yükleniyor...</div>
 </div>
 <script>
-var insights=[
-  {icon:'📊',title:'Cohort Analizi',text:'Kullanıcıları grup halinde takip ederek, davranış değişimlerini zaman içinde daha net görebiliriz.'},
-  {icon:'🎯',title:'North Star Metrik',text:'Tek bir ana metriğe odaklanarak, ekip hizalamasını güçlendirebilir ve öncelikleri netleştirebiliriz.'},
-  {icon:'📈',title:'Leading Göstergeler',text:'Geçmiş verilere ek olarak öncü göstergeleri izleyerek, geleceğe dair daha proaktif kararlar alabiliriz.'},
-  {icon:'🔍',title:'Funnel Optimizasyonu',text:'Dönüşüm hunisinin her adımını detaylı inceleyerek, kritik darboğazları belirleyebiliriz.'},
-  {icon:'💡',title:'Retention Eğrileri',text:'Kullanıcı tutma oranlarını haftalık/aylık izleyerek, ürün sağlığını değerlendirebiliriz.'},
-  {icon:'⚡',title:'İstatistiksel Anlamlılık',text:'A/B testlerinde yeterli örneklem ve güven aralığı kullanarak, yanıltıcı sonuçlardan kaçınabiliriz.'}
-];
+// Language support
+var translations={
+  tr:{
+    insights:[
+      {icon:'📊',title:'Cohort Analizi',text:'Kullanıcıları grup halinde takip ederek, davranış değişimlerini zaman içinde daha net görebiliriz.'},
+      {icon:'🎯',title:'North Star Metrik',text:'Tek bir ana metriğe odaklanarak, ekip hizalamasını güçlendirebilir ve öncelikleri netleştirebiliriz.'},
+      {icon:'📈',title:'Leading Göstergeler',text:'Geçmiş verilere ek olarak öncü göstergeleri izleyerek, geleceğe dair daha proaktif kararlar alabiliriz.'},
+      {icon:'🔍',title:'Funnel Optimizasyonu',text:'Dönüşüm hunisinin her adımını detaylı inceleyerek, kritik darboğazları belirleyebiliriz.'},
+      {icon:'💡',title:'Retention Eğrileri',text:'Kullanıcı tutma oranlarını haftalık/aylık izleyerek, ürün sağlığını değerlendirebiliriz.'},
+      {icon:'⚡',title:'İstatistiksel Anlamlılık',text:'A/B testlerinde yeterli örneklem ve güven aralığı kullanarak, yanıltıcı sonuçlardan kaçınabiliriz.'}
+    ]
+  },
+  en:{
+    insights:[
+      {icon:'📊',title:'Cohort Analysis',text:'By tracking users in groups, we can observe behavioral changes over time more clearly.'},
+      {icon:'🎯',title:'North Star Metric',text:'By focusing on a single key metric, we can strengthen team alignment and clarify priorities.'},
+      {icon:'📈',title:'Leading Indicators',text:'By monitoring leading indicators alongside historical data, we can make more proactive decisions about the future.'},
+      {icon:'🔍',title:'Funnel Optimization',text:'By examining each step of the conversion funnel in detail, we can identify critical bottlenecks.'},
+      {icon:'💡',title:'Retention Curves',text:'By tracking weekly/monthly user retention rates, we can evaluate product health.'},
+      {icon:'⚡',title:'Statistical Significance',text:'By using adequate sample sizes and confidence intervals in A/B tests, we can avoid misleading results.'}
+    ]
+  }
+};
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+var insights=translations[currentLang].insights;
 var idx=0;
+
 function update(){
   var ins=insights[idx];
   document.getElementById('icon').textContent=ins.icon;
@@ -56,8 +75,21 @@ function update(){
   document.getElementById('insight').textContent=ins.text;
   idx=(idx+1)%insights.length;
 }
+
+function updateLanguage(lang){
+  insights=translations[lang]?translations[lang].insights:translations.tr.insights;
+  idx=0;
+  update();
+}
+
 update();
 setInterval(update,6000);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
 
 // Theme support
 (function(){

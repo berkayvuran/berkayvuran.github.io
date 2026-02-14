@@ -10,8 +10,8 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;overflow:hidden;height:100vh;transition:background-color .3s}
 .container{height:100vh;display:flex;flex-direction:column;padding:12px 16px;overflow:hidden}
 .header{text-align:center;padding:8px 0 10px;margin-bottom:10px;flex-shrink:0;transition:border-color .3s}
-.header h1{font-size:14px;letter-spacing:-0.3px;font-weight:600;transition:color .3s}
-.header h2{font-size:11px;letter-spacing:0;font-weight:400;margin-top:2px;transition:color .3s}
+.header h1{font-size:15px;letter-spacing:-0.2px;font-weight:700;transition:color .3s;line-height:1.3}
+.header h2{font-size:11px;letter-spacing:0.02em;font-weight:500;margin-top:4px;transition:color .3s;opacity:0.85}
 .cards{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;position:relative}
 .cards-inner{display:flex;flex-direction:column;gap:10px;position:absolute;width:100%;animation:scroll 30s ease-in-out infinite}
 .cards:hover .cards-inner{animation-play-state:paused}
@@ -67,41 +67,83 @@ body.high-contrast .footer{border-top:2px solid #FFFFFF;color:#FFFF00}
 <body>
 <div class="container">
   <div class="header">
-    <h1>PA PERFORMANCE DASHBOARD 2026</h1>
-    <h2>// DELIVERY & ESTIMATION METRICS</h2>
+    <h1 id="headerTitle">PA PERFORMANCE DASHBOARD 2026</h1>
+    <h2 id="headerSubtitle">// DELIVERY & ESTIMATION METRICS</h2>
   </div>
   <div class="cards" id="area">
     <div class="cards-inner" id="inner">
 
       <div class="card">
         <div class="top"><span class="title">Cycle Time</span></div>
-        <div class="desc">Bir işin aktif çalışmaya başladığı andan tamamlandığı ana kadar geçen ortalama süre. Ekibin görevi ne kadar hızlı teslim edebildiğini ölçer.</div>
+        <div class="desc" id="cycleTimeDesc">Bir işin aktif çalışmaya başladığı andan tamamlandığı ana kadar geçen ortalama süre. Ekibin görevi ne kadar hızlı teslim edebildiğini ölçer.</div>
       </div>
 
       <div class="card">
         <div class="top"><span class="title">Lead Time</span></div>
-        <div class="desc">Bir işin sisteme girildiği andan tamamlandığı ana kadar geçen toplam süre. Müşteri bakış açısından bekleme süresini gösterir ve darboğazları ortaya çıkarır.</div>
+        <div class="desc" id="leadTimeDesc">Bir işin sisteme girildiği andan tamamlandığı ana kadar geçen toplam süre. Müşteri bakış açısından bekleme süresini gösterir ve darboğazları ortaya çıkarır.</div>
       </div>
 
       <div class="card">
         <div class="top"><span class="title">Original Estimates</span></div>
-        <div class="desc">Sprint başlangıcında yapılan iş yükü tahminlerinin ekip üyeleri arasındaki dağılımı. Tahmin doğruluğu ve iş dağılımı dengesini değerlendirir.</div>
+        <div class="desc" id="originalEstDesc">Sprint başlangıcında yapılan iş yükü tahminlerinin ekip üyeleri arasındaki dağılımı. Tahmin doğruluğu ve iş dağılımı dengesini değerlendirir.</div>
       </div>
 
       <div class="card">
         <div class="top"><span class="title">Completed Works</span></div>
-        <div class="desc">Belirtilen dönemde tamamlanan işlerin ekip üyeleri bazında dağılımı. Bireysel ve ekip üretkenliğini somut olarak gösterir.</div>
+        <div class="desc" id="completedDesc">Belirtilen dönemde tamamlanan işlerin ekip üyeleri bazında dağılımı. Bireysel ve ekip üretkenliğini somut olarak gösterir.</div>
       </div>
 
     </div>
   </div>
   <div class="footer">
-    <span>Sayfa 1/2</span>
+    <span id="footerPage">Sayfa 1/2</span>
     <span>SESTEK · PA</span>
   </div>
 </div>
 <script>
 (function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 30s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)})})();
+
+// Language support
+var translations={
+  tr:{
+    headerTitle:'PA PERFORMANCE DASHBOARD 2026',
+    headerSubtitle:'// DELIVERY & ESTIMATION METRICS',
+    cycleTimeDesc:'Bir işin aktif çalışmaya başladığı andan tamamlandığı ana kadar geçen ortalama süre. Ekibin görevi ne kadar hızlı teslim edebildiğini ölçer.',
+    leadTimeDesc:'Bir işin sisteme girildiği andan tamamlandığı ana kadar geçen toplam süre. Müşteri bakış açısından bekleme süresini gösterir ve darboğazları ortaya çıkarır.',
+    originalEstDesc:'Sprint başlangıcında yapılan iş yükü tahminlerinin ekip üyeleri arasındaki dağılımı. Tahmin doğruluğu ve iş dağılımı dengesini değerlendirir.',
+    completedDesc:'Belirtilen dönemde tamamlanan işlerin ekip üyeleri bazında dağılımı. Bireysel ve ekip üretkenliğini somut olarak gösterir.',
+    footerPage:'Sayfa 1/2'
+  },
+  en:{
+    headerTitle:'PA PERFORMANCE DASHBOARD 2026',
+    headerSubtitle:'// DELIVERY & ESTIMATION METRICS',
+    cycleTimeDesc:'Average time from when work begins to when it is completed. Measures how quickly the team can deliver tasks.',
+    leadTimeDesc:'Total time from when work enters the system to completion. Shows customer wait time and reveals bottlenecks.',
+    originalEstDesc:'Distribution of estimated workload among team members at sprint start. Evaluates estimation accuracy and work distribution balance.',
+    completedDesc:'Distribution of completed work by team members in the specified period. Concretely shows individual and team productivity.',
+    footerPage:'Page 1/2'
+  }
+};
+
+function updateLanguage(lang){
+  var t=translations[lang]||translations.tr;
+  document.getElementById('headerTitle').textContent=t.headerTitle;
+  document.getElementById('headerSubtitle').textContent=t.headerSubtitle;
+  document.getElementById('cycleTimeDesc').textContent=t.cycleTimeDesc;
+  document.getElementById('leadTimeDesc').textContent=t.leadTimeDesc;
+  document.getElementById('originalEstDesc').textContent=t.originalEstDesc;
+  document.getElementById('completedDesc').textContent=t.completedDesc;
+  document.getElementById('footerPage').textContent=t.footerPage;
+}
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+updateLanguage(currentLang);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
 
 // Theme support
 (function(){
