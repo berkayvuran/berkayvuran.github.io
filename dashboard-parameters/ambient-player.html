@@ -87,7 +87,7 @@ function updateLanguage(lang){
   document.getElementById('label').textContent=t.label;
 }
 
-var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+var currentLang=localStorage.getItem('dashboard-lang')||'en';
 updateLanguage(currentLang);
 
 window.addEventListener('storage',function(e){
