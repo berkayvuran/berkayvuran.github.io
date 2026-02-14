@@ -61,50 +61,50 @@ body.high-contrast .footer{border-top:2px solid #FFFF00;color:#FFFF00}
 <body>
 <div class="container">
   <div class="header">
-    <h1><span>💬</span> TOPLULUKLAR</h1>
+    <h1><span>💬</span> <span id="headerTitle">TOPLULUKLAR</span></h1>
   </div>
   <div class="list" id="area">
     <div class="list-inner" id="inner">
 
       <a class="item" href="https://www.mindtheproduct.com/product-management-slack-community/" target="_blank">
         <div class="name">Mind the Product Slack</div>
-        <div class="desc">60,000+ üye. En büyük PM topluluğu.</div>
+        <div class="desc" id="desc1">60,000+ üye. En büyük PM topluluğu.</div>
       </a>
 
       <a class="item" href="https://productschool.com/slack-community/" target="_blank">
         <div class="name">Product School Slack</div>
-        <div class="desc">Haftalık AMA'ler, 100,000+ üye.</div>
+        <div class="desc" id="desc2">Haftalık AMA'ler, 100,000+ üye.</div>
       </a>
 
       <a class="item" href="https://productcoalition.com/join-the-product-coalition-community-806352624921" target="_blank">
         <div class="name">Product Coalition Slack</div>
-        <div class="desc">5,000+ üye, aktif tartışmalar.</div>
+        <div class="desc" id="desc3">5,000+ üye, aktif tartışmalar.</div>
       </a>
 
       <a class="item" href="https://www.producthq.org/" target="_blank">
         <div class="name">Product HQ</div>
-        <div class="desc">Mentorluk odaklı topluluk.</div>
+        <div class="desc" id="desc4">Mentorluk odaklı topluluk.</div>
       </a>
 
       <a class="item" href="https://www.womenpm.org/" target="_blank">
         <div class="name">Women in Product</div>
-        <div class="desc">Kadın PM'ler için networking ve destek.</div>
+        <div class="desc" id="desc5">Kadın PM'ler için networking ve destek.</div>
       </a>
 
       <a class="item" href="https://www.lennysnewsletter.com/about" target="_blank">
         <div class="name">Lenny's Community</div>
-        <div class="desc">Ücretli üyelikle özel Slack erişimi.</div>
+        <div class="desc" id="desc6">Ücretli üyelikle özel Slack erişimi.</div>
       </a>
 
       <a class="item" href="https://www.productled.com/" target="_blank">
         <div class="name">Product-Led Community</div>
-        <div class="desc">SaaS ve product-led growth odaklı.</div>
+        <div class="desc" id="desc7">SaaS ve product-led growth odaklı.</div>
       </a>
 
     </div>
   </div>
   <div class="footer">
-    <span>PM Toplulukları</span>
+    <span id="footerLabel">PM Toplulukları</span>
     <span>SESTEK</span>
   </div>
 </div>
@@ -112,6 +112,54 @@ body.high-contrast .footer{border-top:2px solid #FFFF00;color:#FFFF00}
 (function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 35s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)});
 // Linkleri JavaScript ile aç
 document.querySelectorAll('.item').forEach(function(item){item.addEventListener('click',function(e){e.preventDefault();var url=this.getAttribute('href');if(url)window.open(url,'_blank')})})})();
+
+// Language support
+var translations={
+  tr:{
+    headerTitle:'TOPLULUKLAR',
+    desc1:'60,000+ üye. En büyük PM topluluğu.',
+    desc2:"Haftalık AMA'ler, 100,000+ üye.",
+    desc3:'5,000+ üye, aktif tartışmalar.',
+    desc4:'Mentorluk odaklı topluluk.',
+    desc5:"Kadın PM'ler için networking ve destek.",
+    desc6:'Ücretli üyelikle özel Slack erişimi.',
+    desc7:'SaaS ve product-led growth odaklı.',
+    footerLabel:'PM Toplulukları'
+  },
+  en:{
+    headerTitle:'COMMUNITIES',
+    desc1:'60,000+ members. The largest PM community.',
+    desc2:'Weekly AMAs, 100,000+ members.',
+    desc3:'5,000+ members, active discussions.',
+    desc4:'Mentorship-focused community.',
+    desc5:'Networking and support for women PMs.',
+    desc6:'Exclusive Slack access with paid membership.',
+    desc7:'Focused on SaaS and product-led growth.',
+    footerLabel:'PM Communities'
+  }
+};
+
+function updateLanguage(lang){
+  var t=translations[lang]||translations.tr;
+  document.getElementById('headerTitle').textContent=t.headerTitle;
+  document.getElementById('desc1').textContent=t.desc1;
+  document.getElementById('desc2').textContent=t.desc2;
+  document.getElementById('desc3').textContent=t.desc3;
+  document.getElementById('desc4').textContent=t.desc4;
+  document.getElementById('desc5').textContent=t.desc5;
+  document.getElementById('desc6').textContent=t.desc6;
+  document.getElementById('desc7').textContent=t.desc7;
+  document.getElementById('footerLabel').textContent=t.footerLabel;
+}
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+updateLanguage(currentLang);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
 
 // Theme support
 (function(){

@@ -58,7 +58,7 @@ body.high-contrast .label{color:#FFFF00}
     <button class="btn" id="next">▶</button>
   </div>
   <div class="status" id="status">Lofi Hip Hop Radio</div>
-  <div class="label">Rahatlatıcı müzik</div>
+  <div class="label" id="label">Rahatlatıcı müzik</div>
 </div>
 <script>
 var videos=[
@@ -71,6 +71,30 @@ var currentIdx=0;
 var status=document.getElementById('status');
 var prevBtn=document.getElementById('prev'),nextBtn=document.getElementById('next');
 var iframe=document.getElementById('player');
+
+// Language support
+var translations={
+  tr:{
+    label:'Rahatlatıcı müzik'
+  },
+  en:{
+    label:'Relaxing music'
+  }
+};
+
+function updateLanguage(lang){
+  var t=translations[lang]||translations.tr;
+  document.getElementById('label').textContent=t.label;
+}
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+updateLanguage(currentLang);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
 
 // Otomatik başlat: sessiz başla, 800ms sonra sesi aç
 setTimeout(function(){

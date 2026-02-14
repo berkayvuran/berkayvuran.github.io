@@ -65,7 +65,7 @@ body.high-contrast .footer{border-top:2px solid #FFFF00;color:#FFFF00}
 <body>
 <div class="container">
   <div class="header">
-    <h1><span>🌐</span> WEB SİTELERİ & BLOGLAR</h1>
+    <h1><span>🌐</span> <span id="headerTitle">WEB SİTELERİ & BLOGLAR</span></h1>
   </div>
   <div class="list" id="area">
     <div class="list-inner" id="inner">
@@ -73,43 +73,43 @@ body.high-contrast .footer{border-top:2px solid #FFFF00;color:#FFFF00}
       <a class="item" href="https://www.mindtheproduct.com/" target="_blank">
         <div class="name">Mind the Product</div>
         <div class="url">mindtheproduct.com</div>
-        <div class="desc">170,000+ üye. Makaleler, etkinlikler, eğitimler.</div>
+        <div class="desc" id="desc1">170,000+ üye. Makaleler, etkinlikler, eğitimler.</div>
       </a>
 
       <a class="item" href="https://www.svpg.com/" target="_blank">
         <div class="name">Silicon Valley Product Group (SVPG)</div>
         <div class="url">svpg.com</div>
-        <div class="desc">Marty Cagan'ın kurduğu. Ürün stratejisi ve liderlik odaklı.</div>
+        <div class="desc" id="desc2">Marty Cagan'ın kurduğu. Ürün stratejisi ve liderlik odaklı.</div>
       </a>
 
       <a class="item" href="https://www.lennysnewsletter.com/" target="_blank">
         <div class="name">Lenny's Newsletter</div>
         <div class="url">lennysnewsletter.com</div>
-        <div class="desc">Veri odaklı PM içerikleri ve araştırmalar.</div>
+        <div class="desc" id="desc3">Veri odaklı PM içerikleri ve araştırmalar.</div>
       </a>
 
       <a class="item" href="https://productcoalition.com/" target="_blank">
         <div class="name">Product Coalition</div>
         <div class="url">Medium</div>
-        <div class="desc">Medium'da 100,000+ takipçi. Güncel makaleler ve topluluk içerikleri.</div>
+        <div class="desc" id="desc4">Medium'da 100,000+ takipçi. Güncel makaleler ve topluluk içerikleri.</div>
       </a>
 
       <a class="item" href="https://www.reforge.com/" target="_blank">
         <div class="name">Reforge</div>
         <div class="url">reforge.com</div>
-        <div class="desc">Silicon Valley liderlerinden gerçek dünya case study'leri.</div>
+        <div class="desc" id="desc5">Silicon Valley liderlerinden gerçek dünya case study'leri.</div>
       </a>
 
       <a class="item" href="https://www.producttalk.org/" target="_blank">
         <div class="name">Product Talk</div>
         <div class="url">producttalk.org</div>
-        <div class="desc">Teresa Torres'in sürekli keşif (continuous discovery) üzerine içerikleri.</div>
+        <div class="desc" id="desc6">Teresa Torres'in sürekli keşif (continuous discovery) üzerine içerikleri.</div>
       </a>
 
     </div>
   </div>
   <div class="footer">
-    <span>PM Kaynakları</span>
+    <span id="footerLabel">PM Kaynakları</span>
     <span>SESTEK</span>
   </div>
 </div>
@@ -117,6 +117,51 @@ body.high-contrast .footer{border-top:2px solid #FFFF00;color:#FFFF00}
 (function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 35s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)});
 // Linkleri JavaScript ile aç
 document.querySelectorAll('.item').forEach(function(item){item.addEventListener('click',function(e){e.preventDefault();var url=this.getAttribute('href');if(url)window.open(url,'_blank')})})})();
+
+// Language support
+var translations={
+  tr:{
+    headerTitle:'WEB SİTELERİ & BLOGLAR',
+    desc1:'170,000+ üye. Makaleler, etkinlikler, eğitimler.',
+    desc2:"Marty Cagan'ın kurduğu. Ürün stratejisi ve liderlik odaklı.",
+    desc3:'Veri odaklı PM içerikleri ve araştırmalar.',
+    desc4:"Medium'da 100,000+ takipçi. Güncel makaleler ve topluluk içerikleri.",
+    desc5:"Silicon Valley liderlerinden gerçek dünya case study'leri.",
+    desc6:"Teresa Torres'in sürekli keşif (continuous discovery) üzerine içerikleri.",
+    footerLabel:'PM Kaynakları'
+  },
+  en:{
+    headerTitle:'WEBSITES & BLOGS',
+    desc1:'170,000+ members. Articles, events, training.',
+    desc2:'Founded by Marty Cagan. Focused on product strategy and leadership.',
+    desc3:'Data-driven PM content and research.',
+    desc4:'100,000+ followers on Medium. Current articles and community content.',
+    desc5:'Real-world case studies from Silicon Valley leaders.',
+    desc6:"Teresa Torres' content on continuous discovery.",
+    footerLabel:'PM Resources'
+  }
+};
+
+function updateLanguage(lang){
+  var t=translations[lang]||translations.tr;
+  document.getElementById('headerTitle').textContent=t.headerTitle;
+  document.getElementById('desc1').textContent=t.desc1;
+  document.getElementById('desc2').textContent=t.desc2;
+  document.getElementById('desc3').textContent=t.desc3;
+  document.getElementById('desc4').textContent=t.desc4;
+  document.getElementById('desc5').textContent=t.desc5;
+  document.getElementById('desc6').textContent=t.desc6;
+  document.getElementById('footerLabel').textContent=t.footerLabel;
+}
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+updateLanguage(currentLang);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
 
 // Theme support
 (function(){

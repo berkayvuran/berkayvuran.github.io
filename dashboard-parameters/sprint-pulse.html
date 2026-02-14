@@ -48,15 +48,34 @@ body.high-contrast .status{color:#FFFF00}
   </div>
 </div>
 <script>
-var pulses=[
-  {icon:'🚀',title:'Sprint Başlangıcı',msg:'Yeni sprint, yeni hedefler. Planning tamamlandı, işler atandı.',status:'Sprint başladı'},
-  {icon:'⚡',title:'Geliştirme Devam Ediyor',msg:'Ekip odaklanmış durumda. Daily\'ler düzenli, blocker\'lar hızla çözülüyor.',status:'Sprint ortası'},
-  {icon:'🎯',title:'Demo Hazırlığı',msg:'Sprint sonuna yaklaşıyoruz. Tamamlanan işler demo için hazırlanıyor.',status:'Sprint sonu yaklaşıyor'},
-  {icon:'📊',title:'Review & Retro Zamanı',msg:'Neler yaptık, neler öğrendik? İyileştirme fırsatlarını değerlendiriyoruz.',status:'Sprint tamamlandı'},
-  {icon:'💡',title:'Backlog Refinement',msg:'Önümüzdeki sprint için backlog gözden geçiriliyor, story\'ler detaylandırılıyor.',status:'Sprint arası'},
-  {icon:'🔥',title:'Yoğun Tempo',msg:'Birden fazla feature aynı anda geliştiriliyor. Koordinasyon üst düzeyde.',status:'Yoğun çalışma dönemi'}
-];
+// Language support
+var translations={
+  tr:{
+    pulses:[
+      {icon:'🚀',title:'Sprint Başlangıcı',msg:'Yeni sprint, yeni hedefler. Planning tamamlandı, işler atandı.',status:'Sprint başladı'},
+      {icon:'⚡',title:'Geliştirme Devam Ediyor',msg:'Ekip odaklanmış durumda. Daily\'ler düzenli, blocker\'lar hızla çözülüyor.',status:'Sprint ortası'},
+      {icon:'🎯',title:'Demo Hazırlığı',msg:'Sprint sonuna yaklaşıyoruz. Tamamlanan işler demo için hazırlanıyor.',status:'Sprint sonu yaklaşıyor'},
+      {icon:'📊',title:'Review & Retro Zamanı',msg:'Neler yaptık, neler öğrendik? İyileştirme fırsatlarını değerlendiriyoruz.',status:'Sprint tamamlandı'},
+      {icon:'💡',title:'Backlog Refinement',msg:'Önümüzdeki sprint için backlog gözden geçiriliyor, story\'ler detaylandırılıyor.',status:'Sprint arası'},
+      {icon:'🔥',title:'Yoğun Tempo',msg:'Birden fazla feature aynı anda geliştiriliyor. Koordinasyon üst düzeyde.',status:'Yoğun çalışma dönemi'}
+    ]
+  },
+  en:{
+    pulses:[
+      {icon:'🚀',title:'Sprint Kickoff',msg:'New sprint, new goals. Planning complete, work assigned.',status:'Sprint started'},
+      {icon:'⚡',title:'Development In Progress',msg:'Team is focused. Dailies are regular, blockers resolved quickly.',status:'Mid-sprint'},
+      {icon:'🎯',title:'Demo Preparation',msg:'Approaching sprint end. Completed work being prepared for demo.',status:'Sprint ending soon'},
+      {icon:'📊',title:'Review & Retro Time',msg:'What did we do, what did we learn? Evaluating improvement opportunities.',status:'Sprint completed'},
+      {icon:'💡',title:'Backlog Refinement',msg:'Reviewing backlog for next sprint, detailing stories.',status:'Between sprints'},
+      {icon:'🔥',title:'High Intensity',msg:'Multiple features being developed simultaneously. Coordination at peak.',status:'Busy work period'}
+    ]
+  }
+};
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+var pulses=translations[currentLang].pulses;
 var idx=0;
+
 function update(){
   var p=pulses[idx];
   document.getElementById('pulse').textContent=p.icon;
@@ -65,8 +84,21 @@ function update(){
   document.getElementById('status').textContent=p.status;
   idx=(idx+1)%pulses.length;
 }
+
+function updateLanguage(lang){
+  pulses=translations[lang]?translations[lang].pulses:translations.tr.pulses;
+  idx=0;
+  update();
+}
+
 update();
 setInterval(update,7000);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
 
 // Theme support
 (function(){

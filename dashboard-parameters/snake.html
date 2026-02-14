@@ -155,7 +155,7 @@ body.high-contrast .switch-btn:hover{color:#FFFFFF}
     <input type="text" id="nameInput" placeholder="İsminizi girin" maxlength="12" autocomplete="off" spellcheck="false">
     <div id="prevPlayers" class="prev-players"></div>
     <button class="start-btn" id="startBtn" disabled>Başla</button>
-    <p style="margin-top:10px;font-size:10px;color:#86868b">WASD veya ok tuşları</p>
+    <p id="controlsText" style="margin-top:10px;font-size:10px;color:#86868b">WASD veya ok tuşları</p>
   </div>
 
   <!-- DEATH / LEADERBOARD SCREEN -->
@@ -163,7 +163,7 @@ body.high-contrast .switch-btn:hover{color:#FFFFFF}
     <h2 id="deathTitle">Oyun Bitti</h2>
     <div id="deathScore"></div>
     <div class="lb">
-      <div class="lb-title">LIDERLIK TABLOSU</div>
+      <div class="lb-title" id="lbTitle">LIDERLIK TABLOSU</div>
       <table class="lb-table"><tbody id="lbBody"></tbody></table>
     </div>
     <button class="replay-btn" id="replayBtn">Tekrar Oyna</button>
@@ -263,13 +263,13 @@ function renderPrevPlayers(){
   if(players.length===0)return;
   var label=document.createElement('div');
   label.className='prev-label';
-  label.textContent='ÖNCEKİ OYUNCULAR';
+  label.textContent=currentTranslations.prevPlayers;
   prevPlayersDiv.appendChild(label);
   for(var i=0;i<players.length;i++){
     var btn=document.createElement('button');
     btn.className='prev-btn';
     var pb=getPlayerBest(players[i]);
-    btn.textContent=players[i]+(pb>0?' [en yüksek: '+pb+']':'');
+    btn.textContent=players[i]+(pb>0?' ['+currentTranslations.bestLabel+': '+pb+']':'');
     btn.setAttribute('data-name',players[i]);
     btn.addEventListener('click',function(){
       nameInput.value=this.getAttribute('data-name');
@@ -299,7 +299,7 @@ function selectPlayerAndStart(){
   if(!name)return;
   currentPlayer=name;
   best=getPlayerBest(currentPlayer);
-  bestEl.textContent='En Yüksek: '+best;
+  bestEl.textContent=currentTranslations.bestScore+': '+best;
   playerHud.textContent=currentPlayer;
   startGame();
 }
@@ -313,10 +313,10 @@ function showDeath(){
   addScore(currentPlayer,score);
   if(score>best){
     best=score;
-    bestEl.textContent='En Yüksek: '+best;
+    bestEl.textContent=currentTranslations.bestScore+': '+best;
   }
 
-  deathTitle.textContent='Oyun Bitti - Skor: '+score;
+  deathTitle.textContent=currentTranslations.gameOver+' - '+currentTranslations.score+': '+score;
   deathScore.textContent=currentPlayer;
 
   // render leaderboard
@@ -352,7 +352,7 @@ function startGame(){
   snake=[{x:7,y:7},{x:6,y:7},{x:5,y:7}];
   dir={x:1,y:0};ndir={x:1,y:0};
   score=0;alive=true;particles=[];
-  scoreEl.textContent='Skor: 0';
+  scoreEl.textContent=currentTranslations.score+': 0';
   placeFood();draw();
   if(loop)clearInterval(loop);
   loop=setInterval(tick,130);
@@ -384,7 +384,7 @@ function tick(){
   for(var i=0;i<snake.length;i++){if(snake[i].x===h.x&&snake[i].y===h.y){die();return}}
   snake.unshift(h);
   if(h.x===food.x&&h.y===food.y){
-    playEat();score++;scoreEl.textContent='Skor: '+score;
+    playEat();score++;scoreEl.textContent=currentTranslations.score+': '+score;
     spawnParticles(food.x*S+S/2,food.y*S+S/2,8);placeFood();
   }else{snake.pop()}
   draw();
@@ -455,6 +455,60 @@ document.addEventListener('touchend',function(e){
   if(Math.abs(dx)<10&&Math.abs(dy)<10)return;
   if(Math.abs(dx)>Math.abs(dy)){if(dx>0&&dir.x!==-1)ndir={x:1,y:0};else if(dx<0&&dir.x!==1)ndir={x:-1,y:0}}
   else{if(dy>0&&dir.y!==-1)ndir={x:0,y:1};else if(dy<0&&dir.y!==1)ndir={x:0,y:-1}}
+});
+
+// --- LANGUAGE SUPPORT ---
+var translations={
+  tr:{
+    score:'Skor',
+    bestScore:'En Yüksek',
+    namePlaceholder:'İsminizi girin',
+    startBtn:'Başla',
+    controlsText:'WASD veya ok tuşları',
+    prevPlayers:'ÖNCEKİ OYUNCULAR',
+    bestLabel:'en yüksek',
+    gameOver:'Oyun Bitti',
+    leaderboard:'LIDERLIK TABLOSU',
+    replayBtn:'Tekrar Oyna',
+    switchBtn:'Oyuncu değiştir'
+  },
+  en:{
+    score:'Score',
+    bestScore:'Best',
+    namePlaceholder:'Enter your name',
+    startBtn:'Start',
+    controlsText:'WASD or arrow keys',
+    prevPlayers:'PREVIOUS PLAYERS',
+    bestLabel:'best',
+    gameOver:'Game Over',
+    leaderboard:'LEADERBOARD',
+    replayBtn:'Play Again',
+    switchBtn:'Switch player'
+  }
+};
+
+var currentTranslations=translations.tr;
+
+function updateLanguage(lang){
+  currentTranslations=translations[lang]||translations.tr;
+  scoreEl.textContent=currentTranslations.score+': '+(score||0);
+  bestEl.textContent=currentTranslations.bestScore+': '+best;
+  nameInput.placeholder=currentTranslations.namePlaceholder;
+  startBtn.textContent=currentTranslations.startBtn;
+  document.getElementById('controlsText').textContent=currentTranslations.controlsText;
+  document.getElementById('lbTitle').textContent=currentTranslations.leaderboard;
+  replayBtn.textContent=currentTranslations.replayBtn;
+  switchBtn.textContent=currentTranslations.switchBtn;
+  renderPrevPlayers();
+}
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+updateLanguage(currentLang);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
 });
 
 // --- INIT: show login ---

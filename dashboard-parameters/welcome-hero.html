@@ -47,6 +47,33 @@ setInterval(function(){
   document.querySelector('.icon').textContent=icons[i];
 },4000);
 
+// Language support
+var translations={
+  tr:{
+    title:'PA Performance Dashboard',
+    tagline:'Gerçek zamanlı içgörüler, aksiyon alınabilir metrikler'
+  },
+  en:{
+    title:'PA Performance Dashboard',
+    tagline:'Real-time insights, actionable metrics'
+  }
+};
+
+function updateLanguage(lang){
+  var t=translations[lang]||translations.tr;
+  document.querySelector('h1').textContent=t.title;
+  document.querySelector('.tagline').textContent=t.tagline;
+}
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+updateLanguage(currentLang);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
+
 // Theme support
 (function(){
   var theme=localStorage.getItem('dashboard-theme')||'light';

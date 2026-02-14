@@ -61,45 +61,45 @@ body.high-contrast .footer{border-top:2px solid #FFFF00;color:#FFFF00}
 <body>
 <div class="container">
   <div class="header">
-    <h1><span>🎙️</span> PODCAST'LER</h1>
+    <h1><span>🎙️</span> <span id="headerTitle">PODCAST'LER</span></h1>
   </div>
   <div class="list" id="area">
     <div class="list-inner" id="inner">
 
       <a class="item" href="https://www.lennyspodcast.com/" target="_blank">
         <div class="name">Lenny's Podcast</div>
-        <div class="desc">Sektörün en popüler PM podcast'i. Lenny Rachitsky'nin ürün liderleriyle derinlemesine sohbetleri.</div>
+        <div class="desc" id="desc1">Sektörün en popüler PM podcast'i. Lenny Rachitsky'nin ürün liderleriyle derinlemesine sohbetleri.</div>
       </a>
 
       <a class="item" href="https://productschool.com/product-podcast/" target="_blank">
         <div class="name">The Product Podcast</div>
-        <div class="desc">Product School tarafından. Google, Netflix, Meta gibi şirketlerden PM'lerle röportajlar. 300+ bölüm.</div>
+        <div class="desc" id="desc2">Product School tarafından. Google, Netflix, Meta gibi şirketlerden PM'lerle röportajlar. 300+ bölüm.</div>
       </a>
 
       <a class="item" href="https://melissaperri.com/podcast" target="_blank">
         <div class="name">Product Thinking</div>
-        <div class="desc">Melissa Perri'nin podcast'i. "Dear Melissa" bölümleriyle pratik tavsiyeler.</div>
+        <div class="desc" id="desc3">Melissa Perri'nin podcast'i. "Dear Melissa" bölümleriyle pratik tavsiyeler.</div>
       </a>
 
       <a class="item" href="https://www.oneknightinproduct.com/" target="_blank">
         <div class="name">One Knight in Product</div>
-        <div class="desc">Jason Knight'ın konvansiyonel olmayan bakış açıları ve cesur tartışmaları.</div>
+        <div class="desc" id="desc4">Jason Knight'ın konvansiyonel olmayan bakış açıları ve cesur tartışmaları.</div>
       </a>
 
       <a class="item" href="https://mastersofscale.com/" target="_blank">
         <div class="name">Masters of Scale</div>
-        <div class="desc">Reid Hoffman (LinkedIn co-founder) ile şirketlerin ölçeklenme hikayeleri.</div>
+        <div class="desc" id="desc5">Reid Hoffman (LinkedIn co-founder) ile şirketlerin ölçeklenme hikayeleri.</div>
       </a>
 
       <a class="item" href="https://www.theproductmanager.com/topics/product-manager-podcast/" target="_blank">
         <div class="name">The Product Manager Podcast</div>
-        <div class="desc">Hannah Clark'ın sunduğu, UX'ten AI'ya geniş kapsamlı tartışmalar.</div>
+        <div class="desc" id="desc6">Hannah Clark'ın sunduğu, UX'ten AI'ya geniş kapsamlı tartışmalar.</div>
       </a>
 
     </div>
   </div>
   <div class="footer">
-    <span>PM Podcast'ler</span>
+    <span id="footerLabel">PM Podcast'ler</span>
     <span>SESTEK</span>
   </div>
 </div>
@@ -107,6 +107,51 @@ body.high-contrast .footer{border-top:2px solid #FFFF00;color:#FFFF00}
 (function(){var area=document.getElementById('area'),inner=document.getElementById('inner');function calc(){var aH=area.offsetHeight,iH=inner.scrollHeight;if(iH<=aH){inner.style.animation='none';inner.style.position='relative'}else{var pct=((iH-aH)/iH*100).toFixed(1);inner.style.setProperty('--offset','-'+pct+'%');inner.style.animation='scroll 35s ease-in-out infinite'}}setTimeout(calc,100);window.addEventListener('resize',function(){setTimeout(calc,100)});
 // Linkleri JavaScript ile aç
 document.querySelectorAll('.item').forEach(function(item){item.addEventListener('click',function(e){e.preventDefault();var url=this.getAttribute('href');if(url)window.open(url,'_blank')})})})();
+
+// Language support
+var translations={
+  tr:{
+    headerTitle:"PODCAST'LER",
+    desc1:"Sektörün en popüler PM podcast'i. Lenny Rachitsky'nin ürün liderleriyle derinlemesine sohbetleri.",
+    desc2:"Product School tarafından. Google, Netflix, Meta gibi şirketlerden PM'lerle röportajlar. 300+ bölüm.",
+    desc3:"Melissa Perri'nin podcast'i. \"Dear Melissa\" bölümleriyle pratik tavsiyeler.",
+    desc4:"Jason Knight'ın konvansiyonel olmayan bakış açıları ve cesur tartışmaları.",
+    desc5:"Reid Hoffman (LinkedIn co-founder) ile şirketlerin ölçeklenme hikayeleri.",
+    desc6:"Hannah Clark'ın sunduğu, UX'ten AI'ya geniş kapsamlı tartışmalar.",
+    footerLabel:"PM Podcast'ler"
+  },
+  en:{
+    headerTitle:'PODCASTS',
+    desc1:"The industry's most popular PM podcast. Lenny Rachitsky's in-depth conversations with product leaders.",
+    desc2:"By Product School. Interviews with PMs from Google, Netflix, Meta, and more. 300+ episodes.",
+    desc3:"Melissa Perri's podcast. Practical advice through \"Dear Melissa\" segments.",
+    desc4:"Jason Knight's unconventional perspectives and bold discussions.",
+    desc5:"Scaling stories with Reid Hoffman (LinkedIn co-founder).",
+    desc6:"Hosted by Hannah Clark, covering wide-ranging discussions from UX to AI.",
+    footerLabel:'PM Podcasts'
+  }
+};
+
+function updateLanguage(lang){
+  var t=translations[lang]||translations.tr;
+  document.getElementById('headerTitle').textContent=t.headerTitle;
+  document.getElementById('desc1').textContent=t.desc1;
+  document.getElementById('desc2').textContent=t.desc2;
+  document.getElementById('desc3').textContent=t.desc3;
+  document.getElementById('desc4').textContent=t.desc4;
+  document.getElementById('desc5').textContent=t.desc5;
+  document.getElementById('desc6').textContent=t.desc6;
+  document.getElementById('footerLabel').textContent=t.footerLabel;
+}
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+updateLanguage(currentLang);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
 
 // Theme support
 (function(){

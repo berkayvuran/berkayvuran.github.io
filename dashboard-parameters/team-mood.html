@@ -54,15 +54,34 @@ body.high-contrast .mood-label{color:#FFFF00}
   <div class="mood-label" id="percent">85%</div>
 </div>
 <script>
-var moods=[
-  {emoji:'😊',status:'Takım Morali: Yüksek!',msg:'Sprint gidiyor, kahve akıyor ☕',level:85},
-  {emoji:'🚀',status:'Takım Morali: Füze Gibi!',msg:'Bugün Production\'a 5 bug göndermedik! 🎉',level:95},
-  {emoji:'😅',status:'Takım Morali: Idare Eder',msg:'Meeting sayısı: 7. Gün henüz bitmedi...',level:60},
-  {emoji:'🔥',status:'Takım Morali: Ateş Gibi!',msg:'Zero bugs, full coffee, pure magic ✨',level:100},
-  {emoji:'😴',status:'Takım Morali: Uykulu',msg:'Pazartesi sabahı. Yeterli açıklama.',level:45},
-  {emoji:'🎯',status:'Takım Morali: Odaklanmış',msg:'Deep work mode: ON. Bildirimler: OFF.',level:90}
-];
+// Language support
+var translations={
+  tr:{
+    moods:[
+      {emoji:'😊',status:'Takım Morali: Yüksek!',msg:'Sprint gidiyor, kahve akıyor ☕',level:85},
+      {emoji:'🚀',status:'Takım Morali: Füze Gibi!',msg:'Bugün Production\'a 5 bug göndermedik! 🎉',level:95},
+      {emoji:'😅',status:'Takım Morali: Idare Eder',msg:'Meeting sayısı: 7. Gün henüz bitmedi...',level:60},
+      {emoji:'🔥',status:'Takım Morali: Ateş Gibi!',msg:'Zero bugs, full coffee, pure magic ✨',level:100},
+      {emoji:'😴',status:'Takım Morali: Uykulu',msg:'Pazartesi sabahı. Yeterli açıklama.',level:45},
+      {emoji:'🎯',status:'Takım Morali: Odaklanmış',msg:'Deep work mode: ON. Bildirimler: OFF.',level:90}
+    ]
+  },
+  en:{
+    moods:[
+      {emoji:'😊',status:'Team Mood: High!',msg:'Sprint is flowing, coffee is pouring ☕',level:85},
+      {emoji:'🚀',status:'Team Mood: Rocket Speed!',msg:'Didn\'t push 5 bugs to Production today! 🎉',level:95},
+      {emoji:'😅',status:'Team Mood: Hanging In',msg:'Meeting count: 7. Day isn\'t over yet...',level:60},
+      {emoji:'🔥',status:'Team Mood: On Fire!',msg:'Zero bugs, full coffee, pure magic ✨',level:100},
+      {emoji:'😴',status:'Team Mood: Sleepy',msg:'Monday morning. Enough said.',level:45},
+      {emoji:'🎯',status:'Team Mood: Focused',msg:'Deep work mode: ON. Notifications: OFF.',level:90}
+    ]
+  }
+};
+
+var currentLang=localStorage.getItem('dashboard-lang')||'tr';
+var moods=translations[currentLang].moods;
 var current=0;
+
 function update(){
   var m=moods[current];
   document.getElementById('emoji').textContent=m.emoji;
@@ -75,9 +94,22 @@ function update(){
   setTimeout(function(){fill.style.animation='fillBar 2s ease-out forwards'},10);
   current=(current+1)%moods.length;
 }
+
+function updateLanguage(lang){
+  moods=translations[lang]?translations[lang].moods:translations.tr.moods;
+  current=0;
+  update();
+}
+
 update();
 setInterval(update,6000);
 document.getElementById('emoji').addEventListener('click',update);
+
+window.addEventListener('storage',function(e){
+  if(e.key==='dashboard-lang'){
+    updateLanguage(e.newValue||'tr');
+  }
+});
 
 // Theme support
 (function(){
