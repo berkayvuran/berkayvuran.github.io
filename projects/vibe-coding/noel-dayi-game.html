@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Noel Dayı: The Game | Grafi2000 Tribute</title>
+    <meta name="description" content="Grafi2000'in efsanevi Noel Dayı karakteri oyun oldu! Hediye dağıt, beğenmeyeni tokatla. Ticari amaç gütmeyen bir fan projesidir.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Russo+One&display=swap');
+
+        :root {
+            --night-sky: #0a0a2e;
+            --snow-white: #ffffff;
+            --noel-red: #d42426;
+            --noel-dark-red: #8b1a1a;
+            --gold: #ffd700;
+            --building-color: #2a1a3a;
+            --window-glow: #ffcc44;
+        }
+
+        body {
+            background: var(--night-sky);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Bungee', 'Russo One', cursive;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        canvas {
+            display: block;
+            image-rendering: auto;
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .mobile-controls .ctrl-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+
+        .mobile-controls .dpad {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        .mobile-controls .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        .ctrl-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            pointer-events: auto;
+            touch-action: none;
+        }
+
+        .ctrl-btn.action-jump {
+            background: rgba(100,180,255,0.3);
+            border-color: rgba(100,180,255,0.7);
+        }
+
+        .ctrl-btn.action-throw {
+            background: rgba(212,36,38,0.3);
+            border-color: rgba(212,36,38,0.7);
+            width: 70px;
+            height: 70px;
+            font-size: 28px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-controls { display: block; }
+        }
+
+        /* Disclaimer overlay */
+        .disclaimer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.85);
+            color: #aaa;
+            font-family: sans-serif;
+            font-size: 10px;
+            text-align: center;
+            padding: 4px 10px;
+            z-index: 200;
+            line-height: 1.4;
+        }
+
+        .disclaimer-bar a {
+            color: #ccc;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- YouTube Background Music Player (hidden) -->
+    <div id="ytPlayer" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;pointer-events:none;"></div>
+
+    <div class="mobile-controls" id="mobileControls">
+        <div class="ctrl-row">
+            <div class="dpad">
+                <button class="ctrl-btn" id="btnLeft">&#9664;</button>
+                <button class="ctrl-btn" id="btnRight">&#9654;</button>
+            </div>
+            <div class="actions">
+                <button class="ctrl-btn action-jump" id="btnJump">&#8679;</button>
+                <button class="ctrl-btn action-throw" id="btnThrow">&#127873;</button>
+                <button class="ctrl-btn" id="btnSpit" style="background:rgba(100,200,50,0.3);border-color:rgba(100,200,50,0.7);width:55px;height:55px;font-size:20px;">&#128169;</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer-bar">
+        Bu proje ticari ama&ccedil; g&uuml;tmez. Varol Ya&#351;aro&#287;lu, Erdil Ya&#351;aro&#287;lu, Berk Tokay ve Grafi2000'e hayranl&#305;kla yap&#305;lm&#305;&#351; bir fan projesidir.
+    </div>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+    // ============================================================
+    //  NOEL DAYI: THE GAME - Grafi2000 Tribute
+    //  A fan project, non-commercial. All rights to original
+    //  creators: Varol Yaşaroğlu, Erdil Yaşaroğlu, Berk Tokay.
+    // ============================================================
+
+    // ---- YOUTUBE BACKGROUND MUSIC ----
+    let ytPlayer = null;
+    let ytReady = false;
+    let musicStarted = false;
+
+    function onYouTubeIframeAPIReady() {
+        ytPlayer = new YT.Player('ytPlayer', {
+            height: '1',
+            width: '1',
+            videoId: 'Cea2hprTx8o',
+            playerVars: {
+                autoplay: 0,
+                loop: 1,
+                playlist: 'Cea2hprTx8o', // needed for loop to work
+                controls: 0,
+                disablekb: 1,
+                fs: 0,
+                modestbranding: 1,
+                rel: 0,
+            },
+            events: {
+                onReady: function() { ytReady = true; },
+                onStateChange: function(e) {
+                    // If video ends, replay (backup for loop)
+                    if (e.data === YT.PlayerState.ENDED) {
+                        ytPlayer.seekTo(0);
+                        ytPlayer.playVideo();
+                    }
+                }
+            }
+        });
+    }
+
+    function startMusic() {
+        if (ytReady && ytPlayer) {
+            ytPlayer.setVolume(35); // Background level, not overpowering
+            ytPlayer.seekTo(0);
+            ytPlayer.playVideo();
+            musicStarted = true;
+        }
+    }
+
+    function stopMusic() {
+        if (ytReady && ytPlayer && musicStarted) {
+            ytPlayer.pauseVideo();
+        }
+    }
+
+    function resumeMusic() {
+        if (ytReady && ytPlayer && musicStarted) {
+            ytPlayer.playVideo();
+        }
+    }
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // ---- SOUND ENGINE (Web Audio API) ----
+    let audioCtx = null;
+
+    function initAudio() {
+        if (audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playSound(type) {
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+
+        if (type === 'throw') {
+            // Whoosh sound
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+
+            // Noise burst for whoosh
+            const bufferSize = audioCtx.sampleRate * 0.1;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+            const noise = audioCtx.createBufferSource();
+            const noiseGain = audioCtx.createGain();
+            noise.buffer = buffer;
+            noiseGain.gain.setValueAtTime(0.08, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+            noise.connect(noiseGain).connect(audioCtx.destination);
+            noise.start(now);
+        }
+
+        if (type === 'hit_happy') {
+            // Cheerful ding
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, now);
+            osc.frequency.setValueAtTime(1100, now + 0.08);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+
+        if (type === 'slap') {
+            // TOKAT! - Heavy slap sound
+            // Low thump
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.exponentialRampToValueAtTime(60, now + 0.15);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.2);
+
+            // Noise crack
+            const bufferSize = audioCtx.sampleRate * 0.08;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+            const noise = audioCtx.createBufferSource();
+            const noiseGain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 2000;
+            filter.Q.value = 1;
+            noise.buffer = buffer;
+            noiseGain.gain.setValueAtTime(0.35, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            noise.connect(filter).connect(noiseGain).connect(audioCtx.destination);
+            noise.start(now);
+
+            // Mid whack
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = 'square';
+            osc2.frequency.setValueAtTime(350, now);
+            osc2.frequency.exponentialRampToValueAtTime(100, now + 0.08);
+            gain2.gain.setValueAtTime(0.15, now);
+            gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            osc2.connect(gain2).connect(audioCtx.destination);
+            osc2.start(now);
+            osc2.stop(now + 0.1);
+        }
+
+        if (type === 'jump') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(250, now);
+            osc.frequency.exponentialRampToValueAtTime(500, now + 0.12);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        }
+
+        if (type === 'miss') {
+            // Sad/fail sound
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(200, now + 0.3);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+
+        if (type === 'levelup') {
+            // Triumphant fanfare
+            [523, 659, 784, 1047].forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, now + i * 0.1);
+                gain.gain.linearRampToValueAtTime(0.12, now + i * 0.1 + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.3);
+                osc.connect(gain).connect(audioCtx.destination);
+                osc.start(now + i * 0.1);
+                osc.stop(now + i * 0.1 + 0.3);
+            });
+        }
+
+        if (type === 'gameover') {
+            // Dramatic descending
+            [400, 350, 300, 200].forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, now + i * 0.2);
+                gain.gain.linearRampToValueAtTime(0.1, now + i * 0.2 + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.2 + 0.35);
+                osc.connect(gain).connect(audioCtx.destination);
+                osc.start(now + i * 0.2);
+                osc.stop(now + i * 0.2 + 0.35);
+            });
+        }
+
+        if (type === 'combo') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        }
+
+        if (type === 'spit') {
+            // Balgam! - Wet spit/splat sound
+            // Noise burst with low-pass filter (wet/sloshy)
+            const bufferSize = audioCtx.sampleRate * 0.2;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                const t = i / bufferSize;
+                data[i] = (Math.random() * 2 - 1) * Math.sin(t * Math.PI) * (1 - t * 0.5);
+            }
+            const noise = audioCtx.createBufferSource();
+            const noiseGain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800, now);
+            filter.frequency.exponentialRampToValueAtTime(200, now + 0.2);
+            filter.Q.value = 5;
+            noise.buffer = buffer;
+            noiseGain.gain.setValueAtTime(0.3, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            noise.connect(filter).connect(noiseGain).connect(audioCtx.destination);
+            noise.start(now);
+
+            // Pitch bend for extra wetness
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+            g.gain.setValueAtTime(0.1, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(g).connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        }
+
+        if (type === 'spit_hit') {
+            // Splat on hit
+            const bufferSize = audioCtx.sampleRate * 0.12;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 1.5);
+            const noise = audioCtx.createBufferSource();
+            const noiseGain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 600;
+            filter.Q.value = 3;
+            noise.buffer = buffer;
+            noiseGain.gain.setValueAtTime(0.4, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            noise.connect(filter).connect(noiseGain).connect(audioCtx.destination);
+            noise.start(now);
+        }
+    }
+
+    // ---- GAME STATE ----
+    const GAME_STATE = { MENU: 0, PLAYING: 1, GAMEOVER: 2 };
+    let state = GAME_STATE.MENU;
+    let score = 0;
+    let highScore = parseInt(localStorage.getItem('noelDayiHighScore') || '0');
+    let lives = 3;
+    let level = 1;
+    let giftCount = 20;
+    let spitCount = 3; // Balgam - special attack, limited per level
+    let gameTime = 0;
+    let screenShake = 0;
+    let combo = 0;
+    let comboTimer = 0;
+    let flashMessages = [];
+
+    // ---- RESIZE ----
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // ---- INPUT ----
+    const keys = {};
+    window.addEventListener('keydown', e => {
+        keys[e.code] = true;
+        if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'ArrowDown') e.preventDefault();
+        if (state === GAME_STATE.MENU && (e.code === 'Space' || e.code === 'Enter')) { initAudio(); startGame(); }
+        if (state === GAME_STATE.GAMEOVER && (e.code === 'Space' || e.code === 'Enter')) startGame();
+    });
+    window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+    // Mobile controls
+    const mobileState = { left: false, right: false, jump: false, throw: false, spit: false };
+
+    function setupMobileBtn(id, key) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        const start = () => { mobileState[key] = true; };
+        const end = () => { mobileState[key] = false; };
+        btn.addEventListener('touchstart', e => { e.preventDefault(); start(); });
+        btn.addEventListener('touchend', e => { e.preventDefault(); end(); });
+        btn.addEventListener('touchcancel', e => { e.preventDefault(); end(); });
+    }
+    setupMobileBtn('btnLeft', 'left');
+    setupMobileBtn('btnRight', 'right');
+    setupMobileBtn('btnJump', 'jump');
+    setupMobileBtn('btnThrow', 'throw');
+    setupMobileBtn('btnSpit', 'spit');
+
+    // Tap to start on mobile
+    canvas.addEventListener('touchstart', e => {
+        if (state === GAME_STATE.MENU || state === GAME_STATE.GAMEOVER) {
+            e.preventDefault();
+            initAudio();
+            startGame();
+        }
+    });
+    canvas.addEventListener('click', () => {
+        if (state === GAME_STATE.MENU || state === GAME_STATE.GAMEOVER) { initAudio(); startGame(); }
+    });
+
+    // ---- SNOWFLAKES ----
+    const snowflakes = [];
+    function initSnow() {
+        snowflakes.length = 0;
+        for (let i = 0; i < 120; i++) {
+            snowflakes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 3 + 1,
+                speed: Math.random() * 1.5 + 0.5,
+                wind: Math.random() * 0.5 - 0.25,
+                opacity: Math.random() * 0.6 + 0.4,
+            });
+        }
+    }
+    initSnow();
+
+    function updateSnow() {
+        for (const s of snowflakes) {
+            s.y += s.speed;
+            s.x += s.wind + Math.sin(gameTime * 0.01 + s.x * 0.01) * 0.3;
+            if (s.y > canvas.height) { s.y = -5; s.x = Math.random() * canvas.width; }
+            if (s.x > canvas.width) s.x = 0;
+            if (s.x < 0) s.x = canvas.width;
+        }
+    }
+
+    function drawSnow() {
+        for (const s of snowflakes) {
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${s.opacity})`;
+            ctx.fill();
+        }
+    }
+
+    // ---- BUILDINGS (Background) ----
+    const buildings = [];
+    function initBuildings() {
+        buildings.length = 0;
+        let x = -50;
+        while (x < canvas.width + 200) {
+            const w = 80 + Math.random() * 100;
+            const h = 120 + Math.random() * 200;
+            const windows = [];
+            const cols = Math.floor(w / 30);
+            const rows = Math.floor(h / 40);
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (Math.random() > 0.3) {
+                        windows.push({
+                            rx: 10 + c * 28,
+                            ry: 15 + r * 38,
+                            lit: Math.random() > 0.4
+                        });
+                    }
+                }
+            }
+            buildings.push({ x, w, h, windows, color: `hsl(${250 + Math.random()*30}, 30%, ${12 + Math.random()*8}%)` });
+            x += w + 5 + Math.random() * 20;
+        }
+    }
+
+    function drawBuildings() {
+        const groundY = canvas.height * 0.78;
+        for (const b of buildings) {
+            ctx.fillStyle = b.color;
+            ctx.fillRect(b.x, groundY - b.h, b.w, b.h + 50);
+
+            for (const win of b.windows) {
+                ctx.fillStyle = win.lit ? `rgba(255,204,68,${0.6 + Math.sin(gameTime * 0.02 + win.rx) * 0.2})` : 'rgba(20,20,40,0.8)';
+                ctx.fillRect(b.x + win.rx, groundY - b.h + win.ry, 18, 24);
+                ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(b.x + win.rx, groundY - b.h + win.ry, 18, 24);
+                ctx.beginPath();
+                ctx.moveTo(b.x + win.rx + 9, groundY - b.h + win.ry);
+                ctx.lineTo(b.x + win.rx + 9, groundY - b.h + win.ry + 24);
+                ctx.moveTo(b.x + win.rx, groundY - b.h + win.ry + 12);
+                ctx.lineTo(b.x + win.rx + 18, groundY - b.h + win.ry + 12);
+                ctx.stroke();
+            }
+
+            // Snow on roof
+            ctx.fillStyle = '#e8e8f0';
+            ctx.beginPath();
+            ctx.moveTo(b.x - 3, groundY - b.h);
+            ctx.quadraticCurveTo(b.x + b.w / 2, groundY - b.h - 8, b.x + b.w + 3, groundY - b.h);
+            ctx.lineTo(b.x + b.w + 3, groundY - b.h + 5);
+            ctx.lineTo(b.x - 3, groundY - b.h + 5);
+            ctx.fill();
+        }
+    }
+
+    // ---- GROUND ----
+    function drawGround() {
+        const groundY = canvas.height * 0.78;
+        const gradient = ctx.createLinearGradient(0, groundY, 0, canvas.height);
+        gradient.addColorStop(0, '#e8e8f0');
+        gradient.addColorStop(0.1, '#d0d0e0');
+        gradient.addColorStop(1, '#a0a0c0');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+
+        ctx.fillStyle = '#f0f0ff';
+        for (let x = 0; x < canvas.width; x += 60) {
+            ctx.beginPath();
+            ctx.ellipse(x + 30, groundY, 35, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    // ---- STARS ----
+    const stars = [];
+    function initStars() {
+        stars.length = 0;
+        for (let i = 0; i < 60; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height * 0.4,
+                r: Math.random() * 1.5 + 0.5,
+                twinkle: Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    function drawStars() {
+        for (const s of stars) {
+            const alpha = 0.5 + Math.sin(gameTime * 0.03 + s.twinkle) * 0.3;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,220,${alpha})`;
+            ctx.fill();
+        }
+    }
+
+    // ============================================================
+    //  NOEL DAYI CHARACTER - Faithful to Grafi2000 Original
+    //  Reference: Square jaw, dark tan skin, stubble dots,
+    //  thick black eyebrows, red suit with gold trim, red hat
+    // ============================================================
+    const player = {
+        x: 100, y: 0, w: 60, h: 100,
+        vx: 0, vy: 0,
+        onGround: false,
+        facing: 1,
+        frame: 0,
+        throwCooldown: 0,
+        spitCooldown: 0,
+        slapAnim: 0,
+        spitAnim: 0,
+        walkCycle: 0,
+    };
+
+    function drawNoelDayi() {
+        const p = player;
+        const px = p.x;
+        const py = p.y;
+        const f = p.facing;
+
+        ctx.save();
+        ctx.translate(px + p.w / 2, py + p.h);
+        ctx.scale(f, 1);
+
+        const bob = p.onGround ? Math.sin(p.walkCycle * 0.15) * 2 : 0;
+        const legSpread = p.onGround && Math.abs(p.vx) > 0.5 ? Math.sin(p.walkCycle * 0.15) * 6 : 0;
+        const armSwing = p.onGround && Math.abs(p.vx) > 0.5 ? Math.sin(p.walkCycle * 0.15) * 12 : 0;
+
+        // === LEGS ===
+        ctx.fillStyle = '#1a1a1a';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2.5;
+        // Left leg
+        ctx.fillRect(-12 - legSpread, -35, 12, 28);
+        ctx.strokeRect(-12 - legSpread, -35, 12, 28);
+        // Right leg
+        ctx.fillRect(0 + legSpread, -35, 12, 28);
+        ctx.strokeRect(0 + legSpread, -35, 12, 28);
+
+        // Boots (dark red/brown)
+        ctx.fillStyle = '#5a1a1a';
+        ctx.fillRect(-14 - legSpread, -9, 16, 10);
+        ctx.strokeRect(-14 - legSpread, -9, 16, 10);
+        ctx.fillRect(-2 + legSpread, -9, 16, 10);
+        ctx.strokeRect(-2 + legSpread, -9, 16, 10);
+
+        // === TORSO (Red coat with gold trim - like original) ===
+        ctx.fillStyle = '#cc2222';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-24, -36 + bob);
+        ctx.lineTo(-24, -82 + bob);
+        ctx.lineTo(24, -82 + bob);
+        ctx.lineTo(24, -36 + bob);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.stroke();
+
+        // Gold trim on coat edges (like the original with yellow zigzag border)
+        ctx.strokeStyle = '#daa520';
+        ctx.lineWidth = 3;
+        // Left edge trim
+        ctx.beginPath();
+        ctx.moveTo(-24, -82 + bob);
+        ctx.lineTo(-24, -36 + bob);
+        ctx.stroke();
+        // Right edge trim
+        ctx.beginPath();
+        ctx.moveTo(24, -82 + bob);
+        ctx.lineTo(24, -36 + bob);
+        ctx.stroke();
+        // Bottom trim
+        ctx.beginPath();
+        ctx.moveTo(-24, -36 + bob);
+        ctx.lineTo(24, -36 + bob);
+        ctx.stroke();
+        // Top trim / collar
+        ctx.beginPath();
+        ctx.moveTo(-24, -82 + bob);
+        ctx.lineTo(24, -82 + bob);
+        ctx.stroke();
+
+        // Center coat line
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, -82 + bob);
+        ctx.lineTo(0, -36 + bob);
+        ctx.stroke();
+
+        // Belt
+        ctx.fillStyle = '#111';
+        ctx.fillRect(-24, -50 + bob, 48, 7);
+        ctx.fillStyle = '#daa520';
+        ctx.fillRect(-6, -50 + bob, 12, 7);
+
+        // === ARMS ===
+        // Left arm (back)
+        ctx.save();
+        ctx.translate(-22, -75 + bob);
+        ctx.rotate((15 - armSwing) * Math.PI / 180);
+        ctx.fillStyle = '#cc2222';
+        ctx.fillRect(-10, 0, 12, 30);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(-10, 0, 12, 30);
+        // Gold cuff
+        ctx.fillStyle = '#daa520';
+        ctx.fillRect(-10, 25, 12, 4);
+        // Hand
+        ctx.fillStyle = '#c69c6d';
+        ctx.beginPath();
+        ctx.arc(-4, 34, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Gift sack on back
+        ctx.fillStyle = '#7a4a2a';
+        ctx.beginPath();
+        ctx.ellipse(-6, -5, 16, 20, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Sack tie
+        ctx.strokeStyle = '#daa520';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-10, -22);
+        ctx.lineTo(-2, -24);
+        ctx.stroke();
+        ctx.restore();
+
+        // Right arm (front)
+        ctx.save();
+        ctx.translate(22, -75 + bob);
+        ctx.rotate((-15 + armSwing) * Math.PI / 180);
+        ctx.fillStyle = '#cc2222';
+        ctx.fillRect(-2, 0, 12, 30);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(-2, 0, 12, 30);
+        // Gold cuff
+        ctx.fillStyle = '#daa520';
+        ctx.fillRect(-2, 25, 12, 4);
+        // Hand
+        ctx.fillStyle = '#c69c6d';
+        ctx.beginPath();
+        ctx.arc(4, 34, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Slap effect
+        if (p.slapAnim > 0) {
+            ctx.fillStyle = '#c69c6d';
+            ctx.beginPath();
+            ctx.arc(10, 36, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(255,50,50,0.5)';
+            ctx.fill();
+        }
+        ctx.restore();
+
+        // === NECK ===
+        ctx.fillStyle = '#c69c6d';
+        ctx.fillRect(-6, -88 + bob, 12, 8);
+
+        // === HEAD (SQUARE JAW - faithful to original!) ===
+        // The original has a distinctly square/rectangular head shape
+        ctx.fillStyle = '#c69c6d'; // Darker tan skin like original
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#000';
+
+        // Square head shape
+        ctx.beginPath();
+        ctx.moveTo(-18, -88 + bob);   // jaw left
+        ctx.lineTo(-18, -115 + bob);  // side left
+        ctx.quadraticCurveTo(-18, -125 + bob, -10, -125 + bob); // top-left round
+        ctx.lineTo(10, -125 + bob);    // top
+        ctx.quadraticCurveTo(18, -125 + bob, 18, -115 + bob);   // top-right round
+        ctx.lineTo(18, -88 + bob);    // side right
+        ctx.quadraticCurveTo(18, -85 + bob, 12, -85 + bob);    // jaw right round
+        ctx.lineTo(-12, -85 + bob);    // chin
+        ctx.quadraticCurveTo(-18, -85 + bob, -18, -88 + bob);  // jaw left round
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // === EARS ===
+        // Left ear
+        ctx.fillStyle = '#c69c6d';
+        ctx.beginPath();
+        ctx.ellipse(-20, -105 + bob, 5, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Right ear
+        ctx.beginPath();
+        ctx.ellipse(20, -105 + bob, 5, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // === HAIR (short black hair visible under hat) ===
+        ctx.fillStyle = '#1a1a1a';
+        ctx.beginPath();
+        ctx.moveTo(-17, -115 + bob);
+        ctx.lineTo(-17, -108 + bob);
+        ctx.lineTo(-14, -110 + bob);
+        ctx.lineTo(14, -110 + bob);
+        ctx.lineTo(17, -108 + bob);
+        ctx.lineTo(17, -115 + bob);
+        ctx.closePath();
+        ctx.fill();
+
+        // === EYEBROWS (thick, angry, black - KEY feature) ===
+        ctx.fillStyle = '#000';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 4;
+        // Left eyebrow (angled down toward center = angry)
+        ctx.beginPath();
+        ctx.moveTo(-14, -114 + bob);
+        ctx.lineTo(-4, -110 + bob);
+        ctx.stroke();
+        // Right eyebrow
+        ctx.beginPath();
+        ctx.moveTo(14, -114 + bob);
+        ctx.lineTo(4, -110 + bob);
+        ctx.stroke();
+
+        // === EYES (small, dark, menacing) ===
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.ellipse(-9, -107 + bob, 4.5, 3.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(9, -107 + bob, 4.5, 3.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        // Pupils (looking forward/slightly down)
+        ctx.fillStyle = '#111';
+        ctx.beginPath();
+        ctx.arc(-8, -106 + bob, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(10, -106 + bob, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // === NOSE (prominent, angular - like original) ===
+        ctx.fillStyle = '#b8845a';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -107 + bob);
+        ctx.lineTo(4, -95 + bob);
+        ctx.lineTo(-2, -94 + bob);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // === STUBBLE (dots pattern - KEY feature from original!) ===
+        // The original has distinctive dot-pattern stubble, not a full beard
+        ctx.fillStyle = '#5a4a3a';
+        const stubbleArea = [
+            // Chin area
+            [-10,-90], [-6,-89], [-2,-88], [2,-89], [6,-90], [10,-91],
+            [-8,-92], [-4,-91], [0,-91], [4,-92], [8,-93],
+            [-12,-93], [-6,-93], [0,-93], [6,-94], [12,-94],
+            // Cheeks
+            [-14,-96], [-12,-98], [-14,-100],
+            [14,-96], [12,-98], [14,-100],
+            // Jaw line
+            [-16,-91], [-14,-89], [-12,-87], [-8,-86], [-4,-86],
+            [0,-86], [4,-86], [8,-87], [12,-89], [14,-91], [16,-93],
+            // More density
+            [-10,-95], [-6,-96], [-2,-95], [2,-96], [6,-95], [10,-96],
+            [-8,-88], [0,-87], [8,-88],
+        ];
+        for (const [sx, sy] of stubbleArea) {
+            ctx.beginPath();
+            ctx.arc(sx, sy + bob, 1.2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // === MOUTH ===
+        if (p.spitAnim > 0) {
+            // Mouth open wide (spitting!)
+            ctx.fillStyle = '#4a1a1a';
+            ctx.beginPath();
+            ctx.ellipse(0, -92 + bob, 7, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // Teeth
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(-4, -96 + bob, 8, 2);
+        } else {
+            // Normal mouth (slight frown/tough expression)
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(-7, -93 + bob);
+            ctx.quadraticCurveTo(0, -90 + bob, 7, -93 + bob);
+            ctx.stroke();
+        }
+
+        // === SANTA HAT (red with white trim - faithful to original) ===
+        ctx.fillStyle = '#cc2222';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-22, -118 + bob);
+        // Hat body curves to the right and droops
+        ctx.quadraticCurveTo(-5, -155 + bob, 25, -140 + bob);
+        ctx.lineTo(20, -118 + bob);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // White fur trim band at base of hat
+        ctx.fillStyle = '#fff';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-22, -115 + bob);
+        ctx.quadraticCurveTo(0, -120 + bob, 22, -115 + bob);
+        ctx.lineTo(22, -122 + bob);
+        ctx.quadraticCurveTo(0, -127 + bob, -22, -122 + bob);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // White pompom
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(25, -140 + bob, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    // ---- GIFTS ----
+    const gifts = [];
+
+    function throwGift() {
+        if (giftCount <= 0 || player.throwCooldown > 0) return;
+        giftCount--;
+        player.throwCooldown = 20;
+        playSound('throw');
+        gifts.push({
+            x: player.x + (player.facing === 1 ? player.w : 0),
+            y: player.y + 30,
+            vx: player.facing * 8,
+            vy: -4,
+            w: 20, h: 20,
+            active: true,
+            color: ['#d42426', '#2ecc71', '#3498db', '#f39c12', '#9b59b6'][Math.floor(Math.random() * 5)],
+            ribbonColor: ['#ffd700', '#fff', '#ff69b4'][Math.floor(Math.random() * 3)],
+        });
+    }
+
+    function drawGift(g) {
+        ctx.fillStyle = g.color;
+        ctx.fillRect(g.x, g.y, g.w, g.h);
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(g.x, g.y, g.w, g.h);
+        ctx.strokeStyle = g.ribbonColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(g.x + g.w / 2, g.y);
+        ctx.lineTo(g.x + g.w / 2, g.y + g.h);
+        ctx.moveTo(g.x, g.y + g.h / 2);
+        ctx.lineTo(g.x + g.w, g.y + g.h / 2);
+        ctx.stroke();
+        ctx.fillStyle = g.ribbonColor;
+        ctx.beginPath();
+        ctx.ellipse(g.x + g.w / 2 - 4, g.y, 5, 3, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(g.x + g.w / 2 + 4, g.y, 5, 3, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // ---- BALGAM (Spit - Special Attack) ----
+    const spits = [];
+
+    function throwSpit() {
+        if (spitCount <= 0 || player.spitCooldown > 0) return;
+        spitCount--;
+        player.spitCooldown = 40; // Longer cooldown than gift
+        player.spitAnim = 15;
+        playSound('spit');
+        spits.push({
+            x: player.x + (player.facing === 1 ? player.w + 5 : -10),
+            y: player.y + 35, // mouth level
+            vx: player.facing * 10, // faster than gift
+            vy: -1,
+            w: 14, h: 10,
+            active: true,
+            wobble: 0,
+            trail: [],
+        });
+    }
+
+    function drawSpit(s) {
+        // Trail (dripping effect)
+        for (let i = 0; i < s.trail.length; i++) {
+            const t = s.trail[i];
+            const alpha = (i / s.trail.length) * 0.4;
+            ctx.fillStyle = `rgba(140, 200, 60, ${alpha})`;
+            ctx.beginPath();
+            ctx.ellipse(t.x, t.y, 4 - i * 0.3, 3 - i * 0.2, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Main spit blob
+        s.wobble += 0.3;
+        const wobX = Math.sin(s.wobble) * 2;
+        const wobY = Math.cos(s.wobble * 1.3) * 1;
+
+        // Outer glow
+        ctx.fillStyle = 'rgba(100, 180, 40, 0.3)';
+        ctx.beginPath();
+        ctx.ellipse(s.x + s.w/2 + wobX, s.y + s.h/2 + wobY, s.w/2 + 4, s.h/2 + 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Main blob
+        ctx.fillStyle = '#7ab832';
+        ctx.beginPath();
+        ctx.ellipse(s.x + s.w/2 + wobX, s.y + s.h/2 + wobY, s.w/2 + 1, s.h/2, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#4a7a1a';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Highlight
+        ctx.fillStyle = 'rgba(200, 255, 100, 0.5)';
+        ctx.beginPath();
+        ctx.ellipse(s.x + s.w/2 - 2 + wobX, s.y + s.h/2 - 2 + wobY, 3, 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // ---- CHILDREN (NPCs) ----
+    const children = [];
+    let childSpawnTimer = 0;
+
+    function spawnChild() {
+        const fromRight = Math.random() > 0.3;
+        const groundY = canvas.height * 0.78;
+        const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
+        children.push({
+            x: fromRight ? canvas.width + 30 : -30,
+            y: groundY - 55,
+            w: 30, h: 55,
+            vx: fromRight ? -(1 + Math.random() * 1.5) : (1 + Math.random() * 1.5),
+            active: true,
+            hit: false,
+            reaction: null,
+            reactionTimer: 0,
+            slapTimer: 0,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            hairColor: ['#4a3200', '#1a1a1a', '#8B4513', '#DAA520'][Math.floor(Math.random() * 4)],
+        });
+    }
+
+    function drawChild(c) {
+        ctx.save();
+        ctx.translate(c.x + c.w / 2, c.y);
+
+        const scale = c.slapTimer > 0 ? 1 + Math.sin(c.slapTimer * 0.5) * 0.1 : 1;
+        ctx.scale(c.vx > 0 ? 1 : -1, scale);
+
+        if (c.slapTimer > 0) {
+            ctx.rotate(Math.sin(c.slapTimer * 0.8) * 0.2);
+        }
+
+        // Legs
+        const walk = Math.sin(gameTime * 0.1 + c.x) * 5;
+        ctx.fillStyle = '#2c3e50';
+        ctx.fillRect(-8 - walk, 30, 8, 22);
+        ctx.fillRect(0 + walk, 30, 8, 22);
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(-10 - walk, 48, 12, 6);
+        ctx.fillRect(-2 + walk, 48, 12, 6);
+
+        // Body
+        ctx.fillStyle = c.color;
+        ctx.beginPath();
+        ctx.roundRect(-12, 5, 24, 28, 3);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Head
+        ctx.fillStyle = '#f0d5b8';
+        ctx.beginPath();
+        ctx.arc(0, -5, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Hair
+        ctx.fillStyle = c.hairColor;
+        ctx.beginPath();
+        ctx.arc(0, -10, 13, Math.PI, 0);
+        ctx.fill();
+
+        // Eyes
+        if (c.reaction === 'happy') {
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(-5, -6, 3, Math.PI, 0);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(5, -6, 3, Math.PI, 0);
+            ctx.stroke();
+        } else if (c.reaction === 'angry') {
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            [-5, 5].forEach(ex => {
+                ctx.beginPath();
+                ctx.moveTo(ex - 3, -8);
+                ctx.lineTo(ex + 3, -4);
+                ctx.moveTo(ex + 3, -8);
+                ctx.lineTo(ex - 3, -4);
+                ctx.stroke();
+            });
+        } else {
+            ctx.fillStyle = '#000';
+            ctx.beginPath(); ctx.arc(-5, -5, 2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(5, -5, 2, 0, Math.PI * 2); ctx.fill();
+        }
+
+        // Mouth
+        if (c.reaction === 'happy') {
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI); ctx.stroke();
+        } else if (c.reaction === 'angry') {
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(0, 5, 4, Math.PI, 0); ctx.stroke();
+        }
+
+        // Reaction bubbles
+        if (c.reaction === 'happy' && c.reactionTimer > 0) {
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.beginPath();
+            ctx.ellipse(18, -25, 16, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.fillStyle = '#e74c3c';
+            ctx.font = '14px sans-serif';
+            ctx.fillText('\u2764', 12, -21);
+        }
+        if (c.reaction === 'angry' && c.reactionTimer > 0) {
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.beginPath();
+            ctx.ellipse(18, -25, 16, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.fillStyle = '#e74c3c';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('\uD83D\uDE21', 10, -21);
+        }
+
+        // Slap star
+        if (c.slapTimer > 0 && c.slapTimer > 15) {
+            const starSize = (c.slapTimer - 15) * 1.5;
+            ctx.fillStyle = '#ffd700';
+            ctx.font = `${starSize}px sans-serif`;
+            ctx.fillText('\uD83D\uDCA5', 10, -15);
+        }
+
+        ctx.restore();
+    }
+
+    // ---- PARTICLES ----
+    const particles = [];
+
+    function spawnParticles(x, y, color, count) {
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x, y,
+                vx: (Math.random() - 0.5) * 8,
+                vy: (Math.random() - 0.5) * 8 - 2,
+                life: 30 + Math.random() * 20,
+                maxLife: 50,
+                size: 2 + Math.random() * 4,
+                color,
+            });
+        }
+    }
+
+    function updateParticles() {
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.15;
+            p.life--;
+            if (p.life <= 0) particles.splice(i, 1);
+        }
+    }
+
+    function drawParticles() {
+        for (const p of particles) {
+            const alpha = p.life / p.maxLife;
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+        }
+        ctx.globalAlpha = 1;
+    }
+
+    // ---- FLASH MESSAGES ----
+    function addFlashMessage(text, x, y, color) {
+        flashMessages.push({ text, x, y, vy: -2, life: 50, color });
+    }
+
+    function updateFlashMessages() {
+        for (let i = flashMessages.length - 1; i >= 0; i--) {
+            const m = flashMessages[i];
+            m.y += m.vy;
+            m.life--;
+            if (m.life <= 0) flashMessages.splice(i, 1);
+        }
+    }
+
+    function drawFlashMessages() {
+        for (const m of flashMessages) {
+            const alpha = m.life / 50;
+            ctx.globalAlpha = alpha;
+            ctx.font = 'bold 22px Russo One, sans-serif';
+            ctx.fillStyle = m.color;
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 3;
+            ctx.strokeText(m.text, m.x, m.y);
+            ctx.fillText(m.text, m.x, m.y);
+        }
+        ctx.globalAlpha = 1;
+    }
+
+    // ---- HUD ----
+    function drawHUD() {
+        const pad = 15;
+
+        ctx.font = '28px Russo One, sans-serif';
+        ctx.fillStyle = '#ffd700';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.strokeText(`Skor: ${score}`, pad, 35);
+        ctx.fillText(`Skor: ${score}`, pad, 35);
+
+        ctx.font = '20px Russo One, sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.strokeText(`Level ${level}`, pad, 60);
+        ctx.fillText(`Level ${level}`, pad, 60);
+
+        if (combo > 1 && comboTimer > 0) {
+            ctx.font = '24px Russo One, sans-serif';
+            ctx.fillStyle = '#ff6b6b';
+            ctx.strokeText(`${combo}x COMBO!`, pad, 88);
+            ctx.fillText(`${combo}x COMBO!`, pad, 88);
+        }
+
+        ctx.font = '22px sans-serif';
+        const livesX = canvas.width - pad - 90;
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.strokeText('Can:', livesX - 45, 35);
+        ctx.fillStyle = '#fff';
+        ctx.fillText('Can:', livesX - 45, 35);
+        for (let i = 0; i < lives; i++) {
+            ctx.font = '24px sans-serif';
+            ctx.fillText('\uD83E\uDED3', livesX + i * 28, 36);
+        }
+
+        ctx.font = '20px Russo One, sans-serif';
+        ctx.fillStyle = '#2ecc71';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.strokeText(`Hediye: ${giftCount}`, canvas.width - pad - 120, 64);
+        ctx.fillText(`Hediye: ${giftCount}`, canvas.width - pad - 120, 64);
+
+        // Balgam count
+        ctx.font = '18px Russo One, sans-serif';
+        ctx.fillStyle = '#7ab832';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.strokeText(`Balgam [Q]: ${spitCount}`, canvas.width - pad - 130, 88);
+        ctx.fillText(`Balgam [Q]: ${spitCount}`, canvas.width - pad - 130, 88);
+
+        ctx.font = '16px Russo One, sans-serif';
+        ctx.fillStyle = '#aaa';
+        ctx.strokeText(`En Y\u00FCksek: ${highScore}`, pad, canvas.height - 40);
+        ctx.fillText(`En Y\u00FCksek: ${highScore}`, pad, canvas.height - 40);
+    }
+
+    // ---- GAME LOGIC ----
+    function startGame() {
+        state = GAME_STATE.PLAYING;
+        score = 0;
+        lives = 3;
+        level = 1;
+        giftCount = 20;
+        combo = 0;
+        comboTimer = 0;
+        player.x = 100;
+        player.y = canvas.height * 0.78 - player.h;
+        player.vx = 0;
+        player.vy = 0;
+        player.onGround = false;
+        player.throwCooldown = 0;
+        player.spitCooldown = 0;
+        player.slapAnim = 0;
+        player.spitAnim = 0;
+        spitCount = 3;
+        gifts.length = 0;
+        spits.length = 0;
+        children.length = 0;
+        particles.length = 0;
+        flashMessages.length = 0;
+        childSpawnTimer = 0;
+        initBuildings();
+        initStars();
+        // Start/resume background music
+        if (!musicStarted) {
+            startMusic();
+        } else {
+            resumeMusic();
+        }
+    }
+
+    function updateGame() {
+        gameTime++;
+        const groundY = canvas.height * 0.78;
+
+        const moveLeft = keys['ArrowLeft'] || keys['KeyA'] || mobileState.left;
+        const moveRight = keys['ArrowRight'] || keys['KeyD'] || mobileState.right;
+        const jump = keys['ArrowUp'] || keys['KeyW'] || keys['Space'] || mobileState.jump;
+        const throwKey = keys['KeyE'] || mobileState.throw;
+        const spitKey = keys['KeyQ'] || mobileState.spit;
+
+        if (moveLeft) { player.vx = -5; player.facing = -1; }
+        else if (moveRight) { player.vx = 5; player.facing = 1; }
+        else { player.vx *= 0.7; }
+
+        if (jump && player.onGround) {
+            player.vy = -13;
+            player.onGround = false;
+            playSound('jump');
+        }
+
+        if (throwKey) {
+            throwGift();
+            mobileState.throw = false;
+        }
+
+        if (spitKey) {
+            throwSpit();
+            mobileState.spit = false;
+        }
+
+        player.vy += 0.6;
+        player.x += player.vx;
+        player.y += player.vy;
+
+        if (player.y + player.h >= groundY) {
+            player.y = groundY - player.h;
+            player.vy = 0;
+            player.onGround = true;
+        }
+
+        if (player.x < 0) player.x = 0;
+        if (player.x + player.w > canvas.width) player.x = canvas.width - player.w;
+
+        if (Math.abs(player.vx) > 0.5 && player.onGround) {
+            player.walkCycle++;
+        }
+
+        if (player.throwCooldown > 0) player.throwCooldown--;
+        if (player.spitCooldown > 0) player.spitCooldown--;
+        if (player.slapAnim > 0) player.slapAnim--;
+        if (player.spitAnim > 0) player.spitAnim--;
+
+        // Update gifts
+        for (let i = gifts.length - 1; i >= 0; i--) {
+            const g = gifts[i];
+            g.x += g.vx;
+            g.y += g.vy;
+            g.vy += 0.2;
+
+            if (g.y > groundY || g.x < -50 || g.x > canvas.width + 50) {
+                gifts.splice(i, 1);
+                continue;
+            }
+
+            for (const c of children) {
+                if (!c.active || c.hit) continue;
+                if (g.x < c.x + c.w && g.x + g.w > c.x && g.y < c.y + c.h && g.y + g.h > c.y) {
+                    c.hit = true;
+                    g.active = false;
+                    gifts.splice(i, 1);
+
+                    const likeChance = Math.max(0.3, 0.7 - level * 0.05);
+                    if (Math.random() < likeChance) {
+                        c.reaction = 'happy';
+                        c.reactionTimer = 60;
+                        c.vx = 0;
+                        const pts = 100 * (combo > 1 ? combo : 1);
+                        score += pts;
+                        combo++;
+                        comboTimer = 120;
+                        addFlashMessage(`+${pts}`, c.x, c.y - 20, '#2ecc71');
+                        spawnParticles(c.x + c.w/2, c.y, '#ffd700', 8);
+                        playSound('hit_happy');
+                        if (combo > 2) playSound('combo');
+                    } else {
+                        c.reaction = 'angry';
+                        c.reactionTimer = 80;
+                        c.slapTimer = 30;
+                        c.vx = 0;
+                        player.slapAnim = 20;
+                        screenShake = 8;
+                        const pts = 150 * (combo > 1 ? combo : 1);
+                        score += pts;
+                        combo++;
+                        comboTimer = 120;
+                        addFlashMessage(`TOKAT! +${pts}`, c.x, c.y - 20, '#e74c3c');
+                        spawnParticles(c.x + c.w/2, c.y, '#ff0000', 15);
+                        playSound('slap');
+                        if (combo > 2) playSound('combo');
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Update spits (balgam)
+        for (let i = spits.length - 1; i >= 0; i--) {
+            const s = spits[i];
+            // Trail
+            s.trail.push({ x: s.x + s.w/2, y: s.y + s.h/2 });
+            if (s.trail.length > 6) s.trail.shift();
+
+            s.x += s.vx;
+            s.y += s.vy;
+            s.vy += 0.08; // slight gravity, less than gift
+
+            if (s.y > groundY || s.x < -50 || s.x > canvas.width + 50) {
+                spits.splice(i, 1);
+                continue;
+            }
+
+            // Check collision with children
+            for (const c of children) {
+                if (!c.active || c.hit) continue;
+                if (s.x < c.x + c.w && s.x + s.w > c.x && s.y < c.y + c.h && s.y + s.h > c.y) {
+                    c.hit = true;
+                    s.active = false;
+                    spits.splice(i, 1);
+
+                    // Balgam always triggers angry reaction + huge bonus
+                    c.reaction = 'angry';
+                    c.reactionTimer = 100;
+                    c.slapTimer = 40;
+                    c.vx = 0;
+                    player.slapAnim = 20;
+                    screenShake = 12;
+                    const pts = 250 * (combo > 1 ? combo : 1);
+                    score += pts;
+                    combo++;
+                    comboTimer = 120;
+                    addFlashMessage(`BALGAM! +${pts}`, c.x, c.y - 30, '#7ab832');
+                    spawnParticles(c.x + c.w/2, c.y, '#7ab832', 20);
+                    spawnParticles(c.x + c.w/2, c.y, '#a0d840', 10);
+                    playSound('spit_hit');
+                    if (combo > 2) playSound('combo');
+                    break;
+                }
+            }
+        }
+
+        if (comboTimer > 0) {
+            comboTimer--;
+            if (comboTimer <= 0) combo = 0;
+        }
+
+        childSpawnTimer--;
+        const spawnRate = Math.max(40, 120 - level * 15);
+        if (childSpawnTimer <= 0) {
+            spawnChild();
+            childSpawnTimer = spawnRate;
+        }
+
+        for (let i = children.length - 1; i >= 0; i--) {
+            const c = children[i];
+            if (!c.hit) {
+                c.x += c.vx;
+            }
+            if (c.reactionTimer > 0) c.reactionTimer--;
+            if (c.slapTimer > 0) c.slapTimer--;
+
+            if (c.x < -60 || c.x > canvas.width + 60) {
+                if (!c.hit) {
+                    lives--;
+                    screenShake = 5;
+                    addFlashMessage('Ka\u00E7\u0131rd\u0131n!', canvas.width / 2, canvas.height * 0.4, '#e74c3c');
+                    playSound('miss');
+                    if (lives <= 0) gameOver();
+                }
+                children.splice(i, 1);
+                continue;
+            }
+
+            if (c.hit && c.reactionTimer <= 0) {
+                children.splice(i, 1);
+            }
+        }
+
+        const newLevel = Math.floor(score / 500) + 1;
+        if (newLevel > level) {
+            level = newLevel;
+            giftCount += 10;
+            spitCount += 2; // Bonus balgam per level
+            addFlashMessage(`LEVEL ${level}!`, canvas.width / 2 - 50, canvas.height / 2, '#ffd700');
+            spawnParticles(canvas.width / 2, canvas.height / 2, '#ffd700', 20);
+            playSound('levelup');
+        }
+
+        if (giftCount <= 0 && gifts.length === 0) {
+            lives--;
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                giftCount = 10;
+                addFlashMessage('Hediye bitti! Yeni \u00E7uval!', canvas.width / 2 - 80, canvas.height / 2, '#f39c12');
+            }
+        }
+
+        if (screenShake > 0) screenShake *= 0.85;
+        if (screenShake < 0.5) screenShake = 0;
+
+        updateParticles();
+        updateFlashMessages();
+        updateSnow();
+    }
+
+    function gameOver() {
+        state = GAME_STATE.GAMEOVER;
+        playSound('gameover');
+        stopMusic();
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('noelDayiHighScore', String(highScore));
+        }
+    }
+
+    // ---- DRAW NOEL DAYI FOR MENU (larger, facing camera) ----
+    function drawMenuNoelDayi(cx, cy, scale) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(scale, scale);
+
+        // Torso
+        ctx.fillStyle = '#cc2222';
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#000';
+        ctx.fillRect(-30, 0, 60, 60);
+        ctx.strokeRect(-30, 0, 60, 60);
+
+        // Gold trim
+        ctx.strokeStyle = '#daa520';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(-30, 0, 60, 60);
+
+        // Belt
+        ctx.fillStyle = '#111';
+        ctx.fillRect(-30, 35, 60, 8);
+        ctx.fillStyle = '#daa520';
+        ctx.fillRect(-7, 35, 14, 8);
+
+        // Neck
+        ctx.fillStyle = '#c69c6d';
+        ctx.fillRect(-7, -8, 14, 12);
+
+        // Head (square)
+        ctx.fillStyle = '#c69c6d';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-22, -8);
+        ctx.lineTo(-22, -42);
+        ctx.quadraticCurveTo(-22, -52, -12, -52);
+        ctx.lineTo(12, -52);
+        ctx.quadraticCurveTo(22, -52, 22, -42);
+        ctx.lineTo(22, -8);
+        ctx.quadraticCurveTo(22, -4, 14, -4);
+        ctx.lineTo(-14, -4);
+        ctx.quadraticCurveTo(-22, -4, -22, -8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Ears
+        ctx.beginPath();
+        ctx.ellipse(-24, -28, 5, 8, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(24, -28, 5, 8, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+
+        // Eyebrows
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 4.5;
+        ctx.beginPath(); ctx.moveTo(-16, -40); ctx.lineTo(-5, -36); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(16, -40); ctx.lineTo(5, -36); ctx.stroke();
+
+        // Eyes
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.ellipse(-10, -32, 5, 4, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(10, -32, 5, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#111';
+        ctx.beginPath(); ctx.arc(-9, -31, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(11, -31, 3, 0, Math.PI * 2); ctx.fill();
+
+        // Nose
+        ctx.fillStyle = '#b8845a';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -32);
+        ctx.lineTo(5, -18);
+        ctx.lineTo(-3, -17);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Stubble
+        ctx.fillStyle = '#5a4a3a';
+        const menuStubble = [
+            [-12,-14],[-8,-13],[-4,-12],[0,-13],[4,-12],[8,-13],[12,-14],
+            [-10,-16],[-6,-15],[-2,-15],[2,-16],[6,-15],[10,-16],
+            [-14,-18],[14,-18],[-16,-20],[16,-20],
+            [-14,-10],[-10,-8],[-6,-7],[-2,-7],[2,-7],[6,-8],[10,-10],[14,-12],
+            [-8,-10],[0,-9],[8,-10],
+        ];
+        for (const [sx, sy] of menuStubble) {
+            ctx.beginPath();
+            ctx.arc(sx, sy, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Mouth
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-8, -16);
+        ctx.quadraticCurveTo(0, -12, 8, -16);
+        ctx.stroke();
+
+        // Hat
+        ctx.fillStyle = '#cc2222';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-26, -44);
+        ctx.quadraticCurveTo(-6, -82, 30, -68);
+        ctx.lineTo(24, -44);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Hat trim
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(-26, -41);
+        ctx.quadraticCurveTo(0, -48, 26, -41);
+        ctx.lineTo(26, -48);
+        ctx.quadraticCurveTo(0, -55, -26, -48);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
+
+        // Pompom
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(30, -68, 9, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+
+        ctx.restore();
+    }
+
+    // ---- MENU SCREEN ----
+    function drawMenu() {
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        skyGrad.addColorStop(0, '#0a0a2e');
+        skyGrad.addColorStop(0.5, '#1a1a4e');
+        skyGrad.addColorStop(1, '#2a1a3a');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        drawStars();
+        drawBuildings();
+        drawGround();
+        drawSnow();
+
+        const cx = canvas.width / 2;
+        const cy = canvas.height * 0.22;
+
+        // Title glow
+        ctx.shadowColor = '#d42426';
+        ctx.shadowBlur = 30;
+        ctx.font = `${Math.min(canvas.width * 0.09, 72)}px Bungee, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#d42426';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 4;
+        ctx.strokeText('NOEL DAYI', cx, cy);
+        ctx.fillText('NOEL DAYI', cx, cy);
+        ctx.shadowBlur = 0;
+
+        ctx.font = `${Math.min(canvas.width * 0.055, 42)}px Bungee, sans-serif`;
+        ctx.fillStyle = '#ffd700';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.strokeText('THE GAME', cx, cy + 45);
+        ctx.fillText('THE GAME', cx, cy + 45);
+
+        // Draw Noel Dayi character on menu
+        const charScale = Math.min(canvas.width * 0.0014, 1.1);
+        drawMenuNoelDayi(cx, cy + 140, charScale);
+
+        // Catchphrase
+        ctx.textAlign = 'center';
+        ctx.font = `${Math.min(canvas.width * 0.022, 16)}px Russo One, sans-serif`;
+        ctx.fillStyle = '#e8e8e8';
+        const phraseY = cy + 140 + 80 * charScale;
+        ctx.fillText('"Ben Noel Day\u0131y\u0131m, delikanl\u0131y\u0131m,', cx, phraseY);
+        ctx.fillText('hediyemi be\u011Fenmeyeni sakatlr\u0131m!"', cx, phraseY + 20);
+
+        // Play button
+        const btnW = 200;
+        const btnH = 55;
+        const btnX = cx - btnW / 2;
+        const btnY = phraseY + 40;
+        const pulse = Math.sin(gameTime * 0.05) * 5;
+
+        ctx.fillStyle = '#d42426';
+        ctx.shadowColor = '#d42426';
+        ctx.shadowBlur = 15 + pulse;
+        ctx.beginPath();
+        ctx.roundRect(btnX, btnY, btnW, btnH, 10);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(btnX, btnY, btnW, btnH, 10);
+        ctx.stroke();
+
+        ctx.font = `bold 32px Russo One, sans-serif`;
+        ctx.fillStyle = '#fff';
+        ctx.fillText('OYNA!', cx, btnY + 38);
+
+        ctx.font = `${Math.min(canvas.width * 0.018, 14)}px Russo One, sans-serif`;
+        ctx.fillStyle = '#aaa';
+        ctx.fillText('\u2190 \u2192 Hareket  |  \u2191 / Space Z\u0131pla  |  E Hediye  |  Q Balgam!', cx, btnY + 75);
+
+        // Grafi2000 tribute
+        ctx.font = `${Math.min(canvas.width * 0.016, 13)}px sans-serif`;
+        ctx.fillStyle = '#777';
+        ctx.fillText('Grafi2000 efsanesinden ilham al\u0131nm\u0131\u015Ft\u0131r', cx, canvas.height - 60);
+        ctx.fillStyle = '#666';
+        ctx.font = `${Math.min(canvas.width * 0.013, 11)}px sans-serif`;
+        ctx.fillText('Varol Ya\u015Faro\u011Flu, Erdil Ya\u015Faro\u011Flu ve Berk Tokay\'a sayg\u0131yla', cx, canvas.height - 42);
+
+        if (highScore > 0) {
+            ctx.font = '18px Russo One, sans-serif';
+            ctx.fillStyle = '#ffd700';
+            ctx.fillText(`En Y\u00FCksek Skor: ${highScore}`, cx, btnY + 100);
+        }
+
+        ctx.textAlign = 'start';
+    }
+
+    // ---- GAME OVER SCREEN ----
+    function drawGameOver() {
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const cx = canvas.width / 2;
+        const cy = canvas.height * 0.25;
+
+        ctx.textAlign = 'center';
+
+        ctx.shadowColor = '#d42426';
+        ctx.shadowBlur = 20;
+        ctx.font = `${Math.min(canvas.width * 0.08, 60)}px Bungee, sans-serif`;
+        ctx.fillStyle = '#d42426';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3;
+        ctx.strokeText('OYUN B\u0130TT\u0130!', cx, cy);
+        ctx.fillText('OYUN B\u0130TT\u0130!', cx, cy);
+        ctx.shadowBlur = 0;
+
+        // Draw Noel Dayi on game over
+        drawMenuNoelDayi(cx, cy + 90, 0.8);
+
+        ctx.font = `${Math.min(canvas.width * 0.028, 22)}px Russo One, sans-serif`;
+        ctx.fillStyle = '#e8e8e8';
+        ctx.fillText('"Hediyemi be\u011Fenmedin ha?!"', cx, cy + 160);
+
+        ctx.font = `bold ${Math.min(canvas.width * 0.04, 32)}px Russo One, sans-serif`;
+        ctx.fillStyle = '#ffd700';
+        ctx.fillText(`Skor: ${score}`, cx, cy + 200);
+
+        if (score >= highScore && score > 0) {
+            ctx.fillStyle = '#2ecc71';
+            ctx.font = `24px Russo One, sans-serif`;
+            ctx.fillText('YEN\u0130 REKOR!', cx, cy + 230);
+        }
+
+        ctx.font = '20px Russo One, sans-serif';
+        ctx.fillStyle = '#aaa';
+        ctx.fillText(`En Y\u00FCksek: ${highScore}`, cx, cy + 258);
+
+        const btnW = 220;
+        const btnH = 55;
+        const btnX = cx - btnW / 2;
+        const btnY = cy + 275;
+        const pulse = Math.sin(gameTime * 0.05) * 5;
+
+        ctx.fillStyle = '#d42426';
+        ctx.shadowColor = '#d42426';
+        ctx.shadowBlur = 10 + pulse;
+        ctx.beginPath();
+        ctx.roundRect(btnX, btnY, btnW, btnH, 10);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(btnX, btnY, btnW, btnH, 10);
+        ctx.stroke();
+
+        ctx.font = `bold 28px Russo One, sans-serif`;
+        ctx.fillStyle = '#fff';
+        ctx.fillText('TEKRAR OYNA', cx, btnY + 38);
+
+        ctx.font = `14px Russo One, sans-serif`;
+        ctx.fillStyle = '#888';
+        ctx.fillText('Space veya Enter\'a bas', cx, btnY + 70);
+
+        ctx.textAlign = 'start';
+    }
+
+    // ---- MAIN RENDER ----
+    function drawGame() {
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        skyGrad.addColorStop(0, '#0a0a2e');
+        skyGrad.addColorStop(0.6, '#1a1a4e');
+        skyGrad.addColorStop(1, '#2a1a3a');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (screenShake > 0) {
+            ctx.save();
+            ctx.translate(
+                (Math.random() - 0.5) * screenShake * 2,
+                (Math.random() - 0.5) * screenShake * 2
+            );
+        }
+
+        drawStars();
+        drawBuildings();
+        drawGround();
+
+        for (const c of children) drawChild(c);
+        for (const g of gifts) drawGift(g);
+        for (const s of spits) drawSpit(s);
+
+        drawNoelDayi();
+
+        drawParticles();
+        drawFlashMessages();
+        drawSnow();
+        drawHUD();
+
+        if (screenShake > 0) ctx.restore();
+    }
+
+    // ---- GAME LOOP ----
+    function gameLoop() {
+        if (state === GAME_STATE.MENU) {
+            updateSnow();
+            gameTime++;
+            drawMenu();
+        } else if (state === GAME_STATE.PLAYING) {
+            updateGame();
+            drawGame();
+        } else if (state === GAME_STATE.GAMEOVER) {
+            updateSnow();
+            gameTime++;
+            drawGame();
+            drawGameOver();
+        }
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    // ---- INIT ----
+    initBuildings();
+    initStars();
+    gameLoop();
+
+    </script>
+</body>
+</html>
