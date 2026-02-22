@@ -1,0 +1,37 @@
+name: Sync Medium Articles
+
+on:
+  schedule:
+    - cron: '0 9 * * *'   # Her gün 09:00 UTC (12:00 Türkiye)
+  workflow_dispatch:        # GitHub'dan elle de tetiklenebilir
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install feedparser
+
+      - name: Run sync script
+        run: python scripts/sync_medium.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "medium-sync[bot]"
+          git config user.email "medium-sync@users.noreply.github.com"
+          git diff --quiet || (
+            git add pages/blog.html &&
+            git commit -m "sync: Medium'dan yeni makale eklendi" &&
+            git push
+          )
