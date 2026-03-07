@@ -31,6 +31,14 @@
     /* LAYOUT */
     .wrap{max-width:680px;margin:0 auto;padding:0 16px}
     .main-content{padding:12px 0 120px}
+    /* Share page — wider on desktop */
+    @media(min-width:900px){
+      #screen-share .wrap{max-width:1160px;padding:0 40px}
+      #screen-share .app-header .inner{max-width:1160px;padding:0 40px}
+      #screen-share .donut{width:80px;height:80px}
+      #screen-main .wrap{max-width:1160px;padding:0 40px}
+      #screen-main .app-header .inner{max-width:1160px;padding:0 40px}
+    }
 
     /* LOGIN */
     #screen-login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px}
@@ -85,13 +93,17 @@
     .seg-btn.active{background:var(--bg-e);color:var(--label);box-shadow:0 1px 3px rgba(0,0,0,.1)}
 
     /* ANALYTICS */
-    .analytics-wrap{margin-bottom:16px}
-    .analytics-card{background:var(--bg-e);border-radius:14px;padding:14px 16px;margin-bottom:10px}
-    .analytics-card h4{font-size:12px;font-weight:700;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px}
-    .analytics-stat-row{display:flex;gap:8px}
-    .analytics-stat{flex:1;background:var(--fill);border-radius:10px;padding:10px 12px;text-align:center}
-    .analytics-stat .val{font-size:20px;font-weight:700;letter-spacing:-.5px}
-    .analytics-stat .lbl{font-size:10px;color:var(--label-3);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+    .analytics-wrap{margin-bottom:12px}
+    .analytics-card{background:var(--bg-e);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+    .analytics-card h4{font-size:11px;font-weight:700;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+    .analytics-stat-row{display:flex;gap:0;border-radius:8px;overflow:hidden;border:1px solid var(--sep)}
+    .analytics-stat{flex:1;background:var(--fill);padding:8px 6px;text-align:center;border-right:1px solid var(--sep)}
+    .analytics-stat:last-child{border-right:none}
+    .analytics-stat .val{font-size:15px;font-weight:700;letter-spacing:-.3px}
+    .analytics-stat .lbl{font-size:9px;color:var(--label-3);text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+    .chart-tabs{display:flex;gap:2px;margin-bottom:10px;background:var(--fill);border-radius:8px;padding:2px}
+    .chart-tab{flex:1;padding:6px 4px;border:none;background:none;border-radius:6px;font-size:11px;font-weight:600;font-family:var(--font);cursor:pointer;color:var(--label-3);transition:all .2s;text-align:center}
+    .chart-tab.active{background:var(--bg-e);color:var(--label);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 
     /* TABS */
     .tabs{display:flex;background:var(--fill);border-radius:12px;padding:2px;margin-bottom:16px}
@@ -178,15 +190,15 @@
     .share-bar-btns{display:flex;gap:8px;flex-shrink:0}
 
     /* PIE / DONUT CHARTS */
-    .pie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:10px}
-    .pie-col{display:flex;flex-direction:column;align-items:center;gap:10px}
-    .pie-title{font-size:11px;font-weight:700;color:var(--label-3);text-transform:uppercase;letter-spacing:.3px;text-align:center}
-    .donut{width:90px;height:90px;border-radius:50%;position:relative;flex-shrink:0}
+    .pie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
+    .pie-col{display:flex;flex-direction:column;align-items:center;gap:7px}
+    .pie-title{font-size:10px;font-weight:700;color:var(--label-3);text-transform:uppercase;letter-spacing:.3px;text-align:center}
+    .donut{width:68px;height:68px;border-radius:50%;position:relative;flex-shrink:0}
     .donut::after{content:'';position:absolute;inset:26%;border-radius:50%;background:var(--bg-e)}
-    .pie-legend{display:flex;flex-direction:column;gap:3px;width:100%}
-    .pie-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--label-2)}
-    .pie-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-    @media(max-width:480px){.pie-grid{grid-template-columns:1fr;gap:8px}.pie-col{flex-direction:row;align-items:flex-start}.donut{width:72px;height:72px;flex-shrink:0}.pie-legend{margin-top:0}}
+    .pie-legend{display:flex;flex-direction:column;gap:2px;width:100%}
+    .pie-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--label-2)}
+    .pie-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    @media(max-width:480px){.pie-grid{grid-template-columns:1fr;gap:6px}.pie-col{flex-direction:row;align-items:flex-start}.donut{width:60px;height:60px;flex-shrink:0}.pie-legend{margin-top:0}}
 
     /* SPINNER */
     .spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite}
@@ -198,11 +210,29 @@
     .toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.85);color:white;padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;backdrop-filter:blur(10px)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+
     /* DURATION BOX */
     .duration-box{background:var(--blue-bg);border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:center;margin-bottom:20px}
     .duration-box .val{font-size:24px;font-weight:700;color:var(--blue)} .duration-box .lbl{font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.3px}
 
     @media print{.fab,.app-header,.overlay,.toast,#loading-overlay{display:none!important}body{background:white}}
+
+    /* DAY-END */
+    .star-rating{display:flex;gap:6px;justify-content:center;margin:8px 0 4px}
+    .star-btn{background:none;border:none;font-size:34px;cursor:pointer;padding:2px;line-height:1;transition:transform .15s}
+    .star-btn:hover{transform:scale(1.15)}
+
+    /* TRADITIONAL VIEW */
+    .trad-meal{background:var(--bg-e);border-radius:14px;overflow:hidden;margin-bottom:10px}
+    .trad-meal-hdr{background:var(--blue);padding:11px 16px;color:white;font-weight:700;font-size:14px;letter-spacing:-.2px}
+    .trad-tbl{width:100%;border-collapse:collapse;font-size:13px}
+    .trad-tbl td{padding:9px 14px;border-bottom:1px solid var(--sep);vertical-align:top;line-height:1.5}
+    .trad-tbl tr:last-child td{border-bottom:none}
+    .trad-tbl .tl{width:40%;font-weight:600;color:var(--label-2);background:var(--fill);font-size:12px;white-space:nowrap}
+    .day-rating-row{background:var(--orange-bg);border-radius:12px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:14px}
+    .trad-view-btn{padding:6px 14px;border-radius:20px;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:white;font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .2s;white-space:nowrap}
+    .trad-view-btn:hover{background:rgba(255,255,255,.25)}
+    .trad-view-btn.on{background:white;color:var(--blue);border-color:white}
 
     /* ── MOBILE ≤ 480px (iPhone 13 mini = 375px) ── */
     @media(max-width:480px){
@@ -363,6 +393,8 @@
         <div class="card-hdr"><h3>Bugünkü Öğünler</h3></div>
         <div id="today-list"></div>
       </div>
+      <div id="day-end-section"></div>
+      <div id="day-rating-chart-section"></div>
     </div>
     <div id="tab-history" class="hidden"><div id="analytics-section"></div><div id="history-list"></div></div>
     <div id="tab-profile" class="hidden">
@@ -490,6 +522,32 @@
   </div>
 </div>
 
+<!-- MODAL: Day End -->
+<div class="overlay" id="modal-day-end">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title"><span>Günü Bitir 🌙</span><button class="sheet-close" onclick="closeModal('modal-day-end')">✕</button></div>
+    <div class="sheet-body">
+      <div class="fg">
+        <label>Bugünü 5 Üzerinden Puanla</label>
+        <div class="star-rating" id="star-rating">
+          <button class="star-btn" onclick="setDayRating(1)">☆</button>
+          <button class="star-btn" onclick="setDayRating(2)">☆</button>
+          <button class="star-btn" onclick="setDayRating(3)">☆</button>
+          <button class="star-btn" onclick="setDayRating(4)">☆</button>
+          <button class="star-btn" onclick="setDayRating(5)">☆</button>
+        </div>
+        <div id="day-rating-display" style="text-align:center;font-size:28px;font-weight:700;color:var(--orange);margin-bottom:4px;">3/5</div>
+      </div>
+      <div class="fg">
+        <label>Günle İlgili Not</label>
+        <textarea id="day-end-note" class="fi" placeholder="Bu gün nasıl geçti? İyi ve zor tarafları..." style="min-height:80px;"></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-save-day" style="margin-top:16px;margin-bottom:8px;">Günü Kaydet 🌙</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://qftttunqzriytdnbitcu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmdHR0dW5xenJpeXRkbmJpdGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NTA3NzAsImV4cCI6MjA4ODQyNjc3MH0.Qv_8S-ZuJNwQuIihxynk_0p16mLOrMM5nCzDX_BCInI';
@@ -499,6 +557,8 @@ const sb = CONFIG_READY ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 let currentUser=null, activeMeal=null, allMeals=[], userProfile=null;
 let timerInterval=null, durationInterval=null;
+let allDayLogs=[], currentDayRating=3;
+let shareGrouped={}, shareDayLogs=[], shareTraditionalMode=false;
 
 const F_LABELS=['Çok Açım','Çok Açım','Açım','Biraz Açım','Nötr','Orta','Biraz Tok','Doygun','Tok','Çok Tok','Tıka Basa Tok'];
 const F_EMOJIS=['😩','😩','😕','🤔','😐','😐','🙂','😊','😌','😮','🤢'];
@@ -607,7 +667,7 @@ async function loadApp(){
   showScreen('main');
   userProfile=await ensureProfile(currentUser);
   document.getElementById('prof-handle').textContent=currentUser;
-  await fetchMeals();renderAll();subscribeRealtime();
+  await fetchMeals();await fetchDayLogs();renderAll();subscribeRealtime();
 }
 
 async function fetchMeals(){
@@ -621,7 +681,7 @@ function subscribeRealtime(){
 }
 
 // ===== RENDER =====
-function renderAll(){renderActive();renderStats();renderToday();renderHistory();renderProfile();}
+function renderAll(){renderActive();renderStats();renderToday();renderHistory();renderProfile();renderDayEndButton();renderDayRatingDashboard();}
 
 function renderActive(){
   const sec=document.getElementById('active-section'),fab=document.getElementById('fab');
@@ -664,13 +724,13 @@ function setAnalyticsRange(range){
   analyticsRange=range;
   const done=allMeals.filter(m=>m.status==='completed');
   const aEl=document.getElementById('analytics-section');
-  if(aEl) aEl.innerHTML=done.length?analyticsHTML(done,analyticsRange):'';
+  if(aEl) aEl.innerHTML=done.length?analyticsHTML(done,analyticsRange,null,allDayLogs):'';
 }
 
 function renderHistory(){
   const done=allMeals.filter(m=>m.status==='completed');
   const aEl=document.getElementById('analytics-section');
-  if(aEl) aEl.innerHTML=done.length?analyticsHTML(done,analyticsRange):'';
+  if(aEl) aEl.innerHTML=done.length?analyticsHTML(done,analyticsRange,null,allDayLogs):'';
   const el=document.getElementById('history-list');
   if(!done.length){el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><h3>Geçmiş yok</h3><p>Öğün kayıtların burada görünecek</p></div>`;return;}
   const grouped={};done.forEach(m=>{const k=new Date(m.started_at).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});(grouped[k]=grouped[k]||[]).push(m);});
@@ -864,6 +924,114 @@ document.getElementById('btn-delete-all').addEventListener('click',async()=>{
   await sb.from('meals').delete().eq('user_email',currentUser);await sb.from('profiles').delete().eq('email',currentUser);localStorage.removeItem('ogun_handle');location.reload();
 });
 
+// ===== DAY LOGS =====
+async function fetchDayLogs(){
+  if(!currentUser)return;
+  const{data}=await sb.from('day_logs').select('*').eq('user_email',currentUser).order('date',{ascending:false});
+  allDayLogs=data||[];
+}
+
+function renderDayEndButton(){
+  const sec=document.getElementById('day-end-section');if(!sec)return;
+  const today=new Date().toISOString().slice(0,10);
+  const todayMeals=allMeals.filter(m=>m.status==='completed'&&new Date(m.started_at).toISOString().slice(0,10)===today);
+  if(!todayMeals.length){sec.innerHTML='';return;}
+  const log=allDayLogs.find(l=>l.date===today);
+  if(log){
+    const stars='⭐'.repeat(log.rating)+'☆'.repeat(5-log.rating);
+    sec.innerHTML=`<div style="background:var(--bg-e);border-radius:14px;padding:14px 16px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;"><div><div style="font-size:12px;font-weight:600;color:var(--label-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px;">Günün Puanı</div><div style="font-size:20px;">${stars} <span style="font-size:14px;font-weight:700;color:var(--orange);">${log.rating}/5</span></div>${log.note?`<div style="font-size:12px;color:var(--label-3);margin-top:4px;">${esc(log.note)}</div>`:''}</div><button class="btn btn-secondary btn-sm" onclick="openDayEnd()">Düzenle</button></div>`;
+  }else{
+    sec.innerHTML=`<button class="btn btn-full" style="background:var(--orange-bg);color:var(--orange);margin-top:10px;font-weight:600;border-radius:14px;padding:15px;" onclick="openDayEnd()">🌙 Günü Bitir &amp; Puanla</button>`;
+  }
+}
+
+function setDayRating(n){
+  currentDayRating=n;
+  document.querySelectorAll('#star-rating .star-btn').forEach((b,i)=>{b.textContent=i<n?'⭐':'☆';});
+  document.getElementById('day-rating-display').textContent=n+'/5';
+}
+
+function openDayEnd(){
+  const today=new Date().toISOString().slice(0,10);
+  const log=allDayLogs.find(l=>l.date===today);
+  document.getElementById('day-end-note').value=log?log.note||'':'';
+  setDayRating(log?log.rating:3);
+  openModal('modal-day-end');
+}
+
+document.getElementById('btn-save-day').addEventListener('click',async()=>{
+  const today=new Date().toISOString().slice(0,10);
+  const note=document.getElementById('day-end-note').value.trim();
+  const btn=document.getElementById('btn-save-day');btn.innerHTML='<span class="spin"></span> Kaydediliyor...';btn.disabled=true;
+  const existing=allDayLogs.find(l=>l.date===today);let error;
+  if(existing){({error}=await sb.from('day_logs').update({rating:currentDayRating,note:note||null}).eq('id',existing.id));}
+  else{({error}=await sb.from('day_logs').insert({user_email:currentUser,date:today,rating:currentDayRating,note:note||null}));}
+  btn.innerHTML='Günü Kaydet 🌙';btn.disabled=false;
+  if(error){toast('Hata: '+error.message);return;}
+  await fetchDayLogs();closeModal('modal-day-end');renderDayEndButton();toast('Gün kaydedildi ✓');
+});
+
+function renderDayRatingDashboard(){
+  const sec=document.getElementById('day-rating-chart-section');if(!sec)return;
+  if(!allDayLogs.length){sec.innerHTML='';return;}
+  sec.innerHTML=`<div class="analytics-card" style="margin-top:10px;"><h4 style="font-size:12px;font-weight:700;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px;">Gün Puanı Trendi</h4>${buildDayRatingChart(allDayLogs.slice().reverse())}</div>`;
+}
+
+function filterDayLogsByRange(dayLogs,range){
+  const now=new Date();
+  if(range==='today'){const d=now.toISOString().slice(0,10);return dayLogs.filter(l=>l.date===d);}
+  if(range==='week'){const ago=new Date(now-7*24*60*60*1000).toISOString().slice(0,10);return dayLogs.filter(l=>l.date>=ago);}
+  if(range==='month'){const ago=new Date(now-30*24*60*60*1000).toISOString().slice(0,10);return dayLogs.filter(l=>l.date>=ago);}
+  return dayLogs;
+}
+
+function buildDayRatingChart(dayLogs){
+  const data=[...dayLogs].sort((a,b)=>a.date.localeCompare(b.date));
+  if(!data.length)return`<p style="text-align:center;color:var(--label-3);padding:10px 0;font-size:13px;">Henüz gün puanı yok</p>`;
+  if(data.length<2)return`<p style="text-align:center;color:var(--label-3);padding:10px 0;font-size:13px;">Grafik için en az 2 gün puanı gerekli</p>`;
+  const W=600,H=120,PL=26,PR=12,PT=10,PB=24,CW=W-PL-PR,CH=H-PT-PB,n=data.length;
+  const xp=i=>PL+(n===1?CW/2:i*(CW/(n-1)));
+  const yp=v=>PT+CH-((v-1)/4)*CH;
+  const grid=[1,2,3,4,5].map(v=>`<line x1="${PL}" y1="${yp(v)}" x2="${W-PR}" y2="${yp(v)}" stroke="var(--sep)" stroke-width="1"/><text x="${PL-4}" y="${yp(v)+4}" text-anchor="end" font-size="9" fill="var(--label-3)">${v}</text>`).join('');
+  let d='';data.forEach((l,i)=>{const x=xp(i),y=yp(l.rating);d+=d?`L${x},${y}`:`M${x},${y}`;});
+  const pts=data.map((l,i)=>`${xp(i)},${yp(l.rating)}`);
+  const first=pts[0].split(','),last=pts[pts.length-1].split(',');
+  const area=`M${first[0]},${PT+CH} ${pts.map(p=>`L${p}`).join(' ')} L${last[0]},${PT+CH} Z`;
+  const dots=data.map((l,i)=>`<circle cx="${xp(i)}" cy="${yp(l.rating)}" r="3" fill="#FF9500"/>`).join('');
+  const fmtX=dt=>new Date(dt+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'short'});
+  const xLabels=`<text x="${xp(0)}" y="${H-6}" text-anchor="start" font-size="9" fill="var(--label-3)">${fmtX(data[0].date)}</text><text x="${xp(n-1)}" y="${H-6}" text-anchor="end" font-size="9" fill="var(--label-3)">${fmtX(data[n-1].date)}</text>`;
+  return`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${grid}<path d="${area}" fill="#FF9500" opacity=".08"/><path d="${d}" fill="none" stroke="#FF9500" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${dots}${xLabels}</svg><div style="display:flex;gap:16px;justify-content:center;margin-top:6px;"><div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--label-2);"><div style="width:16px;height:2px;background:#FF9500;border-radius:2px;"></div>Gün Puanı (1–5)</div></div>`;
+}
+
+function switchChartTab(uid,tab){
+  ['fullness','rating','duration'].forEach(t=>{
+    const el=document.getElementById(`chart-panel-${uid}-${t}`);
+    const btn=document.getElementById(`chart-tab-${uid}-${t}`);
+    if(el) el.style.display=t===tab?'block':'none';
+    if(btn) btn.className='chart-tab'+(t===tab?' active':'');
+  });
+}
+
+function buildDurationChart(meals){
+  const data=meals.filter(m=>m.duration_minutes!=null).sort((a,b)=>new Date(a.started_at)-new Date(b.started_at));
+  if(data.length<2)return`<p style="text-align:center;color:var(--label-3);padding:16px 0;font-size:13px;">Grafik için en az 2 öğün gerekli</p>`;
+  const W=600,H=150,PL=34,PR=12,PT=10,PB=24,CW=W-PL-PR,CH=H-PT-PB,n=data.length;
+  const maxDur=Math.max(...data.map(m=>m.duration_minutes));
+  const yMax=Math.ceil(maxDur/10)*10||60;
+  const xp=i=>PL+(n===1?CW/2:i*(CW/(n-1)));
+  const yp=v=>PT+CH-(v/yMax)*CH;
+  const steps=[0,.25,.5,.75,1].map(p=>Math.round(p*yMax));
+  const grid=steps.map(v=>`<line x1="${PL}" y1="${yp(v)}" x2="${W-PR}" y2="${yp(v)}" stroke="var(--sep)" stroke-width="1"/><text x="${PL-4}" y="${yp(v)+4}" text-anchor="end" font-size="9" fill="var(--label-3)">${v}</text>`).join('');
+  let d='';data.forEach((m,i)=>{const x=xp(i),y=yp(m.duration_minutes);d+=d?`L${x},${y}`:`M${x},${y}`;});
+  const pts=data.map((m,i)=>`${xp(i)},${yp(m.duration_minutes)}`);
+  const first=pts[0].split(','),last=pts[pts.length-1].split(',');
+  const area=`M${first[0]},${PT+CH} ${pts.map(p=>`L${p}`).join(' ')} L${last[0]},${PT+CH} Z`;
+  const dots=data.map((m,i)=>`<circle cx="${xp(i)}" cy="${yp(m.duration_minutes)}" r="2.5" fill="#5856D6"/>`).join('');
+  const fmtX=dt=>new Date(dt).toLocaleDateString('tr-TR',{day:'numeric',month:'short'});
+  const xLabels=`<text x="${xp(0)}" y="${H-6}" text-anchor="start" font-size="9" fill="var(--label-3)">${fmtX(data[0].started_at)}</text><text x="${xp(n-1)}" y="${H-6}" text-anchor="end" font-size="9" fill="var(--label-3)">${fmtX(data[n-1].started_at)}</text>`;
+  return`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${grid}<path d="${area}" fill="#5856D6" opacity=".08"/><path d="${d}" fill="none" stroke="#5856D6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${dots}${xLabels}</svg><div style="display:flex;gap:16px;justify-content:center;margin-top:6px;"><div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--label-2);"><div style="width:16px;height:2px;background:#5856D6;border-radius:2px;"></div>Öğün Süresi (dk)</div></div>`;
+}
+
 // ===== ANALYTICS =====
 function buildDonut(data,colors){
   const total=data.reduce((s,d)=>s+d.count,0);
@@ -903,7 +1071,7 @@ function buildLineChart(meals){
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${grid}${path('pre_fullness','#007AFF')}${path('post_fullness','#34C759')}${dots('pre_fullness','#007AFF')}${dots('post_fullness','#34C759')}${xLabels}</svg><div style="display:flex;gap:16px;justify-content:center;margin-top:6px;"><div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--label-2);"><div style="width:16px;height:2px;background:#007AFF;border-radius:2px;"></div>Önce Tokluk</div><div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--label-2);"><div style="width:16px;height:2px;background:#34C759;border-radius:2px;"></div>Sonra Tokluk</div></div>`;
 }
 
-function analyticsHTML(allDone, range, context){
+function analyticsHTML(allDone, range, context, dayLogs){
   if(!allDone.length) return '';
   const meals=range?filterByRange(allDone,range):allDone;
   const RANGE_LABELS={today:'Bugün',week:'Son 7 Gün',month:'Son 30 Gün',all:'Tümü'};
@@ -912,11 +1080,16 @@ function analyticsHTML(allDone, range, context){
     Object.entries(RANGE_LABELS).map(([k,l])=>`<button onclick="${setFn}('${k}')" style="padding:5px 12px;border-radius:20px;border:none;font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;background:${range===k?'var(--blue)':'var(--fill)'};color:${range===k?'white':'var(--label-3)'};">${l}</button>`).join('')
   }</div>`:'';
   if(!meals.length) return `<div class="analytics-wrap"><div class="analytics-card">${rangeSelector}<p style="text-align:center;padding:16px 0;color:var(--label-3);font-size:14px;">Bu aralıkta öğün yok</p></div></div>`;
-  // Fullness averages
+  const uid=context||'main';
+  // Averages
   const withPre=meals.filter(m=>m.pre_fullness!=null);
   const withPost=meals.filter(m=>m.post_fullness!=null);
+  const withDur=meals.filter(m=>m.duration_minutes!=null);
   const avgPre=withPre.length?(withPre.reduce((s,m)=>s+m.pre_fullness,0)/withPre.length).toFixed(1):'-';
   const avgPost=withPost.length?(withPost.reduce((s,m)=>s+m.post_fullness,0)/withPost.length).toFixed(1):'-';
+  const avgDur=withDur.length?Math.round(withDur.reduce((s,m)=>s+m.duration_minutes,0)/withDur.length)+' dk':'-';
+  const filtDayLogs=dayLogs?filterDayLogsByRange(dayLogs,range):[];
+  const avgRating=filtDayLogs.length?(filtDayLogs.reduce((s,d)=>s+d.rating,0)/filtDayLogs.length).toFixed(1):'-';
 
   // Portion pie
   const PORTIONS=['Az','Biraz Az','Normal','Fazla','Çok Fazla'];
@@ -937,13 +1110,14 @@ function analyticsHTML(allDone, range, context){
   const {css:tCss,legend:tLegend}=buildDonut(tData,TCOLS);
 
   return `<div class="analytics-wrap">
-    <div style="font-size:12px;font-weight:700;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;margin:0 0 8px 2px;">Analiz</div>
+    <div style="font-size:11px;font-weight:700;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;margin:0 0 6px 2px;">Analiz</div>
     <div class="analytics-card">
-      ${rangeSelector}<h4>Tokluk Ortalamaları</h4>
+      ${rangeSelector}<h4>Ortalamalar</h4>
       <div class="analytics-stat-row">
-        <div class="analytics-stat"><div class="val" style="color:var(--blue)">${avgPre}</div><div class="lbl">Önce</div></div>
-        <div class="analytics-stat"><div class="val" style="color:var(--green)">${avgPost}</div><div class="lbl">Sonra</div></div>
-        <div class="analytics-stat"><div class="val">${meals.length}</div><div class="lbl">Toplam</div></div>
+        <div class="analytics-stat"><div class="val" style="color:var(--blue)">${avgPre}</div><div class="lbl">Önceki Açlık</div></div>
+        <div class="analytics-stat"><div class="val" style="color:var(--green)">${avgPost}</div><div class="lbl">Sonraki Açlık</div></div>
+        <div class="analytics-stat"><div class="val" style="color:var(--indigo)">${avgDur}</div><div class="lbl">Öğün Süresi</div></div>
+        <div class="analytics-stat"><div class="val" style="color:var(--orange)">${avgRating}</div><div class="lbl">Gün Puanı</div></div>
       </div>
     </div>
     <div class="analytics-card">
@@ -967,14 +1141,20 @@ function analyticsHTML(allDone, range, context){
       </div>
     </div>
     <div class="analytics-card">
-      <h4>Tokluk Değişimi</h4>
-      ${buildLineChart(meals)}
+      <div class="chart-tabs">
+        <button id="chart-tab-${uid}-fullness" class="chart-tab active" onclick="switchChartTab('${uid}','fullness')">Tokluk Trendi</button>
+        <button id="chart-tab-${uid}-duration" class="chart-tab" onclick="switchChartTab('${uid}','duration')">Öğün Süresi Trendi</button>
+        <button id="chart-tab-${uid}-rating" class="chart-tab" onclick="switchChartTab('${uid}','rating')">Gün Puanı Trendi</button>
+      </div>
+      <div id="chart-panel-${uid}-fullness">${buildLineChart(meals)}</div>
+      <div id="chart-panel-${uid}-duration" style="display:none">${buildDurationChart(meals)}</div>
+      <div id="chart-panel-${uid}-rating" style="display:none">${buildDayRatingChart(filtDayLogs)}</div>
     </div>
   </div>`;
 }
 
 // ===== SHARE VIEWS =====
-function shareTableHTML(meals){
+function shareTableHTML(meals, dayLog){
   if(!meals.length) return '<p style="text-align:center;padding:32px;color:var(--label-3);">Öğün yok</p>';
   const E='<span class="empty-cell">—</span>';
   const fmtFoods=foods=>foods.length?foods.map(f=>`<span style="font-weight:500">${esc(f.name)}</span>`).join(', '):E;
@@ -1002,10 +1182,11 @@ function shareTableHTML(meals){
     row('💬 Yorumlar', m=>m.comments?esc(m.comments):E),
   ].join('');
 
+  const dayRatingRow=dayLog?(()=>{const stars='⭐'.repeat(dayLog.rating)+'☆'.repeat(5-dayLog.rating);const noteHtml=dayLog.note?`<br><span style="color:var(--label-3);font-size:12px;">${esc(dayLog.note)}</span>`:'';return`<tr><td class="st-lbl">⭐ Gün Puanı</td><td class="st-cell" colspan="${meals.length}" style="background:var(--orange-bg)"><strong>${stars} ${dayLog.rating}/5</strong>${noteHtml}</td></tr>`;})():'';
   return `<p class="share-scroll-hint">← yatay kaydır →</p>
   <div class="share-table-wrap"><table class="share-table">
     <thead><tr><th class="st-lbl st-lbl-hdr"></th>${headerCols}</tr></thead>
-    <tbody>${rows}</tbody>
+    <tbody>${dayRatingRow}${rows}</tbody>
   </table></div>`;
 }
 
@@ -1037,29 +1218,113 @@ let shareAnalyticsRange='week';
 function setShareAnalyticsRange(range){
   shareAnalyticsRange=range;
   const el=document.getElementById('share-analytics-section');
-  if(el) el.innerHTML=analyticsHTML(shareAnalyticsMeals,shareAnalyticsRange,'share');
+  if(el) el.innerHTML=analyticsHTML(shareAnalyticsMeals,shareAnalyticsRange,'share',shareDayLogs);
 }
 
 async function loadShareProfile(token){
   const{data:profile}=await sb.from('profiles').select('email').eq('share_token',token).single();
   if(!profile){document.getElementById('loading-overlay').innerHTML=`<div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">🔍</div><h2>Profil bulunamadı</h2></div>`;return;}
-  const{data:meals}=await sb.from('meals').select('*').eq('user_email',profile.email).eq('status','completed').order('started_at',{ascending:true});
+  const[{data:meals},{data:dlData}]=await Promise.all([
+    sb.from('meals').select('*').eq('user_email',profile.email).eq('status','completed').order('started_at',{ascending:true}),
+    sb.from('day_logs').select('*').eq('user_email',profile.email).order('date',{ascending:true})
+  ]);
   showScreen('share');const ms=meals||[];
-  shareAnalyticsMeals=ms;shareAnalyticsRange='week';
-  const grouped={};
-  ms.forEach(m=>{const k=new Date(m.started_at).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});(grouped[k]=grouped[k]||[]).push(m);});
-  const days=Object.keys(grouped).reverse();
-  const tabsHTML=days.map((d,i)=>`<button class="share-day-tab${i===0?' active':''}" onclick="shareShowDay('${d}',this)">${d} <span style="opacity:.7;font-size:11px;">(${grouped[d].length})</span></button>`).join('');
-  const tablesHTML=days.map((d,i)=>`<div class="share-day-section${i===0?'':' hidden'}" data-day="${esc(d)}">${shareTableHTML(grouped[d])}</div>`).join('');
+  shareAnalyticsMeals=ms;shareAnalyticsRange='week';shareDayLogs=dlData||[];shareTraditionalMode=false;
+  shareGrouped={};
+  ms.forEach(m=>{const k=new Date(m.started_at).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});(shareGrouped[k]=shareGrouped[k]||[]).push(m);});
+  const dayCount=Object.keys(shareGrouped).length;
   document.getElementById('share-body').innerHTML=`
     <div class="share-hero">
-      <div class="share-hero-badge">👁️ Paylaşılan Profil</div>
-      <h2>🍽️ Öğün Günlüğü</h2>
-      <p>${ms.length} öğün · ${days.length} gün</p>
+      <div class="share-hero-badge" style="position:relative;z-index:1">👁️ Paylaşılan Profil</div>
+      <div style="position:relative;z-index:1;margin-top:4px;">
+        <h2 style="font-size:22px;font-weight:700;letter-spacing:-.4px;margin-bottom:3px;">🍽️ Öğün Günlüğü</h2>
+        <p style="font-size:13px;opacity:.8;">${ms.length} öğün · ${dayCount} gün</p>
+      </div>
     </div>
-    ${ms.length?`<div id="share-analytics-section">${analyticsHTML(ms,shareAnalyticsRange,'share')}</div>`:''}
-    <div class="share-day-tabs">${tabsHTML}</div>
-    ${tablesHTML}`;
+    ${ms.length?`<div id="share-analytics-section">${analyticsHTML(ms,shareAnalyticsRange,'share',shareDayLogs)}</div>`:''}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:700;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;">Günlük</div>
+      <button class="btn btn-sm btn-secondary" id="btn-trad-view" onclick="toggleTradView()" style="font-size:12px;padding:6px 14px;border-radius:20px;">📋 Geleneksel</button>
+    </div>
+    <div id="share-days-content"></div>`;
+  renderShareDays();
+}
+
+function toggleTradView(){
+  shareTraditionalMode=!shareTraditionalMode;
+  const btn=document.getElementById('btn-trad-view');
+  if(btn){btn.textContent=shareTraditionalMode?'📊 Modern':'📋 Geleneksel';}
+  renderShareDays();
+}
+
+function getDayLog(meals){
+  const date=new Date(meals[0].started_at).toISOString().slice(0,10);
+  return shareDayLogs.find(l=>l.date===date)||null;
+}
+
+function renderShareDays(){
+  const cont=document.getElementById('share-days-content');if(!cont)return;
+  const days=Object.keys(shareGrouped).reverse();
+  if(!days.length){cont.innerHTML='';return;}
+  if(shareTraditionalMode){
+    cont.innerHTML=days.map(day=>traditionalDayHTML(day,shareGrouped[day],getDayLog(shareGrouped[day]))).join('');
+  }else{
+    const tabsHTML=days.map((d,i)=>`<button class="share-day-tab${i===0?' active':''}" onclick="shareShowDay('${esc(d)}',this)">${esc(d)} <span style="opacity:.7;font-size:11px;">(${shareGrouped[d].length})</span></button>`).join('');
+    const tablesHTML=days.map((d,i)=>`<div class="share-day-section${i===0?'':' hidden'}" data-day="${esc(d)}">${shareTableHTML(shareGrouped[d],getDayLog(shareGrouped[d]))}</div>`).join('');
+    cont.innerHTML=`<div class="share-day-tabs">${tabsHTML}</div>${tablesHTML}`;
+  }
+}
+
+function fmtTrad(dt){
+  const d=new Date(dt);
+  const dd=String(d.getDate()).padStart(2,'0'),mm=String(d.getMonth()+1).padStart(2,'0'),yyyy=d.getFullYear();
+  const hh=String(d.getHours()).padStart(2,'0'),mi=String(d.getMinutes()).padStart(2,'0');
+  return`${dd}.${mm}.${yyyy}<br>${hh}:${mi}`;
+}
+
+function traditionalDayHTML(dayLabel,meals,dayLog){
+  const B='border:1px solid #000;padding:8px 10px;vertical-align:top;font-size:13px;line-height:1.5;color:#000;';
+  const TH=s=>`<th style="${B}font-weight:700;text-align:center;background:#fff;">${s}</th>`;
+  const TD=(s,extra='')=>`<td style="${B}${extra}">${s||'-'}</td>`;
+  let dayRating='';
+  if(dayLog){
+    const stars='★'.repeat(dayLog.rating)+'☆'.repeat(5-dayLog.rating);
+    dayRating=`<div style="font-size:13px;font-weight:600;margin-bottom:6px;color:#000;">Gün Puanı: ${stars} ${dayLog.rating}/5${dayLog.note?' — '+esc(dayLog.note):''}</div>`;
+  }
+  return`<div style="margin-bottom:28px;">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:#000;">${esc(dayLabel)}</div>
+    ${dayRating}
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+    <table style="border-collapse:collapse;width:100%;min-width:780px;background:#fff;">
+      <thead><tr>
+        ${TH('Tarih ve<br>Saat')}
+        ${TH('Yer')}
+        ${TH('Yenilen/İçilen')}
+        ${TH('Miktarı Sence<br>Nasıldı?')}
+        ${TH('Tokluk<br>(Yemeden önce-sonra<br>10 en tok üzerinden)')}
+        ${TH('Süre')}
+        ${TH('Telafi Edici<br>Davranış')}
+        ${TH('Yemeği Etkileyen Olaylar,<br>Düşünceler, Duygular')}
+        ${TH('Yorumlar')}
+      </tr></thead>
+      <tbody>${meals.map(m=>{
+        const loc=m.location_custom||m.location||'';
+        const foods=(m.foods||[]).map(f=>f.name).filter(Boolean).join(', ');
+        const tokluk=[m.pre_fullness!=null?m.pre_fullness:null,m.post_fullness!=null?m.post_fullness:null].filter(v=>v!=null).join('-');
+        return`<tr>
+          ${TD(fmtTrad(m.started_at),'text-align:center;white-space:nowrap;')}
+          ${TD(esc(loc),'text-align:center;')}
+          ${TD(esc(foods),'min-width:120px;')}
+          ${TD(esc(m.portion_size||''),'text-align:center;')}
+          ${TD(tokluk,'text-align:center;')}
+          ${TD(m.duration_minutes?m.duration_minutes+' dk.':'','text-align:center;white-space:nowrap;')}
+          ${TD(esc(m.compensatory_plan||''),'min-width:100px;')}
+          ${TD(esc(m.events_thoughts_emotions||''),'min-width:140px;')}
+          ${TD(esc(m.comments||''),'min-width:110px;')}
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>
+  </div>`;
 }
 
 // ===== UTILS =====
