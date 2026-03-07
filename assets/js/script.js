@@ -18,7 +18,7 @@ async function loadPage(pageName) {
   if (!contentArea) return;
   
   // Normalize page name
-  const validPages = ['about', 'cv', 'references', 'showcase', 'blog'];
+  const validPages = ['about', 'cv', 'references', 'showcase', 'blog', 'builder'];
   if (!validPages.includes(pageName)) pageName = 'about';
 
   // If about page is already loaded inline, skip fetch
@@ -239,7 +239,7 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // Prefetch all pages except about (already inline) and current page
   // Prioritize CV page for faster loading
-  const pagesToPrefetch = ['cv', 'references', 'showcase', 'blog'];
+  const pagesToPrefetch = ['cv', 'references', 'showcase', 'blog', 'builder'];
   
   // Only prefetch other pages if not already on that page
   pagesToPrefetch.forEach((page) => {
