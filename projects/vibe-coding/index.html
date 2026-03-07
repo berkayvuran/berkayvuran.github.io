@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Berkay Vuran as a Product Builder — a showcase of vibe-coded products, experiments and ideas built with AI.">
+  <meta name="author" content="Berkay Vuran">
+  <title>Berkay as a Product Builder | Vibe-Coded Projects</title>
+  <link rel="shortcut icon" href="../../assets/images/favicon.ico" type="image/x-icon">
+
+  <!-- Fonts -->
+  <style>
+    @font-face {
+      font-family: 'Poppins';
+      font-style: normal;
+      font-weight: 300;
+      font-display: swap;
+      src: url('../../assets/fonts/poppins-300.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Poppins';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('../../assets/fonts/poppins-400.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Poppins';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('../../assets/fonts/poppins-500.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Poppins';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url('../../assets/fonts/poppins-600.woff2') format('woff2');
+    }
+  </style>
+
+  <style>
+    /* ========================
+       CSS VARIABLES & RESET
+    ======================== */
+    :root {
+      --bg-primary: hsl(220, 20%, 10%);
+      --bg-secondary: hsl(220, 18%, 13%);
+      --bg-card: hsl(220, 15%, 16%);
+      --bg-card-hover: hsl(220, 15%, 20%);
+      --border-color: hsla(220, 15%, 65%, 0.12);
+      --border-hover: hsla(0, 0%, 100%, 0.15);
+      --text-primary: hsl(0, 0%, 95%);
+      --text-secondary: hsl(220, 15%, 65%);
+      --text-muted: hsl(220, 15%, 50%);
+      --accent: #007AFF;
+      --accent-2: #5AC8FA;
+      --accent-glow: rgba(0, 122, 255, 0.25);
+      --tag-bg: hsla(210, 100%, 50%, 0.1);
+      --tag-color: #5AC8FA;
+      --shadow: 0 8px 32px hsla(220, 50%, 5%, 0.4);
+      --shadow-card: 0 4px 20px hsla(220, 50%, 5%, 0.35);
+      --ff: 'Poppins', sans-serif;
+      --transition: 0.25s ease;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: hsl(220, 20%, 97%);
+      --bg-secondary: hsl(0, 0%, 100%);
+      --bg-card: hsl(0, 0%, 100%);
+      --bg-card-hover: hsl(220, 20%, 96%);
+      --border-color: hsla(220, 15%, 40%, 0.12);
+      --border-hover: hsla(210, 100%, 50%, 0.3);
+      --text-primary: hsl(220, 20%, 12%);
+      --text-secondary: hsl(220, 15%, 40%);
+      --text-muted: hsl(220, 15%, 55%);
+      --accent: #007AFF;
+      --accent-2: #0050CC;
+      --accent-glow: rgba(0, 122, 255, 0.12);
+      --tag-bg: hsla(210, 100%, 50%, 0.08);
+      --tag-color: #005cc5;
+      --shadow: 0 8px 32px hsla(220, 30%, 60%, 0.12);
+      --shadow-card: 0 2px 12px hsla(220, 30%, 60%, 0.1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--ff);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      transition: background-color var(--transition), color var(--transition);
+    }
+
+    /* ========================
+       LAYOUT
+    ======================== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ========================
+       HEADER / NAV
+    ======================== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: background-color var(--transition);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+
+    .back-link:hover { color: var(--accent); }
+
+    .back-link svg { flex-shrink: 0; }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-family: var(--ff);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      transition: all var(--transition);
+    }
+
+    .ctrl-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+
+    /* ========================
+       HERO
+    ======================== */
+    .hero {
+      padding: 72px 24px 60px;
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(0, 122, 255, 0.3);
+      border-radius: 100px;
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 6px 16px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero-title {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 600;
+      line-height: 1.18;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title .accent-text {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 580px;
+      margin: 0 auto 36px;
+      line-height: 1.75;
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-num {
+      display: block;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .hero-stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 4px;
+    }
+
+    .hero-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border-color);
+    }
+
+    /* ========================
+       PRODUCTS SECTION
+    ======================== */
+    .products-section {
+      padding: 20px 0 80px;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 40px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* ========================
+       PRODUCT CARD
+    ======================== */
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition);
+      pointer-events: none;
+    }
+
+    .product-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .product-card:hover::before { opacity: 1; }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .card-arrow {
+      color: var(--text-muted);
+      transition: color var(--transition), transform var(--transition);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .product-card:hover .card-arrow {
+      color: var(--accent);
+      transform: translate(3px, -3px);
+    }
+
+    .card-name {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      background: var(--tag-bg);
+      color: var(--tag-color);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      letter-spacing: 0.03em;
+    }
+
+    /* Icon color schemes */
+    .icon-blue { background: rgba(0, 122, 255, 0.15); }
+    .icon-green { background: rgba(52, 199, 89, 0.15); }
+    .icon-purple { background: rgba(175, 82, 222, 0.15); }
+    .icon-orange { background: rgba(255, 159, 10, 0.15); }
+    .icon-red { background: rgba(255, 59, 48, 0.15); }
+    .icon-teal { background: rgba(90, 200, 250, 0.15); }
+    .icon-pink { background: rgba(255, 45, 85, 0.15); }
+    .icon-yellow { background: rgba(255, 214, 10, 0.15); }
+    .icon-indigo { background: rgba(88, 86, 214, 0.15); }
+    .icon-brown { background: rgba(162, 132, 94, 0.15); }
+
+    /* ========================
+       FOOTER
+    ======================== */
+    .site-footer {
+      border-top: 1px solid var(--border-color);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .footer-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer-link:hover { text-decoration: underline; }
+
+    /* ========================
+       RESPONSIVE
+    ======================== */
+    @media (max-width: 600px) {
+      .hero { padding: 52px 20px 48px; }
+      .hero-stats { gap: 20px; }
+      .products-grid { grid-template-columns: 1fr; }
+      .footer-inner { justify-content: center; text-align: center; }
+      .header-inner { padding: 12px 16px; }
+    }
+
+  </style>
+
+  <script>
+    // Apply saved theme immediately (before render to prevent flash)
+    (function() {
+      const t = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../../index.html" class="back-link" aria-label="Go back to main site">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        <span data-lang="en">berkayvuran.com</span>
+        <span data-lang="tr">berkayvuran.com</span>
+      </a>
+
+      <div class="header-controls">
+        <button class="ctrl-btn" id="theme-btn" aria-label="Toggle theme">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" id="theme-icon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <span data-lang="en">Theme</span>
+          <span data-lang="tr">Tema</span>
+        </button>
+        <button class="ctrl-btn" id="lang-btn" aria-label="Switch language">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <span id="lang-label">TR</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <main>
+    <section class="hero" aria-label="Hero">
+      <div class="hero-badge">
+        <span data-lang="en">Vibe Coding Lab</span>
+        <span data-lang="tr">Vibe Coding Laboratuvarı</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span data-lang="en">Berkay as a<br><span class="accent-text">Product Builder</span></span>
+        <span data-lang="tr">Berkay bir<br><span class="accent-text">Ürün İnşacısı</span> olarak</span>
+      </h1>
+
+      <p class="hero-desc" data-lang="en">
+        Some of these actually work. Some are experiments that went nowhere. A few barely qualify as ideas. None were built for a reason — no user research, no business case, no roadmap. Just things I wanted to see exist.
+      </p>
+      <p class="hero-desc" data-lang="tr">
+        Bir kısmı gerçekten çalışıyor. Bir kısmı hiçbir yere varmayan denemeler. Birkaçı fikir bile sayılmaz. Hiçbirini somut bir neden için yapmadım — kullanıcı araştırması yok, iş gerekçesi yok, yol haritası yok. Sadece var olmalarını görmek istediğim şeyler.
+      </p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">10</span>
+          <span class="hero-stat-label" data-lang="en">Products</span>
+          <span class="hero-stat-label" data-lang="tr">Ürün</span>
+        </div>
+        <div class="hero-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">100%</span>
+          <span class="hero-stat-label" data-lang="en">Browser-based</span>
+          <span class="hero-stat-label" data-lang="tr">Tarayıcı tabanlı</span>
+        </div>
+        <div class="hero-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">AI</span>
+          <span class="hero-stat-label" data-lang="en">Powered Build</span>
+          <span class="hero-stat-label" data-lang="tr">Destekli İnşa</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PRODUCTS ===================== -->
+    <section class="products-section" aria-label="Products">
+      <div class="container">
+        <p class="section-label">
+          <span data-lang="en">All projects — live & clickable</span>
+          <span data-lang="tr">Tüm projeler — canlı & tıklanabilir</span>
+        </p>
+
+        <div class="products-grid">
+
+          <!-- AboneRez -->
+          <a href="./abonerez.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="AboneRez — Subscription Appointment Platform">
+            <div class="card-top">
+              <div class="card-icon icon-purple" aria-hidden="true">📅</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name">AboneRez</h2>
+              <p class="card-desc" data-lang="en">A subscription-based appointment platform with a rich dashboard. Designed to simplify recurring reservations and subscription management for service businesses.</p>
+              <p class="card-desc" data-lang="tr">Zengin panelli abonelik tabanlı randevu platformu. Hizmet işletmelerinde tekrarlayan rezervasyonları ve abonelik yönetimini kolaylaştırmak için tasarlandı.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag">SaaS</span>
+              <span class="tag" data-lang="en">Dashboard</span>
+              <span class="tag" data-lang="tr">Panel</span>
+              <span class="tag" data-lang="en">Appointments</span>
+              <span class="tag" data-lang="tr">Randevu</span>
+            </div>
+          </a>
+
+          <!-- ZenFocus -->
+          <a href="./zen-focus.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="ZenFocus — Flow State Timer">
+            <div class="card-top">
+              <div class="card-icon icon-teal" aria-hidden="true">⏱️</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name" data-lang="en">ZenFocus Flow Timer</h2>
+              <h2 class="card-name" data-lang="tr">ZenFocus Akış Zamanlayıcı</h2>
+              <p class="card-desc" data-lang="en">A minimalist flow-state timer with ambient background animations. Built to help you enter deep focus and achieve peak productivity without distraction.</p>
+              <p class="card-desc" data-lang="tr">Ambiyans arka plan animasyonlarına sahip minimalist akış durumu zamanlayıcısı. Dikkat dağıtmadan derin odaklanmaya girmenize ve en yüksek üretkenliğe ulaşmanıza yardımcı olmak için inşa edildi.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Productivity</span>
+              <span class="tag">Pomodoro</span>
+              <span class="tag">Focus</span>
+            </div>
+          </a>
+
+          <!-- CCaaS Glossary Game -->
+          <a href="./ccai-glossary-game.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="CCaaS Glossary Game">
+            <div class="card-top">
+              <div class="card-icon icon-blue" aria-hidden="true">🎮</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name" data-lang="en">CCaaS Glossary Game</h2>
+              <h2 class="card-name" data-lang="tr">CCaaS Sözlük Oyunu</h2>
+              <p class="card-desc" data-lang="en">An interactive quiz game for Contact Center professionals. Master CCaaS and conversational AI terminology through gamified learning — because boring training is a product failure.</p>
+              <p class="card-desc" data-lang="tr">Çağrı merkezi profesyonelleri için interaktif bir sınav oyunu. Sıkıcı eğitim bir ürün başarısızlığıdır — oyunlaştırılmış öğrenmeyle CCaaS ve konuşma AI terminolojisini öğrenin.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag">EdTech</span>
+              <span class="tag">Quiz</span>
+              <span class="tag">CCaaS</span>
+            </div>
+          </a>
+
+          <!-- UI Component Master -->
+          <a href="./uicomponentmaster.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="UI Component Master">
+            <div class="card-top">
+              <div class="card-icon icon-indigo" aria-hidden="true">🪟</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name" data-lang="en">UI Component Master</h2>
+              <h2 class="card-name" data-lang="tr">UI Bileşen Ustası</h2>
+              <p class="card-desc" data-lang="en">A visual showcase of glassmorphism UI components in Pro Glass Edition. Demonstrates advanced CSS design patterns — cards, modals, inputs and more with stunning glass effects.</p>
+              <p class="card-desc" data-lang="tr">Pro Glass Edition'da glassmorphism UI bileşenlerinin görsel sunumu. Kartlar, modaller, inputlar ve daha fazlası için gelişmiş CSS tasarım kalıplarını gösteriyor.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Design</span>
+              <span class="tag">CSS</span>
+              <span class="tag">Glassmorphism</span>
+            </div>
+          </a>
+
+          <!-- Combat Sports News Hub -->
+          <a href="./combat-news.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="Combat Sports News Hub">
+            <div class="card-top">
+              <div class="card-icon icon-red" aria-hidden="true">🥊</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name" data-lang="en">Combat Sports News Hub</h2>
+              <h2 class="card-name" data-lang="tr">Dövüş Sporları Haber Merkezi</h2>
+              <p class="card-desc" data-lang="en">A news aggregator hub dedicated to combat sports — boxing, MMA, kickboxing and more. Built for fans who want all the action in one place.</p>
+              <p class="card-desc" data-lang="tr">Boks, MMA, kickboks ve daha fazlasına adanmış dövüş sporları haber merkezi. Tüm aksiyonu tek bir yerde isteyen taraftarlar için inşa edildi.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Media</span>
+              <span class="tag" data-lang="en">News</span>
+              <span class="tag" data-lang="tr">Haber</span>
+              <span class="tag">MMA</span>
+            </div>
+          </a>
+
+          <!-- Lessons Learners -->
+          <a href="./lessons-learned.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="Lessons Learners">
+            <div class="card-top">
+              <div class="card-icon icon-green" aria-hidden="true">💡</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name" data-lang="en">Lessons Learners</h2>
+              <h2 class="card-name" data-lang="tr">Ders Çıkarılanlar</h2>
+              <p class="card-desc" data-lang="en">A retrospective tool for product teams to capture, organize, and reflect on lessons learned from projects and sprints. Because the best team never stops learning.</p>
+              <p class="card-desc" data-lang="tr">Ürün ekiplerinin projelerden ve sprintlerden çıkardıkları dersleri yakalaması, düzenlemesi ve üzerinde düşünmesi için bir retrospektif araç. Çünkü en iyi ekip öğrenmeyi asla bırakmaz.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Agile</span>
+              <span class="tag">Retro</span>
+              <span class="tag" data-lang="en">Teams</span>
+              <span class="tag" data-lang="tr">Takım</span>
+            </div>
+          </a>
+
+          <!-- Gender Bias Assessment -->
+          <a href="./gender-bias-test.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="Gender Bias Assessment">
+            <div class="card-top">
+              <div class="card-icon icon-pink" aria-hidden="true">⚖️</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name" data-lang="en">Gender Bias Assessment</h2>
+              <h2 class="card-name" data-lang="tr">Örtük Cinsiyetçilik Ölçeği</h2>
+              <p class="card-desc" data-lang="en">An implicit sexism scale that measures subtle gender biases through scientifically grounded questions. Self-awareness is the first step toward a fairer world.</p>
+              <p class="card-desc" data-lang="tr">Bilimsel temelli sorularla ince cinsiyet önyargılarını ölçen örtük cinsiyetçilik ölçeği. Öz-farkındalık, daha adil bir dünya için ilk adımdır.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag" data-lang="en">Psychology</span>
+              <span class="tag" data-lang="tr">Psikoloji</span>
+              <span class="tag" data-lang="en">Assessment</span>
+              <span class="tag" data-lang="tr">Değerlendirme</span>
+              <span class="tag">Research</span>
+            </div>
+          </a>
+
+          <!-- HackerTyper -->
+          <a href="./hackertyper.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="HackerTyper Clone">
+            <div class="card-top">
+              <div class="card-icon icon-green" aria-hidden="true">💻</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name" data-lang="en">HackerTyper Clone</h2>
+              <h2 class="card-name" data-lang="tr">HackerTyper Kopyası</h2>
+              <p class="card-desc" data-lang="en">A fun recreation of the legendary HackerTyper experience. Mash any keys and watch as terminal code fills your screen — look like a movie hacker in seconds.</p>
+              <p class="card-desc" data-lang="tr">Efsanevi HackerTyper deneyiminin eğlenceli yeniden yorumlaması. Herhangi bir tuşa basın ve terminal kodunun ekranınızı doldurduğunu izleyin — saniyeler içinde film hackerı gibi görünün.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Fun</span>
+              <span class="tag">Terminal</span>
+              <span class="tag" data-lang="en">Interactive</span>
+              <span class="tag" data-lang="tr">İnteraktif</span>
+            </div>
+          </a>
+
+          <!-- Noel Dayı: The Game -->
+          <a href="./noel-dayi-game.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="Noel Dayı: The Game">
+            <div class="card-top">
+              <div class="card-icon icon-orange" aria-hidden="true">🎮</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name">Noel Dayı: The Game</h2>
+              <p class="card-desc" data-lang="en">A browser-based game tribute to Grafi2000, celebrating the beloved Noel Dayı meme from Turkish internet culture. A nostalgic dive into early 2000s internet folklore.</p>
+              <p class="card-desc" data-lang="tr">Türk internet kültürünün sevilen Noel Dayı memesini kutlayan, Grafi2000'e tarayıcı tabanlı bir saygı duruşu oyunu. 2000'lerin başı internet folkloruna nostaljik bir yolculuk.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag" data-lang="en">Game</span>
+              <span class="tag" data-lang="tr">Oyun</span>
+              <span class="tag">Nostalgia</span>
+              <span class="tag" data-lang="en">Turkish Internet</span>
+              <span class="tag" data-lang="tr">Türk İnterneti</span>
+            </div>
+          </a>
+
+          <!-- Öğün Günlüğü -->
+          <a href="./ogun-takip.html" target="_blank" rel="noopener noreferrer" class="product-card" aria-label="Öğün Günlüğü — Meal Tracker">
+            <div class="card-top">
+              <div class="card-icon icon-brown" aria-hidden="true">🥗</div>
+              <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </div>
+            <div>
+              <h2 class="card-name" data-lang="en">Öğün Günlüğü — Meal Tracker</h2>
+              <h2 class="card-name" data-lang="tr">Öğün Günlüğü</h2>
+              <p class="card-desc" data-lang="en">A daily meal tracking journal to log your food intake and monitor nutrition habits. Simple, no sign-up required.</p>
+              <p class="card-desc" data-lang="tr">Yiyecek alımınızı kaydetmek ve beslenme alışkanlıklarınızı izlemek için günlük öğün takip günlüğü. Sade, kayıt gerektirmiyor.</p>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Health</span>
+              <span class="tag" data-lang="en">Nutrition</span>
+              <span class="tag" data-lang="tr">Beslenme</span>
+              <span class="tag" data-lang="en">Tracker</span>
+              <span class="tag" data-lang="tr">Takip</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-text">
+        <span data-lang="en">Built with vibes & AI by</span>
+        <span data-lang="tr">AI ile vibe'lanarak inşa edildi —</span>
+        <a href="https://berkayvuran.com" class="footer-link">Berkay Vuran</a>
+      </p>
+      <p class="footer-text">
+        <a href="../../index.html" class="footer-link" data-lang="en">← Back to main site</a>
+        <a href="../../index.html" class="footer-link" data-lang="tr">← Ana siteye dön</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===================== SCRIPT ===================== -->
+  <script>
+    const html = document.documentElement;
+
+    // ---- THEME ----
+    const themeBtn = document.getElementById('theme-btn');
+    const themeIcon = document.getElementById('theme-icon');
+
+    function updateThemeIcon(theme) {
+      if (theme === 'light') {
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+      } else {
+        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+      }
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const cur = html.getAttribute('data-theme') || 'dark';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeIcon(next);
+    });
+
+    // Init theme icon
+    updateThemeIcon(html.getAttribute('data-theme') || 'dark');
+
+    // ---- LANGUAGE ----
+    const langBtn = document.getElementById('lang-btn');
+    const langLabel = document.getElementById('lang-label');
+
+    function applyLang(lang) {
+      // Scope to body so <html data-lang="..."> is never toggled to display:none
+      document.body.querySelectorAll('[data-lang]').forEach(function(el) {
+        var elLang = el.getAttribute('data-lang');
+        el.style.display = (elLang === lang) ? '' : 'none';
+      });
+      html.setAttribute('data-lang', lang);
+      localStorage.setItem('preferredLanguage', lang);
+      langLabel.textContent = lang === 'tr' ? 'EN' : 'TR';
+    }
+
+    langBtn.addEventListener('click', function() {
+      var cur = html.getAttribute('data-lang') || 'en';
+      applyLang(cur === 'en' ? 'tr' : 'en');
+    });
+
+    // Apply saved language on load
+    applyLang(localStorage.getItem('preferredLanguage') || 'en');
+  </script>
+
+</body>
+</html>
