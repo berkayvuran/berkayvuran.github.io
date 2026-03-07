@@ -324,8 +324,13 @@
         <label for="inp-handle">Rumuz</label>
         <input type="text" id="inp-handle" class="fi" placeholder="örn. berkay, ayse42..." autocomplete="username" maxlength="40">
       </div>
+      <div class="fg" id="captcha-group">
+        <label id="captcha-label" style="font-size:13px;color:var(--label-2);"></label>
+        <input type="number" id="captcha-input" class="fi" placeholder="Cevap..." autocomplete="off">
+      </div>
+      <div id="lockout-msg" class="hidden" style="background:var(--fill);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--red);text-align:center;margin-bottom:8px;"></div>
       <button class="btn btn-primary btn-full" id="btn-login">Başla →</button>
-      <p style="font-size:12px;color:var(--label-3);text-align:center;margin-top:14px;">Parola gerekmez. Rumuzun verilerine erişmek için anahtar olarak kullanılır.</p>
+      <p style="font-size:12px;color:var(--label-3);text-align:center;margin-top:14px;">Rumuzunu unutursan verilerine ulaşamazsın — not al. Gerçek adın, telefon numaran gibi kişisel bilgi kullanma.</p>
     </div>
   </div>
 </div>
@@ -517,13 +522,71 @@ function showScreen(n){
   document.getElementById('screen-'+n).classList.remove('hidden');
 }
 
-// ===== AUTH =====
+// ===== AUTH / RATE LIMIT =====
+const RL_KEY='ogun_rl', MAX_ATTEMPTS=5, WINDOW_MS=5*60*1000, LOCKOUT_MS=60*1000;
+let captchaAnswer=null, lockoutTimer=null;
+
+function getRl(){try{return JSON.parse(localStorage.getItem(RL_KEY)||'{}')}catch{return {};}}
+function setRl(v){localStorage.setItem(RL_KEY,JSON.stringify(v));}
+
+function isLocked(){
+  const rl=getRl(), now=Date.now();
+  if(rl.lockedUntil && now < rl.lockedUntil) return rl.lockedUntil;
+  // cleanup old attempts outside window
+  if(rl.attempts){rl.attempts=rl.attempts.filter(t=>now-t<WINDOW_MS);setRl(rl);}
+  return false;
+}
+
+function recordAttempt(){
+  const rl=getRl(), now=Date.now();
+  rl.attempts=(rl.attempts||[]).filter(t=>now-t<WINDOW_MS);
+  rl.attempts.push(now);
+  if(rl.attempts.length>=MAX_ATTEMPTS){rl.lockedUntil=now+LOCKOUT_MS;}
+  setRl(rl);
+  return rl.attempts.length;
+}
+
+function newCaptcha(){
+  const a=Math.floor(Math.random()*9)+1, b=Math.floor(Math.random()*9)+1;
+  captchaAnswer=a+b;
+  document.getElementById('captcha-label').textContent=`Güvenlik sorusu: ${a} + ${b} = ?`;
+  document.getElementById('captcha-input').value='';
+}
+
+function startLockoutUI(until){
+  const msg=document.getElementById('lockout-msg'), btn=document.getElementById('btn-login');
+  msg.classList.remove('hidden'); btn.disabled=true;
+  clearInterval(lockoutTimer);
+  lockoutTimer=setInterval(()=>{
+    const secs=Math.ceil((until-Date.now())/1000);
+    if(secs<=0){msg.classList.add('hidden');btn.disabled=false;clearInterval(lockoutTimer);newCaptcha();}
+    else msg.textContent=`Çok fazla deneme. ${secs} saniye bekle.`;
+  },500);
+}
+
+// init captcha on page load
+newCaptcha();
+// check if already locked on load
+const _initLock=isLocked();
+if(_initLock) startLockoutUI(_initLock);
+
 document.getElementById('btn-login').addEventListener('click',login);
 document.getElementById('inp-handle').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+document.getElementById('captcha-input').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
 
 async function login(){
+  const locked=isLocked();
+  if(locked){startLockoutUI(locked);return;}
   const handle=document.getElementById('inp-handle').value.trim().toLowerCase().replace(/\s+/g,'_');
   if(handle.length<3){toast('En az 3 karakter gir');return;}
+  const capVal=parseInt(document.getElementById('captcha-input').value);
+  if(isNaN(capVal)||capVal!==captchaAnswer){
+    recordAttempt();
+    const lock=isLocked();
+    if(lock){startLockoutUI(lock);}else{toast('Yanlış cevap, tekrar dene');}
+    newCaptcha();
+    return;
+  }
   currentUser=handle;localStorage.setItem('ogun_handle',handle);
   await loadApp();
 }
