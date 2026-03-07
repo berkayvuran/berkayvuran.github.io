@@ -739,7 +739,7 @@ document.getElementById('btn-start').addEventListener('click',async()=>{
   if(!portion){toast('Miktar seçin');return;}
   const btn=document.getElementById('btn-start');btn.innerHTML='<span class="spin"></span> Kaydediliyor...';btn.disabled=true;
   const foods=foodsText?[{name:foodsText}]:[];
-  const{data,error}=await sb.from('meals').insert({user_email:currentUser,started_at:new Date().toISOString(),location:loc,location_custom:locC||null,pre_fullness:pre,status:'active',foods,portion_size:portion}).select().single();
+  const{data,error}=await sb.from('meals').insert({user_email:currentUser,started_at:new Date(dt).toISOString(),location:loc,location_custom:locC||null,pre_fullness:pre,status:'active',foods,portion_size:portion}).select().single();
   btn.innerHTML='Öğüne Başla →';btn.disabled=false;
   if(error){toast('Hata: '+error.message);return;}
   activeMeal=data;allMeals.unshift(data);closeModal('modal-start');renderAll();toast('Öğün başlatıldı! 🍴');
@@ -783,8 +783,9 @@ document.getElementById('btn-finish').addEventListener('click',async()=>{
   if(!com){toast('Yorumlar alanını doldurun');return;}
   const btn=document.getElementById('btn-finish');btn.innerHTML='<span class="spin"></span> Kaydediliyor...';btn.disabled=true;
   const foods=foodsText?[{name:foodsText}]:[];
-  const endedAt=new Date(),durInput=document.getElementById('fin-duration').value;
-  const dur=durInput!==''?parseInt(durInput):Math.round((endedAt-new Date(activeMeal.started_at))/60000);
+  const durInput=document.getElementById('fin-duration').value;
+  const dur=durInput!==''?parseInt(durInput):Math.round((Date.now()-new Date(activeMeal.started_at))/60000);
+  const endedAt=new Date(new Date(activeMeal.started_at).getTime()+dur*60000);
   const{error}=await sb.from('meals').update({ended_at:endedAt.toISOString(),duration_minutes:dur,foods,post_fullness:post,compensatory_plan:comp||null,events_thoughts_emotions:emo||null,comments:com||null,status:'completed'}).eq('id',activeMeal.id);
   btn.innerHTML='Kaydet ✓';btn.disabled=false;
   if(error){toast('Hata: '+error.message);return;}
@@ -879,6 +880,29 @@ function buildDonut(data,colors){
   return {css:`conic-gradient(${stops.join(',')})`,legend};
 }
 
+function buildLineChart(meals){
+  const data=meals.filter(m=>m.pre_fullness!=null||m.post_fullness!=null).sort((a,b)=>new Date(a.started_at)-new Date(b.started_at));
+  if(data.length<2) return `<p style="text-align:center;color:var(--label-3);padding:16px 0;font-size:13px;">Grafik için en az 2 öğün gerekli</p>`;
+  const W=600,H=150,PL=26,PR=12,PT=10,PB=24,CW=W-PL-PR,CH=H-PT-PB,n=data.length;
+  const xp=i=>PL+(n===1?CW/2:i*(CW/(n-1)));
+  const yp=v=>PT+CH-(v/10)*CH;
+  const grid=[0,2,4,6,8,10].map(v=>`<line x1="${PL}" y1="${yp(v)}" x2="${W-PR}" y2="${yp(v)}" stroke="var(--sep)" stroke-width="1"/><text x="${PL-4}" y="${yp(v)+4}" text-anchor="end" font-size="9" fill="var(--label-3)">${v}</text>`).join('');
+  function path(key,color){
+    let d='';data.forEach((m,i)=>{if(m[key]==null)return;const x=xp(i),y=yp(m[key]);d+=d?`L${x},${y}`:`M${x},${y}`;});
+    if(!d)return'';
+    // fill area under line
+    const pts=data.map((m,i)=>m[key]!=null?`${xp(i)},${yp(m[key])}`:null).filter(Boolean);
+    const first=pts[0].split(','),last=pts[pts.length-1].split(',');
+    const area=`M${first[0]},${PT+CH} ${pts.map(p=>`L${p}`).join(' ')} L${last[0]},${PT+CH} Z`;
+    return `<path d="${area}" fill="${color}" opacity=".08"/><path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+  function dots(key,color){return data.map((m,i)=>m[key]!=null?`<circle cx="${xp(i)}" cy="${yp(m[key])}" r="2.5" fill="${color}"/>`:'').join('');}
+  // x-axis: first and last date labels
+  const fmtX=dt=>new Date(dt).toLocaleDateString('tr-TR',{day:'numeric',month:'short'});
+  const xLabels=`<text x="${xp(0)}" y="${H-6}" text-anchor="start" font-size="9" fill="var(--label-3)">${fmtX(data[0].started_at)}</text><text x="${xp(n-1)}" y="${H-6}" text-anchor="end" font-size="9" fill="var(--label-3)">${fmtX(data[n-1].started_at)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${grid}${path('pre_fullness','#007AFF')}${path('post_fullness','#34C759')}${dots('pre_fullness','#007AFF')}${dots('post_fullness','#34C759')}${xLabels}</svg><div style="display:flex;gap:16px;justify-content:center;margin-top:6px;"><div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--label-2);"><div style="width:16px;height:2px;background:#007AFF;border-radius:2px;"></div>Önce Tokluk</div><div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--label-2);"><div style="width:16px;height:2px;background:#34C759;border-radius:2px;"></div>Sonra Tokluk</div></div>`;
+}
+
 function analyticsHTML(allDone, range, context){
   if(!allDone.length) return '';
   const meals=range?filterByRange(allDone,range):allDone;
@@ -942,6 +966,10 @@ function analyticsHTML(allDone, range, context){
         </div>
       </div>
     </div>
+    <div class="analytics-card">
+      <h4>Tokluk Değişimi</h4>
+      ${buildLineChart(meals)}
+    </div>
   </div>`;
 }
 
@@ -952,7 +980,7 @@ function shareTableHTML(meals){
   const fmtFoods=foods=>foods.length?foods.map(f=>`<span style="font-weight:500">${esc(f.name)}</span>`).join(', '):E;
 
   // Header row: empty corner + one column per meal (showing time)
-  const headerCols=meals.map((m,i)=>`<th class="st-meal-hdr"><div class="st-meal-num">Öğün ${i+1}</div><div class="st-meal-time">${fmtTime(m.started_at)}</div></th>`).join('');
+  const headerCols=meals.map((m,i)=>`<th class="st-meal-hdr"><div class="st-meal-num">Öğün ${i+1}</div></th>`).join('');
 
   // Each row: label cell + one data cell per meal
   const row=(label,fn)=>`<tr><td class="st-lbl">${label}</td>${meals.map(m=>`<td class="st-cell">${fn(m)}</td>`).join('')}</tr>`;
