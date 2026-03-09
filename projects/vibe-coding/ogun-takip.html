@@ -968,7 +968,7 @@ document.getElementById('btn-save-day').addEventListener('click',async()=>{
   else{({error}=await sb.from('day_logs').insert({user_email:currentUser,date:today,rating:currentDayRating,note:note||null}));}
   btn.innerHTML='Günü Kaydet 🌙';btn.disabled=false;
   if(error){toast('Hata: '+error.message);return;}
-  await fetchDayLogs();closeModal('modal-day-end');renderDayEndButton();toast('Gün kaydedildi ✓');
+  await fetchDayLogs();closeModal('modal-day-end');renderDayEndButton();renderDayRatingDashboard();toast('Gün kaydedildi ✓');
 });
 
 function renderDayRatingDashboard(){
@@ -988,7 +988,6 @@ function filterDayLogsByRange(dayLogs,range){
 function buildDayRatingChart(dayLogs){
   const data=[...dayLogs].sort((a,b)=>a.date.localeCompare(b.date));
   if(!data.length)return`<p style="text-align:center;color:var(--label-3);padding:10px 0;font-size:13px;">Henüz gün puanı yok</p>`;
-  if(data.length<2)return`<p style="text-align:center;color:var(--label-3);padding:10px 0;font-size:13px;">Grafik için en az 2 gün puanı gerekli</p>`;
   const W=600,H=120,PL=26,PR=12,PT=10,PB=24,CW=W-PL-PR,CH=H-PT-PB,n=data.length;
   const xp=i=>PL+(n===1?CW/2:i*(CW/(n-1)));
   const yp=v=>PT+CH-((v-1)/4)*CH;
