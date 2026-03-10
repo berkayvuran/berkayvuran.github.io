@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Superhero Program</title>
+  <meta name="theme-color" content="#007AFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <style>
+    :root {
+      --bg:#F2F2F7;--bg-e:#FFFFFF;--label:#000;--label-2:#3C3C43;--label-3:rgba(60,60,67,.6);
+      --sep:rgba(60,60,67,.18);--sep-o:#C6C6C8;--fill:rgba(120,120,128,.2);--fill-2:rgba(120,120,128,.16);
+      --blue:#007AFF;--blue-bg:rgba(0,122,255,.1);--green:#34C759;--green-bg:rgba(52,199,89,.1);
+      --orange:#FF9500;--orange-bg:rgba(255,149,0,.1);--red:#FF3B30;--red-bg:rgba(255,59,48,.1);
+      --purple:#AF52DE;--purple-bg:rgba(175,82,222,.1);--yellow:#FFD60A;
+      --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Arial,sans-serif;
+      --tab-h:82px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html{height:100%;overflow-x:hidden}
+    body{min-height:100%;font-family:var(--font);background:var(--bg);color:var(--label);font-size:15px;line-height:1.47;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    .hidden{display:none!important}
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    input[type=number]{-moz-appearance:textfield}
+
+    /* ─── LOADING ─── */
+    #loading-overlay{position:fixed;inset:0;background:var(--bg-e);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9999}
+    #loading-overlay p{color:var(--label-3);font-size:14px}
+    .spin{width:28px;height:28px;border:2.5px solid var(--sep);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ─── TOAST ─── */
+    #toast{position:fixed;bottom:calc(var(--tab-h) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.82);color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:8888;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* ─── LOGIN ─── */
+    #screen-login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;background:var(--bg)}
+    .login-card{background:var(--bg-e);border-radius:20px;padding:32px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.1)}
+    .login-icon{width:72px;height:72px;background:linear-gradient(135deg,#007AFF,#5856D6);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:34px;box-shadow:0 8px 24px rgba(0,122,255,.35)}
+    .login-card h1{font-size:24px;font-weight:700;text-align:center;letter-spacing:-.5px;margin-bottom:6px}
+    .login-card>p{color:var(--label-3);text-align:center;font-size:14px;margin-bottom:28px}
+    .fg{margin-bottom:16px}
+    .fg label{display:block;font-size:12px;font-weight:600;color:var(--label-2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+    .fi{width:100%;padding:13px 14px;border:1.5px solid var(--sep);border-radius:12px;font-size:16px;font-family:var(--font);color:var(--label);background:var(--bg-e);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+    .fi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,122,255,.15)}
+    .fi::placeholder{color:var(--label-3)}
+    .fi.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,59,48,.12)}
+    .err-msg{font-size:13px;color:var(--red);text-align:center;margin-top:10px;min-height:20px}
+
+    /* ─── BUTTONS ─── */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:12px;font-size:15px;font-weight:600;font-family:var(--font);cursor:pointer;border:none;transition:all .15s;text-decoration:none;white-space:nowrap;line-height:1;-webkit-user-select:none;user-select:none}
+    .btn:active{transform:scale(.97)}
+    .btn-primary{background:var(--blue);color:white}
+    .btn-primary:hover{background:#0066DD}
+    .btn-secondary{background:var(--fill);color:var(--label)}
+    .btn-secondary:hover{background:var(--fill-2)}
+    .btn-green{background:var(--green);color:white}
+    .btn-ghost{background:transparent;color:var(--blue);padding:8px 12px}
+    .btn-ghost:hover{background:var(--blue-bg)}
+    .btn-full{width:100%}
+    .btn-sm{padding:8px 14px;font-size:13px;border-radius:10px}
+
+    /* ─── APP HEADER ─── */
+    .app-header{background:rgba(242,242,247,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--sep);position:sticky;top:0;z-index:200}
+    .app-header .inner{max-width:680px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:52px;gap:8px}
+    .app-header h1{font-size:17px;font-weight:600;letter-spacing:-.3px;flex:1;text-align:center}
+    .hdr-btn{background:none;border:none;color:var(--blue);font-size:15px;font-family:var(--font);cursor:pointer;padding:6px 10px;border-radius:8px;transition:background .15s;white-space:nowrap;font-weight:500}
+    .hdr-btn:hover{background:var(--blue-bg)}
+    .hdr-btn.danger{color:var(--red)}
+    .hdr-btn.danger:hover{background:var(--red-bg)}
+
+    /* ─── LAYOUT ─── */
+    .wrap{max-width:680px;margin:0 auto;padding:0 16px}
+    .content{padding:16px 0 calc(var(--tab-h) + 16px)}
+
+    /* ─── BOTTOM TAB BAR ─── */
+    .tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(249,249,249,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--sep);display:flex;align-items:stretch;z-index:300;height:var(--tab-h);padding-bottom:env(safe-area-inset-bottom)}
+    .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:none;background:none;cursor:pointer;font-family:var(--font);color:var(--label-3);transition:color .2s;padding:8px 4px;font-size:10px;font-weight:500;letter-spacing:.2px;-webkit-user-select:none;user-select:none}
+    .tab-btn svg{width:24px;height:24px;fill:currentColor;transition:all .2s}
+    .tab-btn.active{color:var(--blue)}
+    .tab-btn.active svg{transform:scale(1.1)}
+
+    /* ─── CARDS ─── */
+    .card{background:var(--bg-e);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .card+.card{margin-top:8px}
+    .card-hdr{padding:14px 16px;border-bottom:1px solid var(--sep);display:flex;align-items:center;justify-content:space-between}
+    .card-hdr h3{font-size:12px;font-weight:600;color:var(--label-3);text-transform:uppercase;letter-spacing:.5px}
+    .card-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+    .card-row+.card-row{border-top:1px solid var(--sep)}
+    .card-row-val{font-size:15px;color:var(--label-3)}
+
+    /* ─── SECTION TITLE ─── */
+    .section-title{font-size:20px;font-weight:700;letter-spacing:-.4px;padding:8px 0 10px}
+    .section-sub{font-size:13px;color:var(--label-3);margin-top:-6px;margin-bottom:12px}
+
+    /* ─── WEEK GRID ─── */
+    .week-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    @media(min-width:480px){.week-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(min-width:680px){.week-grid{grid-template-columns:repeat(6,1fr)}}
+    .week-cell{background:var(--bg-e);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;box-shadow:0 1px 4px rgba(0,0,0,.06);border:2px solid transparent;position:relative}
+    .week-cell:active{transform:scale(.96)}
+    .week-cell.active-week{border-color:var(--blue);background:var(--blue-bg)}
+    .week-cell.done{border-color:var(--green);background:var(--green-bg)}
+    .week-cell.rest{border-color:var(--orange);background:var(--orange-bg)}
+    .week-cell-num{font-size:22px;font-weight:700;letter-spacing:-.5px;display:block}
+    .week-cell-lbl{font-size:10px;color:var(--label-3);font-weight:500;display:block;margin-top:2px}
+    .week-cell.active-week .week-cell-num{color:var(--blue)}
+    .week-cell.done .week-cell-num{color:var(--green)}
+    .week-cell.rest .week-cell-num{color:var(--orange)}
+
+    /* ─── HOME WEEK CARD ─── */
+    .hero-card{background:linear-gradient(135deg,#007AFF 0%,#5856D6 100%);border-radius:20px;padding:22px;color:white;position:relative;overflow:hidden;margin-bottom:14px}
+    .hero-card::before{content:'';position:absolute;top:-50px;right:-30px;width:160px;height:160px;background:rgba(255,255,255,.08);border-radius:50%}
+    .hero-card::after{content:'';position:absolute;bottom:-40px;left:20px;width:120px;height:120px;background:rgba(255,255,255,.05);border-radius:50%}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-bottom:14px;backdrop-filter:blur(4px)}
+    .hero-title{font-size:26px;font-weight:700;letter-spacing:-.6px;position:relative;z-index:1;margin-bottom:4px}
+    .hero-sub{font-size:14px;opacity:.8;position:relative;z-index:1;margin-bottom:18px}
+    .hero-progress-bar{background:rgba(255,255,255,.25);border-radius:6px;height:6px;margin-bottom:18px;position:relative;z-index:1}
+    .hero-progress-fill{background:white;border-radius:6px;height:6px;transition:width .5s ease}
+    .hero-progress-label{font-size:12px;opacity:.8;margin-top:4px;position:relative;z-index:1}
+    .workout-cards{display:flex;gap:10px;position:relative;z-index:1;margin-top:16px}
+    .wo-card{flex:1;background:rgba(255,255,255,.18);border-radius:14px;padding:12px;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px);border:1.5px solid rgba(255,255,255,.15)}
+    .wo-card:hover{background:rgba(255,255,255,.25)}
+    .wo-card:active{transform:scale(.95)}
+    .wo-card.done{background:rgba(52,199,89,.25);border-color:rgba(52,199,89,.4)}
+    .wo-card-letter{font-size:20px;font-weight:700;display:block;margin-bottom:4px}
+    .wo-card-label{font-size:10px;opacity:.8;font-weight:500;display:block}
+    .wo-card-check{font-size:14px;display:block;margin-top:4px}
+
+    /* ─── BODY WEIGHT CARD ─── */
+    .bw-card{background:var(--bg-e);border-radius:16px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:14px;display:flex;align-items:center;gap:16px}
+    .bw-icon{width:44px;height:44px;background:var(--blue-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .bw-label{font-size:12px;font-weight:600;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+    .bw-input-wrap{display:flex;align-items:center;gap:8px;flex:1}
+    .bw-input{border:none;outline:none;font-size:22px;font-weight:700;font-family:var(--font);color:var(--label);width:80px;background:transparent;letter-spacing:-.5px}
+    .bw-unit{font-size:16px;color:var(--label-3);font-weight:500}
+
+    /* ─── STATS ROW ─── */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+    .stat-card{background:var(--bg-e);border-radius:14px;padding:14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .stat-val{font-size:22px;font-weight:700;letter-spacing:-.5px}
+    .stat-lbl{font-size:11px;color:var(--label-3);font-weight:500;margin-top:2px}
+
+    /* ─── WEEK DETAIL ─── */
+    #view-workout{display:none;position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    #view-workout.open{display:block}
+    .workout-tabs{display:flex;gap:8px;padding:12px 16px;max-width:680px;margin:0 auto}
+    .workout-tab-btn{flex:1;padding:10px 8px;border:none;background:var(--fill);border-radius:10px;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;color:var(--label-3);transition:all .2s}
+    .workout-tab-btn.active{background:var(--blue);color:white;box-shadow:0 3px 10px rgba(0,122,255,.3)}
+    .workout-tab-btn.done-tab{background:var(--green-bg);color:var(--green)}
+    .workout-tab-btn.done-tab.active{background:var(--green);color:white}
+
+    /* ─── EXERCISE CARD ─── */
+    .ex-card{background:var(--bg-e);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:10px}
+    .ex-header{padding:14px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .ex-name{font-size:16px;font-weight:600;letter-spacing:-.2px;line-height:1.3;flex:1}
+    .ex-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+    .badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+    .badge-weight{background:var(--blue-bg);color:var(--blue)}
+    .badge-scheme{background:var(--fill);color:var(--label-2)}
+    .badge-rpe8{background:var(--orange-bg);color:var(--orange)}
+    .badge-rpe9,.badge-rpe10{background:var(--red-bg);color:var(--red)}
+    .badge-bw{background:var(--purple-bg);color:var(--purple)}
+    .ex-complete-dot{width:10px;height:10px;border-radius:50%;background:var(--sep-o);flex-shrink:0;margin-top:4px;transition:background .3s}
+    .ex-complete-dot.done{background:var(--green)}
+
+    /* ─── WARMUP ROW ─── */
+    .warmup-row{padding:0 16px 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .warmup-label{font-size:11px;font-weight:600;color:var(--label-3);text-transform:uppercase;letter-spacing:.3px;margin-right:2px}
+    .warmup-chip{background:var(--fill);border-radius:8px;padding:4px 8px;font-size:12px;font-weight:600;color:var(--label-2)}
+
+    /* ─── SETS GRID ─── */
+    .sets-grid{display:grid;gap:8px;padding:12px 16px;border-top:1px solid var(--sep)}
+    .sets-grid.sets-4{grid-template-columns:repeat(4,1fr)}
+    .sets-grid.sets-3{grid-template-columns:repeat(3,1fr)}
+    .set-cell{display:flex;flex-direction:column;align-items:center;gap:4px}
+    .set-label{font-size:10px;font-weight:600;color:var(--label-3);text-transform:uppercase;letter-spacing:.3px}
+    .set-inp{width:100%;height:52px;border:1.5px solid var(--sep);border-radius:12px;font-size:20px;font-weight:700;font-family:var(--font);color:var(--label);text-align:center;background:var(--bg);outline:none;transition:border-color .2s,background .2s;-webkit-appearance:none;appearance:none}
+    .set-inp:focus{border-color:var(--blue);background:var(--bg-e);box-shadow:0 0 0 3px rgba(0,122,255,.12)}
+    .set-inp.filled{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+    .set-inp:disabled{opacity:.4;cursor:not-allowed}
+
+    /* ─── NOTES ─── */
+    .notes-row{padding:10px 16px 14px;border-top:1px solid var(--sep)}
+    .notes-inp{width:100%;border:none;outline:none;font-size:14px;font-family:var(--font);color:var(--label);background:transparent;resize:none;min-height:36px;line-height:1.5}
+    .notes-inp::placeholder{color:var(--label-3)}
+
+    /* ─── PROGRESS CHARTS ─── */
+    .chart-card{background:var(--bg-e);border-radius:16px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:12px}
+    .chart-title{font-size:14px;font-weight:600;letter-spacing:-.2px;margin-bottom:14px}
+    .chart-wrap{position:relative;height:200px}
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state{text-align:center;padding:40px 20px;color:var(--label-3)}
+    .empty-state-icon{font-size:48px;margin-bottom:12px}
+    .empty-state p{font-size:14px}
+
+    /* ─── SAVE INDICATOR ─── */
+    .save-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);opacity:0;transition:opacity .3s;margin-left:6px;vertical-align:middle}
+    .save-dot.show{opacity:1}
+
+    /* ─── RESPONSIVE ─── */
+    @media(min-width:680px){
+      .hero-card{max-width:680px;margin:0 auto 14px}
+      .content{padding-bottom:calc(var(--tab-h) + 24px)}
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading-overlay">
+  <div class="spin"></div>
+  <p>Yükleniyor...</p>
+</div>
+
+<div id="toast"></div>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="screen-login" class="hidden">
+  <div class="login-card">
+    <div class="login-icon">💪</div>
+    <h1>Superhero Program</h1>
+    <p>12 haftalık güç antrenmanı takibi</p>
+    <div class="fg">
+      <label for="inp-pass">Şifre</label>
+      <input type="password" id="inp-pass" class="fi" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary btn-full" id="btn-login">Giriş Yap →</button>
+    <p class="err-msg" id="login-err"></p>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="app" class="hidden">
+
+  <!-- ── MAIN VIEW (tabs) ── -->
+  <div id="view-main">
+    <header class="app-header">
+      <div class="inner">
+        <span style="font-size:22px;line-height:1">💪</span>
+        <h1 id="main-title">Superhero</h1>
+        <button class="hdr-btn danger" id="btn-logout">Çıkış</button>
+      </div>
+    </header>
+
+    <!-- HOME TAB -->
+    <div id="tab-home" class="wrap content">
+      <p class="section-title" id="home-week-title">Bu Hafta</p>
+      <div id="home-hero"></div>
+      <div id="home-bw"></div>
+      <div id="home-stats" class="stats-row"></div>
+    </div>
+
+    <!-- HAFTALAR TAB -->
+    <div id="tab-haftalar" class="wrap content hidden">
+      <p class="section-title">Program</p>
+      <p class="section-sub">Haftaya tıkla, antrenmanı seç, logla</p>
+      <div id="week-grid" class="week-grid"></div>
+      <div id="rest-week-card"></div>
+    </div>
+
+    <!-- İLERLEME TAB -->
+    <div id="tab-ilerleme" class="wrap content hidden">
+      <p class="section-title">İlerleme</p>
+      <div id="progress-body"></div>
+    </div>
+
+    <!-- BOTTOM TAB BAR -->
+    <nav class="tab-bar">
+      <button class="tab-btn active" data-tab="home">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        Ana Sayfa
+      </button>
+      <button class="tab-btn" data-tab="haftalar">
+        <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+        Haftalar
+      </button>
+      <button class="tab-btn" data-tab="ilerleme">
+        <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+        İlerleme
+      </button>
+    </nav>
+  </div>
+
+  <!-- ── WORKOUT DETAIL VIEW ── -->
+  <div id="view-workout">
+    <header class="app-header">
+      <div class="inner">
+        <button class="hdr-btn" id="btn-back">← Geri</button>
+        <h1 id="workout-view-title">Antrenman</h1>
+        <span class="save-dot" id="save-dot"></span>
+      </div>
+    </header>
+    <div id="workout-tabs-wrap" class="workout-tabs"></div>
+    <div id="workout-exercises" class="wrap" style="padding-bottom:40px"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+const SB_URL = 'https://vwubvpjidodewzvtqjtf.supabase.co';
+const SB_KEY = 'sb_publishable_Pyhx-5-wLHw199bcT6URCA_O2Xu6QQY';
+const PASSWORD = 'superhero';
+const WEEK_NAMES = ['Hafta 1','Hafta 2','Hafta 3','Hafta 4','Hafta 5','Hafta 6',
+                    'Hafta 7','Hafta 8','Hafta 9','Hafta 10','Hafta 11','Hafta 12',
+                    'Dinlenme haftası'];
+
+// ═══════════════════════════════════════
+// PROGRAM DATA (Excel'den extract)
+// ═══════════════════════════════════════
+const PROGRAM = {"Hafta 1":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"37.5","sets_reps":"4x5+","rpe":"","warmup1":"22.5","warmup2":"27.5","warmup3":"32.5"},{"name":"Shoulder Press Machine","kg":"35","sets_reps":"3x10","rpe":"","warmup1":"20","warmup2":"30","warmup3":"-"},{"name":"Romanian DL","kg":"35","sets_reps":"3x8","rpe":"","warmup1":"20","warmup2":"30","warmup3":"-"},{"name":"Lat Pulldown","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"32.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"Bench Press","kg":"30","sets_reps":"3x10","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"22.5","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"20"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"30","sets_reps":"4x10","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 2":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"40","sets_reps":"4x5+","rpe":"","warmup1":"25","warmup2":"27.5","warmup3":"35"},{"name":"Shoulder Press Machine","kg":"37.5","sets_reps":"3x10","rpe":"","warmup1":"22.5","warmup2":"32.5","warmup3":"-"},{"name":"Romanian DL","kg":"40","sets_reps":"3x8","rpe":"","warmup1":"25","warmup2":"35","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"20","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"17.5"},{"name":"Bench Press","kg":"32.5","sets_reps":"3x10","rpe":"","warmup1":"20","warmup2":"27.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"20","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"17.5"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"27.5","sets_reps":"4x10","rpe":"","warmup1":"17.5","warmup2":"22.5","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 3":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"35","sets_reps":"4x5+","rpe":"","warmup1":"22.5","warmup2":"25","warmup3":"30"},{"name":"Shoulder Press Machine","kg":"35","sets_reps":"3x10","rpe":"","warmup1":"20","warmup2":"30","warmup3":"-"},{"name":"Romanian DL","kg":"35","sets_reps":"3x8","rpe":"","warmup1":"20","warmup2":"30","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"17.5","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"15"},{"name":"Bench Press","kg":"30","sets_reps":"3x10","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"17.5","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"15"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"25","sets_reps":"4x10","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 4":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"32.5","sets_reps":"4x5+","rpe":"","warmup1":"20","warmup2":"22.5","warmup3":"27.5"},{"name":"Shoulder Press Machine","kg":"32.5","sets_reps":"3x10","rpe":"","warmup1":"20","warmup2":"27.5","warmup3":"-"},{"name":"Romanian DL","kg":"32.5","sets_reps":"3x8","rpe":"","warmup1":"20","warmup2":"27.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"Bench Press","kg":"27.5","sets_reps":"3x10","rpe":"","warmup1":"17.5","warmup2":"22.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"22.5","sets_reps":"4x10","rpe":"","warmup1":"12.5","warmup2":"20","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 5":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"30","sets_reps":"4x5+","rpe":"","warmup1":"17.5","warmup2":"22.5","warmup3":"25"},{"name":"Shoulder Press Machine","kg":"30","sets_reps":"3x10","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Romanian DL","kg":"30","sets_reps":"3x8","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"25","sets_reps":"3x10","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"20","sets_reps":"4x10","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 6":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"27.5","sets_reps":"4x5+","rpe":"","warmup1":"17.5","warmup2":"20","warmup3":"22.5"},{"name":"Shoulder Press Machine","kg":"27.5","sets_reps":"3x10","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Romanian DL","kg":"27.5","sets_reps":"3x8","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"22.5","sets_reps":"3x10","rpe":"","warmup1":"12.5","warmup2":"20","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"17.5","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 7":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"25","sets_reps":"4x5+","rpe":"","warmup1":"15","warmup2":"17.5","warmup3":"22.5"},{"name":"Shoulder Press Machine","kg":"25","sets_reps":"3x10","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Romanian DL","kg":"25","sets_reps":"3x8","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"20","sets_reps":"3x10","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"15","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 8":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"22.5","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"20"},{"name":"Shoulder Press Machine","kg":"22.5","sets_reps":"3x10","rpe":"","warmup1":"12.5","warmup2":"20","warmup3":"-"},{"name":"Romanian DL","kg":"22.5","sets_reps":"3x8","rpe":"","warmup1":"12.5","warmup2":"20","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"17.5","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 9":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"20","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"17.5"},{"name":"Shoulder Press Machine","kg":"20","sets_reps":"3x10","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"-"},{"name":"Romanian DL","kg":"20","sets_reps":"3x8","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"15","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 10":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"17.5","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"15"},{"name":"Shoulder Press Machine","kg":"17.5","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Romanian DL","kg":"17.5","sets_reps":"3x8","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 11":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"Shoulder Press Machine","kg":"15","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Romanian DL","kg":"15","sets_reps":"3x8","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 12":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Shoulder Press Machine","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Romanian DL","kg":"12.5","sets_reps":"3x8","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Dinlenme haftası":{"body_weight":null,"workouts":[{"name":"ANTRENMAN 1","type":"rest","exercises":[{"name":"Squat","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""},{"name":"Bench Press","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""}]},{"name":"ANTRENMAN 2","type":"rest","exercises":[{"name":"Over Head Press","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""},{"name":"Romanian DL","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""},{"name":"Barbell Row","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""}]}]}};
+
+// Pre-existing log data from Excel (Hafta 1)
+const SEED_LOGS = [
+  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Bench Press',set1:'5',set2:'5',set3:'5',set4:'10',notes:'40 yaptım'},
+  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Shoulder Press Machine',set1:'10',set2:'10',set3:'10',set4:'',notes:''},
+  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Romanian DL',set1:'8',set2:'8',set3:'8',set4:'',notes:'40 yaptım ama yanlış olabilir'},
+  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Lat Pulldown',set1:'14',set2:'14',set3:'14',set4:'',notes:'30 yaptım'},
+  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Leg Extension',set1:'14',set2:'14',set3:'14',set4:'',notes:'35 yaptım'},
+  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Crunch',set1:'20',set2:'20',set3:'20',set4:'',notes:'çok kötü kramp girdi'},
+  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Squat',set1:'5',set2:'5',set3:'5',set4:'12',notes:''},
+  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Bench Press',set1:'10',set2:'10',set3:'10',set4:'',notes:''},
+  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Pull Ups',set1:'4',set2:'4',set3:'4',set4:'',notes:'60kg yaptım'},
+  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Lateral Raises',set1:'14',set2:'14',set3:'14',set4:'',notes:''},
+  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Incline Dumbbell Curl',set1:'8',set2:'11',set3:'14',set4:'',notes:''},
+  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Leg Raises',set1:'5',set2:'5',set3:'5',set4:'',notes:'yapmadım'},
+];
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let sb = null;
+let state = {
+  view: 'main',          // 'main' | 'workout'
+  activeTab: 'home',
+  selectedWeek: 'Hafta 1',
+  selectedWorkout: null,
+  logs: {},              // key: "week|workout|exercise" → {set1..set4, notes}
+  bodyWeights: {},       // key: "week" → number
+  saveTimers: {},
+  charts: {},
+};
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function logKey(w, wo, ex) { return `${w}|${wo}|${ex}`; }
+function getLog(w, wo, ex) { return state.logs[logKey(w,wo,ex)] || {set1:'',set2:'',set3:'',set4:'',notes:''}; }
+
+function numSets(sets_reps) {
+  const m = sets_reps.match(/^(\d+)x/);
+  return m ? parseInt(m[1]) : 3;
+}
+
+function calc1RM(kg, reps) {
+  if (!kg || !reps || isNaN(kg) || isNaN(reps) || reps <= 0) return null;
+  return Math.round(((kg * reps * 0.0333) + kg) * 10) / 10;
+}
+
+function bestSet(log) {
+  return Math.max(
+    parseInt(log.set1)||0,
+    parseInt(log.set2)||0,
+    parseInt(log.set3)||0,
+    parseInt(log.set4)||0
+  );
+}
+
+function isWorkoutDone(weekName, workoutName) {
+  const wo = PROGRAM[weekName]?.workouts.find(w=>w.name===workoutName);
+  if (!wo) return false;
+  const filled = wo.exercises.filter(ex => {
+    const l = getLog(weekName, workoutName, ex.name);
+    return l.set1 !== '';
+  });
+  return filled.length >= Math.ceil(wo.exercises.length / 2);
+}
+
+function isWeekDone(weekName) {
+  const wk = PROGRAM[weekName];
+  if (!wk) return false;
+  return wk.workouts.every(wo => isWorkoutDone(weekName, wo.name));
+}
+
+function currentWeek() {
+  for (const wk of WEEK_NAMES.slice(0,12)) {
+    if (!isWeekDone(wk)) return wk;
+  }
+  return 'Dinlenme haftası';
+}
+
+function completedWeeksCount() {
+  return WEEK_NAMES.slice(0,12).filter(isWeekDone).length;
+}
+
+function toast(msg, dur=2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+function showLoading(v) {
+  document.getElementById('loading-overlay').style.display = v ? 'flex' : 'none';
+}
+
+function showSaveDot() {
+  const d = document.getElementById('save-dot');
+  if (!d) return;
+  d.classList.add('show');
+  clearTimeout(d._t);
+  d._t = setTimeout(()=>d.classList.remove('show'), 1800);
+}
+
+// ═══════════════════════════════════════
+// SUPABASE
+// ═══════════════════════════════════════
+async function initSupabase() {
+  sb = supabase.createClient(SB_URL, SB_KEY);
+}
+
+async function loadAllLogs() {
+  try {
+    const {data, error} = await sb.from('workout_logs').select('*');
+    if (error) throw error;
+    state.logs = {};
+    (data||[]).forEach(r => {
+      state.logs[logKey(r.week_name, r.workout_name, r.exercise_name)] = {
+        set1: r.set1||'', set2: r.set2||'', set3: r.set3||'', set4: r.set4||'', notes: r.notes||''
+      };
+    });
+    return true;
+  } catch(e) {
+    console.error('loadAllLogs:', e);
+    return false;
+  }
+}
+
+async function loadAllBodyWeights() {
+  try {
+    const {data, error} = await sb.from('body_weights').select('*');
+    if (error) throw error;
+    state.bodyWeights = {};
+    (data||[]).forEach(r => { state.bodyWeights[r.week_name] = r.weight; });
+    return true;
+  } catch(e) {
+    console.error('loadAllBodyWeights:', e);
+    return false;
+  }
+}
+
+async function seedIfEmpty() {
+  try {
+    const {data} = await sb.from('workout_logs').select('id').limit(1);
+    if (data && data.length === 0) {
+      // DB is empty, seed with Excel data
+      const {error} = await sb.from('workout_logs').upsert(SEED_LOGS, {onConflict:'week_name,workout_name,exercise_name'});
+      if (!error) {
+        SEED_LOGS.forEach(r => {
+          state.logs[logKey(r.week_name,r.workout_name,r.exercise_name)] = {
+            set1:r.set1, set2:r.set2, set3:r.set3, set4:r.set4, notes:r.notes
+          };
+        });
+      }
+    }
+  } catch(e) { console.error('seedIfEmpty:', e); }
+}
+
+async function saveLog(weekName, workoutName, exerciseName) {
+  const key = logKey(weekName, workoutName, exerciseName);
+  const log = state.logs[key] || {set1:'',set2:'',set3:'',set4:'',notes:''};
+  try {
+    await sb.from('workout_logs').upsert({
+      week_name: weekName, workout_name: workoutName, exercise_name: exerciseName,
+      set1: log.set1, set2: log.set2, set3: log.set3, set4: log.set4, notes: log.notes,
+      updated_at: new Date().toISOString()
+    }, {onConflict:'week_name,workout_name,exercise_name'});
+    showSaveDot();
+  } catch(e) { console.error('saveLog:', e); toast('⚠️ Kayıt hatası'); }
+}
+
+async function saveBodyWeight(weekName, weight) {
+  try {
+    await sb.from('body_weights').upsert({week_name: weekName, weight: weight, logged_at: new Date().toISOString()}, {onConflict:'week_name'});
+    state.bodyWeights[weekName] = weight;
+    showSaveDot();
+  } catch(e) { console.error('saveBodyWeight:', e); }
+}
+
+function scheduleSave(weekName, workoutName, exerciseName) {
+  const key = logKey(weekName, workoutName, exerciseName);
+  clearTimeout(state.saveTimers[key]);
+  state.saveTimers[key] = setTimeout(() => saveLog(weekName, workoutName, exerciseName), 800);
+}
+
+// ═══════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════
+async function login() {
+  const pass = document.getElementById('inp-pass').value.trim();
+  const errEl = document.getElementById('login-err');
+  if (pass !== PASSWORD) {
+    document.getElementById('inp-pass').classList.add('error');
+    errEl.textContent = 'Şifre yanlış.';
+    setTimeout(()=>{
+      document.getElementById('inp-pass').classList.remove('error');
+      errEl.textContent = '';
+    }, 2000);
+    return;
+  }
+  localStorage.setItem('sh_auth','1');
+  await startApp();
+}
+
+function logout() {
+  localStorage.removeItem('sh_auth');
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('screen-login').classList.remove('hidden');
+  document.getElementById('inp-pass').value = '';
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function switchTab(tab) {
+  state.activeTab = tab;
+  ['home','haftalar','ilerleme'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+  });
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  const titles = {home:'Superhero', haftalar:'Program', ilerleme:'İlerleme'};
+  document.getElementById('main-title').textContent = titles[tab];
+  if (tab === 'ilerleme') renderProgress();
+}
+
+function openWorkoutView(weekName, workoutName) {
+  state.selectedWeek = weekName;
+  state.selectedWorkout = workoutName || PROGRAM[weekName]?.workouts[0]?.name;
+  renderWorkoutView();
+  document.getElementById('view-workout').classList.add('open');
+  document.getElementById('view-main').style.display = 'none';
+  window.scrollTo(0,0);
+}
+
+function closeWorkoutView() {
+  document.getElementById('view-workout').classList.remove('open');
+  document.getElementById('view-main').style.display = '';
+  renderHome();
+  renderWeekGrid();
+}
+
+// ═══════════════════════════════════════
+// RENDER: HOME
+// ═══════════════════════════════════════
+function renderHome() {
+  const curWeek = currentWeek();
+  state.selectedWeek = curWeek;
+  const wkNum = WEEK_NAMES.indexOf(curWeek);
+  const completed = completedWeeksCount();
+  const prog = Math.round((completed / 12) * 100);
+
+  document.getElementById('home-week-title').textContent = curWeek === 'Dinlenme haftası' ? '🎉 Tebrikler!' : `Bu Hafta: ${curWeek}`;
+
+  // Hero card
+  const wk = PROGRAM[curWeek];
+  const woLetters = wk?.workouts.map(wo => ({
+    letter: wo.name.includes('WORKOUT') ? wo.name.split(' ')[1] : wo.name.replace('ANTRENMAN ',''),
+    name: wo.name,
+    done: isWorkoutDone(curWeek, wo.name)
+  })) || [];
+
+  document.getElementById('home-hero').innerHTML = `
+    <div class="hero-card">
+      <div class="hero-badge"><span>💪</span> ${curWeek}</div>
+      <div class="hero-title">${curWeek === 'Dinlenme haftası' ? '12 Hafta Tamamlandı!' : `Antrenman Zamanı`}</div>
+      <div class="hero-sub">${curWeek === 'Dinlenme haftası' ? 'Dinlenme ve toparlanma haftası' : `${completed}/12 hafta tamamlandı`}</div>
+      <div class="hero-progress-bar"><div class="hero-progress-fill" style="width:${prog}%"></div></div>
+      <div class="hero-progress-label">${prog}% ilerleme</div>
+      <div class="workout-cards">
+        ${woLetters.map(w=>`
+          <div class="wo-card ${w.done?'done':''}" onclick="openWorkoutView('${curWeek}','${w.name}')">
+            <span class="wo-card-letter">${w.letter}</span>
+            <span class="wo-card-label">${w.done?'Tamamlandı':'Antrenman'}</span>
+            <span class="wo-card-check">${w.done?'✅':'▶'}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Body weight
+  const bw = state.bodyWeights[curWeek] || '';
+  document.getElementById('home-bw').innerHTML = `
+    <div class="bw-card">
+      <div class="bw-icon">⚖️</div>
+      <div style="flex:1">
+        <div class="bw-label">Vücut Ağırlığı</div>
+        <div class="bw-input-wrap">
+          <input type="number" class="bw-input" id="bw-inp" inputmode="decimal" step="0.1" min="30" max="300"
+            value="${bw}" placeholder="–" onchange="onBwChange(this.value,'${curWeek}')">
+          <span class="bw-unit">kg</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Stats
+  const totalWo = WEEK_NAMES.slice(0,12).reduce((acc,wk)=>{
+    return acc + (PROGRAM[wk]?.workouts.filter(wo=>isWorkoutDone(wk,wo.name)).length||0);
+  }, 0);
+  const latestBW = Object.values(state.bodyWeights).filter(Boolean).pop() || '–';
+
+  document.getElementById('home-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val" style="color:var(--green)">${completed}</div><div class="stat-lbl">Hafta Bitti</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--blue)">${totalWo}</div><div class="stat-lbl">Antrenman</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--purple)">${latestBW}${latestBW!=='–'?'kg':''}</div><div class="stat-lbl">Son Ağırlık</div></div>
+  `;
+}
+
+function onBwChange(val, weekName) {
+  const num = parseFloat(val);
+  if (isNaN(num) || num <= 0) return;
+  saveBodyWeight(weekName, num);
+  renderHome();
+}
+
+// ═══════════════════════════════════════
+// RENDER: WEEK GRID
+// ═══════════════════════════════════════
+function renderWeekGrid() {
+  const curWeek = currentWeek();
+  let html = '';
+  WEEK_NAMES.slice(0,12).forEach((wk,i) => {
+    const done = isWeekDone(wk);
+    const active = wk === curWeek;
+    let cls = '';
+    if (done) cls = 'done';
+    else if (active) cls = 'active-week';
+    html += `<div class="week-cell ${cls}" onclick="openWorkoutView('${wk}',null)">
+      <span class="week-cell-num">${done?'✓':i+1}</span>
+      <span class="week-cell-lbl">${done?'Bitti':active?'Aktif':'Hafta'}</span>
+    </div>`;
+  });
+  document.getElementById('week-grid').innerHTML = html;
+
+  // Rest week
+  const restDone = isWeekDone('Dinlenme haftası');
+  document.getElementById('rest-week-card').innerHTML = `
+    <div class="week-cell rest" style="width:100%;display:flex;flex-direction:row;align-items:center;gap:14px;padding:16px;cursor:pointer;" onclick="openWorkoutView('Dinlenme haftası',null)">
+      <span style="font-size:28px">😴</span>
+      <div>
+        <div style="font-weight:700;font-size:15px;color:var(--orange)">Dinlenme Haftası</div>
+        <div style="font-size:12px;color:var(--label-3);margin-top:2px">12 haftanın ardından toparlanma antrenmanları</div>
+      </div>
+      <span style="margin-left:auto;font-size:18px">${restDone?'✅':'→'}</span>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════
+// RENDER: WORKOUT VIEW
+// ═══════════════════════════════════════
+function renderWorkoutView() {
+  const weekName = state.selectedWeek;
+  const wk = PROGRAM[weekName];
+  if (!wk) return;
+
+  document.getElementById('workout-view-title').textContent = weekName;
+
+  // Tabs
+  const tabsHtml = wk.workouts.map(wo => {
+    const done = isWorkoutDone(weekName, wo.name);
+    const active = wo.name === state.selectedWorkout;
+    const letter = wo.name.includes('WORKOUT') ? wo.name.split(' ')[1] : wo.name.replace('ANTRENMAN ','');
+    return `<button class="workout-tab-btn ${active?'active':''} ${done&&!active?'done-tab':''}"
+      onclick="selectWorkout('${wo.name}')">${done&&!active?'✓ ':''}${letter}</button>`;
+  }).join('');
+  document.getElementById('workout-tabs-wrap').innerHTML = tabsHtml;
+
+  // Exercises
+  const wo = wk.workouts.find(w=>w.name===state.selectedWorkout);
+  if (!wo) return;
+
+  let html = '';
+  wo.exercises.forEach(ex => {
+    const log = getLog(weekName, state.selectedWorkout, ex.name);
+    const n = numSets(ex.sets_reps);
+    const isBW = ex.kg === 'vücut a.';
+    const kgNum = parseFloat(ex.kg);
+
+    // Completion check
+    const setsFilled = [log.set1, log.set2, log.set3, n>=4?log.set4:null]
+      .filter((v,i)=>i<n).filter(v=>v!==null&&v!=='').length;
+    const isDone = setsFilled >= n;
+
+    // Warmups
+    const warmups = [ex.warmup1, ex.warmup2, ex.warmup3].filter(w=>w && w !== '-' && w !== '');
+    const warmupHtml = warmups.length ? `
+      <div class="warmup-row">
+        <span class="warmup-label">Isınma</span>
+        ${warmups.map(w=>`<span class="warmup-chip">${w} kg</span>`).join('<span style="color:var(--label-3);font-size:12px">→</span>')}
+      </div>
+    ` : '';
+
+    // RPE badge
+    const rpeHtml = ex.rpe ? `<span class="badge badge-rpe${ex.rpe}">${ex.rpe} RPE</span>` : '';
+
+    // Weight badge
+    const kgHtml = isBW
+      ? `<span class="badge badge-bw">Vücut A.</span>`
+      : `<span class="badge badge-weight">${ex.kg} kg</span>`;
+
+    // 1RM estimate (for main lifts with weight)
+    let rm1Html = '';
+    if (!isBW && !isNaN(kgNum)) {
+      const best = bestSet(log);
+      if (best > 0) {
+        const rm = calc1RM(kgNum, best);
+        if (rm) rm1Html = `<span class="badge" style="background:var(--purple-bg);color:var(--purple)">~${rm} kg 1RM</span>`;
+      }
+    }
+
+    // Set inputs
+    const setKeys = ['set1','set2','set3','set4'].slice(0,n);
+    const setsHtml = setKeys.map((sk,i)=>`
+      <div class="set-cell">
+        <span class="set-label">Set ${i+1}</span>
+        <input type="number" inputmode="numeric" min="0" max="99" step="1"
+          class="set-inp ${log[sk]?'filled':''}"
+          value="${log[sk]||''}"
+          placeholder="–"
+          data-week="${weekName}"
+          data-workout="${state.selectedWorkout}"
+          data-exercise="${ex.name}"
+          data-setkey="${sk}"
+          onchange="onSetChange(this)"
+          oninput="onSetInput(this)">
+      </div>
+    `).join('');
+
+    html += `
+      <div class="ex-card" id="excard-${encodeURIComponent(ex.name)}">
+        <div class="ex-header">
+          <div style="flex:1">
+            <div class="ex-name">${ex.name}</div>
+            <div class="ex-badges">
+              ${kgHtml}
+              <span class="badge badge-scheme">${ex.sets_reps}</span>
+              ${rpeHtml}
+              ${rm1Html}
+            </div>
+          </div>
+          <div class="ex-complete-dot ${isDone?'done':''}"></div>
+        </div>
+        ${warmupHtml}
+        <div class="sets-grid sets-${n}">${setsHtml}</div>
+        <div class="notes-row">
+          <textarea class="notes-inp" rows="1" placeholder="Not ekle..."
+            data-week="${weekName}"
+            data-workout="${state.selectedWorkout}"
+            data-exercise="${ex.name}"
+            oninput="onNotesInput(this)">${log.notes||''}</textarea>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById('workout-exercises').innerHTML = html;
+  autoResizeAll();
+}
+
+function selectWorkout(workoutName) {
+  state.selectedWorkout = workoutName;
+  renderWorkoutView();
+}
+
+// ═══════════════════════════════════════
+// RENDER: PROGRESS
+// ═══════════════════════════════════════
+function renderProgress() {
+  const el = document.getElementById('progress-body');
+
+  // Collect 1RM data per week for main lifts
+  const mainLifts = [
+    {name:'Bench Press', workout:'WORKOUT A', label:'Bench Press', color:'#007AFF'},
+    {name:'Squat', workout:'WORKOUT B', label:'Squat', color:'#34C759'},
+    {name:'Over Head Press', workout:'WORKOUT C', label:'OHP', color:'#AF52DE'},
+  ];
+
+  const labels = WEEK_NAMES.slice(0,12);
+  const datasets = mainLifts.map(lift => {
+    const vals = labels.map(wk => {
+      const ex = PROGRAM[wk]?.workouts.find(w=>w.name===lift.workout)?.exercises.find(e=>e.name===lift.name);
+      if (!ex) return null;
+      const log = getLog(wk, lift.workout, lift.name);
+      const kg = parseFloat(ex.kg);
+      const best = bestSet(log);
+      if (!best || isNaN(kg)) return null;
+      return calc1RM(kg, best);
+    });
+    return {label: lift.label, data: vals, borderColor: lift.color, backgroundColor: lift.color+'22',
+      tension:.3, pointRadius:5, pointHoverRadius:7, fill:false, spanGaps:true};
+  });
+
+  // Body weight data
+  const bwVals = labels.map(wk => state.bodyWeights[wk] || null);
+  const bwDataset = {label:'Vücut Ağırlığı', data: bwVals, borderColor:'#FF9500', backgroundColor:'#FF950022',
+    tension:.3, pointRadius:5, pointHoverRadius:7, fill:true, spanGaps:true};
+
+  // Completion stats
+  const totalCompleted = completedWeeksCount();
+  const totalWorkouts = WEEK_NAMES.slice(0,12).reduce((acc,wk)=>{
+    return acc + (PROGRAM[wk]?.workouts.filter(wo=>isWorkoutDone(wk,wo.name)).length||0);
+  }, 0);
+
+  el.innerHTML = `
+    <div class="stats-row" style="margin-bottom:14px">
+      <div class="stat-card"><div class="stat-val" style="color:var(--blue)">${totalCompleted}/12</div><div class="stat-lbl">Hafta</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--green)">${totalWorkouts}</div><div class="stat-lbl">Antrenman</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--orange)">${Math.round(totalCompleted/12*100)}%</div><div class="stat-lbl">İlerleme</div></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">📈 Tahmini 1RM İlerlemesi (kg)</div>
+      <div class="chart-wrap"><canvas id="chart-1rm"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">⚖️ Vücut Ağırlığı (kg)</div>
+      <div class="chart-wrap"><canvas id="chart-bw"></canvas></div>
+    </div>
+  `;
+
+  // Destroy old charts
+  ['1rm','bw'].forEach(k => { if (state.charts[k]) { state.charts[k].destroy(); delete state.charts[k]; }});
+
+  const chartDefaults = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {legend:{labels:{font:{family:'-apple-system,sans-serif',size:12},boxWidth:12}}},
+    scales: {
+      x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'-apple-system,sans-serif',size:10}}},
+      y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'-apple-system,sans-serif',size:10}}}
+    }
+  };
+
+  const shortLabels = labels.map((_,i)=>`H${i+1}`);
+
+  state.charts['1rm'] = new Chart(document.getElementById('chart-1rm'), {
+    type:'line', data:{labels:shortLabels, datasets},
+    options:{...chartDefaults, plugins:{...chartDefaults.plugins, tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} kg`}}}}
+  });
+  state.charts['bw'] = new Chart(document.getElementById('chart-bw'), {
+    type:'line', data:{labels:shortLabels, datasets:[bwDataset]},
+    options:{...chartDefaults, plugins:{...chartDefaults.plugins, tooltip:{callbacks:{label:ctx=>`${ctx.raw} kg`}}}}
+  });
+}
+
+// ═══════════════════════════════════════
+// INPUT HANDLERS
+// ═══════════════════════════════════════
+function onSetInput(el) {
+  const {week, workout, exercise, setkey} = el.dataset;
+  const key = logKey(week, workout, exercise);
+  if (!state.logs[key]) state.logs[key] = {set1:'',set2:'',set3:'',set4:'',notes:''};
+  const val = el.value.replace(/[^0-9]/g,'');
+  el.value = val;
+  state.logs[key][setkey] = val;
+  el.classList.toggle('filled', val !== '');
+  scheduleSave(week, workout, exercise);
+  updateExCardDot(exercise);
+  updateTabDoneState(week, workout);
+}
+
+function onSetChange(el) {
+  onSetInput(el);
+  // Recalc 1RM badge
+  const {week, workout, exercise} = el.dataset;
+  updateRM1Badge(week, workout, exercise);
+}
+
+function onNotesInput(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+  const {week, workout, exercise} = el.dataset;
+  const key = logKey(week, workout, exercise);
+  if (!state.logs[key]) state.logs[key] = {set1:'',set2:'',set3:'',set4:'',notes:''};
+  state.logs[key].notes = el.value;
+  scheduleSave(week, workout, exercise);
+}
+
+function updateExCardDot(exerciseName) {
+  const card = document.getElementById(`excard-${encodeURIComponent(exerciseName)}`);
+  if (!card) return;
+  const log = getLog(state.selectedWeek, state.selectedWorkout, exerciseName);
+  const wo = PROGRAM[state.selectedWeek]?.workouts.find(w=>w.name===state.selectedWorkout);
+  const ex = wo?.exercises.find(e=>e.name===exerciseName);
+  if (!ex) return;
+  const n = numSets(ex.sets_reps);
+  const filled = ['set1','set2','set3','set4'].slice(0,n).filter(k=>log[k]!=='').length;
+  card.querySelector('.ex-complete-dot')?.classList.toggle('done', filled >= n);
+}
+
+function updateTabDoneState(weekName, workoutName) {
+  const done = isWorkoutDone(weekName, workoutName);
+  document.querySelectorAll('.workout-tab-btn').forEach(btn => {
+    const letter = workoutName.includes('WORKOUT') ? workoutName.split(' ')[1] : workoutName.replace('ANTRENMAN ','');
+    if (btn.textContent.includes(letter) && !btn.classList.contains('active')) {
+      btn.classList.toggle('done-tab', done);
+    }
+  });
+}
+
+function updateRM1Badge(weekName, workoutName, exerciseName) {
+  const card = document.getElementById(`excard-${encodeURIComponent(exerciseName)}`);
+  if (!card) return;
+  const wo = PROGRAM[weekName]?.workouts.find(w=>w.name===workoutName);
+  const ex = wo?.exercises.find(e=>e.name===exerciseName);
+  if (!ex || ex.kg === 'vücut a.') return;
+  const kg = parseFloat(ex.kg);
+  if (isNaN(kg)) return;
+  const log = getLog(weekName, workoutName, exerciseName);
+  const best = bestSet(log);
+  const existing = card.querySelector('.badge[style*="purple"]');
+  if (best > 0) {
+    const rm = calc1RM(kg, best);
+    if (rm) {
+      if (existing) existing.textContent = `~${rm} kg 1RM`;
+      else card.querySelector('.ex-badges')?.insertAdjacentHTML('beforeend',
+        `<span class="badge" style="background:var(--purple-bg);color:var(--purple)">~${rm} kg 1RM</span>`);
+    }
+  }
+}
+
+function autoResizeAll() {
+  document.querySelectorAll('.notes-inp').forEach(el => {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  });
+}
+
+// ═══════════════════════════════════════
+// APP INIT
+// ═══════════════════════════════════════
+async function startApp() {
+  showLoading(true);
+  document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+
+  await initSupabase();
+  const ok1 = await loadAllLogs();
+  const ok2 = await loadAllBodyWeights();
+  if (ok1) await seedIfEmpty();
+
+  showLoading(false);
+
+  renderHome();
+  renderWeekGrid();
+  switchTab('home');
+}
+
+// ═══════════════════════════════════════
+// EVENT LISTENERS
+// ═══════════════════════════════════════
+document.getElementById('btn-login').addEventListener('click', login);
+document.getElementById('inp-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') login(); });
+document.getElementById('btn-logout').addEventListener('click', logout);
+document.getElementById('btn-back').addEventListener('click', closeWorkoutView);
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
+});
+
+// ═══════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════
+(async function boot() {
+  await initSupabase();
+  if (localStorage.getItem('sh_auth') === '1') {
+    await startApp();
+  } else {
+    showLoading(false);
+    document.getElementById('screen-login').classList.remove('hidden');
+  }
+})();
+</script>
+</body>
+</html>
