@@ -203,6 +203,13 @@
     .save-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);opacity:0;transition:opacity .3s;margin-left:6px;vertical-align:middle}
     .save-dot.show{opacity:1}
 
+    /* ─── CONFIG SCREEN ─── */
+    .config-ex-row{background:var(--bg-e);border-radius:14px;padding:14px 16px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .config-ex-name{font-size:15px;font-weight:600;letter-spacing:-.2px;margin-bottom:12px}
+    .config-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
+    .config-calc{font-size:12px;color:var(--label-3);margin-top:10px;padding-top:10px;border-top:1px solid var(--sep)}
+    .config-calc span{color:var(--blue);font-weight:700}
+
     /* ─── RESPONSIVE ─── */
     @media(min-width:680px){
       .hero-card{max-width:680px;margin:0 auto 14px}
@@ -225,11 +232,20 @@
     <div class="login-icon">💪</div>
     <h1>Superhero Program</h1>
     <p>12 haftalık güç antrenmanı takibi</p>
-    <div class="fg">
-      <label for="inp-pass">Şifre</label>
-      <input type="password" id="inp-pass" class="fi" placeholder="••••••••" autocomplete="current-password">
+    <div id="login-step1">
+      <div class="fg">
+        <label for="inp-pass">Şifre</label>
+        <input type="password" id="inp-pass" class="fi" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-login">Devam Et →</button>
     </div>
-    <button class="btn btn-primary btn-full" id="btn-login">Giriş Yap →</button>
+    <div id="login-step2" class="hidden">
+      <div class="fg">
+        <label for="inp-handle">Rumuz</label>
+        <input type="text" id="inp-handle" class="fi" placeholder="rumuzunu yaz..." autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-handle">Giriş Yap →</button>
+    </div>
     <p class="err-msg" id="login-err"></p>
   </div>
 </div>
@@ -241,7 +257,7 @@
   <div id="view-main">
     <header class="app-header">
       <div class="inner">
-        <span style="font-size:22px;line-height:1">💪</span>
+        <button class="hdr-btn" id="btn-profile" style="font-size:18px;padding:6px 8px">⚙️</button>
         <h1 id="main-title">Superhero</h1>
         <button class="hdr-btn danger" id="btn-logout">Çıkış</button>
       </div>
@@ -299,6 +315,20 @@
     <div id="workout-exercises" class="wrap" style="padding-bottom:40px"></div>
   </div>
 
+  <!-- ── CONFIG SCREEN ── -->
+  <div id="screen-config" class="hidden" style="position:fixed;inset:0;background:var(--bg);z-index:500;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <header class="app-header">
+      <div class="inner">
+        <button class="hdr-btn" id="btn-config-back">← Geri</button>
+        <h1>Profil</h1>
+        <button class="hdr-btn" id="btn-config-save" style="color:var(--green);font-weight:700">Kaydet</button>
+      </div>
+    </header>
+    <div class="wrap" style="padding:16px 16px 80px">
+      <div id="config-body"></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -307,43 +337,80 @@
 // ═══════════════════════════════════════
 const SB_URL = 'https://vwubvpjidodewzvtqjtf.supabase.co';
 const SB_KEY = 'sb_publishable_Pyhx-5-wLHw199bcT6URCA_O2Xu6QQY';
-const PASSWORD = 'superhero';
+const PASSWORD = 'Nakama123!';
+const ALLOWED_HANDLES = ['nakama', 'boksimoron'];
 const WEEK_NAMES = ['Hafta 1','Hafta 2','Hafta 3','Hafta 4','Hafta 5','Hafta 6',
                     'Hafta 7','Hafta 8','Hafta 9','Hafta 10','Hafta 11','Hafta 12',
                     'Dinlenme haftası'];
+const CONFIG_EXERCISES = [
+  {workout:'WORKOUT A',name:'Bench Press',               factor:0.80,label:'Bench Press (Ana Lift)'},
+  {workout:'WORKOUT B',name:'Squat',                     factor:0.70,label:'Squat (Ana Lift)'},
+  {workout:'WORKOUT C',name:'Over Head Press',           factor:0.70,label:'Over Head Press (Ana Lift)'},
+  {workout:'WORKOUT A',name:'Shoulder Press Machine',    factor:0.60,label:'Shoulder Press Machine'},
+  {workout:'WORKOUT A',name:'Romanian DL',               factor:0.60,label:'Romanian DL'},
+  {workout:'WORKOUT B',name:'Bench Press',               factor:0.60,label:'Bench Press (Yardımcı)'},
+  {workout:'WORKOUT C',name:'Barbell Row',               factor:0.60,label:'Barbell Row'},
+  {workout:'WORKOUT C',name:'Squat',                     factor:0.60,label:'Squat (Yardımcı)'},
+  {workout:'WORKOUT B',name:'Lateral Raises',            factor:0.60,label:'Lateral Raises'},
+  {workout:'WORKOUT A',name:'Lat Pulldown',              factor:0.65,label:'Lat Pulldown'},
+  {workout:'WORKOUT C',name:'Chest Fly Machine',         factor:0.65,label:'Chest Fly Machine'},
+  {workout:'WORKOUT A',name:'Leg Extension',             factor:0.65,label:'Leg Extension'},
+  {workout:'WORKOUT B',name:'Incline Dumbbell Curl',     factor:0.75,label:'Incline Dumbbell Curl'},
+  {workout:'WORKOUT C',name:'Overhead Triceps Extension',factor:0.75,label:'Overhead Triceps Extension'},
+];
+const CONFIG_EXERCISES_NAKAMA = [
+  {workout:'WORKOUT A',name:'Dumbbell Chest Press',       factor:0.80,label:'Dumbbell Chest Press (Ana)'},
+  {workout:'WORKOUT B',name:'Squat',                      factor:0.70,label:'Squat (Ana Lift)'},
+  {workout:'WORKOUT C',name:'Dumbbell Shoulder Press',    factor:0.70,label:'Dumbbell Shoulder Press (Ana)'},
+  {workout:'WORKOUT A',name:'DB Shoulder Press',          factor:0.60,label:'DB Shoulder Press'},
+  {workout:'WORKOUT A',name:'Dumbbell Romanian Deadlift', factor:0.60,label:'Dumbbell Romanian Deadlift'},
+  {workout:'WORKOUT B',name:'Dumbbell Chest Press',       factor:0.60,label:'Dumbbell Chest Press (Yard.)'},
+  {workout:'WORKOUT C',name:'Barbell Row',                factor:0.60,label:'Barbell Row'},
+  {workout:'WORKOUT C',name:'Squat',                      factor:0.60,label:'Squat (Yardımcı)'},
+  {workout:'WORKOUT B',name:'Lateral Raises',             factor:0.60,label:'Lateral Raises'},
+  {workout:'WORKOUT A',name:'Lat Pulldown',               factor:0.65,label:'Lat Pulldown'},
+  {workout:'WORKOUT C',name:'Dumbbell Chest Fly',         factor:0.65,label:'Dumbbell Chest Fly'},
+  {workout:'WORKOUT A',name:'Leg Extension',              factor:0.65,label:'Leg Extension'},
+  {workout:'WORKOUT B',name:'Dumbbell Curl',              factor:0.75,label:'Dumbbell Curl'},
+  {workout:'WORKOUT C',name:'Cable Pushdown',             factor:0.75,label:'Cable Pushdown'},
+];
 
 // ═══════════════════════════════════════
 // PROGRAM DATA (Excel'den extract)
 // ═══════════════════════════════════════
 const PROGRAM = {"Hafta 1":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"37.5","sets_reps":"4x5+","rpe":"","warmup1":"22.5","warmup2":"27.5","warmup3":"32.5"},{"name":"Shoulder Press Machine","kg":"35","sets_reps":"3x10","rpe":"","warmup1":"20","warmup2":"30","warmup3":"-"},{"name":"Romanian DL","kg":"35","sets_reps":"3x8","rpe":"","warmup1":"20","warmup2":"30","warmup3":"-"},{"name":"Lat Pulldown","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"32.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"Bench Press","kg":"30","sets_reps":"3x10","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"22.5","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"20"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"30","sets_reps":"4x10","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 2":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"40","sets_reps":"4x5+","rpe":"","warmup1":"25","warmup2":"27.5","warmup3":"35"},{"name":"Shoulder Press Machine","kg":"37.5","sets_reps":"3x10","rpe":"","warmup1":"22.5","warmup2":"32.5","warmup3":"-"},{"name":"Romanian DL","kg":"40","sets_reps":"3x8","rpe":"","warmup1":"25","warmup2":"35","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"20","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"17.5"},{"name":"Bench Press","kg":"32.5","sets_reps":"3x10","rpe":"","warmup1":"20","warmup2":"27.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"20","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"17.5"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"27.5","sets_reps":"4x10","rpe":"","warmup1":"17.5","warmup2":"22.5","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 3":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"35","sets_reps":"4x5+","rpe":"","warmup1":"22.5","warmup2":"25","warmup3":"30"},{"name":"Shoulder Press Machine","kg":"35","sets_reps":"3x10","rpe":"","warmup1":"20","warmup2":"30","warmup3":"-"},{"name":"Romanian DL","kg":"35","sets_reps":"3x8","rpe":"","warmup1":"20","warmup2":"30","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"17.5","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"15"},{"name":"Bench Press","kg":"30","sets_reps":"3x10","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"17.5","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"15"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"25","sets_reps":"4x10","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 4":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"32.5","sets_reps":"4x5+","rpe":"","warmup1":"20","warmup2":"22.5","warmup3":"27.5"},{"name":"Shoulder Press Machine","kg":"32.5","sets_reps":"3x10","rpe":"","warmup1":"20","warmup2":"27.5","warmup3":"-"},{"name":"Romanian DL","kg":"32.5","sets_reps":"3x8","rpe":"","warmup1":"20","warmup2":"27.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"Bench Press","kg":"27.5","sets_reps":"3x10","rpe":"","warmup1":"17.5","warmup2":"22.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"22.5","sets_reps":"4x10","rpe":"","warmup1":"12.5","warmup2":"20","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 5":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"30","sets_reps":"4x5+","rpe":"","warmup1":"17.5","warmup2":"22.5","warmup3":"25"},{"name":"Shoulder Press Machine","kg":"30","sets_reps":"3x10","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Romanian DL","kg":"30","sets_reps":"3x8","rpe":"","warmup1":"17.5","warmup2":"25","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"25","sets_reps":"3x10","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"20","sets_reps":"4x10","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 6":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"27.5","sets_reps":"4x5+","rpe":"","warmup1":"17.5","warmup2":"20","warmup3":"22.5"},{"name":"Shoulder Press Machine","kg":"27.5","sets_reps":"3x10","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Romanian DL","kg":"27.5","sets_reps":"3x8","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"22.5","sets_reps":"3x10","rpe":"","warmup1":"12.5","warmup2":"20","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"17.5","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 7":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"25","sets_reps":"4x5+","rpe":"","warmup1":"15","warmup2":"17.5","warmup3":"22.5"},{"name":"Shoulder Press Machine","kg":"25","sets_reps":"3x10","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Romanian DL","kg":"25","sets_reps":"3x8","rpe":"","warmup1":"15","warmup2":"22.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"20","sets_reps":"3x10","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"15","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 8":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"22.5","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"20"},{"name":"Shoulder Press Machine","kg":"22.5","sets_reps":"3x10","rpe":"","warmup1":"12.5","warmup2":"20","warmup3":"-"},{"name":"Romanian DL","kg":"22.5","sets_reps":"3x8","rpe":"","warmup1":"12.5","warmup2":"20","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"17.5","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 9":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"20","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"17.5"},{"name":"Shoulder Press Machine","kg":"20","sets_reps":"3x10","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"-"},{"name":"Romanian DL","kg":"20","sets_reps":"3x8","rpe":"","warmup1":"12.5","warmup2":"17.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"15","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 10":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"17.5","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"15"},{"name":"Shoulder Press Machine","kg":"17.5","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Romanian DL","kg":"17.5","sets_reps":"3x8","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 11":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"Shoulder Press Machine","kg":"15","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Romanian DL","kg":"15","sets_reps":"3x8","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 12":{"body_weight":null,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Bench Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Shoulder Press Machine","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Romanian DL","kg":"12.5","sets_reps":"3x8","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Lat Pulldown","kg":"37.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"37.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Bench Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Incline Dumbbell Curl","kg":"7.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Over Head Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Chest Fly Machine","kg":"32.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Overhead Triceps Extension","kg":"35","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Dinlenme haftası":{"body_weight":null,"workouts":[{"name":"ANTRENMAN 1","type":"rest","exercises":[{"name":"Squat","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""},{"name":"Bench Press","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""},{"name":"Pull Ups","kg":"vücut a.","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""}]},{"name":"ANTRENMAN 2","type":"rest","exercises":[{"name":"Over Head Press","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""},{"name":"Romanian DL","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""},{"name":"Barbell Row","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"","warmup2":"","warmup3":""}]}]}};
 
-// Pre-existing log data from Excel (Hafta 1)
-const SEED_LOGS = [
-  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Bench Press',set1:'5',set2:'5',set3:'5',set4:'10',notes:'40 yaptım'},
-  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Shoulder Press Machine',set1:'10',set2:'10',set3:'10',set4:'',notes:''},
-  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Romanian DL',set1:'8',set2:'8',set3:'8',set4:'',notes:'40 yaptım ama yanlış olabilir'},
-  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Lat Pulldown',set1:'14',set2:'14',set3:'14',set4:'',notes:'30 yaptım'},
-  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Leg Extension',set1:'14',set2:'14',set3:'14',set4:'',notes:'35 yaptım'},
-  {week_name:'Hafta 1',workout_name:'WORKOUT A',exercise_name:'Crunch',set1:'20',set2:'20',set3:'20',set4:'',notes:'çok kötü kramp girdi'},
-  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Squat',set1:'5',set2:'5',set3:'5',set4:'12',notes:''},
-  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Bench Press',set1:'10',set2:'10',set3:'10',set4:'',notes:''},
-  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Pull Ups',set1:'4',set2:'4',set3:'4',set4:'',notes:'60kg yaptım'},
-  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Lateral Raises',set1:'14',set2:'14',set3:'14',set4:'',notes:''},
-  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Incline Dumbbell Curl',set1:'8',set2:'11',set3:'14',set4:'',notes:''},
-  {week_name:'Hafta 1',workout_name:'WORKOUT B',exercise_name:'Leg Raises',set1:'5',set2:'5',set3:'5',set4:'',notes:'yapmadım'},
-];
+
+const PROGRAM_NAKAMA = {"Hafta 1":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"5","sets_reps":"4x5+","rpe":"8","warmup1":"2.5","warmup2":"2.5","warmup3":"5"},{"name":"DB Shoulder Press","kg":"2.5","sets_reps":"3x10","rpe":"8","warmup1":"2.5","warmup2":"2.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"2.5","sets_reps":"3x8","rpe":"8","warmup1":"2.5","warmup2":"2.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"17.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"2.5","sets_reps":"4x5+","rpe":"","warmup1":"2.5","warmup2":"2.5","warmup3":"2.5"},{"name":"Dumbbell Chest Press","kg":"5","sets_reps":"3x10","rpe":"","warmup1":"2.5","warmup2":"5","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"5","sets_reps":"4x5+","rpe":"","warmup1":"2.5","warmup2":"2.5","warmup3":"5"},{"name":"Squat","kg":"2.5","sets_reps":"3x10","rpe":"","warmup1":"2.5","warmup2":"2.5","warmup3":"-"},{"name":"Barbell Row","kg":"15","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"2.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"12.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 2":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"7.5","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"5","warmup3":"7.5"},{"name":"DB Shoulder Press","kg":"5","sets_reps":"3x10","rpe":"","warmup1":"2.5","warmup2":"5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"2.5","sets_reps":"3x8","rpe":"","warmup1":"2.5","warmup2":"2.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"17.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"10","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"7.5","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"5","warmup3":"7.5"},{"name":"Dumbbell Chest Press","kg":"5","sets_reps":"3x10","rpe":"","warmup1":"2.5","warmup2":"5","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"7.5","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"5","warmup3":"7.5"},{"name":"Squat","kg":"5","sets_reps":"3x10","rpe":"","warmup1":"2.5","warmup2":"5","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"2.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"17.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 3":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"10","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"7.5"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"2.5","sets_reps":"3x8","rpe":"","warmup1":"2.5","warmup2":"2.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"22.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"15","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Dumbbell Chest Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"10","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"7.5"},{"name":"Squat","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"17.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 4":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"2.5","sets_reps":"3x8","rpe":"","warmup1":"2.5","warmup2":"2.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"15","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"17.5","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"15"},{"name":"Dumbbell Chest Press","kg":"10","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"10","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"7.5"},{"name":"Squat","kg":"10","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Barbell Row","kg":"15","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"17.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 5":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"2.5","sets_reps":"3x8","rpe":"","warmup1":"2.5","warmup2":"2.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"15","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"22.5","sets_reps":"4x5+","rpe":"","warmup1":"12.5","warmup2":"15","warmup3":"20"},{"name":"Dumbbell Chest Press","kg":"10","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"10","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"7.5"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"17.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 6":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"2.5","sets_reps":"3x8","rpe":"","warmup1":"2.5","warmup2":"2.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"20","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"27.5","sets_reps":"4x5+","rpe":"","warmup1":"17.5","warmup2":"20","warmup3":"22.5"},{"name":"Dumbbell Chest Press","kg":"10","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"10","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"7.5"},{"name":"Squat","kg":"15","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"17.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 7":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"7.5","sets_reps":"3x8","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"25","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"32.5","sets_reps":"4x5+","rpe":"","warmup1":"20","warmup2":"22.5","warmup3":"27.5"},{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"10","sets_reps":"4x5+","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"7.5"},{"name":"Squat","kg":"17.5","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Barbell Row","kg":"15","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"17.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 8":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"12.5","sets_reps":"3x8","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"25","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"30","sets_reps":"4x5+","rpe":"","warmup1":"17.5","warmup2":"20","warmup3":"25"},{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"15","sets_reps":"3x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Barbell Row","kg":"17.5","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"22.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 9":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"15","sets_reps":"4x5+","rpe":"","warmup1":"10","warmup2":"10","warmup3":"12.5"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"17.5","sets_reps":"3x8","rpe":"","warmup1":"10","warmup2":"15","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"25","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"35","sets_reps":"4x5+","rpe":"","warmup1":"20","warmup2":"25","warmup3":"30"},{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"15","sets_reps":"4x10","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"22.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 10":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"15","sets_reps":"3x8","rpe":"","warmup1":"10","warmup2":"12.5","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"25","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"32.5","sets_reps":"4x5+","rpe":"","warmup1":"20","warmup2":"22.5","warmup3":"27.5"},{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"22.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 11":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"12.5","sets_reps":"3x8","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"25","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"30","sets_reps":"4x5+","rpe":"","warmup1":"17.5","warmup2":"20","warmup3":"25"},{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"22.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Hafta 12":{"body_weight":76.0,"workouts":[{"name":"WORKOUT A","type":"regular","exercises":[{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"DB Shoulder Press","kg":"7.5","sets_reps":"3x10","rpe":"","warmup1":"5","warmup2":"7.5","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"12.5","sets_reps":"3x8","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Lat Pulldown","kg":"27.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Extension","kg":"25","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Crunch","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT B","type":"regular","exercises":[{"name":"Squat","kg":"27.5","sets_reps":"4x5+","rpe":"","warmup1":"17.5","warmup2":"20","warmup3":"22.5"},{"name":"Dumbbell Chest Press","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Lateral Raises","kg":"2.5","sets_reps":"3x10-14","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Curl","kg":"5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Leg Raises","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"WORKOUT C","type":"regular","exercises":[{"name":"Dumbbell Shoulder Press","kg":"12.5","sets_reps":"4x5+","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"10"},{"name":"Squat","kg":"12.5","sets_reps":"3x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Barbell Row","kg":"12.5","sets_reps":"4x10","rpe":"","warmup1":"7.5","warmup2":"10","warmup3":"-"},{"name":"Dumbbell Chest Fly","kg":"7.5","sets_reps":"3x10-14","rpe":"8","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Cable Pushdown","kg":"22.5","sets_reps":"3x8-12","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Plank","kg":"vücut a.","sets_reps":"3xmax","rpe":"9","warmup1":"-","warmup2":"-","warmup3":"-"}]}]},"Dinlenme haftası":{"body_weight":null,"workouts":[{"name":"ANTRENMAN 1","type":"rest","exercises":[{"name":"Squat","kg":"20","sets_reps":"3x5","rpe":"","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Chest Press","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Assisted Pull Ups","kg":"vücut a.","sets_reps":"3x5","rpe":"","warmup1":"-","warmup2":"-","warmup3":"-"}]},{"name":"ANTRENMAN 2","type":"rest","exercises":[{"name":"Dumbbell Shoulder Press","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Dumbbell Romanian Deadlift","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"-","warmup2":"-","warmup3":"-"},{"name":"Barbell Row","kg":"10","sets_reps":"3x5","rpe":"","warmup1":"-","warmup2":"-","warmup3":"-"}]}]}};
+
+function activeProgram() { return state.handle === 'nakama' ? PROGRAM_NAKAMA : PROGRAM; }
+function activeConfigExercises() { return state.handle === 'nakama' ? CONFIG_EXERCISES_NAKAMA : CONFIG_EXERCISES; }
+function activeMainLifts() {
+  if (state.handle === 'nakama') return [
+    {name:'Dumbbell Chest Press', workout:'WORKOUT A', label:'DB Chest Press', color:'#007AFF'},
+    {name:'Squat',                workout:'WORKOUT B', label:'Squat',          color:'#34C759'},
+    {name:'Dumbbell Shoulder Press',workout:'WORKOUT C',label:'DB Shoulder',  color:'#AF52DE'},
+  ];
+  return [
+    {name:'Bench Press',    workout:'WORKOUT A', label:'Bench Press', color:'#007AFF'},
+    {name:'Squat',          workout:'WORKOUT B', label:'Squat',       color:'#34C759'},
+    {name:'Over Head Press',workout:'WORKOUT C', label:'OHP',         color:'#AF52DE'},
+  ];
+}
 
 // ═══════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════
 let sb = null;
 let state = {
-  view: 'main',          // 'main' | 'workout'
+  view: 'main',
   activeTab: 'home',
   selectedWeek: 'Hafta 1',
   selectedWorkout: null,
-  logs: {},              // key: "week|workout|exercise" → {set1..set4, notes}
-  bodyWeights: {},       // key: "week" → number
+  handle: '',
+  userConfig: null,
+  logs: {},
+  bodyWeights: {},
   saveTimers: {},
   charts: {},
 };
@@ -374,7 +441,7 @@ function bestSet(log) {
 }
 
 function isWorkoutDone(weekName, workoutName) {
-  const wo = PROGRAM[weekName]?.workouts.find(w=>w.name===workoutName);
+  const wo = activeProgram()[weekName]?.workouts.find(w=>w.name===workoutName);
   if (!wo) return false;
   const filled = wo.exercises.filter(ex => {
     const l = getLog(weekName, workoutName, ex.name);
@@ -384,7 +451,7 @@ function isWorkoutDone(weekName, workoutName) {
 }
 
 function isWeekDone(weekName) {
-  const wk = PROGRAM[weekName];
+  const wk = activeProgram()[weekName];
   if (!wk) return false;
   return wk.workouts.every(wo => isWorkoutDone(weekName, wo.name));
 }
@@ -398,6 +465,50 @@ function currentWeek() {
 
 function completedWeeksCount() {
   return WEEK_NAMES.slice(0,12).filter(isWeekDone).length;
+}
+
+function mround(val, multiple) {
+  return Math.round(val / multiple) * multiple;
+}
+
+function calcStartWeight(kg, reps, factor) {
+  const rm = calc1RM(kg, reps);
+  if (!rm) return null;
+  return mround(rm * 0.85 * factor, 2.5);
+}
+
+function getConfigEx(workoutName, exerciseName) {
+  return activeConfigExercises().find(e => e.workout === workoutName && e.name === exerciseName) || null;
+}
+
+function getUserWeight(workoutName, exerciseName, weekName) {
+  if (!state.userConfig || !state.userConfig.config) return null;
+  const cfgEx = getConfigEx(workoutName, exerciseName);
+  if (!cfgEx) return null;
+  const key = `${workoutName}|${exerciseName}`;
+  const ec = state.userConfig.config[key];
+  if (!ec || !ec.kg || !ec.reps) return null;
+  const userStart = calcStartWeight(parseFloat(ec.kg), parseFloat(ec.reps), cfgEx.factor);
+  if (!userStart) return null;
+  const w1Ex = activeProgram()['Hafta 1']?.workouts.find(w=>w.name===workoutName)?.exercises.find(e=>e.name===exerciseName);
+  const wNEx = activeProgram()[weekName]?.workouts.find(w=>w.name===workoutName)?.exercises.find(e=>e.name===exerciseName);
+  if (!w1Ex || !wNEx) return userStart;
+  const origW1 = parseFloat(w1Ex.kg);
+  const origWN = parseFloat(wNEx.kg);
+  if (isNaN(origW1) || isNaN(origWN)) return userStart;
+  return Math.max(mround(userStart + (origWN - origW1), 2.5), 2.5);
+}
+
+function getUserWarmups(userWeight, ex) {
+  const origKg = parseFloat(ex.kg);
+  if (isNaN(origKg) || origKg <= 0) return [ex.warmup1, ex.warmup2, ex.warmup3];
+  const ratio = userWeight / origKg;
+  return [ex.warmup1, ex.warmup2, ex.warmup3].map(w => {
+    if (!w || w === '-' || w === '') return w;
+    const v = parseFloat(w);
+    if (isNaN(v)) return w;
+    return mround(v * ratio, 2.5).toString();
+  });
 }
 
 function toast(msg, dur=2200) {
@@ -428,7 +539,7 @@ async function initSupabase() {
 
 async function loadAllLogs() {
   try {
-    const {data, error} = await sb.from('workout_logs').select('*');
+    const {data, error} = await sb.from('workout_logs').select('*').eq('handle', state.handle);
     if (error) throw error;
     state.logs = {};
     (data||[]).forEach(r => {
@@ -445,7 +556,7 @@ async function loadAllLogs() {
 
 async function loadAllBodyWeights() {
   try {
-    const {data, error} = await sb.from('body_weights').select('*');
+    const {data, error} = await sb.from('body_weights').select('*').eq('handle', state.handle);
     if (error) throw error;
     state.bodyWeights = {};
     (data||[]).forEach(r => { state.bodyWeights[r.week_name] = r.weight; });
@@ -456,42 +567,49 @@ async function loadAllBodyWeights() {
   }
 }
 
-async function seedIfEmpty() {
-  try {
-    const {data} = await sb.from('workout_logs').select('id').limit(1);
-    if (data && data.length === 0) {
-      // DB is empty, seed with Excel data
-      const {error} = await sb.from('workout_logs').upsert(SEED_LOGS, {onConflict:'week_name,workout_name,exercise_name'});
-      if (!error) {
-        SEED_LOGS.forEach(r => {
-          state.logs[logKey(r.week_name,r.workout_name,r.exercise_name)] = {
-            set1:r.set1, set2:r.set2, set3:r.set3, set4:r.set4, notes:r.notes
-          };
-        });
-      }
-    }
-  } catch(e) { console.error('seedIfEmpty:', e); }
-}
 
 async function saveLog(weekName, workoutName, exerciseName) {
   const key = logKey(weekName, workoutName, exerciseName);
   const log = state.logs[key] || {set1:'',set2:'',set3:'',set4:'',notes:''};
   try {
     await sb.from('workout_logs').upsert({
-      week_name: weekName, workout_name: workoutName, exercise_name: exerciseName,
+      handle: state.handle, week_name: weekName, workout_name: workoutName, exercise_name: exerciseName,
       set1: log.set1, set2: log.set2, set3: log.set3, set4: log.set4, notes: log.notes,
       updated_at: new Date().toISOString()
-    }, {onConflict:'week_name,workout_name,exercise_name'});
+    }, {onConflict:'handle,week_name,workout_name,exercise_name'});
     showSaveDot();
   } catch(e) { console.error('saveLog:', e); toast('⚠️ Kayıt hatası'); }
 }
 
 async function saveBodyWeight(weekName, weight) {
   try {
-    await sb.from('body_weights').upsert({week_name: weekName, weight: weight, logged_at: new Date().toISOString()}, {onConflict:'week_name'});
+    await sb.from('body_weights').upsert({
+      handle: state.handle, week_name: weekName, weight: weight, logged_at: new Date().toISOString()
+    }, {onConflict:'handle,week_name'});
     state.bodyWeights[weekName] = weight;
     showSaveDot();
   } catch(e) { console.error('saveBodyWeight:', e); }
+}
+
+async function loadUserConfig() {
+  try {
+    const {data, error} = await sb.from('user_configs').select('*').eq('handle', state.handle).maybeSingle();
+    if (error) throw error;
+    state.userConfig = data ? {gender: data.gender, body_weight: data.body_weight, config: data.config || {}} : null;
+    return !!data;
+  } catch(e) { console.error('loadUserConfig:', e); return false; }
+}
+
+async function saveUserConfig(gender, bodyWeight, configData) {
+  try {
+    const {error} = await sb.from('user_configs').upsert({
+      handle: state.handle, gender, body_weight: bodyWeight, config: configData,
+      updated_at: new Date().toISOString()
+    }, {onConflict:'handle'});
+    if (error) throw error;
+    state.userConfig = {gender, body_weight: bodyWeight, config: configData};
+    return true;
+  } catch(e) { console.error('saveUserConfig:', e); return false; }
 }
 
 function scheduleSave(weekName, workoutName, exerciseName) {
@@ -503,8 +621,8 @@ function scheduleSave(weekName, workoutName, exerciseName) {
 // ═══════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════
-async function login() {
-  const pass = document.getElementById('inp-pass').value.trim();
+function loginStep1() {
+  const pass = document.getElementById('inp-pass').value;
   const errEl = document.getElementById('login-err');
   if (pass !== PASSWORD) {
     document.getElementById('inp-pass').classList.add('error');
@@ -515,15 +633,46 @@ async function login() {
     }, 2000);
     return;
   }
-  localStorage.setItem('sh_auth','1');
+  document.getElementById('login-step1').classList.add('hidden');
+  document.getElementById('login-step2').classList.remove('hidden');
+  document.getElementById('inp-handle').focus();
+}
+
+async function loginStep2() {
+  const handle = document.getElementById('inp-handle').value.trim().toLowerCase();
+  const errEl = document.getElementById('login-err');
+  if (!handle) {
+    document.getElementById('inp-handle').classList.add('error');
+    errEl.textContent = 'Rumuz gir.';
+    setTimeout(()=>{ document.getElementById('inp-handle').classList.remove('error'); errEl.textContent = ''; }, 2000);
+    return;
+  }
+  if (!ALLOWED_HANDLES.includes(handle)) {
+    document.getElementById('inp-handle').classList.add('error');
+    errEl.textContent = 'Bu rumuz kayıtlı değil.';
+    setTimeout(()=>{ document.getElementById('inp-handle').classList.remove('error'); errEl.textContent = ''; }, 2000);
+    return;
+  }
+  state.handle = handle;
+  localStorage.setItem('sh_auth', '1');
+  localStorage.setItem('sh_handle', handle);
   await startApp();
 }
 
 function logout() {
   localStorage.removeItem('sh_auth');
+  localStorage.removeItem('sh_handle');
+  state.handle = '';
+  state.userConfig = null;
+  state.logs = {};
+  state.bodyWeights = {};
   document.getElementById('app').classList.add('hidden');
   document.getElementById('screen-login').classList.remove('hidden');
+  document.getElementById('login-step1').classList.remove('hidden');
+  document.getElementById('login-step2').classList.add('hidden');
   document.getElementById('inp-pass').value = '';
+  document.getElementById('inp-handle').value = '';
+  document.getElementById('login-err').textContent = '';
 }
 
 // ═══════════════════════════════════════
@@ -544,7 +693,7 @@ function switchTab(tab) {
 
 function openWorkoutView(weekName, workoutName) {
   state.selectedWeek = weekName;
-  state.selectedWorkout = workoutName || PROGRAM[weekName]?.workouts[0]?.name;
+  state.selectedWorkout = workoutName || activeProgram()[weekName]?.workouts[0]?.name;
   renderWorkoutView();
   document.getElementById('view-workout').classList.add('open');
   document.getElementById('view-main').style.display = 'none';
@@ -571,7 +720,7 @@ function renderHome() {
   document.getElementById('home-week-title').textContent = curWeek === 'Dinlenme haftası' ? '🎉 Tebrikler!' : `Bu Hafta: ${curWeek}`;
 
   // Hero card
-  const wk = PROGRAM[curWeek];
+  const wk = activeProgram()[curWeek];
   const woLetters = wk?.workouts.map(wo => ({
     letter: wo.name.includes('WORKOUT') ? wo.name.split(' ')[1] : wo.name.replace('ANTRENMAN ',''),
     name: wo.name,
@@ -615,7 +764,7 @@ function renderHome() {
 
   // Stats
   const totalWo = WEEK_NAMES.slice(0,12).reduce((acc,wk)=>{
-    return acc + (PROGRAM[wk]?.workouts.filter(wo=>isWorkoutDone(wk,wo.name)).length||0);
+    return acc + (activeProgram()[wk]?.workouts.filter(wo=>isWorkoutDone(wk,wo.name)).length||0);
   }, 0);
   const latestBW = Object.values(state.bodyWeights).filter(Boolean).pop() || '–';
 
@@ -671,7 +820,7 @@ function renderWeekGrid() {
 // ═══════════════════════════════════════
 function renderWorkoutView() {
   const weekName = state.selectedWeek;
-  const wk = PROGRAM[weekName];
+  const wk = activeProgram()[weekName];
   if (!wk) return;
 
   document.getElementById('workout-view-title').textContent = weekName;
@@ -695,7 +844,19 @@ function renderWorkoutView() {
     const log = getLog(weekName, state.selectedWorkout, ex.name);
     const n = numSets(ex.sets_reps);
     const isBW = ex.kg === 'vücut a.';
-    const kgNum = parseFloat(ex.kg);
+    let kgNum = parseFloat(ex.kg);
+    let displayKg = ex.kg;
+    let warmupSrc = [ex.warmup1, ex.warmup2, ex.warmup3];
+
+    // Dynamic weights per user config
+    if (!isBW && state.userConfig) {
+      const userW = getUserWeight(state.selectedWorkout, ex.name, weekName);
+      if (userW !== null) {
+        kgNum = userW;
+        displayKg = userW.toString();
+        warmupSrc = getUserWarmups(userW, ex);
+      }
+    }
 
     // Completion check
     const setsFilled = [log.set1, log.set2, log.set3, n>=4?log.set4:null]
@@ -703,7 +864,7 @@ function renderWorkoutView() {
     const isDone = setsFilled >= n;
 
     // Warmups
-    const warmups = [ex.warmup1, ex.warmup2, ex.warmup3].filter(w=>w && w !== '-' && w !== '');
+    const warmups = warmupSrc.filter(w=>w && w !== '-' && w !== '');
     const warmupHtml = warmups.length ? `
       <div class="warmup-row">
         <span class="warmup-label">Isınma</span>
@@ -717,7 +878,7 @@ function renderWorkoutView() {
     // Weight badge
     const kgHtml = isBW
       ? `<span class="badge badge-bw">Vücut A.</span>`
-      : `<span class="badge badge-weight">${ex.kg} kg</span>`;
+      : `<span class="badge badge-weight">${displayKg} kg</span>`;
 
     // 1RM estimate (for main lifts with weight)
     let rm1Html = '';
@@ -790,16 +951,12 @@ function renderProgress() {
   const el = document.getElementById('progress-body');
 
   // Collect 1RM data per week for main lifts
-  const mainLifts = [
-    {name:'Bench Press', workout:'WORKOUT A', label:'Bench Press', color:'#007AFF'},
-    {name:'Squat', workout:'WORKOUT B', label:'Squat', color:'#34C759'},
-    {name:'Over Head Press', workout:'WORKOUT C', label:'OHP', color:'#AF52DE'},
-  ];
+  const mainLifts = activeMainLifts();
 
   const labels = WEEK_NAMES.slice(0,12);
   const datasets = mainLifts.map(lift => {
     const vals = labels.map(wk => {
-      const ex = PROGRAM[wk]?.workouts.find(w=>w.name===lift.workout)?.exercises.find(e=>e.name===lift.name);
+      const ex = activeProgram()[wk]?.workouts.find(w=>w.name===lift.workout)?.exercises.find(e=>e.name===lift.name);
       if (!ex) return null;
       const log = getLog(wk, lift.workout, lift.name);
       const kg = parseFloat(ex.kg);
@@ -819,7 +976,7 @@ function renderProgress() {
   // Completion stats
   const totalCompleted = completedWeeksCount();
   const totalWorkouts = WEEK_NAMES.slice(0,12).reduce((acc,wk)=>{
-    return acc + (PROGRAM[wk]?.workouts.filter(wo=>isWorkoutDone(wk,wo.name)).length||0);
+    return acc + (activeProgram()[wk]?.workouts.filter(wo=>isWorkoutDone(wk,wo.name)).length||0);
   }, 0);
 
   el.innerHTML = `
@@ -863,6 +1020,126 @@ function renderProgress() {
 }
 
 // ═══════════════════════════════════════
+// CONFIG SCREEN
+// ═══════════════════════════════════════
+function showConfigScreen(isFirst) {
+  document.getElementById('screen-config').classList.remove('hidden');
+  const backBtn = document.getElementById('btn-config-back');
+  if (backBtn) backBtn.style.visibility = isFirst ? 'hidden' : '';
+  renderConfigScreen();
+}
+
+function hideConfigScreen() {
+  document.getElementById('screen-config').classList.add('hidden');
+}
+
+function renderConfigScreen() {
+  const cfg = state.userConfig || {};
+  const cfgData = cfg.config || {};
+  let html = `
+    <p class="section-title" style="padding-top:16px">Profil</p>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-row">
+        <span style="font-weight:500">Cinsiyet</span>
+        <select id="cfg-gender" style="border:none;outline:none;font-size:15px;font-family:var(--font);background:transparent;color:var(--blue);font-weight:600;cursor:pointer">
+          <option value="erkek" ${(!cfg.gender||cfg.gender==='erkek')?'selected':''}>Erkek</option>
+          <option value="kadın" ${cfg.gender==='kadın'?'selected':''}>Kadın</option>
+        </select>
+      </div>
+      <div class="card-row">
+        <span style="font-weight:500">Vücut Ağırlığı</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="number" id="cfg-bw" inputmode="decimal" step="0.1" min="30" max="300"
+            value="${cfg.body_weight||''}" placeholder="–"
+            style="border:none;outline:none;font-size:16px;font-weight:700;font-family:var(--font);color:var(--blue);width:64px;background:transparent;text-align:right">
+          <span style="color:var(--label-3);font-size:14px">kg</span>
+        </div>
+      </div>
+    </div>
+    <p class="section-title">Max Değerler</p>
+    <p class="section-sub">Her egzersiz için en iyi 1 setini gir. Başlangıç ağırlıkların otomatik hesaplanır.</p>
+  `;
+  activeConfigExercises().forEach(ex => {
+    const key = `${ex.workout}|${ex.name}`;
+    const safeKey = key.replace(/[^a-z0-9]/gi,'_');
+    const ec = cfgData[key] || {};
+    const hasData = ec.kg && ec.reps;
+    const rm = hasData ? calc1RM(parseFloat(ec.kg), parseFloat(ec.reps)) : null;
+    const startW = (rm && hasData) ? calcStartWeight(parseFloat(ec.kg), parseFloat(ec.reps), ex.factor) : null;
+    html += `
+      <div class="config-ex-row" data-cfgkey="${key}">
+        <div class="config-ex-name">${ex.label}</div>
+        <div class="config-inputs">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">Max Ağırlık</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="number" class="fi cfg-kg-inp" inputmode="decimal" step="0.5" min="0"
+                value="${ec.kg||''}" placeholder="kg" data-cfgkey="${key}" oninput="onCfgInput('${safeKey}','${key}')">
+              <span style="color:var(--label-3);font-size:13px;white-space:nowrap">kg</span>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--label-3);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">Tekrar</label>
+            <input type="number" class="fi cfg-reps-inp" inputmode="numeric" step="1" min="1" max="50"
+              value="${ec.reps||''}" placeholder="adet" data-cfgkey="${key}" oninput="onCfgInput('${safeKey}','${key}')">
+          </div>
+        </div>
+        <div class="config-calc" id="cfg-calc-${safeKey}">
+          ${rm ? `1RM: <span>${rm} kg</span> → Hafta 1 başlangıç: <span>${startW} kg</span>` : 'Ağırlık ve tekrar gir'}
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('config-body').innerHTML = html;
+}
+
+function onCfgInput(safeKey, key) {
+  const row = document.querySelector(`[data-cfgkey="${key}"]`);
+  if (!row) return;
+  const kg = parseFloat(row.querySelector('.cfg-kg-inp').value);
+  const reps = parseFloat(row.querySelector('.cfg-reps-inp').value);
+  const calcEl = document.getElementById(`cfg-calc-${safeKey}`);
+  if (!calcEl) return;
+  const cfgEx = activeConfigExercises().find(e => `${e.workout}|${e.name}` === key);
+  if (!cfgEx) return;
+  if (kg > 0 && reps > 0) {
+    const rm = calc1RM(kg, reps);
+    const startW = calcStartWeight(kg, reps, cfgEx.factor);
+    calcEl.innerHTML = `1RM: <span>${rm} kg</span> → Hafta 1 başlangıç: <span>${startW} kg</span>`;
+  } else {
+    calcEl.textContent = 'Ağırlık ve tekrar gir';
+  }
+}
+
+async function saveConfig() {
+  const genderEl = document.getElementById('cfg-gender');
+  const bwEl = document.getElementById('cfg-bw');
+  const gender = genderEl ? genderEl.value : 'erkek';
+  const bodyWeight = bwEl ? (parseFloat(bwEl.value) || 0) : 0;
+  const configData = {};
+  activeConfigExercises().forEach(ex => {
+    const key = `${ex.workout}|${ex.name}`;
+    const row = document.querySelector(`[data-cfgkey="${key}"]`);
+    if (!row) return;
+    const kg = parseFloat(row.querySelector('.cfg-kg-inp').value);
+    const reps = parseFloat(row.querySelector('.cfg-reps-inp').value);
+    if (kg > 0 && reps > 0) configData[key] = {kg, reps};
+  });
+  showLoading(true);
+  const ok = await saveUserConfig(gender, bodyWeight, configData);
+  showLoading(false);
+  if (ok) {
+    toast('Profil kaydedildi ✓');
+    hideConfigScreen();
+    renderHome();
+    renderWeekGrid();
+    switchTab('home');
+  } else {
+    toast('⚠️ Kayıt hatası');
+  }
+}
+
+// ═══════════════════════════════════════
 // INPUT HANDLERS
 // ═══════════════════════════════════════
 function onSetInput(el) {
@@ -899,7 +1176,7 @@ function updateExCardDot(exerciseName) {
   const card = document.getElementById(`excard-${encodeURIComponent(exerciseName)}`);
   if (!card) return;
   const log = getLog(state.selectedWeek, state.selectedWorkout, exerciseName);
-  const wo = PROGRAM[state.selectedWeek]?.workouts.find(w=>w.name===state.selectedWorkout);
+  const wo = activeProgram()[state.selectedWeek]?.workouts.find(w=>w.name===state.selectedWorkout);
   const ex = wo?.exercises.find(e=>e.name===exerciseName);
   if (!ex) return;
   const n = numSets(ex.sets_reps);
@@ -920,10 +1197,11 @@ function updateTabDoneState(weekName, workoutName) {
 function updateRM1Badge(weekName, workoutName, exerciseName) {
   const card = document.getElementById(`excard-${encodeURIComponent(exerciseName)}`);
   if (!card) return;
-  const wo = PROGRAM[weekName]?.workouts.find(w=>w.name===workoutName);
+  const wo = activeProgram()[weekName]?.workouts.find(w=>w.name===workoutName);
   const ex = wo?.exercises.find(e=>e.name===exerciseName);
   if (!ex || ex.kg === 'vücut a.') return;
-  const kg = parseFloat(ex.kg);
+  let kg = parseFloat(ex.kg);
+  if (state.userConfig) { const uw = getUserWeight(workoutName, exerciseName, weekName); if (uw !== null) kg = uw; }
   if (isNaN(kg)) return;
   const log = getLog(weekName, workoutName, exerciseName);
   const best = bestSet(log);
@@ -951,27 +1229,37 @@ function autoResizeAll() {
 async function startApp() {
   showLoading(true);
   document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('screen-config').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
 
-  await initSupabase();
-  const ok1 = await loadAllLogs();
-  const ok2 = await loadAllBodyWeights();
-  if (ok1) await seedIfEmpty();
+  if (!sb) await initSupabase();
+  await loadAllLogs();
+  await loadAllBodyWeights();
+  const hasConfig = await loadUserConfig();
 
   showLoading(false);
 
-  renderHome();
-  renderWeekGrid();
-  switchTab('home');
+  if (!hasConfig) {
+    showConfigScreen(true);
+  } else {
+    renderHome();
+    renderWeekGrid();
+    switchTab('home');
+  }
 }
 
 // ═══════════════════════════════════════
 // EVENT LISTENERS
 // ═══════════════════════════════════════
-document.getElementById('btn-login').addEventListener('click', login);
-document.getElementById('inp-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') login(); });
+document.getElementById('btn-login').addEventListener('click', loginStep1);
+document.getElementById('inp-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') loginStep1(); });
+document.getElementById('btn-handle').addEventListener('click', loginStep2);
+document.getElementById('inp-handle').addEventListener('keydown', e=>{ if(e.key==='Enter') loginStep2(); });
 document.getElementById('btn-logout').addEventListener('click', logout);
 document.getElementById('btn-back').addEventListener('click', closeWorkoutView);
+document.getElementById('btn-profile').addEventListener('click', ()=>showConfigScreen(false));
+document.getElementById('btn-config-back').addEventListener('click', hideConfigScreen);
+document.getElementById('btn-config-save').addEventListener('click', saveConfig);
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
@@ -982,7 +1270,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ═══════════════════════════════════════
 (async function boot() {
   await initSupabase();
-  if (localStorage.getItem('sh_auth') === '1') {
+  const savedHandle = localStorage.getItem('sh_handle');
+  if (localStorage.getItem('sh_auth') === '1' && savedHandle) {
+    state.handle = savedHandle;
     await startApp();
   } else {
     showLoading(false);
