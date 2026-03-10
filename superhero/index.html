@@ -820,11 +820,12 @@
 
               <div class="divider"></div>
 
-              <div class="top-actions">
-                <button class="secondary" id="openSettingsBtn">Program Ayarları</button>
-                <button class="secondary" id="goReset">Programı Sıfırla</button>
-                <button class="secondary" id="logoutBtn">Çıkış</button>
-              </div>
+<div class="top-actions">
+  <button class="secondary" id="goDashboard">Dashboard</button>
+  <button class="secondary" id="openSettingsBtn">Program Ayarları</button>
+  <button class="secondary" id="goReset">Programı Sıfırla</button>
+  <button class="secondary" id="logoutBtn">Çıkış</button>
+</div>
             </div>
 
             <div class="card">
@@ -874,6 +875,9 @@
         ${state.settingsOpen ? renderSettingsModal(program) : ''}
       `;
 
+      document.getElementById('goDashboard').onclick = () => {
+  window.location.href = 'dashboard.html';
+};
       document.getElementById('logoutBtn').onclick = handleLogout;
       document.getElementById('goReset').onclick = handleResetProgram;
       document.getElementById('openSettingsBtn').onclick = () => {
