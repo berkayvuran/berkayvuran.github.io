@@ -96,6 +96,26 @@
   const MASTER_PASSWORD = 'Nakama123!';
   const ALLOWED_USERS = ['nakama', 'boksimoron'];
   const REST_SECONDS = { g1: 120, g2: 90, g3: 60, g4: 60 };
+  const WARMUP_REST_SECONDS = 30;
+
+  let _audioCtx = null;
+  function _beep(freq, duration, volume = 0.4) {
+    try {
+      if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = _audioCtx.createOscillator();
+      const gain = _audioCtx.createGain();
+      osc.connect(gain); gain.connect(_audioCtx.destination);
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, _audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + duration);
+      osc.start(); osc.stop(_audioCtx.currentTime + duration);
+    } catch(e) {}
+  }
+  function playCountdownBeep() { _beep(880, 0.15); }
+  function playEndBeep() {
+    _beep(1320, 0.15, 0.5);
+    setTimeout(() => _beep(1320, 0.4, 0.5), 180);
+  }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -116,33 +136,33 @@
 
   const TEMPLATE_SLOTS = [
     // Gün 1
-    { slotCode:'G1_1', dayCode:'1', group:'g1', family:'chest_press',    setsReps:'4x5+',    warmupSets:3, incrementKg:2.5, isBodyweight:false, startFactor:0.8,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5  },
-    { slotCode:'G1_2', dayCode:'1', group:'g2', family:'shoulder_press', setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10 },
-    { slotCode:'G1_3', dayCode:'1', group:'g2', family:'hinge',          setsReps:'3x8',     warmupSets:2, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:8  },
-    { slotCode:'G1_4', dayCode:'1', group:'g3', family:'vertical_pull',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42 },
-    { slotCode:'G1_5', dayCode:'1', group:'g3', family:'leg_accessory',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42 },
-    { slotCode:'G1_6', dayCode:'1', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
+    { slotCode:'G1_1', dayCode:'1', group:'g1', family:'chest_press',    setsReps:'4x5+',    warmupSets:3, incrementKg:2.5, isBodyweight:false, startFactor:0.8,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5,  rpe:8 },
+    { slotCode:'G1_2', dayCode:'1', group:'g2', family:'shoulder_press', setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10, rpe:8 },
+    { slotCode:'G1_3', dayCode:'1', group:'g2', family:'hinge',          setsReps:'3x8',     warmupSets:2, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:8,  rpe:8 },
+    { slotCode:'G1_4', dayCode:'1', group:'g3', family:'vertical_pull',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42, rpe:8 },
+    { slotCode:'G1_5', dayCode:'1', group:'g3', family:'leg_accessory',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42, rpe:9 },
+    { slotCode:'G1_6', dayCode:'1', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:9 },
     // Gün 2
-    { slotCode:'G2_1', dayCode:'2', group:'g1', family:'squat',          setsReps:'4x5+',    warmupSets:3, incrementKg:5,   isBodyweight:false, startFactor:0.7,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5  },
-    { slotCode:'G2_2', dayCode:'2', group:'g2', family:'chest_press',    setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10 },
-    { slotCode:'G2_3', dayCode:'2', group:'g2', family:'vertical_pull',  setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
-    { slotCode:'G2_4', dayCode:'2', group:'g3', family:'lateral_raise',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'total_reps', threshold:42 },
-    { slotCode:'G2_5', dayCode:'2', group:'g4', family:'biceps',         setsReps:'3x8-12',  warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:36 },
-    { slotCode:'G2_6', dayCode:'2', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
+    { slotCode:'G2_1', dayCode:'2', group:'g1', family:'squat',          setsReps:'4x5+',    warmupSets:3, incrementKg:5,   isBodyweight:false, startFactor:0.7,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5,  rpe:8 },
+    { slotCode:'G2_2', dayCode:'2', group:'g2', family:'chest_press',    setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10, rpe:8 },
+    { slotCode:'G2_3', dayCode:'2', group:'g2', family:'vertical_pull',  setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:9 },
+    { slotCode:'G2_4', dayCode:'2', group:'g3', family:'lateral_raise',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'total_reps', threshold:42, rpe:9 },
+    { slotCode:'G2_5', dayCode:'2', group:'g4', family:'biceps',         setsReps:'3x8-12',  warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:36, rpe:9 },
+    { slotCode:'G2_6', dayCode:'2', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:9 },
     // Gün 3
-    { slotCode:'G3_1', dayCode:'3', group:'g1', family:'shoulder_press', setsReps:'4x5+',    warmupSets:3, incrementKg:2.5, isBodyweight:false, startFactor:0.7,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5  },
-    { slotCode:'G3_2', dayCode:'3', group:'g2', family:'squat',          setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10 },
-    { slotCode:'G3_3', dayCode:'3', group:'g2', family:'row',            setsReps:'4x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:4, threshold:10 },
-    { slotCode:'G3_4', dayCode:'3', group:'g3', family:'chest_fly',      setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42 },
-    { slotCode:'G3_5', dayCode:'3', group:'g4', family:'triceps',        setsReps:'3x8-12',  warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:36 },
-    { slotCode:'G3_6', dayCode:'3', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
+    { slotCode:'G3_1', dayCode:'3', group:'g1', family:'shoulder_press', setsReps:'4x5+',    warmupSets:3, incrementKg:2.5, isBodyweight:false, startFactor:0.7,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5,  rpe:8 },
+    { slotCode:'G3_2', dayCode:'3', group:'g2', family:'squat',          setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10, rpe:8 },
+    { slotCode:'G3_3', dayCode:'3', group:'g2', family:'row',            setsReps:'4x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:4, threshold:10, rpe:8 },
+    { slotCode:'G3_4', dayCode:'3', group:'g3', family:'chest_fly',      setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42, rpe:8 },
+    { slotCode:'G3_5', dayCode:'3', group:'g4', family:'triceps',        setsReps:'3x8-12',  warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:36, rpe:9 },
+    { slotCode:'G3_6', dayCode:'3', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:9 },
     // Dinlenme
-    { slotCode:'D1_1', dayCode:'D1', group:'g1', family:'squat',          setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G2_1' },
-    { slotCode:'D1_2', dayCode:'D1', group:'g1', family:'chest_press',    setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G1_1' },
-    { slotCode:'D1_3', dayCode:'D1', group:'g2', family:'vertical_pull',  setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
-    { slotCode:'D2_1', dayCode:'D2', group:'g1', family:'shoulder_press', setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G3_1' },
-    { slotCode:'D2_2', dayCode:'D2', group:'g2', family:'hinge',          setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G1_3' },
-    { slotCode:'D2_3', dayCode:'D2', group:'g2', family:'row',            setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G3_3' }
+    { slotCode:'D1_1', dayCode:'D1', group:'g1', family:'squat',          setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G2_1', rpe:6 },
+    { slotCode:'D1_2', dayCode:'D1', group:'g1', family:'chest_press',    setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G1_1', rpe:6 },
+    { slotCode:'D1_3', dayCode:'D1', group:'g2', family:'vertical_pull',  setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:6 },
+    { slotCode:'D2_1', dayCode:'D2', group:'g1', family:'shoulder_press', setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G3_1', rpe:6 },
+    { slotCode:'D2_2', dayCode:'D2', group:'g2', family:'hinge',          setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G1_3', rpe:6 },
+    { slotCode:'D2_3', dayCode:'D2', group:'g2', family:'row',            setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G3_3', rpe:6 }
   ];
 
   // ── State ──
@@ -251,6 +271,21 @@
     if (weekNo === 13) return deloadW(program, slot);
     return prevWeight(program, slotCode, weekNo);
   }
+  function rpeColor(rpe) {
+    if (rpe <= 6) return '#4ade80';
+    if (rpe === 7) return '#86efac';
+    if (rpe === 8) return '#fbbf24';
+    if (rpe === 9) return '#f97316';
+    return '#ef4444';
+  }
+  function rpeDesc(rpe) {
+    if (rpe <= 6) return 'Hafif · 4+ tekrar rezerv';
+    if (rpe === 7) return '3 tekrar rezerv';
+    if (rpe === 8) return '2 tekrar rezerv';
+    if (rpe === 9) return '1 tekrar rezerv';
+    return 'Maksimum';
+  }
+
   function esc(s = '') {
     return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
   }
@@ -416,23 +451,54 @@
     render();
   };
 
+  function updateRestUI() {
+    const el = document.getElementById('rest-num');
+    if (el) el.textContent = fmt(state.session.restRemaining);
+    const ring = document.getElementById('rest-ring');
+    if (ring) {
+      const pct = state.session.restRemaining / state.session.restTotal;
+      ring.setAttribute('stroke-dashoffset', (2 * Math.PI * 80 * (1 - pct)).toFixed(1));
+    }
+  }
+
   function startRestTimer() {
     stopRest();
     _restId = setInterval(() => {
       state.session.restRemaining--;
+      if (state.session.restRemaining > 0 && state.session.restRemaining <= 5) playCountdownBeep();
       if (state.session.restRemaining <= 0) {
         stopRest();
+        playEndBeep();
         state.session.setIdx++;
         state.session.subPhase = 'working';
         render();
       } else {
-        const el = document.getElementById('rest-num');
-        if (el) el.textContent = fmt(state.session.restRemaining);
-        const ring = document.getElementById('rest-ring');
-        if (ring) {
-          const pct = state.session.restRemaining / state.session.restTotal;
-          ring.setAttribute('stroke-dashoffset', (2 * Math.PI * 80 * (1 - pct)).toFixed(1));
+        updateRestUI();
+      }
+    }, 1000);
+  }
+
+  function startWarmupRestTimer() {
+    stopRest();
+    _restId = setInterval(() => {
+      state.session.restRemaining--;
+      if (state.session.restRemaining > 0 && state.session.restRemaining <= 5) playCountdownBeep();
+      if (state.session.restRemaining <= 0) {
+        stopRest();
+        playEndBeep();
+        const { session } = state;
+        const slot = session.slots[session.exIdx];
+        const warmups = session.warmups[slot.slotCode];
+        if (session.warmupStep < warmups.length - 1) {
+          session.warmupStep++;
+          session.subPhase = 'warmup';
+        } else {
+          session.subPhase = 'working';
+          session.setIdx = 0;
         }
+        render();
+      } else {
+        updateRestUI();
       }
     }, 1000);
   }
@@ -742,6 +808,12 @@
           </div>
           <div class="h1" style="color:${gc}; margin-bottom:10px;">${esc(exName)}</div>
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;">${altChips}</div>
+          ${slot.rpe != null ? `
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; padding:10px 14px; background:${rpeColor(slot.rpe)}18; border-radius:12px; border:1px solid ${rpeColor(slot.rpe)}44;">
+              <span style="font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.06em;">HEDEF RPE</span>
+              <span style="font-size:22px; font-weight:900; color:${rpeColor(slot.rpe)};">${slot.rpe}</span>
+              <span style="font-size:12px; color:${rpeColor(slot.rpe)}; font-weight:600;">${rpeDesc(slot.rpe)}</span>
+            </div>` : ''}
           ${!slot.isBodyweight && weight != null ? `
             <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:18px;">
               <span class="big-num">${weight}</span>
@@ -802,6 +874,12 @@
               <span style="font-size:18px; color:var(--muted);">kg</span>
             </div>` : `<div style="margin-bottom:10px; color:var(--muted);">Vücut ağırlığı</div>`}
           <div style="margin-bottom:6px;"><span class="caption">HEDEF </span><span style="font-size:20px; font-weight:800; color:var(--accent);">${slot.isBodyweight ? 'maksimum' : esc(targetReps)} tekrar</span></div>
+          ${slot.rpe != null ? `
+          <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.06em;">RPE</span>
+            <span style="font-size:17px; font-weight:900; color:${rpeColor(slot.rpe)}; padding:2px 10px; background:${rpeColor(slot.rpe)}18; border-radius:8px;">${slot.rpe}</span>
+            <span style="font-size:12px; color:${rpeColor(slot.rpe)};">${rpeDesc(slot.rpe)}</span>
+          </div>` : ''}
           <div class="set-dots">
             ${Array.from({length:setCount}).map((_,i) => `
               <div class="set-dot ${i < prevDone ? 'done' : i === prevDone ? 'current' : ''}"></div>`).join('')}
@@ -851,6 +929,33 @@
               <div class="next-name">${esc(session.exNames[nextSlot.slotCode])}</div>
             </div>
           </div>` : ''}`;
+    }
+
+    else if (subPhase === 'warmup_rest') {
+      showBack = false;
+      ctaLabel = 'Isınma Dinlenmesini Atla';
+      const r = 80, circ = (2 * Math.PI * r).toFixed(1);
+      const pctVal = session.restRemaining / session.restTotal;
+      const offset = (2 * Math.PI * r * (1 - pctVal)).toFixed(1);
+      const isLastWarmup = session.warmupStep === warmups.length - 1;
+      const nextWarmupKg = !isLastWarmup ? warmups[session.warmupStep + 1] : null;
+      content = `
+        <div class="card" style="text-align:center; padding:40px 20px;">
+          <div class="caption" style="margin-bottom:4px;">ISINMA DİNLENMESİ</div>
+          <div style="font-size:12px; color:var(--muted); margin-bottom:24px;">${session.warmupStep + 1} / ${warmups.length} ısınma seti tamamlandı</div>
+          <svg width="180" height="180" style="display:block; margin:0 auto 20px;">
+            <circle cx="90" cy="90" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+            <circle id="rest-ring" cx="90" cy="90" r="${r}" fill="none" stroke="${gc}"
+              stroke-width="10" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
+              stroke-linecap="round" transform="rotate(-90 90 90)"
+              style="transition:stroke-dashoffset 0.9s linear;"/>
+            <text x="90" y="84" text-anchor="middle" fill="var(--text)" font-size="46" font-weight="900"
+              font-family="-apple-system,sans-serif" id="rest-num">${fmt(session.restRemaining)}</text>
+            <text x="90" y="112" text-anchor="middle" fill="var(--muted)" font-size="13"
+              font-family="-apple-system,sans-serif">saniye</text>
+          </svg>
+          <div class="caption">Sıradaki: ${isLastWarmup ? `Çalışma Seti 1 · ${weight != null ? weight+' kg' : 'vücut ağırlığı'}` : `Isınma ${session.warmupStep + 2} / ${warmups.length} · ${nextWarmupKg} kg`}</div>
+        </div>`;
     }
 
     else if (subPhase === 'notes') {
@@ -905,6 +1010,7 @@
     if (backBtn) backBtn.onclick = handleBack;
     document.getElementById('earlyFinishBtn').onclick = earlyFinish;
     if (subPhase === 'rest') startRestTimer();
+    if (subPhase === 'warmup_rest') startWarmupRestTimer();
     if (subPhase === 'working') {
       const inp = document.getElementById('repInput');
       if (inp) setTimeout(() => inp.focus(), 100);
@@ -925,8 +1031,20 @@
       render(); return;
     }
     if (subPhase === 'warmup') {
-      if (session.warmupStep < warmups.length - 1) { session.warmupStep++; }
-      else { session.subPhase = 'working'; session.setIdx = 0; }
+      session.subPhase = 'warmup_rest';
+      session.restTotal = WARMUP_REST_SECONDS;
+      session.restRemaining = WARMUP_REST_SECONDS;
+      render(); return;
+    }
+    if (subPhase === 'warmup_rest') {
+      stopRest();
+      if (session.warmupStep < warmups.length - 1) {
+        session.warmupStep++;
+        session.subPhase = 'warmup';
+      } else {
+        session.subPhase = 'working';
+        session.setIdx = 0;
+      }
       render(); return;
     }
     if (subPhase === 'working') {
@@ -976,6 +1094,9 @@
       session.subPhase = 'notes';
     } else if (subPhase === 'intro') {
       state.phase = 'home';
+    } else if (subPhase === 'warmup_rest') {
+      stopRest();
+      session.subPhase = 'warmup';
     } else if (subPhase === 'warmup' && session.warmupStep > 0) {
       session.warmupStep--;
     } else if (subPhase === 'warmup') {
