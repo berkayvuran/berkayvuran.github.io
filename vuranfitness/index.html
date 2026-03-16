@@ -60,6 +60,7 @@
     .ex-item-right { font-size: 13px; color: var(--muted); white-space: nowrap; }
     .ex-item-name { font-weight: 600; font-size: 15px; }
     .ex-item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .ex-item-alts { font-size: 11px; color: #475569; margin-top: 3px; }
     .set-dots { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
     .set-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all .2s; }
     .set-dot.done { background: var(--accent); border-color: var(--accent); }
@@ -214,7 +215,9 @@
     const reps = (repsArr || []).map(v => Number(v || 0));
     if (slot.progression === 'last_set') {
       const val = reps[(slot.checkSet || 1) - 1] || 0;
-      if (val >= (slot.threshold || 0)) return mround(Number(cur) + Number(slot.incrementKg || 0), 2.5);
+      const t = slot.threshold || 0;
+      const met = slot.setsReps?.includes('+') ? val >= t : val === t;
+      if (met) return mround(Number(cur) + Number(slot.incrementKg || 0), 2.5);
       return mround(Number(cur) * 0.9, 2.5);
     }
     if (slot.progression === 'total_reps') {
@@ -289,15 +292,21 @@
 
   async function saveWorkout() {
     const { session } = state;
-    const rows = session.slots.map(slot => ({
-      username: state.username,
-      week_no: session.week,
-      workout_code: session.dayCode,
-      slot_code: slot.slotCode,
-      reps: (session.reps[slot.slotCode] || []).map(v => Number(v || 0)).filter(v => Number.isFinite(v)),
-      notes: session.notes[slot.slotCode] || '',
-      completed_at: new Date().toISOString()
-    }));
+    const program = { ...state.program, username: state.username };
+    const rows = session.slots.map(slot => {
+      const planned = getSel(program, slot.slotCode)?.selectedExercise;
+      const actual  = session.exNames[slot.slotCode];
+      const altPrefix = planned && actual && actual !== planned ? `[${actual}] ` : '';
+      return {
+        username: state.username,
+        week_no: session.week,
+        workout_code: session.dayCode,
+        slot_code: slot.slotCode,
+        reps: (session.reps[slot.slotCode] || []).map(v => Number(v || 0)).filter(v => Number.isFinite(v)),
+        notes: altPrefix + (session.notes[slot.slotCode] || ''),
+        completed_at: new Date().toISOString()
+      };
+    });
     const { error } = await supabase.from('workout_logs').upsert(rows, { onConflict: 'username,week_no,workout_code,slot_code' });
     if (error) throw error;
     await loadData();
@@ -378,6 +387,34 @@
   function stopRest() {
     if (_restId) { clearInterval(_restId); _restId = null; }
   }
+
+  async function earlyFinish() {
+    if (!confirm('Antrenmanı yarıda bırakmak istediğine emin misin? Kalan setler 0 olarak kaydedilecek.')) return;
+    const { session } = state;
+    const curSlot = session.slots[session.exIdx];
+    // Fill remaining sets of current slot with 0
+    const curSetCount = session.setCounts[curSlot.slotCode];
+    if (!session.reps[curSlot.slotCode]) session.reps[curSlot.slotCode] = [];
+    while (session.reps[curSlot.slotCode].length < curSetCount) {
+      session.reps[curSlot.slotCode].push(0);
+    }
+    // Fill all subsequent slots with 0s
+    for (let i = session.exIdx + 1; i < session.slots.length; i++) {
+      const s = session.slots[i];
+      session.reps[s.slotCode] = Array(session.setCounts[s.slotCode]).fill(0);
+    }
+    // Mark current slot's notes as incomplete
+    session.notes[curSlot.slotCode] = '[⚠️ Yarım bırakıldı] ' + (session.notes[curSlot.slotCode] || '');
+    stopRest();
+    state.phase = 'summary';
+    render();
+  }
+
+  window.selectAlt = function(slotCode, name) {
+    if (!state.session) return;
+    state.session.exNames[slotCode] = name;
+    render();
+  };
 
   function startRestTimer() {
     stopRest();
@@ -582,6 +619,7 @@
       const weight = computedWeight(program, slot.slotCode, week);
       const warmups = calcWarmups(weight, slot.warmupSets);
       const sc = setsCount(slot.setsReps);
+      const alts = (EXERCISE_OPTIONS[slot.family] || []).filter(a => a !== name);
       return `
         <div class="ex-item">
           <div class="group-dot ${slot.group}" style="margin-top:2px; flex-shrink:0;"></div>
@@ -592,6 +630,7 @@
               · ${esc(slot.setsReps)}
               ${warmups.length ? ` · ${warmups.length} ısınma` : ''}
             </div>
+            ${alts.length ? `<div class="ex-item-alts">${alts.map(esc).join(' · ')}</div>` : ''}
           </div>
           <div class="ex-item-right">${sc} set</div>
         </div>`;
@@ -677,15 +716,32 @@
     let ctaLabel = '';
     let showBack = true;
 
+    const plannedExName = getSel({ ...state.program, username: state.username }, slot.slotCode)?.selectedExercise || exName;
+    const exChanged = exName !== plannedExName;
+    const allAlts = EXERCISE_OPTIONS[slot.family] || [];
+    const exAlts = allAlts.filter(a => a !== exName);
+
     if (subPhase === 'intro') {
       ctaLabel = warmups.length ? 'Isınmaya Başla →' : 'Sete Başla →';
+      const altChips = allAlts.map(a => {
+        const isActive = a === exName;
+        return `<button onclick='selectAlt(${JSON.stringify(slot.slotCode)}, ${JSON.stringify(a)})'
+          style="padding:6px 12px; border-radius:10px; font-size:12px; font-weight:600; cursor:pointer;
+            border:1.5px solid ${isActive ? gc : 'rgba(255,255,255,.15)'};
+            background:${isActive ? gc + '22' : 'transparent'};
+            color:${isActive ? gc : 'var(--muted)'};">
+          ${esc(a)}
+        </button>`;
+      }).join('');
       content = `
         <div class="card" style="border-color:${gc}; border-width:2px;">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
             <span class="group-dot ${slot.group}"></span>
             <span class="caption">${slot.group.toUpperCase()} · ${esc(slot.setsReps)}</span>
+            ${exChanged ? `<span style="margin-left:auto; font-size:11px; color:#fbbf24; background:rgba(251,191,36,.12); padding:2px 8px; border-radius:6px; border:1px solid rgba(251,191,36,.3);">değiştirildi</span>` : ''}
           </div>
-          <div class="h1" style="color:${gc}; margin-bottom:18px;">${esc(exName)}</div>
+          <div class="h1" style="color:${gc}; margin-bottom:10px;">${esc(exName)}</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;">${altChips}</div>
           ${!slot.isBodyweight && weight != null ? `
             <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:18px;">
               <span class="big-num">${weight}</span>
@@ -738,13 +794,14 @@
             <span class="group-dot ${slot.group}"></span>
             <span class="caption">Set ${prevDone+1} / ${setCount}</span>
           </div>
-          <div class="h2" style="color:${gc}; margin-bottom:14px;">${esc(exName)}</div>
+          <div class="h2" style="color:${gc}; margin-bottom:${exChanged ? '4px' : '14px'};">${esc(exName)}</div>
+          ${exChanged ? `<div style="font-size:11px; color:#fbbf24; margin-bottom:10px;">↩ ${esc(plannedExName)} yerine</div>` : ''}
           ${!slot.isBodyweight && weight != null ? `
             <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:10px;">
               <span style="font-size:44px; font-weight:900;">${weight}</span>
               <span style="font-size:18px; color:var(--muted);">kg</span>
             </div>` : `<div style="margin-bottom:10px; color:var(--muted);">Vücut ağırlığı</div>`}
-          <div style="margin-bottom:6px;"><span class="caption">HEDEF </span><span style="font-size:20px; font-weight:800; color:var(--accent);">${esc(targetReps)} tekrar</span></div>
+          <div style="margin-bottom:6px;"><span class="caption">HEDEF </span><span style="font-size:20px; font-weight:800; color:var(--accent);">${slot.isBodyweight ? 'maksimum' : esc(targetReps)} tekrar</span></div>
           <div class="set-dots">
             ${Array.from({length:setCount}).map((_,i) => `
               <div class="set-dot ${i < prevDone ? 'done' : i === prevDone ? 'current' : ''}"></div>`).join('')}
@@ -838,12 +895,15 @@
         <div class="bottom">
           <button class="btn btn-primary" id="ctaBtn">${ctaLabel}</button>
           ${showBack ? `<div style="height:8px;"></div><button class="btn btn-ghost" id="backBtn">← Geri</button>` : ''}
+          <div style="height:8px;"></div>
+          <button class="btn btn-ghost" id="earlyFinishBtn" style="color:var(--danger); font-size:13px; opacity:.7;">Antrenmanı Erken Bitir</button>
         </div>
       </div>`;
 
     document.getElementById('ctaBtn').onclick = handleCTA;
     const backBtn = document.getElementById('backBtn');
     if (backBtn) backBtn.onclick = handleBack;
+    document.getElementById('earlyFinishBtn').onclick = earlyFinish;
     if (subPhase === 'rest') startRestTimer();
     if (subPhase === 'working') {
       const inp = document.getElementById('repInput');
@@ -1119,9 +1179,8 @@
     state.phase = 'loading'; render();
     try {
       await supabase.from('workout_logs').delete().eq('username', state.username);
-      await supabase.from('programs').delete().eq('username', state.username);
-      state.program = null; state.logs = []; state.session = null;
-      state.phase = 'setup'; render();
+      state.logs = []; state.session = null;
+      state.phase = 'home'; render();
     } catch (err) {
       alert(err.message || 'Sıfırlama başarısız.'); state.phase = 'home'; render();
     }

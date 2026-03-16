@@ -1,178 +1,165 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Superhero Dashboard</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fitness Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --muted: #94a3b8;
-      --text: #f8fafc;
-      --line: #334155;
+      --bg: #060d1f;
+      --surface: #0f1929;
+      --surface2: #182236;
+      --border: #1e2d42;
+      --text: #f1f5f9;
+      --muted: #64748b;
       --accent: #22c55e;
-      --card: #1e293b;
-      --card2: #172033;
     }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
-      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      background: var(--bg);
       color: var(--text);
-      font-family: Inter, Arial, sans-serif;
+      font-family: -apple-system, 'Inter', sans-serif;
+      min-height: 100dvh;
     }
-    .app {
-      max-width: 1480px;
+    .screen {
+      max-width: 480px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 0 16px 60px;
     }
-    .card {
-      background: rgba(17,24,39,.95);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .title {
-      font-size: 28px;
-      font-weight: 800;
-      margin: 0 0 8px;
-    }
-    .subtitle {
-      color: var(--muted);
-      margin: 0 0 16px;
-      line-height: 1.5;
-    }
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin: 0 0 12px;
-    }
-    .row {
+    .header {
       display: flex;
+      align-items: center;
       gap: 12px;
-      flex-wrap: wrap;
+      padding: 16px 0 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
     }
-    .top-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    button {
-      border: none;
+    .back-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px 14px;
-      background: var(--accent);
-      color: #04130a;
-      font-weight: 700;
+      color: var(--text);
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
     }
-    button.secondary {
-      background: #334155;
-      color: white;
+    .h1 { font-size: 22px; font-weight: 800; }
+    .caption { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 12px;
     }
-    .pill {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #0b1220;
-      border: 1px solid var(--line);
-      color: #cbd5e1;
-      font-size: 12px;
-      margin: 0 6px 6px 0;
-    }
-    .summary-grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-    .summary-box {
-      background: var(--card2);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-    }
-    .summary-label {
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .summary-value {
-      font-size: 28px;
-      font-weight: 800;
-      margin-top: 6px;
-    }
-    .grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    }
-    .exercise-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-    }
-    .exercise-name {
-      font-size: 18px;
+    .section-label {
+      font-size: 11px;
       font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .muted {
+      letter-spacing: 0.08em;
       color: var(--muted);
+      margin-bottom: 12px;
+    }
+    /* Toggle buttons */
+    .toggle-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .ex-toggle {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1.5px solid;
+      background: transparent;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      transition: opacity 0.2s;
+      line-height: 1;
+    }
+    .ex-toggle.off { opacity: 0.28; }
+    .ex-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    /* Chart */
+    .chart-container { position: relative; height: 240px; }
+    /* History accordion */
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      transition: border-radius 0.15s;
+    }
+    .week-header.open {
+      border-radius: 14px 14px 0 0;
+      margin-bottom: 0;
+      border-bottom-color: transparent;
+    }
+    .week-arrow { font-size: 11px; color: var(--muted); transition: transform 0.2s; }
+    .week-header.open .week-arrow { transform: rotate(180deg); }
+    .week-body {
+      display: none;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 14px 14px;
+      padding: 8px 12px 12px;
+      margin-bottom: 6px;
+    }
+    .week-body.open { display: block; }
+    .day-section { margin-bottom: 10px; }
+    .day-section:last-child { margin-bottom: 0; }
+    .day-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    .ex-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
       font-size: 13px;
     }
-    .chart-wrap {
-      margin-top: 12px;
-      background: #0b1220;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px;
+    .ex-row:last-child { border-bottom: none; }
+    .ex-name { flex: 1; font-weight: 500; }
+    .reps-chips { display: flex; gap: 3px; flex-wrap: wrap; justify-content: flex-end; }
+    .rep-chip {
+      background: rgba(34,197,94,.1);
+      border: 1px solid rgba(34,197,94,.2);
+      border-radius: 5px;
+      padding: 1px 5px;
+      font-size: 11px;
+      color: #86efac;
+      white-space: nowrap;
     }
-    .bar-row {
-      display: grid;
-      grid-template-columns: 58px 1fr 56px;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 12px;
-    }
-    .bar-track {
-      height: 10px;
-      background: #111827;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid #1f2937;
-    }
-    .bar-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 999px;
-    }
-    .table-wrap {
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    th, td {
-      border-bottom: 1px solid var(--line);
-      padding: 10px 8px;
-      text-align: left;
-      vertical-align: top;
-    }
-    .empty {
-      color: var(--muted);
-      padding: 16px 0;
-    }
+    .note-text { font-size: 11px; color: var(--muted); margin-top: 3px; font-style: italic; }
+    .spinner { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
   </style>
 </head>
 <body>
-  <div class="app">
-    <div id="app"></div>
+  <div class="screen" id="root">
+    <div class="spinner">Yükleniyor…</div>
   </div>
 
   <script type="module">
@@ -180,333 +167,306 @@
 
     const SUPABASE_URL = 'https://vwubvpjidodewzvtqjtf.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_Pyhx-5-wLHw199bcT6URCA_O2Xu6QQY';
-    const MASTER_PASSWORD = 'Nakama123!';
-    const ALLOWED_USERS = ['nakama', 'boksimoron'];
-
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const state = {
-      gatePassed: localStorage.getItem('superhero_gate_passed') === 'true',
-      username: localStorage.getItem('superhero_username') || '',
+      username: localStorage.getItem('vaft_user') || localStorage.getItem('superhero_username') || '',
+      gatePassed: localStorage.getItem('vaft_gate') === 'true' || localStorage.getItem('superhero_gate_passed') === 'true',
       program: null,
-      logs: [],
-      loading: true
+      logs: []
     };
 
-    const app = document.getElementById('app');
-
-    const TEMPLATE_SLOTS = [
-      // ── Gün 1 ──
-      { slotCode: 'G1_1', dayCode: '1', group: 'g1', family: 'chest_press',    setsReps: '4x5+',    warmupSets: 3, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.8,  trackEstimated1RM: true,  progression: 'last_set', checkSet: 4, threshold: 5 },
-      { slotCode: 'G1_2', dayCode: '1', group: 'g2', family: 'shoulder_press',  setsReps: '3x10',    warmupSets: 2, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 3, threshold: 10 },
-      { slotCode: 'G1_3', dayCode: '1', group: 'g2', family: 'hinge',           setsReps: '3x8',     warmupSets: 2, incrementKg: 5,   rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 3, threshold: 8 },
-      { slotCode: 'G1_4', dayCode: '1', group: 'g3', family: 'vertical_pull',   setsReps: '3x10-14', warmupSets: 0, incrementKg: 5,   rpe: 8,  isBodyweight: false, startFactor: 0.65, trackEstimated1RM: false, progression: 'total_reps', threshold: 42 },
-      { slotCode: 'G1_5', dayCode: '1', group: 'g3', family: 'leg_accessory',   setsReps: '3x10-14', warmupSets: 0, incrementKg: 5,   rpe: 9,  isBodyweight: false, startFactor: 0.65, trackEstimated1RM: false, progression: 'total_reps', threshold: 42 },
-      { slotCode: 'G1_6', dayCode: '1', group: 'g4', family: 'abs',             setsReps: '3xmax',   warmupSets: 0, incrementKg: null, rpe: 9,  isBodyweight: true,  startFactor: null, trackEstimated1RM: false, progression: 'none' },
-      // ── Gün 2 ──
-      { slotCode: 'G2_1', dayCode: '2', group: 'g1', family: 'squat',           setsReps: '4x5+',    warmupSets: 3, incrementKg: 5,   rpe: 0,  isBodyweight: false, startFactor: 0.7,  trackEstimated1RM: true,  progression: 'last_set', checkSet: 4, threshold: 5 },
-      { slotCode: 'G2_2', dayCode: '2', group: 'g2', family: 'chest_press',     setsReps: '3x10',    warmupSets: 2, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 3, threshold: 10 },
-      { slotCode: 'G2_3', dayCode: '2', group: 'g2', family: 'vertical_pull',   setsReps: '3xmax',   warmupSets: 0, incrementKg: null, rpe: 9,  isBodyweight: true,  startFactor: null, trackEstimated1RM: false, progression: 'none' },
-      { slotCode: 'G2_4', dayCode: '2', group: 'g3', family: 'lateral_raise',   setsReps: '3x10-14', warmupSets: 0, incrementKg: 5,   rpe: 9,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'total_reps', threshold: 42 },
-      { slotCode: 'G2_5', dayCode: '2', group: 'g4', family: 'biceps',          setsReps: '3x8-12',  warmupSets: 0, incrementKg: 5,   rpe: 9,  isBodyweight: false, startFactor: 0.75, trackEstimated1RM: false, progression: 'total_reps', threshold: 36 },
-      { slotCode: 'G2_6', dayCode: '2', group: 'g4', family: 'abs',             setsReps: '3xmax',   warmupSets: 0, incrementKg: null, rpe: 9,  isBodyweight: true,  startFactor: null, trackEstimated1RM: false, progression: 'none' },
-      // ── Gün 3 ──
-      { slotCode: 'G3_1', dayCode: '3', group: 'g1', family: 'shoulder_press',  setsReps: '4x5+',    warmupSets: 3, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.7,  trackEstimated1RM: true,  progression: 'last_set', checkSet: 4, threshold: 5 },
-      { slotCode: 'G3_2', dayCode: '3', group: 'g2', family: 'squat',           setsReps: '3x10',    warmupSets: 2, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 3, threshold: 10 },
-      { slotCode: 'G3_3', dayCode: '3', group: 'g2', family: 'row',             setsReps: '4x10',    warmupSets: 2, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 4, threshold: 10 },
-      { slotCode: 'G3_4', dayCode: '3', group: 'g3', family: 'chest_fly',       setsReps: '3x10-14', warmupSets: 0, incrementKg: 5,   rpe: 8,  isBodyweight: false, startFactor: 0.65, trackEstimated1RM: false, progression: 'total_reps', threshold: 42 },
-      { slotCode: 'G3_5', dayCode: '3', group: 'g4', family: 'triceps',         setsReps: '3x8-12',  warmupSets: 0, incrementKg: 5,   rpe: 9,  isBodyweight: false, startFactor: 0.75, trackEstimated1RM: false, progression: 'total_reps', threshold: 36 },
-      { slotCode: 'G3_6', dayCode: '3', group: 'g4', family: 'abs',             setsReps: '3xmax',   warmupSets: 0, incrementKg: null, rpe: 9,  isBodyweight: true,  startFactor: null, trackEstimated1RM: false, progression: 'none' }
+    // 5 ana hareket: g1 grubu (3) + g2 grubu deadlift & row (2)
+    const CHART_SLOTS = [
+      { slotCode: 'G1_1', dayCode: '1', label: 'Chest Press',    color: '#22c55e' },
+      { slotCode: 'G2_1', dayCode: '2', label: 'Squat',          color: '#facc15' },
+      { slotCode: 'G3_1', dayCode: '3', label: 'Shoulder Press', color: '#60a5fa' },
+      { slotCode: 'G1_3', dayCode: '1', label: 'Romanian DL',    color: '#fb923c' },
+      { slotCode: 'G3_3', dayCode: '3', label: 'Barbell Row',    color: '#c084fc' },
     ];
 
-    function mround(value, multiple) {
-      if (value == null || !Number.isFinite(value) || multiple === 0) return null;
-      return Math.round(value / multiple) * multiple;
-    }
+    const TEMPLATE_SLOTS = [
+      { slotCode:'G1_1', dayCode:'1', setsReps:'4x5+',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
+      { slotCode:'G1_2', dayCode:'1', setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
+      { slotCode:'G1_3', dayCode:'1', setsReps:'3x8',     incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:3, threshold:8  },
+      { slotCode:'G1_4', dayCode:'1', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
+      { slotCode:'G1_5', dayCode:'1', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
+      { slotCode:'G1_6', dayCode:'1', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
+      { slotCode:'G2_1', dayCode:'2', setsReps:'4x5+',    incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
+      { slotCode:'G2_2', dayCode:'2', setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
+      { slotCode:'G2_3', dayCode:'2', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
+      { slotCode:'G2_4', dayCode:'2', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
+      { slotCode:'G2_5', dayCode:'2', setsReps:'3x8-12',  incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:36 },
+      { slotCode:'G2_6', dayCode:'2', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
+      { slotCode:'G3_1', dayCode:'3', setsReps:'4x5+',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
+      { slotCode:'G3_2', dayCode:'3', setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
+      { slotCode:'G3_3', dayCode:'3', setsReps:'4x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:10 },
+      { slotCode:'G3_4', dayCode:'3', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
+      { slotCode:'G3_5', dayCode:'3', setsReps:'3x8-12',  incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:36 },
+      { slotCode:'G3_6', dayCode:'3', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
+    ];
 
-    function setsCountFromScheme(scheme) {
-      if (!scheme) return 3;
-      if (scheme.startsWith('4x')) return 4;
-      if (scheme.startsWith('3x')) return 3;
-      return 3;
+    function mround(val, mult) {
+      if (!Number.isFinite(val) || !mult) return null;
+      return Math.round(val / mult) * mult;
     }
+    function setsCount(scheme) { return scheme?.startsWith('4x') ? 4 : 3; }
 
     function decideNextWeight(slot, currentWeight, repsArray) {
       if (slot.progression === 'none' || slot.isBodyweight) return currentWeight;
       const reps = (repsArray || []).map(v => Number(v || 0));
       if (slot.progression === 'last_set') {
-        const setIdx = (slot.checkSet || 1) - 1;
-        const val = reps[setIdx] || 0;
-        if (val >= (slot.threshold || 0)) {
-          return mround(Number(currentWeight) + Number(slot.incrementKg || 0), 2.5);
-        }
-        return mround(Number(currentWeight) * 0.9, 2.5);
+        const val = reps[(slot.checkSet || 1) - 1] || 0;
+        const t = slot.threshold || 0;
+        const met = slot.setsReps?.includes('+') ? val >= t : val === t;
+        return met
+          ? mround(Number(currentWeight) + Number(slot.incrementKg || 0), 2.5)
+          : mround(Number(currentWeight) * 0.9, 2.5);
       }
       if (slot.progression === 'total_reps') {
-        const setCount = setsCountFromScheme(slot.setsReps);
-        const total = reps.slice(0, setCount).reduce((a, b) => a + b, 0);
-        if (total >= (slot.threshold || 0)) {
-          return mround(Number(currentWeight) + Number(slot.incrementKg || 0), 2.5);
-        }
-        return currentWeight;
+        const total = reps.slice(0, setsCount(slot.setsReps)).reduce((a, b) => a + b, 0);
+        return total >= (slot.threshold || 0)
+          ? mround(Number(currentWeight) + Number(slot.incrementKg || 0), 2.5)
+          : currentWeight;
       }
       return currentWeight;
     }
 
-    function previousWeekWeight(program, slotCode, weekNo) {
-      const selection = getSlotSelection(program, slotCode);
-      if (!selection) return null;
-      const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
-      if (!slot || slot.isBodyweight) return null;
-      let current = selection.initialWorkingWeight ?? null;
-      if (current == null) return null;
-      for (let w = 1; w < weekNo; w++) {
-        const log = getLog(state.username, w, slot.dayCode, slotCode);
-        const reps = log && Array.isArray(log.reps) ? log.reps : [];
-        current = decideNextWeight(slot, current, reps);
-      }
-      return current;
-    }
-
-    function weekEstimated1RM(workingWeight, repsArray) {
-      const clean = (repsArray || []).map(Number).filter(n => Number.isFinite(n) && n > 0);
-      if (!workingWeight || !clean.length) return null;
-      const maxReps = Math.max(...clean);
-      return Math.round(((Number(workingWeight) * maxReps * 0.0333) + Number(workingWeight)) * 2) / 2;
-    }
-
-    function getSlotSelection(program, slotCode) {
-      return program?.setup_data?.selections?.find(s => s.slotCode === slotCode);
-    }
-
-    function getLog(username, weekNo, dayCode, slotCode) {
-      return state.logs.find(
-        l => l.username === username && l.week_no === weekNo && l.workout_code === dayCode && l.slot_code === slotCode
+    function getLog(weekNo, dayCode, slotCode) {
+      return state.logs.find(l =>
+        l.week_no === weekNo && l.workout_code === dayCode && l.slot_code === slotCode
       );
     }
 
-    function escapeHtml(str = '') {
-      return String(str)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
+    function getSlotSelection(slotCode) {
+      return state.program?.setup_data?.selections?.find(s => s.slotCode === slotCode);
     }
 
-    function getDayDisplayName(code) {
-      if (code === 'D1') return 'Dinlenme 1';
-      if (code === 'D2') return 'Dinlenme 2';
-      return `Gün ${code}`;
-    }
+    // Compute weight used in week W for slot (only for logged weeks → null otherwise)
+    function computeWeightSeries(slotCode) {
+      const sel = getSlotSelection(slotCode);
+      if (!sel) return Array(12).fill(null);
+      const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
+      if (!slot || slot.isBodyweight) return Array(12).fill(null);
 
-    async function loadData() {
-      const { data: program, error: programError } = await supabase
-        .from('programs')
-        .select('*')
-        .eq('username', state.username)
-        .maybeSingle();
+      let current = sel.initialWorkingWeight ?? null;
+      if (current == null) return Array(12).fill(null);
 
-      if (programError) throw programError;
-      state.program = program || null;
-
-      const { data: logs, error: logsError } = await supabase
-        .from('workout_logs')
-        .select('*')
-        .eq('username', state.username)
-        .order('week_no', { ascending: true });
-
-      if (logsError) throw logsError;
-      state.logs = logs || [];
-    }
-
-    function buildExerciseDashboardRows() {
-      if (!state.program?.setup_data?.selections) return [];
-
-      const selections = state.program.setup_data.selections.filter(s => ['1', '2', '3'].includes(s.dayCode));
-
-      return selections.map(selection => {
-        const slot = TEMPLATE_SLOTS.find(t => t.slotCode === selection.slotCode);
-        if (!slot) return null;
-
-        const weekly = [];
-        for (let week = 1; week <= 12; week++) {
-          const weight = previousWeekWeight(state.program, selection.slotCode, week);
-          const log = getLog(state.username, week, slot.dayCode, selection.slotCode);
-          const reps = log?.reps || [];
-          const metric = slot.trackEstimated1RM
-            ? weekEstimated1RM(weight, reps)
-            : weight;
-
-          weekly.push({
-            week,
-            weight,
-            metric,
-            completed: !!log
-          });
+      const series = [];
+      for (let w = 1; w <= 12; w++) {
+        const log = getLog(w, slot.dayCode, slotCode);
+        if (log) {
+          series.push(Number(current));
+          current = decideNextWeight(slot, current, Array.isArray(log.reps) ? log.reps : []);
+        } else {
+          series.push(null);
         }
-
-        return {
-          slotCode: selection.slotCode,
-          dayCode: selection.dayCode,
-          exercise: selection.selectedExercise,
-          initial: selection.initialWorkingWeight,
-          setsReps: slot.setsReps,
-          trackEstimated1RM: slot.trackEstimated1RM,
-          weekly
-        };
-      }).filter(Boolean);
+      }
+      return series;
     }
 
-    function renderBars(values) {
-      const numeric = values.map(v => Number(v)).filter(v => Number.isFinite(v));
-      const max = numeric.length ? Math.max(...numeric) : 0;
+    function getExerciseName(slotCode) {
+      return getSlotSelection(slotCode)?.selectedExercise
+        || CHART_SLOTS.find(s => s.slotCode === slotCode)?.label
+        || slotCode;
+    }
 
-      return values.map((value, index) => {
-        const num = Number(value);
-        const width = max > 0 && Number.isFinite(num) ? Math.max(6, (num / max) * 100) : 0;
+    function esc(s) {
+      return String(s ?? '')
+        .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+    }
+
+    let chart = null;
+
+    function renderChart() {
+      const labels = Array.from({ length: 12 }, (_, i) => `H${i + 1}`);
+      const datasets = CHART_SLOTS.map(ex => ({
+        label: getExerciseName(ex.slotCode),
+        data: computeWeightSeries(ex.slotCode),
+        borderColor: ex.color,
+        backgroundColor: ex.color + '18',
+        pointBackgroundColor: ex.color,
+        pointBorderColor: ex.color,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5,
+        tension: 0.3,
+        spanGaps: false,
+      }));
+
+      const canvas = document.getElementById('progressChart');
+      if (chart) chart.destroy();
+      chart = new Chart(canvas, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0f1929',
+              borderColor: '#1e2d42',
+              borderWidth: 1,
+              titleColor: '#94a3b8',
+              bodyColor: '#f1f5f9',
+              padding: 10,
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y != null ? ctx.parsed.y + ' kg' : '-'}`,
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,.05)' },
+              ticks: { color: '#64748b', font: { size: 11 } },
+            },
+            y: {
+              grid: { color: 'rgba(255,255,255,.05)' },
+              ticks: { color: '#64748b', font: { size: 11 }, callback: v => v + ' kg' },
+            }
+          }
+        }
+      });
+    }
+
+    const DAY_COLORS = { '1': '#22c55e', '2': '#60a5fa', '3': '#fb923c' };
+    const DAY_NAMES  = { '1': 'GÜN A', '2': 'GÜN B', '3': 'GÜN C' };
+
+    function buildHistory() {
+      const weeks = {};
+      for (const log of state.logs) {
+        if (!weeks[log.week_no]) weeks[log.week_no] = {};
+        if (!weeks[log.week_no][log.workout_code]) weeks[log.week_no][log.workout_code] = [];
+        weeks[log.week_no][log.workout_code].push(log);
+      }
+
+      const sortedWeeks = Object.keys(weeks).map(Number).sort((a, b) => b - a);
+      if (!sortedWeeks.length) return '<div style="color:var(--muted); text-align:center; padding:20px; font-size:13px;">Henüz kayıt yok.</div>';
+
+      return sortedWeeks.map(week => {
+        const days = weeks[week];
+        const dayCount = Object.keys(days).length;
+        const totalSets = Object.values(days).flat()
+          .reduce((a, l) => a + (Array.isArray(l.reps) ? l.reps.length : 0), 0);
+
+        const daysHtml = ['1', '2', '3'].map(dayCode => {
+          const dayLogs = days[dayCode];
+          if (!dayLogs) return '';
+          const color = DAY_COLORS[dayCode];
+          const incomplete = dayLogs.some(l => l.notes?.includes('Yarım bırakıldı'));
+
+          const exRows = dayLogs.map(log => {
+            const exName = getSlotSelection(log.slot_code)?.selectedExercise || log.slot_code;
+            const reps = Array.isArray(log.reps) ? log.reps : [];
+            return `
+              <div class="ex-row">
+                <div class="ex-name">${esc(exName)}</div>
+                <div>
+                  <div class="reps-chips">
+                    ${reps.map(r => `<span class="rep-chip">${r}</span>`).join('')}
+                  </div>
+                  ${log.notes ? `<div class="note-text">💬 ${esc(log.notes)}</div>` : ''}
+                </div>
+              </div>`;
+          }).join('');
+
+          return `
+            <div class="day-section">
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                <div class="day-label" style="margin-bottom:0; background:${color}20; color:${color}; border:1px solid ${color}40;">
+                  ${DAY_NAMES[dayCode]}
+                </div>
+                ${incomplete ? `<span style="font-size:10px; background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.3); border-radius:6px; padding:2px 7px; font-weight:700;">yarım kaldı</span>` : ''}
+              </div>
+              ${exRows}
+            </div>`;
+        }).join('');
 
         return `
-          <div class="bar-row">
-            <div>H${index + 1}</div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:${width}%"></div>
+          <div>
+            <button class="week-header" onclick="toggleWeek(${week})">
+              <span>Hafta ${week}</span>
+              <span style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:12px; color:var(--muted);">${dayCount} gün · ${totalSets} set</span>
+                <span class="week-arrow">▼</span>
+              </span>
+            </button>
+            <div class="week-body" id="week-${week}">
+              ${daysHtml}
             </div>
-            <div>${Number.isFinite(num) ? num : '-'}</div>
-          </div>
-        `;
+          </div>`;
       }).join('');
     }
 
-    function renderDashboard() {
-      if (!state.gatePassed || !ALLOWED_USERS.includes(state.username)) {
-        window.location.href = 'index.html';
-        return;
-      }
+    function render() {
+      const root = document.getElementById('root');
 
-      if (!state.program) {
-        app.innerHTML = `
-          <div class="card">
-            <h1 class="title">Dashboard</h1>
-            <p class="subtitle">Bu kullanıcı için henüz program kurulmamış.</p>
-            <div class="top-actions">
-              <button onclick="window.location.href='index.html'">Index'e Dön</button>
-            </div>
+      const togglesHtml = CHART_SLOTS.map((ex, i) => `
+        <button class="ex-toggle" id="toggle-${i}"
+          style="border-color:${ex.color}; color:${ex.color};"
+          onclick="toggleExercise(${i})">
+          <span class="ex-dot" style="background:${ex.color};"></span>
+          ${esc(getExerciseName(ex.slotCode))}
+        </button>`).join('');
+
+      root.innerHTML = `
+        <div class="header">
+          <button class="back-btn" onclick="window.location.href='index.html'">← Geri</button>
+          <div>
+            <div class="h1">Dashboard</div>
+            <div class="caption">${esc(state.username)}</div>
           </div>
-        `;
-        return;
-      }
+        </div>
 
-      const rows = buildExerciseDashboardRows();
-      const completedWorkouts = state.logs.length;
-      const completedWeeks = new Set(state.logs.map(l => l.week_no)).size;
-      const trackedExercises = rows.length;
-
-      app.innerHTML = `
         <div class="card">
-          <div class="row" style="justify-content:space-between;align-items:flex-start;">
-            <div>
-              <h1 class="title">Dashboard</h1>
-              <p class="subtitle">
-                ${escapeHtml(state.username)} için seçilen hareketlerin hafta hafta gelişimi.
-              </p>
-              <div class="pill">Kullanıcı: ${escapeHtml(state.username)}</div>
-            </div>
-            <div class="top-actions">
-              <button class="secondary" id="backToIndex">Antrenman Ekranı</button>
-              <button class="secondary" id="logoutBtn">Çıkış</button>
-            </div>
+          <div class="section-label">GELİŞİM GRAFİĞİ</div>
+          <div class="toggle-row">${togglesHtml}</div>
+          <div class="chart-container">
+            <canvas id="progressChart"></canvas>
           </div>
         </div>
 
-        <div class="summary-grid">
-          <div class="summary-box">
-            <div class="summary-label">Takip Edilen Hareket</div>
-            <div class="summary-value">${trackedExercises}</div>
-          </div>
-          <div class="summary-box">
-            <div class="summary-label">Tamamlanan Antrenman</div>
-            <div class="summary-value">${completedWorkouts}</div>
-          </div>
-          <div class="summary-box">
-            <div class="summary-label">Kayıt Girilmiş Hafta</div>
-            <div class="summary-value">${completedWeeks}</div>
-          </div>
-        </div>
+        <div class="card">
+          <div class="section-label" style="margin-bottom:14px;">ANTRENMAN GEÇMİŞİ</div>
+          ${buildHistory()}
+        </div>`;
 
-        <div style="height:16px;"></div>
-
-        <div class="grid">
-          ${rows.map(row => `
-            <div class="exercise-card">
-              <div class="exercise-name">${escapeHtml(row.exercise)}</div>
-              <div class="pill">${escapeHtml(getDayDisplayName(row.dayCode))}</div>
-              <div class="pill">Başlangıç: ${row.initial ?? 'BW'}</div>
-              <div class="pill">Hedef: ${escapeHtml(row.setsReps)}</div>
-              <div class="muted">
-                ${row.trackEstimated1RM ? 'Grafik değeri: tahmini 1RM' : 'Grafik değeri: çalışma kilosu'}
-              </div>
-
-              <div class="chart-wrap">
-                ${renderBars(row.weekly.map(w => w.metric))}
-              </div>
-
-              <div class="table-wrap" style="margin-top:12px;">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Hafta</th>
-                      <th>Bu hafta kilo</th>
-                      <th>Gösterilen değer</th>
-                      <th>Durum</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${row.weekly.map(w => `
-                      <tr>
-                        <td>${w.week}</td>
-                        <td>${w.weight ?? '-'}</td>
-                        <td>${w.metric ?? '-'}</td>
-                        <td>${w.completed ? 'Kaydedildi' : '-'}</td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-
-        ${rows.length === 0 ? `<div class="card empty">Gösterilecek hareket bulunamadı.</div>` : ''}
-      `;
-
-      document.getElementById('backToIndex').onclick = () => {
-        window.location.href = 'index.html';
-      };
-
-      document.getElementById('logoutBtn').onclick = () => {
-        localStorage.removeItem('superhero_username');
-        window.location.href = 'index.html';
-      };
+      renderChart();
     }
 
-    async function init() {
-      try {
-        if (!state.gatePassed || !state.username) {
-          window.location.href = 'index.html';
-          return;
-        }
+    window.toggleExercise = function(i) {
+      if (!chart) return;
+      chart.data.datasets[i].hidden = !chart.data.datasets[i].hidden;
+      chart.update();
+      document.getElementById(`toggle-${i}`).classList.toggle('off', !!chart.data.datasets[i].hidden);
+    };
 
-        await loadData();
-        renderDashboard();
+    window.toggleWeek = function(week) {
+      const body = document.getElementById(`week-${week}`);
+      const btn = body.previousElementSibling;
+      body.classList.toggle('open');
+      btn.classList.toggle('open', body.classList.contains('open'));
+    };
+
+    async function init() {
+      if (!state.gatePassed || !state.username) {
+        window.location.href = 'index.html';
+        return;
+      }
+      try {
+        const [{ data: prog }, { data: logs }] = await Promise.all([
+          supabase.from('programs').select('*').eq('username', state.username).maybeSingle(),
+          supabase.from('workout_logs').select('*').eq('username', state.username).order('week_no'),
+        ]);
+        state.program = prog;
+        state.logs = logs || [];
+        render();
       } catch (err) {
-        app.innerHTML = `
-          <div class="card">
-            <h1 class="title">Hata</h1>
-            <p class="subtitle">${escapeHtml(err.message || 'Dashboard yüklenemedi.')}</p>
-            <button onclick="window.location.href='index.html'">Index'e Dön</button>
-          </div>
-        `;
+        document.getElementById('root').innerHTML =
+          `<div class="spinner">Hata: ${esc(err.message)}</div>`;
       }
     }
 
