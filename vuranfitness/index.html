@@ -121,11 +121,11 @@
 
   const EXERCISE_OPTIONS = {
     chest_press:    ['Bench Press', 'Dumbbell Chest Press', 'Incline Bench Press'],
-    squat:          ['Squat', 'Leg Press', 'Hack Squat'],
+    squat:          ['Squat', 'Leg Press', 'Hack Squat', 'Bridge', 'Hip Thrust'],
     shoulder_press: ['Over Head Press', 'Dumbbell Shoulder Press', 'Smith Machine Shoulder Press', 'Shoulder Press Machine'],
     hinge:          ['Romanian DL', 'Dumbbell Romanian Deadlift', 'Hip Thrust'],
     row:            ['Barbell Row', 'T-Bar Row', 'Machine Row'],
-    vertical_pull:  ['Pull Ups', 'Assisted Pull Ups', 'Negative Pull Ups', 'Lat Pulldown', 'High Row Machine', 'Single Arm Pulldown'],
+    vertical_pull:  ['Pull Ups', 'Negative Pull Ups', 'Lat Pulldown', 'High Row Machine', 'Single Arm Pulldown'],
     lateral_raise:  ['Lateral Raises', 'Cable Lateral Raises', 'Machine Lateral Raises'],
     chest_fly:      ['Chest Fly Machine', 'Dumbbell Chest Fly', 'Cable Chest Fly'],
     leg_accessory:  ['Leg Extension', 'Dumbbell Lunges', 'Bulgarian Split Squat'],
@@ -1170,19 +1170,28 @@
     const dayLabels = { '1':'Gün 1', '2':'Gün 2', '3':'Gün 3' };
     const groupColors = { g1:'var(--g1)', g2:'var(--g2)', g3:'var(--g3)', g4:'var(--g4)' };
 
+    const GROUP_SLOT_ORDER = {
+      g1: ['G1_1', 'G2_1', 'G3_1'],
+      g2: ['G1_2', 'G1_3', 'G2_2', 'G3_3', 'G3_2', 'G2_3'],
+      g3: ['G2_4', 'G1_4', 'G3_4', 'G1_5'],
+      g4: ['G3_5', 'G2_5', 'G1_6', 'G2_6', 'G3_6']
+    };
+    const dayLabels2 = { '1':'Gün 1', '2':'Gün 2', '3':'Gün 3' };
+
     let formHtml = '';
-    for (const dayCode of days) {
-      const slots = byDay(dayCode);
-      formHtml += `<div class="card"><div class="h3" style="margin-bottom:16px;">${dayLabels[dayCode]}</div>`;
-      for (const slot of slots) {
+    for (const groupKey of ['g1', 'g2', 'g3', 'g4']) {
+      const groupColor = groupColors[groupKey];
+      formHtml += `<div class="card"><div class="setup-group ${groupKey}" style="padding-top:0; margin-bottom:16px;">${groupKey.toUpperCase()}</div>`;
+      for (const slotCode of GROUP_SLOT_ORDER[groupKey]) {
+        const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
+        if (!slot) continue;
         const sel = program ? getSel(program, slot.slotCode) : null;
         const alts = EXERCISE_OPTIONS[slot.family] || [];
-        const groupColor = groupColors[slot.group];
         formHtml += `
           <div style="border-left:3px solid ${groupColor}; padding-left:14px; margin-bottom:20px;">
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
               <span class="group-dot ${slot.group}"></span>
-              <span style="font-size:13px; font-weight:700; color:${groupColor};">${slot.group.toUpperCase()}</span>
+              <span style="font-size:13px; font-weight:700; color:${groupColor};">${dayLabels2[slot.dayCode] || slot.dayCode}</span>
               <span class="caption">· ${esc(slot.setsReps)}${slot.warmupSets ? ` · ${slot.warmupSets} ısınma` : ''}</span>
             </div>
             <label style="margin-top:0;">Egzersiz</label>
