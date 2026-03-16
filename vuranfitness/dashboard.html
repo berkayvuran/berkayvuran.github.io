@@ -196,101 +196,93 @@
     const app = document.getElementById('app');
 
     const TEMPLATE_SLOTS = [
-      { slotCode: 'A1', workoutCode: 'A', family: 'chest_press', targetScheme: '4x5+', exerciseFactor: 0.8, incrementKg: 2.5, warmupRuleType: 'main_4x5', progressionType: 'threshold_or_deload', evaluationSetIndex: 4, evaluationRepThreshold: 5, trackEstimated1RM: true },
-      { slotCode: 'A2', workoutCode: 'A', family: 'squat', targetScheme: '4x5+', exerciseFactor: 0.7, incrementKg: 5, warmupRuleType: 'main_4x5', progressionType: 'threshold_or_deload', evaluationSetIndex: 4, evaluationRepThreshold: 5, trackEstimated1RM: true },
-      { slotCode: 'A3', workoutCode: 'A', family: 'lateral_raise', targetScheme: '3x10-14', exerciseFactor: 0.6, incrementKg: 2.5, warmupRuleType: 'none', progressionType: 'total_reps_threshold', totalRepThreshold: 42, countedSets: 3, trackEstimated1RM: false },
-      { slotCode: 'A4', workoutCode: 'A', family: 'vertical_pull', targetScheme: '3x8-12', exerciseFactor: 0.65, incrementKg: 2.5, warmupRuleType: 'secondary_3set', progressionType: 'total_reps_threshold', totalRepThreshold: 36, countedSets: 3, trackEstimated1RM: false },
-      { slotCode: 'A5', workoutCode: 'A', family: 'triceps', targetScheme: '3x10-14', exerciseFactor: 0.75, incrementKg: 2.5, warmupRuleType: 'none', progressionType: 'total_reps_threshold', totalRepThreshold: 42, countedSets: 3, trackEstimated1RM: false },
-      { slotCode: 'A6', workoutCode: 'A', family: 'abs', targetScheme: '3 sets', exerciseFactor: null, incrementKg: null, warmupRuleType: 'none', progressionType: 'bodyweight_passive', trackEstimated1RM: false },
-
-      { slotCode: 'B1', workoutCode: 'B', family: 'shoulder_press', targetScheme: '4x5+', exerciseFactor: 0.7, incrementKg: 2.5, warmupRuleType: 'main_4x5', progressionType: 'threshold_or_deload', evaluationSetIndex: 4, evaluationRepThreshold: 5, trackEstimated1RM: true },
-      { slotCode: 'B2', workoutCode: 'B', family: 'hinge', targetScheme: '3x8', exerciseFactor: 0.7, incrementKg: 5, warmupRuleType: 'secondary_3set', progressionType: 'threshold_or_deload', evaluationSetIndex: 3, evaluationRepThreshold: 8, trackEstimated1RM: false },
-      { slotCode: 'B3', workoutCode: 'B', family: 'chest_fly', targetScheme: '3x10-14', exerciseFactor: 0.6, incrementKg: 2.5, warmupRuleType: 'none', progressionType: 'total_reps_threshold', totalRepThreshold: 42, countedSets: 3, trackEstimated1RM: false },
-      { slotCode: 'B4', workoutCode: 'B', family: 'row', targetScheme: '3x10', exerciseFactor: 0.65, incrementKg: 2.5, warmupRuleType: 'secondary_3set', progressionType: 'threshold_or_deload', evaluationSetIndex: 3, evaluationRepThreshold: 10, trackEstimated1RM: false },
-      { slotCode: 'B5', workoutCode: 'B', family: 'biceps', targetScheme: '3x10-14', exerciseFactor: 0.75, incrementKg: 2.5, warmupRuleType: 'none', progressionType: 'total_reps_threshold', totalRepThreshold: 42, countedSets: 3, trackEstimated1RM: false },
-      { slotCode: 'B6', workoutCode: 'B', family: 'abs', targetScheme: '3 sets', exerciseFactor: null, incrementKg: null, warmupRuleType: 'none', progressionType: 'bodyweight_passive', trackEstimated1RM: false },
-
-      { slotCode: 'C1', workoutCode: 'C', family: 'chest_press', targetScheme: '3x10', exerciseFactor: 0.7, incrementKg: 2.5, warmupRuleType: 'secondary_3set', progressionType: 'threshold_or_deload', evaluationSetIndex: 3, evaluationRepThreshold: 10, trackEstimated1RM: false },
-      { slotCode: 'C2', workoutCode: 'C', family: 'leg_accessory', targetScheme: '4x10', exerciseFactor: 0.6, incrementKg: 2.5, warmupRuleType: 'secondary_3set', progressionType: 'threshold_or_deload', evaluationSetIndex: 4, evaluationRepThreshold: 10, trackEstimated1RM: false },
-      { slotCode: 'C3', workoutCode: 'C', family: 'vertical_pull', targetScheme: '3x8-12', exerciseFactor: 0.65, incrementKg: 2.5, warmupRuleType: 'secondary_3set', progressionType: 'total_reps_threshold', totalRepThreshold: 36, countedSets: 3, trackEstimated1RM: false },
-      { slotCode: 'C4', workoutCode: 'C', family: 'row', targetScheme: '3x10', exerciseFactor: 0.65, incrementKg: 2.5, warmupRuleType: 'secondary_3set', progressionType: 'threshold_or_deload', evaluationSetIndex: 3, evaluationRepThreshold: 10, trackEstimated1RM: false },
-      { slotCode: 'C5', workoutCode: 'C', family: 'triceps', targetScheme: '3x10-14', exerciseFactor: 0.75, incrementKg: 2.5, warmupRuleType: 'none', progressionType: 'total_reps_threshold', totalRepThreshold: 42, countedSets: 3, trackEstimated1RM: false },
-      { slotCode: 'C6', workoutCode: 'C', family: 'biceps', targetScheme: '3x10-14', exerciseFactor: 0.75, incrementKg: 2.5, warmupRuleType: 'none', progressionType: 'total_reps_threshold', totalRepThreshold: 42, countedSets: 3, trackEstimated1RM: false }
+      // ── Gün 1 ──
+      { slotCode: 'G1_1', dayCode: '1', group: 'g1', family: 'chest_press',    setsReps: '4x5+',    warmupSets: 3, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.8,  trackEstimated1RM: true,  progression: 'last_set', checkSet: 4, threshold: 5 },
+      { slotCode: 'G1_2', dayCode: '1', group: 'g2', family: 'shoulder_press',  setsReps: '3x10',    warmupSets: 2, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 3, threshold: 10 },
+      { slotCode: 'G1_3', dayCode: '1', group: 'g2', family: 'hinge',           setsReps: '3x8',     warmupSets: 2, incrementKg: 5,   rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 3, threshold: 8 },
+      { slotCode: 'G1_4', dayCode: '1', group: 'g3', family: 'vertical_pull',   setsReps: '3x10-14', warmupSets: 0, incrementKg: 5,   rpe: 8,  isBodyweight: false, startFactor: 0.65, trackEstimated1RM: false, progression: 'total_reps', threshold: 42 },
+      { slotCode: 'G1_5', dayCode: '1', group: 'g3', family: 'leg_accessory',   setsReps: '3x10-14', warmupSets: 0, incrementKg: 5,   rpe: 9,  isBodyweight: false, startFactor: 0.65, trackEstimated1RM: false, progression: 'total_reps', threshold: 42 },
+      { slotCode: 'G1_6', dayCode: '1', group: 'g4', family: 'abs',             setsReps: '3xmax',   warmupSets: 0, incrementKg: null, rpe: 9,  isBodyweight: true,  startFactor: null, trackEstimated1RM: false, progression: 'none' },
+      // ── Gün 2 ──
+      { slotCode: 'G2_1', dayCode: '2', group: 'g1', family: 'squat',           setsReps: '4x5+',    warmupSets: 3, incrementKg: 5,   rpe: 0,  isBodyweight: false, startFactor: 0.7,  trackEstimated1RM: true,  progression: 'last_set', checkSet: 4, threshold: 5 },
+      { slotCode: 'G2_2', dayCode: '2', group: 'g2', family: 'chest_press',     setsReps: '3x10',    warmupSets: 2, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 3, threshold: 10 },
+      { slotCode: 'G2_3', dayCode: '2', group: 'g2', family: 'vertical_pull',   setsReps: '3xmax',   warmupSets: 0, incrementKg: null, rpe: 9,  isBodyweight: true,  startFactor: null, trackEstimated1RM: false, progression: 'none' },
+      { slotCode: 'G2_4', dayCode: '2', group: 'g3', family: 'lateral_raise',   setsReps: '3x10-14', warmupSets: 0, incrementKg: 5,   rpe: 9,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'total_reps', threshold: 42 },
+      { slotCode: 'G2_5', dayCode: '2', group: 'g4', family: 'biceps',          setsReps: '3x8-12',  warmupSets: 0, incrementKg: 5,   rpe: 9,  isBodyweight: false, startFactor: 0.75, trackEstimated1RM: false, progression: 'total_reps', threshold: 36 },
+      { slotCode: 'G2_6', dayCode: '2', group: 'g4', family: 'abs',             setsReps: '3xmax',   warmupSets: 0, incrementKg: null, rpe: 9,  isBodyweight: true,  startFactor: null, trackEstimated1RM: false, progression: 'none' },
+      // ── Gün 3 ──
+      { slotCode: 'G3_1', dayCode: '3', group: 'g1', family: 'shoulder_press',  setsReps: '4x5+',    warmupSets: 3, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.7,  trackEstimated1RM: true,  progression: 'last_set', checkSet: 4, threshold: 5 },
+      { slotCode: 'G3_2', dayCode: '3', group: 'g2', family: 'squat',           setsReps: '3x10',    warmupSets: 2, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 3, threshold: 10 },
+      { slotCode: 'G3_3', dayCode: '3', group: 'g2', family: 'row',             setsReps: '4x10',    warmupSets: 2, incrementKg: 2.5, rpe: 0,  isBodyweight: false, startFactor: 0.6,  trackEstimated1RM: false, progression: 'last_set', checkSet: 4, threshold: 10 },
+      { slotCode: 'G3_4', dayCode: '3', group: 'g3', family: 'chest_fly',       setsReps: '3x10-14', warmupSets: 0, incrementKg: 5,   rpe: 8,  isBodyweight: false, startFactor: 0.65, trackEstimated1RM: false, progression: 'total_reps', threshold: 42 },
+      { slotCode: 'G3_5', dayCode: '3', group: 'g4', family: 'triceps',         setsReps: '3x8-12',  warmupSets: 0, incrementKg: 5,   rpe: 9,  isBodyweight: false, startFactor: 0.75, trackEstimated1RM: false, progression: 'total_reps', threshold: 36 },
+      { slotCode: 'G3_6', dayCode: '3', group: 'g4', family: 'abs',             setsReps: '3xmax',   warmupSets: 0, incrementKg: null, rpe: 9,  isBodyweight: true,  startFactor: null, trackEstimated1RM: false, progression: 'none' }
     ];
 
-    function roundToStep(value, step = 2.5) {
-      if (value === null || value === undefined || Number.isNaN(Number(value))) return null;
-      return Math.round(value / step) * step;
+    function mround(value, multiple) {
+      if (value == null || !Number.isFinite(value) || multiple === 0) return null;
+      return Math.round(value / multiple) * multiple;
     }
 
-    function roundToHalf(value) {
-      if (value === null || value === undefined || Number.isNaN(Number(value))) return null;
-      return Math.round(value * 2) / 2;
+    function setsCountFromScheme(scheme) {
+      if (!scheme) return 3;
+      if (scheme.startsWith('4x')) return 4;
+      if (scheme.startsWith('3x')) return 3;
+      return 3;
+    }
+
+    function decideNextWeight(slot, currentWeight, repsArray) {
+      if (slot.progression === 'none' || slot.isBodyweight) return currentWeight;
+      const reps = (repsArray || []).map(v => Number(v || 0));
+      if (slot.progression === 'last_set') {
+        const setIdx = (slot.checkSet || 1) - 1;
+        const val = reps[setIdx] || 0;
+        if (val >= (slot.threshold || 0)) {
+          return mround(Number(currentWeight) + Number(slot.incrementKg || 0), 2.5);
+        }
+        return mround(Number(currentWeight) * 0.9, 2.5);
+      }
+      if (slot.progression === 'total_reps') {
+        const setCount = setsCountFromScheme(slot.setsReps);
+        const total = reps.slice(0, setCount).reduce((a, b) => a + b, 0);
+        if (total >= (slot.threshold || 0)) {
+          return mround(Number(currentWeight) + Number(slot.incrementKg || 0), 2.5);
+        }
+        return currentWeight;
+      }
+      return currentWeight;
+    }
+
+    function previousWeekWeight(program, slotCode, weekNo) {
+      const selection = getSlotSelection(program, slotCode);
+      if (!selection) return null;
+      const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
+      if (!slot || slot.isBodyweight) return null;
+      let current = selection.initialWorkingWeight ?? null;
+      if (current == null) return null;
+      for (let w = 1; w < weekNo; w++) {
+        const log = getLog(state.username, w, slot.dayCode, slotCode);
+        const reps = log && Array.isArray(log.reps) ? log.reps : [];
+        current = decideNextWeight(slot, current, reps);
+      }
+      return current;
     }
 
     function weekEstimated1RM(workingWeight, repsArray) {
       const clean = (repsArray || []).map(Number).filter(n => Number.isFinite(n) && n > 0);
       if (!workingWeight || !clean.length) return null;
       const maxReps = Math.max(...clean);
-      return roundToHalf((Number(workingWeight) * maxReps * 0.0333) + Number(workingWeight));
-    }
-
-    function decideNextWeight(slot, currentWeight, repsArray) {
-      if (slot.progressionType === 'bodyweight_passive' || slot.progressionType === 'deload_only') {
-        return currentWeight;
-      }
-
-      const reps = (repsArray || []).map(v => Number(v || 0));
-
-      if (slot.progressionType === 'threshold_or_deload') {
-        const idx = (slot.evaluationSetIndex || 1) - 1;
-        const threshold = slot.evaluationRepThreshold || 0;
-        if ((reps[idx] || 0) >= threshold) {
-          return roundToStep(Number(currentWeight) + Number(slot.incrementKg || 0), 2.5);
-        }
-        return roundToStep(Number(currentWeight) * 0.9, 2.5);
-      }
-
-      if (slot.progressionType === 'total_reps_threshold') {
-        const countedSets = slot.countedSets || 3;
-        const total = reps.slice(0, countedSets).reduce((a, b) => a + (Number(b) || 0), 0);
-        if (total >= Number(slot.totalRepThreshold || 0)) {
-          return roundToStep(Number(currentWeight) + Number(slot.incrementKg || 0), 2.5);
-        }
-        return Number(currentWeight);
-      }
-
-      return currentWeight;
+      return Math.round(((Number(workingWeight) * maxReps * 0.0333) + Number(workingWeight)) * 2) / 2;
     }
 
     function getSlotSelection(program, slotCode) {
       return program?.setup_data?.selections?.find(s => s.slotCode === slotCode);
     }
 
-    function getLog(username, weekNo, workoutCode, slotCode) {
+    function getLog(username, weekNo, dayCode, slotCode) {
       return state.logs.find(
-        l => l.username === username && l.week_no === weekNo && l.workout_code === workoutCode && l.slot_code === slotCode
+        l => l.username === username && l.week_no === weekNo && l.workout_code === dayCode && l.slot_code === slotCode
       );
-    }
-
-    function previousWeekWeight(program, slotCode, weekNo) {
-      const selection = getSlotSelection(program, slotCode);
-      if (!selection) return null;
-
-      let current = selection.initialWorkingWeight ?? null;
-
-      for (let w = 1; w < weekNo; w++) {
-        const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
-        if (!slot) break;
-
-        const log = getLog(program.username, w, slot.workoutCode, slotCode);
-        if (!log) break;
-
-        const reps = Array.isArray(log.reps) ? log.reps : [];
-        current = decideNextWeight(slot, current, reps);
-      }
-
-      return current;
     }
 
     function escapeHtml(str = '') {
@@ -300,6 +292,12 @@
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
+    }
+
+    function getDayDisplayName(code) {
+      if (code === 'D1') return 'Dinlenme 1';
+      if (code === 'D2') return 'Dinlenme 2';
+      return `Gün ${code}`;
     }
 
     async function loadData() {
@@ -325,17 +323,18 @@
     function buildExerciseDashboardRows() {
       if (!state.program?.setup_data?.selections) return [];
 
-      const selections = state.program.setup_data.selections.filter(s => ['A', 'B', 'C'].includes(s.workoutCode));
+      const selections = state.program.setup_data.selections.filter(s => ['1', '2', '3'].includes(s.dayCode));
 
       return selections.map(selection => {
         const slot = TEMPLATE_SLOTS.find(t => t.slotCode === selection.slotCode);
-        const weekly = [];
+        if (!slot) return null;
 
+        const weekly = [];
         for (let week = 1; week <= 12; week++) {
-          const weight = previousWeekWeight({ ...state.program, username: state.username }, selection.slotCode, week);
-          const log = getLog(state.username, week, selection.workoutCode, selection.slotCode);
+          const weight = previousWeekWeight(state.program, selection.slotCode, week);
+          const log = getLog(state.username, week, slot.dayCode, selection.slotCode);
           const reps = log?.reps || [];
-          const metric = slot?.trackEstimated1RM
+          const metric = slot.trackEstimated1RM
             ? weekEstimated1RM(weight, reps)
             : weight;
 
@@ -349,14 +348,14 @@
 
         return {
           slotCode: selection.slotCode,
-          workoutCode: selection.workoutCode,
+          dayCode: selection.dayCode,
           exercise: selection.selectedExercise,
           initial: selection.initialWorkingWeight,
-          targetScheme: slot?.targetScheme || '-',
-          trackEstimated1RM: !!slot?.trackEstimated1RM,
+          setsReps: slot.setsReps,
+          trackEstimated1RM: slot.trackEstimated1RM,
           weekly
         };
-      });
+      }).filter(Boolean);
     }
 
     function renderBars(values) {
@@ -426,7 +425,7 @@
             <div class="summary-value">${trackedExercises}</div>
           </div>
           <div class="summary-box">
-            <div class="summary-label">Tamamlanan Workout</div>
+            <div class="summary-label">Tamamlanan Antrenman</div>
             <div class="summary-value">${completedWorkouts}</div>
           </div>
           <div class="summary-box">
@@ -441,9 +440,9 @@
           ${rows.map(row => `
             <div class="exercise-card">
               <div class="exercise-name">${escapeHtml(row.exercise)}</div>
-              <div class="pill">${escapeHtml(row.workoutCode)}</div>
+              <div class="pill">${escapeHtml(getDayDisplayName(row.dayCode))}</div>
               <div class="pill">Başlangıç: ${row.initial ?? 'BW'}</div>
-              <div class="pill">Hedef: ${escapeHtml(row.targetScheme)}</div>
+              <div class="pill">Hedef: ${escapeHtml(row.setsReps)}</div>
               <div class="muted">
                 ${row.trackEstimated1RM ? 'Grafik değeri: tahmini 1RM' : 'Grafik değeri: çalışma kilosu'}
               </div>

@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+  <meta name="theme-color" content="#0a0a12"/>
+  <title>Vuran Ailesi Fitness Takip</title>
+  <style>
+    :root {
+      --bg: #0a0a12;
+      --surface: #141421;
+      --surface2: #1c1c2e;
+      --border: #2a2a40;
+      --text: #f0f0f8;
+      --muted: #7a7a9a;
+      --accent: #22c55e;
+      --accent-dim: rgba(34,197,94,.15);
+      --danger: #ef4444;
+      --g1: #f87171;
+      --g2: #fbbf24;
+      --g3: #60a5fa;
+      --g4: #4ade80;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+    .screen { flex: 1; display: flex; flex-direction: column; padding: 20px 16px 32px; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .app-title { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+    .progress-wrap { background: var(--surface2); border-radius: 999px; height: 4px; margin-bottom: 6px; overflow: hidden; }
+    .progress-bar { height: 4px; border-radius: 999px; background: var(--accent); transition: width .4s ease; }
+    .progress-label { font-size: 12px; color: var(--muted); text-align: right; margin-bottom: 18px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 12px; }
+    .h1 { font-size: 28px; font-weight: 800; line-height: 1.2; }
+    .h2 { font-size: 22px; font-weight: 700; line-height: 1.2; }
+    .h3 { font-size: 15px; font-weight: 700; }
+    .caption { font-size: 13px; color: var(--muted); }
+    .big-num { font-size: 60px; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
+    .btn { width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity .15s, transform .1s; }
+    .btn:active { opacity: .75; transform: scale(.97); }
+    .btn-primary { background: var(--accent); color: #03100a; }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-ghost { background: transparent; color: var(--muted); font-size: 14px; padding: 12px; border: none; }
+    input, select, textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: var(--text); font-size: 16px; font-family: inherit; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    textarea { min-height: 80px; resize: none; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 8px; margin-top: 16px; }
+    label:first-child { margin-top: 0; }
+    .pill { display: inline-flex; align-items: center; padding: 5px 11px; border-radius: 999px; background: var(--surface2); border: 1px solid var(--border); font-size: 12px; color: var(--muted); margin: 2px 4px 2px 0; }
+    .pill.accent { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    .group-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .group-dot.g1 { background: var(--g1); }
+    .group-dot.g2 { background: var(--g2); }
+    .group-dot.g3 { background: var(--g3); }
+    .group-dot.g4 { background: var(--g4); }
+    .ex-item { display: flex; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+    .ex-item:last-child { border-bottom: none; }
+    .ex-item-left { flex: 1; min-width: 0; }
+    .ex-item-right { font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .ex-item-name { font-weight: 600; font-size: 15px; }
+    .ex-item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .set-dots { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+    .set-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all .2s; }
+    .set-dot.done { background: var(--accent); border-color: var(--accent); }
+    .set-dot.current { background: transparent; border-color: var(--accent); border-width: 3px; box-shadow: 0 0 0 3px var(--accent-dim); }
+    .rep-input { font-size: 72px; font-weight: 900; width: 180px; text-align: center; background: var(--surface2); border: 2px solid var(--border); border-radius: 20px; padding: 16px; color: var(--text); font-family: inherit; -moz-appearance: textfield; display: block; margin: 0 auto; }
+    .rep-input:focus { border-color: var(--accent); }
+    .rep-input::-webkit-inner-spin-button, .rep-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .divider { border-top: 1px solid var(--border); margin: 14px 0; }
+    .bottom { margin-top: auto; padding-top: 14px; }
+    .next-preview { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+    .next-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; }
+    .next-name { font-size: 14px; font-weight: 700; }
+    .setup-group { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 18px 0 8px; }
+    .setup-group.g1 { color: var(--g1); }
+    .setup-group.g2 { color: var(--g2); }
+    .setup-group.g3 { color: var(--g3); }
+    .setup-group.g4 { color: var(--g4); }
+    .warmup-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .warmup-item:last-child { border-bottom: none; }
+    .hidden { display: none !important; }
+    @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .fade-in { animation: fade-in .2s ease-out; }
+    select option { background: #1c1c2e; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const SUPABASE_URL = 'https://vwubvpjidodewzvtqjtf.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_Pyhx-5-wLHw199bcT6URCA_O2Xu6QQY';
+  const MASTER_PASSWORD = 'Nakama123!';
+  const ALLOWED_USERS = ['nakama', 'boksimoron'];
+  const REST_SECONDS = { g1: 120, g2: 90, g3: 60, g4: 60 };
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const EXERCISE_OPTIONS = {
+    chest_press:    ['Bench Press', 'Dumbbell Chest Press', 'Incline Bench Press'],
+    squat:          ['Squat', 'Leg Press', 'Hack Squat'],
+    shoulder_press: ['Over Head Press', 'Dumbbell Shoulder Press', 'Smith Machine Shoulder Press', 'Shoulder Press Machine'],
+    hinge:          ['Romanian DL', 'Dumbbell Romanian Deadlift', 'Hip Thrust'],
+    row:            ['Barbell Row', 'T-Bar Row', 'Machine Row'],
+    vertical_pull:  ['Pull Ups', 'Assisted Pull Ups', 'Negative Pull Ups', 'Lat Pulldown', 'High Row Machine', 'Single Arm Pulldown'],
+    lateral_raise:  ['Lateral Raises', 'Cable Lateral Raises', 'Machine Lateral Raises'],
+    chest_fly:      ['Chest Fly Machine', 'Dumbbell Chest Fly', 'Cable Chest Fly'],
+    leg_accessory:  ['Leg Extension', 'Dumbbell Lunges', 'Bulgarian Split Squat'],
+    triceps:        ['Cable Pushdown', 'Overhead Triceps Extension', 'Skull Crushers'],
+    biceps:         ['Incline Dumbbell Curl', 'Dumbbell Curl', 'Cable Curl'],
+    abs:            ['Crunch', 'Leg Raises', 'Plank']
+  };
+
+  const TEMPLATE_SLOTS = [
+    // Gün 1
+    { slotCode:'G1_1', dayCode:'1', group:'g1', family:'chest_press',    setsReps:'4x5+',    warmupSets:3, incrementKg:2.5, isBodyweight:false, startFactor:0.8,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5  },
+    { slotCode:'G1_2', dayCode:'1', group:'g2', family:'shoulder_press', setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10 },
+    { slotCode:'G1_3', dayCode:'1', group:'g2', family:'hinge',          setsReps:'3x8',     warmupSets:2, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:8  },
+    { slotCode:'G1_4', dayCode:'1', group:'g3', family:'vertical_pull',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42 },
+    { slotCode:'G1_5', dayCode:'1', group:'g3', family:'leg_accessory',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42 },
+    { slotCode:'G1_6', dayCode:'1', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
+    // Gün 2
+    { slotCode:'G2_1', dayCode:'2', group:'g1', family:'squat',          setsReps:'4x5+',    warmupSets:3, incrementKg:5,   isBodyweight:false, startFactor:0.7,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5  },
+    { slotCode:'G2_2', dayCode:'2', group:'g2', family:'chest_press',    setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10 },
+    { slotCode:'G2_3', dayCode:'2', group:'g2', family:'vertical_pull',  setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
+    { slotCode:'G2_4', dayCode:'2', group:'g3', family:'lateral_raise',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'total_reps', threshold:42 },
+    { slotCode:'G2_5', dayCode:'2', group:'g4', family:'biceps',         setsReps:'3x8-12',  warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:36 },
+    { slotCode:'G2_6', dayCode:'2', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
+    // Gün 3
+    { slotCode:'G3_1', dayCode:'3', group:'g1', family:'shoulder_press', setsReps:'4x5+',    warmupSets:3, incrementKg:2.5, isBodyweight:false, startFactor:0.7,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5  },
+    { slotCode:'G3_2', dayCode:'3', group:'g2', family:'squat',          setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10 },
+    { slotCode:'G3_3', dayCode:'3', group:'g2', family:'row',            setsReps:'4x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:4, threshold:10 },
+    { slotCode:'G3_4', dayCode:'3', group:'g3', family:'chest_fly',      setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42 },
+    { slotCode:'G3_5', dayCode:'3', group:'g4', family:'triceps',        setsReps:'3x8-12',  warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:36 },
+    { slotCode:'G3_6', dayCode:'3', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
+    // Dinlenme
+    { slotCode:'D1_1', dayCode:'D1', group:'g1', family:'squat',          setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G2_1' },
+    { slotCode:'D1_2', dayCode:'D1', group:'g1', family:'chest_press',    setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G1_1' },
+    { slotCode:'D1_3', dayCode:'D1', group:'g2', family:'vertical_pull',  setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none' },
+    { slotCode:'D2_1', dayCode:'D2', group:'g1', family:'shoulder_press', setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G3_1' },
+    { slotCode:'D2_2', dayCode:'D2', group:'g2', family:'hinge',          setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G1_3' },
+    { slotCode:'D2_3', dayCode:'D2', group:'g2', family:'row',            setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G3_3' }
+  ];
+
+  // ── State ──
+  const state = {
+    gatePassed: localStorage.getItem('vaft_gate') === 'true',
+    username:   localStorage.getItem('vaft_user') || '',
+    program: null,
+    logs: [],
+    phase: 'gate',
+    session: null,
+    _week: null,
+    _dayCode: null,
+  };
+
+  const root = document.getElementById('root');
+  let _restId = null;
+
+  // ── Helpers ──
+  function mround(v, m) {
+    if (v == null || !Number.isFinite(v) || m === 0) return null;
+    return Math.round(v / m) * m;
+  }
+  function estimate1RM(w, r) {
+    if (!w || !r) return null;
+    return (Number(w) * Number(r) * 0.0333) + Number(w);
+  }
+  function calcStart(orm, factor) {
+    if (!orm || !factor) return null;
+    return mround(orm * 0.85 * factor, 2.5);
+  }
+  function calcWarmups(w, n) {
+    if (!w || n === 0) return [];
+    if (n === 3) return [0.6, 0.7, 0.85].map(r => mround(w * r, 2.5));
+    if (n === 2) return [0.6, 0.85].map(r => mround(w * r, 2.5));
+    return [];
+  }
+  function setsCount(scheme) {
+    if (!scheme) return 3;
+    return scheme.startsWith('4x') ? 4 : 3;
+  }
+  function getSel(program, slotCode) {
+    return program?.setup_data?.selections?.find(s => s.slotCode === slotCode);
+  }
+  function getLog(username, week, dayCode, slotCode) {
+    return state.logs.find(l => l.username === username && l.week_no === week && l.workout_code === dayCode && l.slot_code === slotCode);
+  }
+  function byDay(dayCode) {
+    return TEMPLATE_SLOTS.filter(s => s.dayCode === dayCode);
+  }
+  function dayDone(username, week, dayCode) {
+    return byDay(dayCode).every(s => getLog(username, week, dayCode, s.slotCode));
+  }
+  function openWeek(program) {
+    for (let w = 1; w <= 12; w++) {
+      if (!['1','2','3'].every(c => dayDone(program.username, w, c))) return w;
+    }
+    if (!['D1','D2'].every(c => dayDone(program.username, 13, c))) return 13;
+    return 13;
+  }
+  function openDay(program) {
+    const week = openWeek(program);
+    const codes = week === 13 ? ['D1','D2'] : ['1','2','3'];
+    for (const dc of codes) {
+      if (!dayDone(program.username, week, dc)) return { week, dayCode: dc };
+    }
+    return { week, dayCode: codes[0] };
+  }
+  function decideNext(slot, cur, repsArr) {
+    if (slot.progression === 'none' || slot.isBodyweight) return cur;
+    const reps = (repsArr || []).map(v => Number(v || 0));
+    if (slot.progression === 'last_set') {
+      const val = reps[(slot.checkSet || 1) - 1] || 0;
+      if (val >= (slot.threshold || 0)) return mround(Number(cur) + Number(slot.incrementKg || 0), 2.5);
+      return mround(Number(cur) * 0.9, 2.5);
+    }
+    if (slot.progression === 'total_reps') {
+      const total = reps.slice(0, setsCount(slot.setsReps)).reduce((a,b) => a+b, 0);
+      if (total >= (slot.threshold || 0)) return mround(Number(cur) + Number(slot.incrementKg || 0), 2.5);
+      return cur;
+    }
+    return cur;
+  }
+  function prevWeight(program, slotCode, weekNo) {
+    const sel = getSel(program, slotCode);
+    if (!sel) return null;
+    const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
+    if (!slot || slot.isBodyweight) return null;
+    let cur = sel.initialWorkingWeight ?? null;
+    if (cur == null) return null;
+    for (let w = 1; w < weekNo; w++) {
+      const log = getLog(program.username, w, slot.dayCode, slotCode);
+      cur = decideNext(slot, cur, log?.reps || []);
+    }
+    return cur;
+  }
+  function deloadW(program, slot) {
+    if (!slot.deloadFromSlot) return null;
+    const w = prevWeight(program, slot.deloadFromSlot, 13);
+    return w != null ? mround(w * 0.7, 2.5) : null;
+  }
+  function computedWeight(program, slotCode, weekNo) {
+    const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
+    if (!slot || slot.isBodyweight) return null;
+    if (weekNo === 13) return deloadW(program, slot);
+    return prevWeight(program, slotCode, weekNo);
+  }
+  function esc(s = '') {
+    return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+  }
+  function dayName(code) {
+    if (code === 'D1') return 'Dinlenme 1';
+    if (code === 'D2') return 'Dinlenme 2';
+    return `Gün ${code}`;
+  }
+  function fmt(s) {
+    const m = Math.floor(s / 60), sec = s % 60;
+    return `${m}:${String(sec).padStart(2,'0')}`;
+  }
+  function restSec(group) {
+    return REST_SECONDS[group] || 60;
+  }
+
+  // ── Data ──
+  async function loadData() {
+    state.phase = 'loading';
+    render();
+    const [{ data: prog, error: pErr }, { data: logs, error: lErr }] = await Promise.all([
+      supabase.from('programs').select('*').eq('username', state.username).maybeSingle(),
+      supabase.from('workout_logs').select('*').eq('username', state.username).order('week_no')
+    ]);
+    if (pErr) { alert('Program yüklenemedi: ' + pErr.message); state.phase = 'identity'; render(); return; }
+    if (lErr) { alert('Loglar yüklenemedi: ' + lErr.message); state.phase = 'identity'; render(); return; }
+    state.program = prog || null;
+    state.logs = logs || [];
+    if (state.program) {
+      const { week, dayCode } = openDay({ ...state.program, username: state.username });
+      state._week = week;
+      state._dayCode = dayCode;
+      state.phase = 'home';
+    } else {
+      state.phase = 'setup';
+    }
+    render();
+  }
+
+  async function saveWorkout() {
+    const { session } = state;
+    const rows = session.slots.map(slot => ({
+      username: state.username,
+      week_no: session.week,
+      workout_code: session.dayCode,
+      slot_code: slot.slotCode,
+      reps: (session.reps[slot.slotCode] || []).map(v => Number(v || 0)).filter(v => Number.isFinite(v)),
+      notes: session.notes[slot.slotCode] || '',
+      completed_at: new Date().toISOString()
+    }));
+    const { error } = await supabase.from('workout_logs').upsert(rows, { onConflict: 'username,week_no,workout_code,slot_code' });
+    if (error) throw error;
+    await loadData();
+  }
+
+  function buildSelections(fd) {
+    const base = TEMPLATE_SLOTS.filter(s => ['1','2','3'].includes(s.dayCode));
+    const selections = base.map(slot => {
+      const cur = state.program?.setup_data?.selections?.find(s => s.slotCode === slot.slotCode);
+      const exercise = String(fd.get(`${slot.slotCode}_ex`) || cur?.selectedExercise || '').trim();
+      if (!exercise) throw new Error(`${dayName(slot.dayCode)} - egzersiz seçilmemiş.`);
+      const iw = fd.get(`${slot.slotCode}_w`);
+      const ir = fd.get(`${slot.slotCode}_r`);
+      const ii = fd.get(`${slot.slotCode}_i`);
+      const inputWeight = iw !== null && iw !== '' ? Number(iw) : (cur?.inputWeight ?? null);
+      const inputReps   = ir !== null && ir !== '' ? Number(ir) : (cur?.inputReps ?? null);
+      let initial = ii !== null && ii !== '' ? Number(ii) : (cur?.initialWorkingWeight ?? null);
+      if (!slot.isBodyweight && initial == null && inputWeight && inputReps) {
+        initial = calcStart(estimate1RM(inputWeight, inputReps), slot.startFactor);
+      }
+      return { slotCode: slot.slotCode, dayCode: slot.dayCode, family: slot.family,
+               selectedExercise: exercise,
+               inputWeight: slot.isBodyweight ? null : inputWeight,
+               inputReps:   slot.isBodyweight ? null : inputReps,
+               initialWorkingWeight: slot.isBodyweight ? null : initial };
+    });
+    const deload = TEMPLATE_SLOTS.filter(s => ['D1','D2'].includes(s.dayCode)).map(slot => {
+      const src = slot.deloadFromSlot ? selections.find(x => x.slotCode === slot.deloadFromSlot) : null;
+      return { slotCode: slot.slotCode, dayCode: slot.dayCode, family: slot.family,
+               selectedExercise: src?.selectedExercise || (EXERCISE_OPTIONS[slot.family]?.[0] || slot.family),
+               inputWeight: null, inputReps: null, initialWorkingWeight: null };
+    });
+    return [...selections, ...deload];
+  }
+
+  async function saveSetup(fd) {
+    const selections = buildSelections(fd);
+    const payload = { username: state.username, status: 'active',
+      setup_data: { createdAt: state.program?.setup_data?.createdAt || new Date().toISOString(), selections } };
+    const { error } = await supabase.from('programs').upsert(payload, { onConflict: 'username' });
+    if (error) throw error;
+    await loadData();
+  }
+
+  // ── Session ──
+  function startSession() {
+    const week = state._week, dayCode = state._dayCode;
+    const program = { ...state.program, username: state.username };
+    const slots = byDay(dayCode);
+    const session = {
+      week, dayCode, slots,
+      exIdx: 0,
+      subPhase: 'intro',
+      warmupStep: 0,
+      setIdx: 0,
+      reps: {},
+      notes: {},
+      weights: {},
+      warmups: {},
+      setCounts: {},
+      exNames: {},
+      restTotal: 0,
+      restRemaining: 0,
+    };
+    for (const slot of slots) {
+      const sel = getSel(program, slot.slotCode);
+      session.exNames[slot.slotCode]   = sel?.selectedExercise || (EXERCISE_OPTIONS[slot.family]?.[0] || slot.family);
+      session.weights[slot.slotCode]   = computedWeight(program, slot.slotCode, week);
+      session.warmups[slot.slotCode]   = calcWarmups(session.weights[slot.slotCode], slot.warmupSets);
+      session.setCounts[slot.slotCode] = setsCount(slot.setsReps);
+      session.reps[slot.slotCode]      = [];
+    }
+    state.session = session;
+    state.phase = 'workout';
+    render();
+  }
+
+  function stopRest() {
+    if (_restId) { clearInterval(_restId); _restId = null; }
+  }
+
+  function startRestTimer() {
+    stopRest();
+    _restId = setInterval(() => {
+      state.session.restRemaining--;
+      if (state.session.restRemaining <= 0) {
+        stopRest();
+        state.session.setIdx++;
+        state.session.subPhase = 'working';
+        render();
+      } else {
+        const el = document.getElementById('rest-num');
+        if (el) el.textContent = fmt(state.session.restRemaining);
+        const ring = document.getElementById('rest-ring');
+        if (ring) {
+          const pct = state.session.restRemaining / state.session.restTotal;
+          ring.setAttribute('stroke-dashoffset', (2 * Math.PI * 80 * (1 - pct)).toFixed(1));
+        }
+      }
+    }, 1000);
+  }
+
+  // ── Render ──
+  function render() {
+    stopRest();
+    switch (state.phase) {
+      case 'gate':     return renderGate();
+      case 'identity': return renderIdentity();
+      case 'loading':  return renderLoading();
+      case 'setup':    return renderSetup();
+      case 'home':     return renderHome();
+      case 'overview': return renderOverview();
+      case 'workout':  return renderWorkout();
+      case 'summary':  return renderSummary();
+    }
+  }
+
+  function renderGate() {
+    root.innerHTML = `
+      <div class="screen fade-in" style="justify-content:center;">
+        <div style="text-align:center; margin-bottom:48px;">
+          <div style="font-size:56px; margin-bottom:16px;">🏋️</div>
+          <div class="h1" style="margin-bottom:6px;">Vuran Ailesi</div>
+          <div style="font-size:22px; font-weight:700; color:var(--accent);">Fitness Takip</div>
+        </div>
+        <form id="gateForm">
+          <label>Şifre</label>
+          <input id="pw" type="password" placeholder="••••••••" autocomplete="current-password"/>
+          <div style="height:14px;"></div>
+          <button class="btn btn-primary" type="submit">Giriş Yap</button>
+        </form>
+      </div>`;
+    document.getElementById('gateForm').onsubmit = e => {
+      e.preventDefault();
+      const v = document.getElementById('pw').value;
+      if (v === MASTER_PASSWORD) {
+        localStorage.setItem('vaft_gate','true');
+        state.gatePassed = true;
+        state.phase = 'identity';
+        render();
+      } else {
+        const inp = document.getElementById('pw');
+        inp.style.borderColor = 'var(--danger)';
+        inp.value = '';
+        inp.placeholder = 'Yanlış şifre, tekrar dene';
+        setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = '••••••••'; }, 2000);
+      }
+    };
+  }
+
+  function renderIdentity() {
+    root.innerHTML = `
+      <div class="screen fade-in" style="justify-content:center;">
+        <div style="text-align:center; margin-bottom:40px;">
+          <div class="app-title" style="margin-bottom:8px;">Vuran Ailesi Fitness Takip</div>
+          <div class="h2">Kim antrenman yapıyor?</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <button class="btn btn-secondary" id="u-nakama" style="font-size:20px; padding:22px; letter-spacing:.02em;">nakama</button>
+          <button class="btn btn-secondary" id="u-boksimoron" style="font-size:20px; padding:22px; letter-spacing:.02em;">boksimoron</button>
+        </div>
+        <div style="height:20px;"></div>
+        <button class="btn btn-ghost" id="backBtn">← Şifre Ekranına Dön</button>
+      </div>`;
+    for (const name of ALLOWED_USERS) {
+      document.getElementById(`u-${name}`).onclick = async () => {
+        localStorage.setItem('vaft_user', name);
+        state.username = name;
+        await loadData();
+      };
+    }
+    document.getElementById('backBtn').onclick = () => {
+      localStorage.removeItem('vaft_gate');
+      state.gatePassed = false;
+      state.phase = 'gate';
+      render();
+    };
+  }
+
+  function renderLoading() {
+    root.innerHTML = `
+      <div class="screen" style="align-items:center; justify-content:center;">
+        <div style="text-align:center;">
+          <div style="font-size:36px; margin-bottom:16px; opacity:.6;">⏳</div>
+          <div class="caption">Yükleniyor...</div>
+        </div>
+      </div>`;
+  }
+
+  function renderHome() {
+    const week = state._week, dayCode = state._dayCode;
+    const program = { ...state.program, username: state.username };
+    const slots = byDay(dayCode);
+    const isDeload = week === 13;
+    const missing = missingWeightSlots(program);
+    const totalSets = slots.reduce((sum, s) => sum + setsCount(s.setsReps), 0);
+    const hasMissing = missing.length > 0;
+
+    // Completed weeks count
+    let completedWeeks = 0;
+    for (let w = 1; w < week; w++) {
+      if (['1','2','3'].every(c => dayDone(state.username, w, c))) completedWeeks++;
+    }
+
+    root.innerHTML = `
+      <div class="screen fade-in">
+        <div class="header">
+          <span class="app-title">Vuran Ailesi Fitness</span>
+          <button class="btn btn-ghost" id="menuBtn" style="width:auto; padding:6px 12px; font-size:18px;">⚙️</button>
+        </div>
+
+        <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+          <div class="card" style="border-left:4px solid var(--accent);">
+            <div class="caption" style="margin-bottom:4px;">HOŞ GELDİN</div>
+            <div class="h2" style="margin-bottom:2px;">${esc(state.username)}</div>
+            <div class="caption">${isDeload ? 'Dinlenme Haftası' : `Hafta ${week} / 12`} · ${completedWeeks > 0 ? `${completedWeeks} hafta tamamlandı` : 'Yeni başlıyorsun'}</div>
+          </div>
+
+          ${hasMissing ? `
+          <div style="background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.4); border-radius:16px; padding:14px 16px; display:flex; align-items:flex-start; gap:12px;">
+            <span style="font-size:20px; flex-shrink:0;">⚠️</span>
+            <div>
+              <div style="font-size:14px; font-weight:700; color:#fbbf24; margin-bottom:4px;">${missing.length} hareketin başlangıç kilosu eksik</div>
+              <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">${missing.map(s => { const sel = getSel(program, s.slotCode); return esc(sel?.selectedExercise || s.family); }).join(', ')}</div>
+              <button class="btn btn-secondary" id="fixMissingBtn" style="padding:10px 14px; font-size:13px; width:auto;">Tamamla →</button>
+            </div>
+          </div>` : ''}
+
+          <div class="card" style="display:flex; align-items:center; justify-content:space-between; padding:18px 20px;">
+            <div>
+              <div class="caption" style="margin-bottom:4px;">BUGÜNKÜ ANTRENMAN</div>
+              <div class="h3" style="margin-bottom:2px;">${esc(dayName(dayCode))}</div>
+              <div class="caption">${slots.length} hareket · ${totalSets} set</div>
+            </div>
+            <div style="font-size:32px;">🏋️</div>
+          </div>
+
+          <button class="btn btn-primary" id="goWorkoutBtn" ${hasMissing ? 'disabled style="opacity:.45;"' : ''}>
+            Bugünün Antrenmanı →
+          </button>
+
+          <button class="btn btn-secondary" id="goDashboardBtn">
+            📊 Dashboard
+          </button>
+        </div>
+
+        <div class="bottom">
+          <button class="btn btn-ghost" id="logoutBtn">Kullanıcıyı Değiştir</button>
+        </div>
+      </div>`;
+
+    if (!hasMissing) document.getElementById('goWorkoutBtn').onclick = () => { state.phase = 'overview'; render(); };
+    document.getElementById('goDashboardBtn').onclick = () => {
+      localStorage.setItem('superhero_gate_passed', 'true');
+      localStorage.setItem('superhero_username', state.username);
+      window.location.href = 'dashboard.html';
+    };
+    document.getElementById('logoutBtn').onclick = handleLogout;
+    document.getElementById('menuBtn').onclick = showMenu;
+    const fixBtn = document.getElementById('fixMissingBtn');
+    if (fixBtn) fixBtn.onclick = renderSettingsOverlay;
+  }
+
+  function missingWeightSlots(program) {
+    return TEMPLATE_SLOTS.filter(s => ['1','2','3'].includes(s.dayCode) && !s.isBodyweight)
+      .filter(slot => {
+        const sel = getSel(program, slot.slotCode);
+        return !sel || sel.initialWorkingWeight == null;
+      });
+  }
+
+  function renderOverview() {
+    const week = state._week, dayCode = state._dayCode;
+    const program = { ...state.program, username: state.username };
+    const slots = byDay(dayCode);
+    const isDeload = week === 13;
+    const missing = missingWeightSlots(program);
+
+    const list = slots.map(slot => {
+      const sel = getSel(program, slot.slotCode);
+      const name = sel?.selectedExercise || (EXERCISE_OPTIONS[slot.family]?.[0] || slot.family);
+      const weight = computedWeight(program, slot.slotCode, week);
+      const warmups = calcWarmups(weight, slot.warmupSets);
+      const sc = setsCount(slot.setsReps);
+      return `
+        <div class="ex-item">
+          <div class="group-dot ${slot.group}" style="margin-top:2px; flex-shrink:0;"></div>
+          <div class="ex-item-left">
+            <div class="ex-item-name">${esc(name)}</div>
+            <div class="ex-item-sub">
+              ${slot.isBodyweight ? 'Vücut ağırlığı' : weight != null ? `${weight} kg` : '—'}
+              · ${esc(slot.setsReps)}
+              ${warmups.length ? ` · ${warmups.length} ısınma` : ''}
+            </div>
+          </div>
+          <div class="ex-item-right">${sc} set</div>
+        </div>`;
+    }).join('');
+
+    root.innerHTML = `
+      <div class="screen fade-in">
+        <div class="header">
+          <span class="app-title">Vuran Ailesi Fitness</span>
+          <button class="btn btn-ghost" id="menuBtn" style="width:auto; padding:6px 12px; font-size:18px;">⚙️</button>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent);">
+          <div style="display:flex; align-items:baseline; justify-content:space-between;">
+            <div class="h2">${esc(dayName(dayCode))}</div>
+            <div class="caption">${isDeload ? 'Dinlenme Haftası' : `Hafta ${week} / 12`}</div>
+          </div>
+          <div class="caption" style="margin-top:4px;">${slots.length} hareket</div>
+        </div>
+        ${missing.length ? `
+          <div style="background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.4); border-radius:16px; padding:14px 16px; margin-bottom:12px; display:flex; align-items:flex-start; gap:12px;">
+            <span style="font-size:20px; flex-shrink:0;">⚠️</span>
+            <div>
+              <div style="font-size:14px; font-weight:700; color:#fbbf24; margin-bottom:4px;">${missing.length} hareketin başlangıç kilosu eksik</div>
+              <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">${missing.map(s => { const sel = getSel(program, s.slotCode); return esc(sel?.selectedExercise || s.family); }).join(', ')}</div>
+              <button class="btn btn-secondary" id="fixMissingBtn" style="padding:10px 14px; font-size:13px; width:auto;">Program Ayarlarını Tamamla →</button>
+            </div>
+          </div>` : ''}
+        <div class="card" style="flex:1;">
+          <div class="h3" style="margin-bottom:16px; color:var(--muted);">BUGÜNKÜ HAREKETLER</div>
+          ${list}
+        </div>
+        <div class="bottom">
+          <button class="btn btn-primary" id="startBtn" ${missing.length ? 'style="opacity:.5; pointer-events:none;"' : ''}>Antrenmanı Başlat →</button>
+          <div style="height:8px;"></div>
+          <button class="btn btn-ghost" id="homeBtn">← Ana Sayfa</button>
+        </div>
+      </div>`;
+    if (!missing.length) document.getElementById('startBtn').onclick = startSession;
+    document.getElementById('homeBtn').onclick = () => { state.phase = 'home'; render(); };
+    document.getElementById('menuBtn').onclick = showMenu;
+    const fixBtn = document.getElementById('fixMissingBtn');
+    if (fixBtn) fixBtn.onclick = renderSettingsOverlay;
+  }
+
+  function showMenu() {
+    const div = document.createElement('div');
+    div.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:flex-end;';
+    div.innerHTML = `
+      <div style="background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;margin:0 auto;padding:24px 20px 36px;border-top:1px solid var(--border);">
+        <div style="width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 24px;"></div>
+        <div class="caption" style="margin-bottom:16px;">${esc(state.username)} · ${state._week === 13 ? 'Dinlenme Haftası' : `Hafta ${state._week}`}</div>
+        <button class="btn btn-secondary" id="m-settings" style="margin-bottom:10px;">Program Ayarları</button>
+        <button class="btn btn-danger" id="m-reset" style="margin-bottom:10px; background:rgba(239,68,68,.15); color:var(--danger);">Programı Sıfırla</button>
+        <button class="btn btn-ghost" id="m-close">Kapat</button>
+      </div>`;
+    document.body.appendChild(div);
+    div.onclick = e => { if (e.target === div) div.remove(); };
+    document.getElementById('m-close').onclick = () => div.remove();
+    document.getElementById('m-settings').onclick = () => { div.remove(); renderSettingsOverlay(); };
+    document.getElementById('m-reset').onclick = async () => {
+      div.remove();
+      if (!confirm('Tüm antrenman verileri silinsin mi? Bu işlem geri alınamaz.')) return;
+      await handleReset();
+    };
+  }
+
+  function renderWorkout() {
+    const { session } = state;
+    if (!session) { state.phase = 'home'; render(); return; }
+    const slot = session.slots[session.exIdx];
+    const { subPhase } = session;
+    const exName  = session.exNames[slot.slotCode];
+    const weight  = session.weights[slot.slotCode];
+    const warmups = session.warmups[slot.slotCode];
+    const setCount = session.setCounts[slot.slotCode];
+    const nextSlot = session.slots[session.exIdx + 1] || null;
+    const doneReps = session.reps[slot.slotCode] || [];
+    const pct = Math.round((session.exIdx / session.slots.length) * 100);
+    const gc = `var(--${slot.group})`;
+    const targetReps = slot.setsReps.split('x')[1] || '?';
+
+    let content = '';
+    let ctaLabel = '';
+    let showBack = true;
+
+    if (subPhase === 'intro') {
+      ctaLabel = warmups.length ? 'Isınmaya Başla →' : 'Sete Başla →';
+      content = `
+        <div class="card" style="border-color:${gc}; border-width:2px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+            <span class="group-dot ${slot.group}"></span>
+            <span class="caption">${slot.group.toUpperCase()} · ${esc(slot.setsReps)}</span>
+          </div>
+          <div class="h1" style="color:${gc}; margin-bottom:18px;">${esc(exName)}</div>
+          ${!slot.isBodyweight && weight != null ? `
+            <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:18px;">
+              <span class="big-num">${weight}</span>
+              <span style="font-size:22px; font-weight:600; color:var(--muted);">kg</span>
+            </div>` : slot.isBodyweight ? `
+            <div style="margin-bottom:18px; font-size:20px; font-weight:700; color:var(--muted);">Vücut Ağırlığı</div>` : ''}
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="pill accent">${setCount} çalışma seti</span>
+            ${warmups.length ? `<span class="pill">${warmups.length} ısınma seti</span>` : ''}
+            ${slot.incrementKg ? `<span class="pill">+${slot.incrementKg} kg/hafta</span>` : ''}
+          </div>
+        </div>
+        ${warmups.length ? `
+          <div class="card">
+            <div class="h3" style="margin-bottom:14px; color:var(--muted);">ISINMA SETLERİ</div>
+            ${warmups.map((w,i) => `
+              <div class="warmup-item">
+                <div><span style="font-weight:600;">Set ${i+1}</span> <span class="caption">~5 tekrar</span></div>
+                <span style="font-size:20px; font-weight:800;">${w} <span style="font-size:14px; color:var(--muted);">kg</span></span>
+              </div>`).join('')}
+          </div>` : ''}`;
+    }
+
+    else if (subPhase === 'warmup') {
+      const wu = warmups[session.warmupStep];
+      const isLast = session.warmupStep === warmups.length - 1;
+      ctaLabel = isLast ? 'Çalışma Setine Geç →' : 'Sonraki Isınma →';
+      content = `
+        <div class="card">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span class="group-dot ${slot.group}"></span>
+            <span class="caption">Isınma · ${session.warmupStep+1}/${warmups.length}</span>
+          </div>
+          <div class="h2" style="color:${gc}; margin-bottom:24px;">${esc(exName)}</div>
+          <div style="text-align:center; padding:16px 0 24px;">
+            <div class="caption" style="margin-bottom:8px;">AĞIRLIK</div>
+            <div class="big-num" style="color:${gc};">${wu}</div>
+            <div style="font-size:18px; color:var(--muted); margin-top:4px;">kg · ~5 tekrar</div>
+          </div>
+          <div class="caption" style="text-align:center;">Seti tamamlayınca devam et.</div>
+        </div>`;
+    }
+
+    else if (subPhase === 'working') {
+      ctaLabel = 'Seti Tamamla ✓';
+      const prevDone = session.setIdx;
+      content = `
+        <div class="card">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <span class="group-dot ${slot.group}"></span>
+            <span class="caption">Set ${prevDone+1} / ${setCount}</span>
+          </div>
+          <div class="h2" style="color:${gc}; margin-bottom:14px;">${esc(exName)}</div>
+          ${!slot.isBodyweight && weight != null ? `
+            <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:10px;">
+              <span style="font-size:44px; font-weight:900;">${weight}</span>
+              <span style="font-size:18px; color:var(--muted);">kg</span>
+            </div>` : `<div style="margin-bottom:10px; color:var(--muted);">Vücut ağırlığı</div>`}
+          <div style="margin-bottom:6px;"><span class="caption">HEDEF </span><span style="font-size:20px; font-weight:800; color:var(--accent);">${esc(targetReps)} tekrar</span></div>
+          <div class="set-dots">
+            ${Array.from({length:setCount}).map((_,i) => `
+              <div class="set-dot ${i < prevDone ? 'done' : i === prevDone ? 'current' : ''}"></div>`).join('')}
+          </div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="caption" style="margin-bottom:14px;">KAÇ TEKRAR YAPTIN?</div>
+          <input class="rep-input" type="number" id="repInput" min="0" max="99" step="1"
+            value="${doneReps[prevDone] ?? ''}" inputmode="numeric" autofocus/>
+        </div>
+        ${prevDone > 0 ? `
+          <div class="card" style="padding:12px 16px;">
+            <div class="caption" style="margin-bottom:8px;">ÖNCEKİ SETLER</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              ${doneReps.slice(0, prevDone).map((r,i) => `<span class="pill accent">Set ${i+1}: ${r}</span>`).join('')}
+            </div>
+          </div>` : ''}`;
+    }
+
+    else if (subPhase === 'rest') {
+      showBack = false;
+      ctaLabel = 'Dinlenmeyi Atla';
+      const r = 80, circ = (2 * Math.PI * r).toFixed(1);
+      const pctVal = session.restRemaining / session.restTotal;
+      const offset = (2 * Math.PI * r * (1 - pctVal)).toFixed(1);
+      content = `
+        <div class="card" style="text-align:center; padding:40px 20px;">
+          <div class="caption" style="margin-bottom:24px;">DİNLENME</div>
+          <svg width="180" height="180" style="display:block; margin:0 auto 20px;">
+            <circle cx="90" cy="90" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+            <circle id="rest-ring" cx="90" cy="90" r="${r}" fill="none" stroke="var(--accent)"
+              stroke-width="10" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
+              stroke-linecap="round" transform="rotate(-90 90 90)"
+              style="transition:stroke-dashoffset 0.9s linear;"/>
+            <text x="90" y="84" text-anchor="middle" fill="var(--text)" font-size="46" font-weight="900"
+              font-family="-apple-system,sans-serif" id="rest-num">${fmt(session.restRemaining)}</text>
+            <text x="90" y="112" text-anchor="middle" fill="var(--muted)" font-size="13"
+              font-family="-apple-system,sans-serif">saniye</text>
+          </svg>
+          <div class="caption">Sıradaki: Set ${session.setIdx + 2} / ${setCount}</div>
+        </div>
+        ${nextSlot && session.setIdx === setCount - 1 ? `
+          <div class="next-preview">
+            <span class="group-dot ${nextSlot.group}"></span>
+            <div>
+              <div class="next-label">Sıradaki hareket</div>
+              <div class="next-name">${esc(session.exNames[nextSlot.slotCode])}</div>
+            </div>
+          </div>` : ''}`;
+    }
+
+    else if (subPhase === 'notes') {
+      const isLast = session.exIdx === session.slots.length - 1;
+      ctaLabel = isLast ? 'Antrenmanı Bitir 🏆' : 'Sonraki Hareket →';
+      content = `
+        <div class="card" style="border-color:${gc};">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <span class="group-dot ${slot.group}"></span>
+            <span class="caption" style="color:var(--accent);">✓ Tamamlandı</span>
+          </div>
+          <div class="h2" style="color:${gc}; margin-bottom:16px;">${esc(exName)}</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${doneReps.map((r,i) => `<span class="pill accent">Set ${i+1}: ${r}</span>`).join('')}
+          </div>
+          <div class="divider"></div>
+          <label>Not (isteğe bağlı)</label>
+          <textarea id="notesInput" placeholder="Bu hareket hakkında not...">${esc(session.notes[slot.slotCode] || '')}</textarea>
+        </div>
+        ${nextSlot ? `
+          <div class="next-preview">
+            <span class="group-dot ${nextSlot.group}"></span>
+            <div>
+              <div class="next-label">Sıradaki</div>
+              <div class="next-name">${esc(session.exNames[nextSlot.slotCode])}</div>
+              <div style="font-size:12px; color:var(--muted); margin-top:2px;">
+                ${session.weights[nextSlot.slotCode] != null ? session.weights[nextSlot.slotCode]+' kg · ' : ''}${esc(nextSlot.setsReps)}
+              </div>
+            </div>
+          </div>` : ''}`;
+    }
+
+    root.innerHTML = `
+      <div class="screen fade-in">
+        <div class="header">
+          <span class="app-title">${esc(dayName(session.dayCode))} · Hafta ${session.week}</span>
+          <span class="caption">${session.exIdx+1} / ${session.slots.length}</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%;"></div></div>
+        <div class="progress-label">${session.exIdx+1} / ${session.slots.length} hareket</div>
+        <div style="flex:1; overflow-y:auto; margin-bottom:4px;">${content}</div>
+        <div class="bottom">
+          <button class="btn btn-primary" id="ctaBtn">${ctaLabel}</button>
+          ${showBack ? `<div style="height:8px;"></div><button class="btn btn-ghost" id="backBtn">← Geri</button>` : ''}
+        </div>
+      </div>`;
+
+    document.getElementById('ctaBtn').onclick = handleCTA;
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) backBtn.onclick = handleBack;
+    if (subPhase === 'rest') startRestTimer();
+    if (subPhase === 'working') {
+      const inp = document.getElementById('repInput');
+      if (inp) setTimeout(() => inp.focus(), 100);
+    }
+  }
+
+  function handleCTA() {
+    const { session } = state;
+    const slot = session.slots[session.exIdx];
+    const warmups = session.warmups[slot.slotCode];
+    const setCount = session.setCounts[slot.slotCode];
+    const { subPhase } = session;
+
+    if (subPhase === 'intro') {
+      session.subPhase = warmups.length ? 'warmup' : 'working';
+      session.warmupStep = 0;
+      session.setIdx = 0;
+      render(); return;
+    }
+    if (subPhase === 'warmup') {
+      if (session.warmupStep < warmups.length - 1) { session.warmupStep++; }
+      else { session.subPhase = 'working'; session.setIdx = 0; }
+      render(); return;
+    }
+    if (subPhase === 'working') {
+      const val = Number(document.getElementById('repInput')?.value || 0);
+      if (!session.reps[slot.slotCode]) session.reps[slot.slotCode] = [];
+      session.reps[slot.slotCode][session.setIdx] = val;
+      const doneCount = session.setIdx + 1;
+      if (doneCount < setCount) {
+        session.subPhase = 'rest';
+        session.restTotal = restSec(slot.group);
+        session.restRemaining = session.restTotal;
+        render();
+      } else {
+        session.subPhase = 'notes';
+        render();
+      }
+      return;
+    }
+    if (subPhase === 'rest') {
+      stopRest();
+      session.setIdx++;
+      session.subPhase = 'working';
+      render(); return;
+    }
+    if (subPhase === 'notes') {
+      session.notes[slot.slotCode] = document.getElementById('notesInput')?.value || '';
+      if (session.exIdx < session.slots.length - 1) {
+        session.exIdx++;
+        session.subPhase = 'intro';
+        render();
+      } else {
+        state.phase = 'summary';
+        render();
+      }
+      return;
+    }
+  }
+
+  function handleBack() {
+    const { session } = state;
+    const slot = session.slots[session.exIdx];
+    const warmups = session.warmups[slot.slotCode];
+    const { subPhase } = session;
+
+    if (subPhase === 'intro' && session.exIdx > 0) {
+      session.exIdx--;
+      session.subPhase = 'notes';
+    } else if (subPhase === 'intro') {
+      state.phase = 'home';
+    } else if (subPhase === 'warmup' && session.warmupStep > 0) {
+      session.warmupStep--;
+    } else if (subPhase === 'warmup') {
+      session.subPhase = 'intro';
+    } else if (subPhase === 'working' && session.setIdx > 0) {
+      session.setIdx--;
+    } else if (subPhase === 'working' && warmups.length > 0) {
+      session.warmupStep = warmups.length - 1;
+      session.subPhase = 'warmup';
+    } else if (subPhase === 'working') {
+      session.subPhase = 'intro';
+    } else if (subPhase === 'notes') {
+      const sc = session.setCounts[slot.slotCode];
+      session.setIdx = sc - 1;
+      session.subPhase = 'working';
+    }
+    render();
+  }
+
+  function renderSummary() {
+    const { session } = state;
+    const list = session.slots.map(slot => {
+      const reps = session.reps[slot.slotCode] || [];
+      const weight = session.weights[slot.slotCode];
+      return `
+        <div class="ex-item">
+          <span class="group-dot ${slot.group}" style="margin-top:2px; flex-shrink:0;"></span>
+          <div class="ex-item-left">
+            <div class="ex-item-name">${esc(session.exNames[slot.slotCode])}</div>
+            <div class="ex-item-sub">${reps.map((r,i) => `Set ${i+1}: ${r}`).join(' · ')}</div>
+          </div>
+          <div class="ex-item-right">${!slot.isBodyweight && weight != null ? weight+' kg' : '—'}</div>
+        </div>`;
+    }).join('');
+
+    root.innerHTML = `
+      <div class="screen fade-in">
+        <div style="text-align:center; padding:32px 0 24px;">
+          <div style="font-size:56px; margin-bottom:14px;">🏆</div>
+          <div class="h1" style="margin-bottom:6px;">Antrenman Bitti!</div>
+          <div class="caption">${esc(dayName(session.dayCode))} · Hafta ${session.week}</div>
+        </div>
+        <div class="card" style="flex:1;">
+          <div class="h3" style="margin-bottom:16px; color:var(--muted);">ÖZET</div>
+          ${list}
+        </div>
+        <div class="bottom">
+          <button class="btn btn-primary" id="saveBtn">Kaydet ve Bitir ✓</button>
+          <div style="height:8px;"></div>
+          <button class="btn btn-ghost" id="backSummary">← Son Harekete Dön</button>
+        </div>
+      </div>`;
+
+    document.getElementById('saveBtn').onclick = async () => {
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true; btn.textContent = 'Kaydediliyor...';
+      try { await saveWorkout(); }
+      catch (err) { alert(err.message || 'Kayıt başarısız.'); btn.disabled = false; btn.textContent = 'Kaydet ve Bitir ✓'; }
+    };
+    document.getElementById('backSummary').onclick = () => {
+      state.phase = 'workout';
+      session.exIdx = session.slots.length - 1;
+      session.subPhase = 'notes';
+      render();
+    };
+  }
+
+  function renderSetup(isSettings = false) {
+    const program = state.program ? { ...state.program, username: state.username } : null;
+    const days = ['1','2','3'];
+    const dayLabels = { '1':'Gün 1', '2':'Gün 2', '3':'Gün 3' };
+    const groupColors = { g1:'var(--g1)', g2:'var(--g2)', g3:'var(--g3)', g4:'var(--g4)' };
+
+    let formHtml = '';
+    for (const dayCode of days) {
+      const slots = byDay(dayCode);
+      formHtml += `<div class="card"><div class="h3" style="margin-bottom:16px;">${dayLabels[dayCode]}</div>`;
+      for (const slot of slots) {
+        const sel = program ? getSel(program, slot.slotCode) : null;
+        const alts = EXERCISE_OPTIONS[slot.family] || [];
+        const groupColor = groupColors[slot.group];
+        formHtml += `
+          <div style="border-left:3px solid ${groupColor}; padding-left:14px; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+              <span class="group-dot ${slot.group}"></span>
+              <span style="font-size:13px; font-weight:700; color:${groupColor};">${slot.group.toUpperCase()}</span>
+              <span class="caption">· ${esc(slot.setsReps)}${slot.warmupSets ? ` · ${slot.warmupSets} ısınma` : ''}</span>
+            </div>
+            <label style="margin-top:0;">Egzersiz</label>
+            <select name="${slot.slotCode}_ex">
+              ${alts.map(o => `<option value="${esc(o)}" ${sel?.selectedExercise === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}
+            </select>
+            ${slot.isBodyweight ? '<div class="caption" style="margin-top:8px; padding:8px; background:var(--surface2); border-radius:8px;">Vücut ağırlığı hareketi</div>' : `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;">
+              <div>
+                <label>Test Kilosu</label>
+                <input type="number" step="0.5" min="0" name="${slot.slotCode}_w" placeholder="kg" value="${sel?.inputWeight ?? ''}" id="iw_${slot.slotCode}"/>
+              </div>
+              <div>
+                <label>Test Tekrar</label>
+                <input type="number" step="1" min="1" name="${slot.slotCode}_r" placeholder="tekrar" value="${sel?.inputReps ?? ''}" id="ir_${slot.slotCode}"/>
+              </div>
+            </div>
+            <div id="calc_${slot.slotCode}" style="margin-top:8px; padding:8px 12px; background:var(--surface2); border-radius:8px; font-size:13px; color:var(--accent);">
+              ${sel?.inputWeight && sel?.inputReps
+                ? (() => { const orm = estimate1RM(sel.inputWeight, sel.inputReps); return `1RM: ${Math.round(orm*10)/10} kg · Başlangıç: ${calcStart(orm, slot.startFactor) ?? '—'} kg`; })()
+                : '1RM ve başlangıç kilosu otomatik hesaplanır'}
+            </div>
+            <label>Başlangıç Kilosu (override)</label>
+            <input type="number" step="0.5" min="0" name="${slot.slotCode}_i" placeholder="boşsa otomatik" value="${sel?.initialWorkingWeight ?? ''}"/>
+            `}
+          </div>`;
+      }
+      formHtml += '</div>';
+    }
+
+    if (isSettings) {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;overflow-y:auto;';
+      overlay.innerHTML = `
+        <div style="max-width:480px;margin:0 auto;padding:16px 16px 40px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0 20px;">
+            <div class="h2">Program Ayarları</div>
+            <button class="btn btn-ghost" id="closeSettings" style="width:auto;padding:8px 14px;">✕</button>
+          </div>
+          <form id="settingsForm">${formHtml}
+            <button class="btn btn-primary" type="submit">Ayarları Kaydet</button>
+          </form>
+        </div>`;
+      document.body.appendChild(overlay);
+      document.getElementById('closeSettings').onclick = () => overlay.remove();
+      bindCalcListeners(overlay);
+      document.getElementById('settingsForm').onsubmit = async e => {
+        e.preventDefault();
+        const btn = e.target.querySelector('[type=submit]');
+        btn.disabled = true; btn.textContent = 'Kaydediliyor...';
+        try { await saveSetup(new FormData(e.target)); overlay.remove(); }
+        catch (err) { alert(err.message || 'Kayıt başarısız.'); btn.disabled = false; btn.textContent = 'Ayarları Kaydet'; }
+      };
+    } else {
+      root.innerHTML = `
+        <div class="screen fade-in">
+          <div class="header">
+            <span class="app-title">Vuran Ailesi Fitness</span>
+            <button class="btn btn-ghost" id="logoutSetup" style="width:auto;padding:6px 12px;font-size:13px;">Çıkış</button>
+          </div>
+          <div class="card">
+            <div class="h2" style="margin-bottom:6px;">Program Kurulumu</div>
+            <div class="caption">Her egzersiz için test kilosu ve tekrar sayısını gir. Başlangıç ağırlığı otomatik hesaplanır.</div>
+          </div>
+          <form id="setupForm" style="flex:1; overflow-y:auto;">${formHtml}
+            <div style="position:sticky; bottom:0; background:var(--bg); padding:12px 0 4px;">
+              <button class="btn btn-primary" type="submit">Programı Oluştur →</button>
+            </div>
+          </form>
+        </div>`;
+      document.getElementById('logoutSetup').onclick = handleLogout;
+      bindCalcListeners(document.getElementById('setupForm'));
+      document.getElementById('setupForm').onsubmit = async e => {
+        e.preventDefault();
+        const btn = e.target.querySelector('[type=submit]');
+        btn.disabled = true; btn.textContent = 'Oluşturuluyor...';
+        try { await saveSetup(new FormData(e.target)); }
+        catch (err) { alert(err.message || 'Hata.'); btn.disabled = false; btn.textContent = 'Programı Oluştur →'; }
+      };
+    }
+  }
+
+  function renderSettingsOverlay() { renderSetup(true); }
+
+  function bindCalcListeners(container) {
+    const base = TEMPLATE_SLOTS.filter(s => ['1','2','3'].includes(s.dayCode));
+    for (const slot of base) {
+      if (slot.isBodyweight) continue;
+      const wEl = container.querySelector(`[name="${slot.slotCode}_w"]`);
+      const rEl = container.querySelector(`[name="${slot.slotCode}_r"]`);
+      const cEl = container.querySelector(`#calc_${slot.slotCode}`);
+      if (!wEl || !rEl || !cEl) continue;
+      const update = () => {
+        const w = Number(wEl.value), r = Number(rEl.value);
+        if (w > 0 && r > 0) {
+          const orm = estimate1RM(w, r);
+          cEl.textContent = `1RM: ${Math.round(orm*10)/10} kg · Başlangıç: ${calcStart(orm, slot.startFactor) ?? '—'} kg`;
+          cEl.style.color = 'var(--accent)';
+        } else { cEl.textContent = '1RM ve başlangıç kilosu otomatik hesaplanır'; cEl.style.color = 'var(--muted)'; }
+      };
+      wEl.addEventListener('input', update);
+      rEl.addEventListener('input', update);
+    }
+  }
+
+  function handleLogout() {
+    stopRest();
+    localStorage.removeItem('vaft_user');
+    state.username = ''; state.program = null; state.logs = []; state.session = null;
+    state.phase = 'identity';
+    render();
+  }
+
+  async function handleReset() {
+    state.phase = 'loading'; render();
+    try {
+      await supabase.from('workout_logs').delete().eq('username', state.username);
+      await supabase.from('programs').delete().eq('username', state.username);
+      state.program = null; state.logs = []; state.session = null;
+      state.phase = 'setup'; render();
+    } catch (err) {
+      alert(err.message || 'Sıfırlama başarısız.'); state.phase = 'home'; render();
+    }
+  }
+
+  // ── Init ──
+  async function init() {
+    if (state.gatePassed && state.username) { await loadData(); }
+    else if (state.gatePassed) { state.phase = 'identity'; render(); }
+    else { state.phase = 'gate'; render(); }
+  }
+
+  init();
+</script>
+</body>
+</html>
