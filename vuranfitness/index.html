@@ -3,52 +3,55 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-  <meta name="theme-color" content="#0a0a12"/>
+  <meta name="theme-color" content="#1C6B4A"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <title>Vuran Ailesi Fitness Takip</title>
   <style>
     :root {
-      --bg: #0a0a12;
-      --surface: #141421;
-      --surface2: #1c1c2e;
-      --border: #2a2a40;
-      --text: #f0f0f8;
-      --muted: #7a7a9a;
-      --accent: #22c55e;
-      --accent-dim: rgba(34,197,94,.15);
-      --danger: #ef4444;
-      --g1: #f87171;
-      --g2: #fbbf24;
-      --g3: #60a5fa;
-      --g4: #4ade80;
+      --bg: #FFFBFE;
+      --surface: #fff;
+      --surface2: #EEF4EE;
+      --border: rgba(0,0,0,.10);
+      --text: #191C19;
+      --muted: #404943;
+      --accent: #1C6B4A;
+      --accent-dim: rgba(28,107,74,.12);
+      --danger: #BA1A1A;
+      --g1: #B3261E;
+      --g2: #7C5800;
+      --g3: #0061A4;
+      --g4: #1C6B4A;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
     #root { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
     .screen { flex: 1; display: flex; flex-direction: column; padding: 20px 16px 32px; }
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .app-title { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+    .app-title { font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
     .progress-wrap { background: var(--surface2); border-radius: 999px; height: 4px; margin-bottom: 6px; overflow: hidden; }
     .progress-bar { height: 4px; border-radius: 999px; background: var(--accent); transition: width .4s ease; }
     .progress-label { font-size: 12px; color: var(--muted); text-align: right; margin-bottom: 18px; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 12px; }
-    .h1 { font-size: 28px; font-weight: 800; line-height: 1.2; }
-    .h2 { font-size: 22px; font-weight: 700; line-height: 1.2; }
-    .h3 { font-size: 15px; font-weight: 700; }
+    .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .h1 { font-size: 28px; font-weight: 900; line-height: 1.2; }
+    .h2 { font-size: 22px; font-weight: 800; line-height: 1.2; }
+    .h3 { font-size: 15px; font-weight: 800; }
     .caption { font-size: 13px; color: var(--muted); }
     .big-num { font-size: 60px; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
-    .btn { width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 17px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity .15s, transform .1s; }
+    .btn { width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 17px; font-weight: 800; cursor: pointer; font-family: inherit; transition: opacity .15s, transform .1s; }
     .btn:active { opacity: .75; transform: scale(.97); }
-    .btn-primary { background: var(--accent); color: #03100a; }
-    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
     .btn-danger { background: var(--danger); color: white; }
-    .btn-ghost { background: transparent; color: var(--muted); font-size: 14px; padding: 12px; border: none; }
-    input, select, textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: var(--text); font-size: 16px; font-family: inherit; outline: none; }
+    .btn-ghost { background: transparent; color: var(--muted); font-size: 14px; padding: 12px; border: none; font-weight: 700; }
+    input, select, textarea { width: 100%; background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; color: var(--text); font-size: 16px; font-family: inherit; outline: none; }
     input:focus, select:focus, textarea:focus { border-color: var(--accent); }
     textarea { min-height: 80px; resize: none; }
-    label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 8px; margin-top: 16px; }
+    label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; margin-top: 16px; }
     label:first-child { margin-top: 0; }
     .pill { display: inline-flex; align-items: center; padding: 5px 11px; border-radius: 999px; background: var(--surface2); border: 1px solid var(--border); font-size: 12px; color: var(--muted); margin: 2px 4px 2px 0; }
-    .pill.accent { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    .pill.accent { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 800; }
     .group-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
     .group-dot.g1 { background: var(--g1); }
     .group-dot.g2 { background: var(--g2); }
@@ -58,9 +61,9 @@
     .ex-item:last-child { border-bottom: none; }
     .ex-item-left { flex: 1; min-width: 0; }
     .ex-item-right { font-size: 13px; color: var(--muted); white-space: nowrap; }
-    .ex-item-name { font-weight: 600; font-size: 15px; }
+    .ex-item-name { font-weight: 700; font-size: 15px; }
     .ex-item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .ex-item-alts { font-size: 11px; color: #475569; margin-top: 3px; }
+    .ex-item-alts { font-size: 11px; color: var(--muted); opacity: .65; margin-top: 3px; }
     .set-dots { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
     .set-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all .2s; }
     .set-dot.done { background: var(--accent); border-color: var(--accent); }
@@ -70,10 +73,10 @@
     .rep-input::-webkit-inner-spin-button, .rep-input::-webkit-outer-spin-button { -webkit-appearance: none; }
     .divider { border-top: 1px solid var(--border); margin: 14px 0; }
     .bottom { margin-top: auto; padding-top: 14px; }
-    .next-preview { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-    .next-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; }
-    .next-name { font-size: 14px; font-weight: 700; }
-    .setup-group { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 18px 0 8px; }
+    .next-preview { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+    .next-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; font-weight: 800; }
+    .next-name { font-size: 14px; font-weight: 800; }
+    .setup-group { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; padding: 18px 0 8px; }
     .setup-group.g1 { color: var(--g1); }
     .setup-group.g2 { color: var(--g2); }
     .setup-group.g3 { color: var(--g3); }
@@ -81,9 +84,9 @@
     .warmup-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .warmup-item:last-child { border-bottom: none; }
     .hidden { display: none !important; }
-    @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-    .fade-in { animation: fade-in .2s ease-out; }
-    select option { background: #1c1c2e; }
+    @keyframes fade-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .fade-in { animation: fade-in .22s cubic-bezier(.25,.46,.45,.94); }
+    ::-webkit-scrollbar { display: none; } * { scrollbar-width: none; }
   </style>
 </head>
 <body>
@@ -272,11 +275,11 @@
     return prevWeight(program, slotCode, weekNo);
   }
   function rpeColor(rpe) {
-    if (rpe <= 6) return '#4ade80';
-    if (rpe === 7) return '#86efac';
-    if (rpe === 8) return '#fbbf24';
-    if (rpe === 9) return '#f97316';
-    return '#ef4444';
+    if (rpe <= 6) return '#1C6B4A';
+    if (rpe === 7) return '#2E7D32';
+    if (rpe === 8) return '#7C5800';
+    if (rpe === 9) return '#C04C00';
+    return '#B3261E';
   }
   function rpeDesc(rpe) {
     if (rpe <= 6) return 'Hafif · 4+ tekrar rezerv';
@@ -620,10 +623,10 @@
           </div>
 
           ${hasMissing ? `
-          <div style="background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.4); border-radius:16px; padding:14px 16px; display:flex; align-items:flex-start; gap:12px;">
+          <div style="background:rgba(124,88,0,.08); border:1.5px solid rgba(124,88,0,.25); border-radius:16px; padding:14px 16px; display:flex; align-items:flex-start; gap:12px;">
             <span style="font-size:20px; flex-shrink:0;">⚠️</span>
             <div>
-              <div style="font-size:14px; font-weight:700; color:#fbbf24; margin-bottom:4px;">${missing.length} hareketin başlangıç kilosu eksik</div>
+              <div style="font-size:14px; font-weight:800; color:#7C5800; margin-bottom:4px;">${missing.length} hareketin başlangıç kilosu eksik</div>
               <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">${missing.map(s => { const sel = getSel(program, s.slotCode); return esc(sel?.selectedExercise || s.family); }).join(', ')}</div>
               <button class="btn btn-secondary" id="fixMissingBtn" style="padding:10px 14px; font-size:13px; width:auto;">Tamamla →</button>
             </div>
@@ -716,10 +719,10 @@
           <div class="caption" style="margin-top:4px;">${slots.length} hareket</div>
         </div>
         ${missing.length ? `
-          <div style="background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.4); border-radius:16px; padding:14px 16px; margin-bottom:12px; display:flex; align-items:flex-start; gap:12px;">
+          <div style="background:rgba(124,88,0,.08); border:1.5px solid rgba(124,88,0,.25); border-radius:16px; padding:14px 16px; margin-bottom:12px; display:flex; align-items:flex-start; gap:12px;">
             <span style="font-size:20px; flex-shrink:0;">⚠️</span>
             <div>
-              <div style="font-size:14px; font-weight:700; color:#fbbf24; margin-bottom:4px;">${missing.length} hareketin başlangıç kilosu eksik</div>
+              <div style="font-size:14px; font-weight:800; color:#7C5800; margin-bottom:4px;">${missing.length} hareketin başlangıç kilosu eksik</div>
               <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">${missing.map(s => { const sel = getSel(program, s.slotCode); return esc(sel?.selectedExercise || s.family); }).join(', ')}</div>
               <button class="btn btn-secondary" id="fixMissingBtn" style="padding:10px 14px; font-size:13px; width:auto;">Program Ayarlarını Tamamla →</button>
             </div>
@@ -743,10 +746,10 @@
 
   function showMenu() {
     const div = document.createElement('div');
-    div.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:flex-end;';
+    div.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:flex-end;';
     div.innerHTML = `
-      <div style="background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;margin:0 auto;padding:24px 20px 36px;border-top:1px solid var(--border);">
-        <div style="width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 24px;"></div>
+      <div style="background:var(--surface);border-radius:28px 28px 0 0;width:100%;max-width:480px;margin:0 auto;padding:24px 20px 36px;box-shadow:0 -2px 20px rgba(0,0,0,.12);">
+        <div style="width:32px;height:4px;background:rgba(0,0,0,.18);border-radius:2px;margin:0 auto 24px;"></div>
         <div class="caption" style="margin-bottom:16px;">${esc(state.username)} · ${state._week === 13 ? 'Dinlenme Haftası' : `Hafta ${state._week}`}</div>
         <button class="btn btn-secondary" id="m-settings" style="margin-bottom:10px;">Program Ayarları</button>
         <button class="btn btn-danger" id="m-reset" style="margin-bottom:10px; background:rgba(239,68,68,.15); color:var(--danger);">Programı Sıfırla</button>
@@ -1001,7 +1004,7 @@
           <button class="btn btn-primary" id="ctaBtn">${ctaLabel}</button>
           ${showBack ? `<div style="height:8px;"></div><button class="btn btn-ghost" id="backBtn">← Geri</button>` : ''}
           <div style="height:8px;"></div>
-          <button class="btn btn-ghost" id="earlyFinishBtn" style="color:var(--danger); font-size:13px; opacity:.7;">Antrenmanı Erken Bitir</button>
+          <button class="btn btn-ghost" id="earlyFinishBtn" style="color:var(--danger); font-size:13px; opacity:.65; font-weight:800;">Antrenmanı Erken Bitir</button>
         </div>
       </div>`;
 
