@@ -4,24 +4,28 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fitness Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg: #060d1f;
-      --surface: #0f1929;
-      --surface2: #182236;
-      --border: #1e2d42;
-      --text: #f1f5f9;
-      --muted: #64748b;
-      --accent: #22c55e;
+      --bg: #FFFBFE;
+      --surface: #fff;
+      --surface2: #EEF4EE;
+      --border: rgba(0,0,0,.10);
+      --text: #191C19;
+      --muted: #404943;
+      --accent: #1C6B4A;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, 'Inter', sans-serif;
+      font-family: 'Nunito', -apple-system, sans-serif;
       min-height: 100dvh;
     }
+    ::-webkit-scrollbar { display: none; } * { scrollbar-width: none; }
     .screen {
       max-width: 480px;
       margin: 0 auto;
@@ -32,32 +36,35 @@
       align-items: center;
       gap: 12px;
       padding: 16px 0 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1.5px solid var(--border);
       margin-bottom: 16px;
     }
     .back-btn {
       background: var(--surface2);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: 12px;
-      color: var(--text);
+      color: var(--accent);
       padding: 8px 14px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 800;
       cursor: pointer;
+      font-family: inherit;
     }
-    .h1 { font-size: 22px; font-weight: 800; }
+    .h1 { font-size: 22px; font-weight: 900; }
     .caption { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .card {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: 20px;
       padding: 16px;
       margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
     }
     .section-label {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.08em;
+      text-transform: uppercase;
       color: var(--muted);
       margin-bottom: 12px;
     }
@@ -78,12 +85,13 @@
       background: transparent;
       cursor: pointer;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 800;
       color: var(--text);
       transition: opacity 0.2s;
       line-height: 1;
+      font-family: inherit;
     }
-    .ex-toggle.off { opacity: 0.28; }
+    .ex-toggle.off { opacity: 0.3; }
     .ex-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     /* Chart */
     .chart-container { position: relative; height: 240px; }
@@ -95,13 +103,14 @@
       width: 100%;
       padding: 12px 14px;
       background: var(--surface2);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: 14px;
       cursor: pointer;
       margin-bottom: 6px;
       color: var(--text);
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
+      font-family: inherit;
       transition: border-radius 0.15s;
     }
     .week-header.open {
@@ -114,7 +123,7 @@
     .week-body {
       display: none;
       background: var(--surface2);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-top: none;
       border-radius: 0 0 14px 14px;
       padding: 8px 12px 12px;
@@ -125,7 +134,7 @@
     .day-section:last-child { margin-bottom: 0; }
     .day-label {
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.07em;
       padding: 3px 8px;
       border-radius: 6px;
@@ -138,19 +147,20 @@
       align-items: flex-start;
       gap: 8px;
       padding: 6px 0;
-      border-bottom: 1px solid rgba(255,255,255,.04);
+      border-bottom: 1px solid rgba(0,0,0,.06);
       font-size: 13px;
     }
     .ex-row:last-child { border-bottom: none; }
-    .ex-name { flex: 1; font-weight: 500; }
+    .ex-name { flex: 1; font-weight: 700; }
     .reps-chips { display: flex; gap: 3px; flex-wrap: wrap; justify-content: flex-end; }
     .rep-chip {
-      background: rgba(34,197,94,.1);
-      border: 1px solid rgba(34,197,94,.2);
+      background: rgba(28,107,74,.1);
+      border: 1px solid rgba(28,107,74,.22);
       border-radius: 5px;
       padding: 1px 5px;
       font-size: 11px;
-      color: #86efac;
+      color: #1C6B4A;
+      font-weight: 700;
       white-space: nowrap;
     }
     .note-text { font-size: 11px; color: var(--muted); margin-top: 3px; font-style: italic; }
@@ -178,11 +188,11 @@
 
     // 5 ana hareket: g1 grubu (3) + g2 grubu deadlift & row (2)
     const CHART_SLOTS = [
-      { slotCode: 'G1_1', dayCode: '1', label: 'Chest Press',    color: '#22c55e' },
-      { slotCode: 'G2_1', dayCode: '2', label: 'Squat',          color: '#facc15' },
-      { slotCode: 'G3_1', dayCode: '3', label: 'Shoulder Press', color: '#60a5fa' },
-      { slotCode: 'G1_3', dayCode: '1', label: 'Romanian DL',    color: '#fb923c' },
-      { slotCode: 'G3_3', dayCode: '3', label: 'Barbell Row',    color: '#c084fc' },
+      { slotCode: 'G1_1', dayCode: '1', label: 'Chest Press',    color: '#1C6B4A' },
+      { slotCode: 'G2_1', dayCode: '2', label: 'Squat',          color: '#7C5800' },
+      { slotCode: 'G3_1', dayCode: '3', label: 'Shoulder Press', color: '#0061A4' },
+      { slotCode: 'G1_3', dayCode: '1', label: 'Romanian DL',    color: '#B3261E' },
+      { slotCode: 'G3_3', dayCode: '3', label: 'Barbell Row',    color: '#6750A4' },
     ];
 
     const TEMPLATE_SLOTS = [
@@ -307,12 +317,13 @@
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#0f1929',
-              borderColor: '#1e2d42',
+              backgroundColor: '#fff',
+              borderColor: 'rgba(0,0,0,.12)',
               borderWidth: 1,
-              titleColor: '#94a3b8',
-              bodyColor: '#f1f5f9',
+              titleColor: '#404943',
+              bodyColor: '#191C19',
               padding: 10,
+              boxShadow: '0 2px 8px rgba(0,0,0,.12)',
               callbacks: {
                 label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y != null ? ctx.parsed.y + ' kg' : '-'}`,
               }
@@ -320,19 +331,19 @@
           },
           scales: {
             x: {
-              grid: { color: 'rgba(255,255,255,.05)' },
-              ticks: { color: '#64748b', font: { size: 11 } },
+              grid: { color: 'rgba(0,0,0,.06)' },
+              ticks: { color: '#404943', font: { size: 11, family: 'Nunito' } },
             },
             y: {
-              grid: { color: 'rgba(255,255,255,.05)' },
-              ticks: { color: '#64748b', font: { size: 11 }, callback: v => v + ' kg' },
+              grid: { color: 'rgba(0,0,0,.06)' },
+              ticks: { color: '#404943', font: { size: 11, family: 'Nunito' }, callback: v => v + ' kg' },
             }
           }
         }
       });
     }
 
-    const DAY_COLORS = { '1': '#22c55e', '2': '#60a5fa', '3': '#fb923c' };
+    const DAY_COLORS = { '1': '#1C6B4A', '2': '#0061A4', '3': '#B3261E' };
     const DAY_NAMES  = { '1': 'GÜN A', '2': 'GÜN B', '3': 'GÜN C' };
 
     function buildHistory() {
@@ -379,7 +390,7 @@
                 <div class="day-label" style="margin-bottom:0; background:${color}20; color:${color}; border:1px solid ${color}40;">
                   ${DAY_NAMES[dayCode]}
                 </div>
-                ${incomplete ? `<span style="font-size:10px; background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.3); border-radius:6px; padding:2px 7px; font-weight:700;">yarım kaldı</span>` : ''}
+                ${incomplete ? `<span style="font-size:10px; background:rgba(186,26,26,.1); color:#BA1A1A; border:1px solid rgba(186,26,26,.25); border-radius:6px; padding:2px 7px; font-weight:800;">yarım kaldı</span>` : ''}
               </div>
               ${exRows}
             </div>`;
