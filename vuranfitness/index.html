@@ -101,6 +101,53 @@
   const REST_SECONDS = { g1: 120, g2: 90, g3: 60, g4: 60 };
   const WARMUP_REST_SECONDS = 30;
 
+  const EXERCISE_GIFS = {
+    "Bench Press": "0025-EIeI8Vf.gif",
+    "Dumbbell Chest Press": "1287-REGM1dE.gif",
+    "Incline Bench Press": "0047-3TZduzM.gif",
+    "Squat": "0043-qXTaZnJ.gif",
+    "Leg Press": "2287-V07qpXy.gif",
+    "Hack Squat": "0046-5VCj6iH.gif",
+    "Bridge": "1409-qKBpF7I.gif",
+    "Hip Thrust": "3236-Pjbc0Kt.gif",
+    "Over Head Press": "0091-kTbSH9h.gif",
+    "Dumbbell Shoulder Press": "0405-znQUdHY.gif",
+    "Smith Machine Shoulder Press": "0766-903mzG8.gif",
+    "Shoulder Press Machine": "0603-67n3r98.gif",
+    "Romanian DL": "0085-wQ2c4XD.gif",
+    "Dumbbell Romanian Deadlift": "1459-rR0LJzx.gif",
+    "Barbell Row": "0027-eZyBC3j.gif",
+    "T-Bar Row": "1349-BgljGjd.gif",
+    "Machine Row": "1350-7I6LNUG.gif",
+    "Pull Ups": "0652-lBDjFxJ.gif",
+    "Negative Pull Ups": "0015-vrhHa6D.gif",
+    "Lat Pulldown": "2330-LEprlgG.gif",
+    "High Row Machine": "0581-nZZZy9m.gif",
+    "Single Arm Pulldown": "3563-U5INZY6.gif",
+    "Lateral Raises": "0334-DsgkuIt.gif",
+    "Cable Lateral Raises": "0178-goJ6ezq.gif",
+    "Machine Lateral Raises": "0584-dRTfGZT.gif",
+    "Chest Fly Machine": "1262-w4dLzSx.gif",
+    "Dumbbell Chest Fly": "0308-yz9nUhF.gif",
+    "Cable Chest Fly": "1262-w4dLzSx.gif",
+    "Leg Extension": "0585-my33uHU.gif",
+    "Dumbbell Lunges": "0336-RRWFUcw.gif",
+    "Bulgarian Split Squat": "0987-arsYEd3.gif",
+    "Cable Pushdown": "0201-3ZflifB.gif",
+    "Overhead Triceps Extension": "0092-5uFK1xr.gif",
+    "Skull Crushers": "0060-h8LFzo9.gif",
+    "Incline Dumbbell Curl": "0315-F3xgbjF.gif",
+    "Dumbbell Curl": "0294-NbVPDMW.gif",
+    "Cable Curl": "0868-G08RZcQ.gif",
+    "Crunch": "0274-TFqbd8t.gif",
+    "Leg Raises": "0472-I3tsCnC.gif",
+    "Plank": "0464-CosupLu.gif",
+  };
+
+  function getExGif(exName) {
+    return EXERCISE_GIFS[exName] || null;
+  }
+
   let _audioCtx = null;
   function _beep(freq, duration, volume = 0.4) {
     try {
@@ -454,6 +501,15 @@
     render();
   };
 
+  window.toggleExGif = function() {
+    const wrap = document.getElementById('exGifWrap');
+    const btn = document.getElementById('gifToggleBtn');
+    if (!wrap) return;
+    const visible = wrap.style.display !== 'none';
+    wrap.style.display = visible ? 'none' : 'block';
+    if (btn) btn.textContent = visible ? '🎬 Göster' : '🎬 Gizle';
+  };
+
   function updateRestUI() {
     const el = document.getElementById('rest-num');
     if (el) el.textContent = fmt(state.session.restRemaining);
@@ -802,6 +858,7 @@
           ${esc(a)}
         </button>`;
       }).join('');
+      const introGif = getExGif(exName);
       content = `
         <div class="card" style="border-color:${gc}; border-width:2px;">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
@@ -810,6 +867,7 @@
             ${exChanged ? `<span style="margin-left:auto; font-size:11px; color:#fbbf24; background:rgba(251,191,36,.12); padding:2px 8px; border-radius:6px; border:1px solid rgba(251,191,36,.3);">değiştirildi</span>` : ''}
           </div>
           <div class="h1" style="color:${gc}; margin-bottom:10px;">${esc(exName)}</div>
+          ${introGif ? `<div style="text-align:center; margin-bottom:14px; border-radius:14px; overflow:hidden; background:var(--surface2);"><img src="exercise-gifs/${introGif}" alt="${esc(exName)}" style="width:100%; max-height:220px; object-fit:contain; display:block;"/></div>` : ''}
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;">${altChips}</div>
           ${slot.rpe != null ? `
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; padding:10px 14px; background:${rpeColor(slot.rpe)}18; border-radius:12px; border:1px solid ${rpeColor(slot.rpe)}44;">
@@ -844,12 +902,15 @@
       const wu = warmups[session.warmupStep];
       const isLast = session.warmupStep === warmups.length - 1;
       ctaLabel = isLast ? 'Çalışma Setine Geç →' : 'Sonraki Isınma →';
+      const warmupGif = getExGif(exName);
       content = `
         <div class="card">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
             <span class="group-dot ${slot.group}"></span>
             <span class="caption">Isınma · ${session.warmupStep+1}/${warmups.length}</span>
+            ${warmupGif ? `<button onclick="toggleExGif()" id="gifToggleBtn" style="margin-left:auto; background:var(--surface2); border:1.5px solid var(--border); border-radius:8px; padding:3px 10px; font-size:11px; font-weight:700; color:var(--muted); cursor:pointer; font-family:inherit;">🎬 Göster</button>` : ''}
           </div>
+          ${warmupGif ? `<div id="exGifWrap" style="display:none; text-align:center; margin-bottom:12px; border-radius:12px; overflow:hidden; background:var(--surface2);"><img src="exercise-gifs/${warmupGif}" alt="${esc(exName)}" style="width:100%; max-height:180px; object-fit:contain; display:block;"/></div>` : ''}
           <div class="h2" style="color:${gc}; margin-bottom:24px;">${esc(exName)}</div>
           <div style="text-align:center; padding:16px 0 24px;">
             <div class="caption" style="margin-bottom:8px;">AĞIRLIK</div>
@@ -863,12 +924,15 @@
     else if (subPhase === 'working') {
       ctaLabel = 'Seti Tamamla ✓';
       const prevDone = session.setIdx;
+      const workingGif = getExGif(exName);
       content = `
         <div class="card">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
             <span class="group-dot ${slot.group}"></span>
             <span class="caption">Set ${prevDone+1} / ${setCount}</span>
+            ${workingGif ? `<button onclick="toggleExGif()" id="gifToggleBtn" style="margin-left:auto; background:var(--surface2); border:1.5px solid var(--border); border-radius:8px; padding:3px 10px; font-size:11px; font-weight:700; color:var(--muted); cursor:pointer; font-family:inherit;">🎬 Göster</button>` : ''}
           </div>
+          ${workingGif ? `<div id="exGifWrap" style="display:none; text-align:center; margin-bottom:12px; border-radius:12px; overflow:hidden; background:var(--surface2);"><img src="exercise-gifs/${workingGif}" alt="${esc(exName)}" style="width:100%; max-height:180px; object-fit:contain; display:block;"/></div>` : ''}
           <div class="h2" style="color:${gc}; margin-bottom:${exChanged ? '4px' : '14px'};">${esc(exName)}</div>
           ${exChanged ? `<div style="font-size:11px; color:#fbbf24; margin-bottom:10px;">↩ ${esc(plannedExName)} yerine</div>` : ''}
           ${!slot.isBodyweight && weight != null ? `
