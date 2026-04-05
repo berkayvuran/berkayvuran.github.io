@@ -1,0 +1,45 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    - cron: '0 0 */3 * *'  # Her 3 günde bir gece yarısı UTC
+  workflow_dispatch:        # Manuel tetikleme için
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping satırı var mı kontrol et
+        id: check
+        run: |
+          DATA=$(curl -s \
+            "https://vwubvpjidodewzvtqjtf.supabase.co/rest/v1/workout_logs?username=eq.__ping__&select=username" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+          echo "response=$DATA"
+          if echo "$DATA" | grep -q '__ping__'; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Ping satırını sil (varsa)
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          curl -s -X DELETE \
+            "https://vwubvpjidodewzvtqjtf.supabase.co/rest/v1/workout_logs?username=eq.__ping__" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
+          echo "Ping satırı silindi."
+
+      - name: Ping satırı ekle (yoksa)
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          curl -s -X POST \
+            "https://vwubvpjidodewzvtqjtf.supabase.co/rest/v1/workout_logs" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"username":"__ping__","week_no":0,"workout_code":"PING","slot_code":"PING"}'
+          echo "Ping satırı eklendi."
