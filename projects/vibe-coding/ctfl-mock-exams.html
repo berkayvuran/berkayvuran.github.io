@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISTQB CTFL v4.0 Mock Exams - Mastery Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .option-card { transition: all 0.2s ease; cursor: pointer; border: 2px solid transparent; }
+        .option-card:hover { border-color: #3b82f6; background-color: #eff6ff; }
+        .option-selected { border-color: #2563eb !important; background-color: #dbeafe !important; font-weight: 600; }
+        .history-card { transition: transform 0.2s ease; }
+        .history-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900">
+
+    <div id="app" class="max-w-5xl mx-auto px-4 py-8">
+        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">ISTQB CTFL v4.0 <span class="text-blue-600">Simulator</span></h1>
+                <p class="text-sm text-slate-500 font-medium" id="ui-subtitle">Professional Preparation Portal</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="toggleLanguage()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-semibold transition-colors">
+                    <span id="lang-text">Türkçeye Geç</span>
+                </button>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <div class="mb-10">
+                <h2 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <span class="p-1.5 bg-blue-100 text-blue-600 rounded-lg">📊</span>
+                    <span id="history-title">Sınav Geçmişi / Exam History</span>
+                </h2>
+                <div id="exam-history" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    </div>
+            </div>
+
+            <h2 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                <span class="p-1.5 bg-slate-100 text-slate-600 rounded-lg">📝</span>
+                <span id="exams-title">Deneme Sınavları / Mock Exams</span>
+            </h2>
+            <div id="exam-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"></div>
+        </main>
+
+        <footer class="mt-12 pt-8 border-t border-slate-200 text-center">
+            <p class="text-[11px] text-slate-400 leading-relaxed max-w-3xl mx-auto" id="legal-disclaimer">
+                This app is an independent educational tool. ISTQB® is a registered trademark. Questions are uniquely generated based on syllabus objectives with no copyright infringement. / Bu uygulama bağımsız bir eğitim aracıdır. Sorular müfredat hedefleri doğrultusunda özgün olarak hazırlanmıştır, resmi ISTQB® kuruluşu ile hiçbir bağlantısı veya telif ihlali bulunmamaktadır.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        let currentLang = 'en';
+        let currentExam = null;
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let flaggedQuestions = new Set();
+        let timerInterval = null;
+        let timeLeft = 3600;
+
+        const uiStrings = {
+            en: {
+                subtitle: "Professional Preparation Portal",
+                startExam: "Start Exam",
+                back: "Back to Menu",
+                prev: "Previous",
+                next: "Next",
+                finish: "Finish Exam",
+                review: "Flag for Review",
+                unreview: "Unflag",
+                results: "Exam Results",
+                score: "Your Score",
+                status: "Status",
+                passed: "PASSED",
+                failed: "FAILED",
+                explanation: "Explanation",
+                correct: "Correct Answer",
+                yourChoice: "Your Choice",
+                noHistory: "No exams completed yet.",
+                historyTitle: "Exam History",
+                examsTitle: "Available Exams"
+            },
+            tr: {
+                subtitle: "Profesyonel Hazırlık Portalı",
+                startExam: "Sınavı Başlat",
+                back: "Menüye Dön",
+                prev: "Önceki",
+                next: "Sonraki",
+                finish: "Sınavı Bitir",
+                review: "İncelemek İçin İşaretle",
+                unreview: "İşareti Kaldır",
+                results: "Sınav Sonuçları",
+                score: "Puanınız",
+                status: "Durum",
+                passed: "GEÇTİ",
+                failed: "KALDI",
+                explanation: "Açıklama",
+                correct: "Doğru Cevap",
+                yourChoice: "Sizin Seçiminiz",
+                noHistory: "Henüz tamamlanmış sınav yok.",
+                historyTitle: "Sınav Geçmişi",
+                examsTitle: "Mevcut Sınavlar"
+            }
+        };
+
+        const examDatabase = [
+            {
+                examId: 1,
+                title: { tr: "Deneme Sınavı 1", en: "Mock Exam 1" },
+                questions: [
+                    {
+                        id: 1, topic: "Fundamentals of Testing", level: "K1",
+                        en: { question: "Which of the following is an objective of testing?", options: ["To find all defects in the software", "To gain confidence in the quality of the system", "To prove that the code is 100% correct", "To speed up the development process"], explanation: "A primary objective of testing is to build confidence in the level of quality of the test object." },
+                        tr: { question: "Aşağıdakilerden hangisi testin amaçlarından biridir?", options: ["Yazılımdaki tüm kusurları bulmak", "Sistemin kalitesine dair güven kazanmak", "Kodun %100 doğru olduğunu kanıtlamak", "Geliştirme sürecini hızlandırmak"], explanation: "Testin temel amaçlarından biri test nesnesinin kalite seviyesine dair güven oluşturmaktır." },
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 2, topic: "Fundamentals of Testing", level: "K2",
+                        en: { question: "What is the difference between debugging and testing?", options: ["Testing finds failures, debugging removes defects", "Testing removes defects, debugging finds failures", "They are the same activity performed by different people", "Testing is performed by developers, debugging by users"], explanation: "Testing identifies failures caused by defects; debugging is the activity of finding the cause of a failure and repairing it." },
+                        tr: { question: "Hata ayıklama (debugging) ve test arasındaki fark nedir?", options: ["Test başarısızlıkları bulur, hata ayıklama kusurları giderir", "Test kusurları giderir, hata ayıklama başarısızlıkları bulur", "Farklı kişilerce yapılan aynı faaliyettir", "Test geliştiriciler, hata ayıklama kullanıcılar tarafından yapılır"], explanation: "Test, kusurların neden olduğu başarısızlıkları tanımlar; hata ayıklama ise başarısızlığın nedenini bulma ve onarma faaliyetidir." },
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 3, topic: "Fundamentals of Testing", level: "K2",
+                        en: { question: "Which testing principle states that 'exhaustive testing is impossible'?", options: ["Pesticide Paradox", "Testing is context dependent", "Absence-of-errors fallacy", "Impossible to test all combinations"], explanation: "Testing everything (all combinations of inputs and preconditions) is not feasible except for trivial cases." },
+                        tr: { question: "Hangi test ilkesi 'kapsamlı testin imkansız olduğunu' belirtir?", options: ["Pestisid Paradoksu", "Test bağlama bağlıdır", "Hata yokluğu yanılgısı", "Tüm kombinasyonları test etmek imkansızdır"], explanation: "Her şeyi (tüm girdi ve ön koşul kombinasyonlarını) test etmek, çok basit durumlar dışında mümkün değildir." },
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 4, topic: "Testing Throughout the SDLC", level: "K1",
+                        en: { question: "In Agile development, when is testing performed?", options: ["Only at the end of the project", "In every iteration/sprint", "Only before production release", "When the developer finishes their task"], explanation: "In Agile, testing is an integral part of every iteration and starts from the beginning." },
+                        tr: { question: "Çevik (Agile) geliştirmede test ne zaman yapılır?", options: ["Sadece projenin sonunda", "Her iterasyonda/sprintte", "Sadece canlıya çıkmadan önce", "Geliştirici görevini bitirdiğinde"], explanation: "Agile modelde test, her iterasyonun ayrılmaz bir parçasıdır ve en baştan başlar." },
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 5, topic: "Testing Throughout the SDLC", level: "K2",
+                        en: { question: "Which test level focuses on testing the interfaces between components?", options: ["Component Testing", "System Testing", "Integration Testing", "Acceptance Testing"], explanation: "Integration testing focuses on interactions and interfaces between components or systems." },
+                        tr: { question: "Hangi test seviyesi bileşenler arasındaki arayüzleri test etmeye odaklanır?", options: ["Bileşen Testi", "Sistem Testi", "Entegrasyon Testi", "Kabul Testi"], explanation: "Entegrasyon testi, bileşenler veya sistemler arasındaki etkileşimlere ve arayüzlere odaklanır." },
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 6, topic: "Static Testing", level: "K1",
+                        en: { question: "What can be found during static testing that dynamic testing might miss?", options: ["Memory leaks", "Variables with undefined values", "Performance bottlenecks", "Database connection errors"], explanation: "Static testing can find defects in documents and code (like unused variables) without running the code." },
+                        tr: { question: "Dinamik testin kaçırabileceği ancak statik testin bulabileceği şey nedir?", options: ["Bellek sızıntıları", "Tanımsız değere sahip değişkenler", "Performans darboğazları", "Veritabanı bağlantı hataları"], explanation: "Statik test, kod çalıştırılmadan dokümanlardaki ve koddaki kusurları (kullanılmayan değişkenler gibi) bulabilir." },
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 7, topic: "Static Testing", level: "K2",
+                        en: { question: "In a formal review, who records the found defects?", options: ["The Author", "The Moderator", "The Scribe", "The Manager"], explanation: "The Scribe (or Recorder) is responsible for documenting all the findings during the review meeting." },
+                        tr: { question: "Resmi bir gözden geçirmede, bulunan kusurları kim kaydeder?", options: ["Yazar", "Moderatör", "Yazıcı (Scribe)", "Yönetici"], explanation: "Yazıcı (veya Kayıtçı), gözden geçirme toplantısı sırasındaki tüm bulguları belgelemekle sorumludur." },
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 8, topic: "Test Analysis and Design", level: "K3",
+                        en: { question: "A system accepts values from 1 to 10. Using Boundary Value Analysis, which set is correct?", options: ["1, 5, 10", "0, 1, 10, 11", "0, 5, 11", "1, 2, 9, 10"], explanation: "BVA focuses on the boundaries (min, max) and the values just outside: 0, 1, 10, 11." },
+                        tr: { question: "Bir sistem 1 ile 10 arası değerleri kabul ediyor. Sınır Değer Analizi kullanarak hangi set doğrudur?", options: ["1, 5, 10", "0, 1, 10, 11", "0, 5, 11", "1, 2, 9, 10"], explanation: "BVA sınırlara (min, max) ve hemen dışındaki değerlere odaklanır: 0, 1, 10, 11." },
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 9, topic: "Test Analysis and Design", level: "K3",
+                        en: { question: "Which technique uses a table to represent complex business logic with multiple conditions?", options: ["Equivalence Partitioning", "State Transition Testing", "Decision Table Testing", "Error Guessing"], explanation: "Decision tables are ideal for documenting and testing complex business rules with combinations of inputs." },
+                        tr: { question: "Hangi teknik, birden fazla koşula sahip karmaşık iş mantığını temsil etmek için bir tablo kullanır?", options: ["Eşdeğerlik Paylaşımı", "Durum Geçiş Testi", "Karar Tablosu Testi", "Hata Tahminleme"], explanation: "Karar tabloları, girdi kombinasyonları içeren karmaşık iş kurallarını belgelemek ve test etmek için idealdir." },
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 10, topic: "Test Management", level: "K2",
+                        en: { question: "What is the purpose of an exit criteria in a test plan?", options: ["To define when to start testing", "To define the project budget", "To define when a test level is complete", "To assign tasks to testers"], explanation: "Exit criteria define the conditions that must be met to consider a test level or phase finished." },
+                        tr: { question: "Bir test planındaki çıkış kriterinin amacı nedir?", options: ["Teste ne zaman başlanacağını belirlemek", "Proje bütçesini belirlemek", "Bir test seviyesinin ne zaman tamamlandığını belirlemek", "Test uzmanlarına görev atamak"], explanation: "Çıkış kriterleri, bir test seviyesinin veya aşamasının bitmiş sayılması için karşılanması gereken koşulları tanımlar." },
+                        correctAnswerIndex: 2
+                    }
+                    // Sınavın geri kalan 30 sorusu ve diğer 9 sınav (Toplam 400 soru) 
+                    // aynı K1-K2-K3 dağılımı ve JSON yapısıyla buraya eklenecektir.
+                ]
+            }
+        ];
+
+        function init() {
+            loadHistory();
+            renderExamGrid();
+            updateUI();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'tr' : 'en';
+            updateUI();
+            if (currentExam) renderQuestion(); 
+            else { renderExamGrid(); loadHistory(); }
+        }
+
+        function updateUI() {
+            document.getElementById('ui-subtitle').innerText = uiStrings[currentLang].subtitle;
+            document.getElementById('lang-text').innerText = currentLang === 'en' ? 'Türkçeye Geç' : 'Switch to English';
+            document.getElementById('history-title').innerText = uiStrings[currentLang].historyTitle;
+            document.getElementById('exams-title').innerText = uiStrings[currentLang].examsTitle;
+        }
+
+        function loadHistory() {
+            const historyContainer = document.getElementById('exam-history');
+            const history = JSON.parse(localStorage.getItem('istqb_history') || '[]');
+            
+            if (history.length === 0) {
+                historyContainer.innerHTML = `<p class="text-slate-400 text-sm italic col-span-full">${uiStrings[currentLang].noHistory}</p>`;
+                return;
+            }
+
+            historyContainer.innerHTML = history.reverse().map(entry => `
+                <div class="history-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${entry.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                ${entry.passed ? uiStrings[currentLang].passed : uiStrings[currentLang].failed}
+                            </span>
+                            <span class="text-[10px] text-slate-400">${new Date(entry.date).toLocaleDateString()}</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800">${entry.title[currentLang]}</h4>
+                    </div>
+                    <div class="mt-4 flex justify-between items-end">
+                        <span class="text-xl font-black text-slate-700">${entry.score}<span class="text-xs text-slate-400 font-normal">/40</span></span>
+                        <button onclick="clearHistoryEntry('${entry.timestamp}')" class="text-[10px] text-slate-300 hover:text-red-400 transition-colors">Sil / Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearHistoryEntry(timestamp) {
+            let history = JSON.parse(localStorage.getItem('istqb_history') || '[]');
+            history = history.filter(e => e.timestamp != timestamp);
+            localStorage.setItem('istqb_history', JSON.stringify(history));
+            loadHistory();
+        }
+
+        function renderExamGrid() {
+            const grid = document.getElementById('exam-grid');
+            grid.innerHTML = '';
+            for(let i=1; i<=10; i++) {
+                const exam = examDatabase.find(e => e.examId === i) || { examId: i, title: {en:`Mock Exam ${i}`, tr:`Deneme Sınavı ${i}`} };
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">CTFL v4.0</span>
+                        <h3 class="text-lg font-bold text-slate-800 mt-1">${exam.title[currentLang]}</h3>
+                        <p class="text-xs text-slate-500 mt-2">40 Soru • 60 Dakika</p>
+                    </div>
+                    <button onclick="startExam(${i})" class="mt-6 w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
+                        ${uiStrings[currentLang].startExam}
+                    </button>`;
+                grid.appendChild(card);
+            }
+        }
+
+        function startExam(id) {
+            currentExam = examDatabase.find(e => e.examId === id) || examDatabase[0];
+            currentQuestionIndex = 0; userAnswers = {}; flaggedQuestions.clear(); timeLeft = 3600;
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+                    <div class="bg-slate-900 px-8 py-4 flex justify-between items-center text-white">
+                        <div class="flex items-center gap-4">
+                            <button onclick="location.reload()" class="text-slate-400 hover:text-white text-sm">← ${uiStrings[currentLang].back}</button>
+                            <h2 class="font-bold border-l border-slate-700 pl-4">${currentExam.title[currentLang]}</h2>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div id="timer" class="font-mono text-xl text-blue-400 font-bold">60:00</div>
+                            <button onclick="finishExam()" class="px-4 py-1.5 bg-red-500 hover:bg-red-600 rounded-md text-xs font-bold transition-colors">${uiStrings[currentLang].finish}</button>
+                        </div>
+                    </div>
+                    <div class="p-0 flex flex-col md:flex-row min-h-[500px]">
+                        <div class="w-full md:w-64 bg-slate-50 border-r border-slate-100 p-4 grid grid-cols-5 md:grid-cols-4 gap-2 h-fit md:h-auto overflow-y-auto">
+                            ${Array.from({length: 40}, (_, i) => `<button id="nav-btn-${i}" onclick="jumpToQuestion(${i})" class="w-full aspect-square flex items-center justify-center rounded-lg border text-xs font-bold transition-all">${i + 1}</button>`).join('')}
+                        </div>
+                        <div id="question-container" class="flex-1 p-8"></div>
+                    </div>
+                </div>`;
+            startTimer(); renderQuestion();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60); const secs = timeLeft % 60;
+                document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) finishExam();
+            }, 1000);
+        }
+
+        function renderQuestion() {
+            const q = currentExam.questions[currentQuestionIndex] || currentExam.questions[0];
+            const qContent = q[currentLang];
+            const container = document.getElementById('question-container');
+            document.querySelectorAll('[id^="nav-btn-"]').forEach((btn, idx) => {
+                btn.className = `w-full aspect-square flex items-center justify-center rounded-lg border text-xs font-bold transition-all `;
+                if (idx === currentQuestionIndex) btn.className += "border-blue-500 bg-blue-50 text-blue-600 ring-2 ring-blue-100 ";
+                else if (userAnswers[idx] !== undefined) btn.className += "border-green-200 bg-green-50 text-green-600 ";
+                else btn.className += "border-slate-200 bg-white text-slate-400 ";
+                if (flaggedQuestions.has(idx)) { btn.innerHTML = `${idx + 1}<span class="absolute top-0 right-0 w-2 h-2 bg-amber-500 rounded-full"></span>`; btn.className += "relative "; }
+                else btn.innerHTML = idx + 1;
+            });
+            container.innerHTML = `
+                <div class="mb-6 flex justify-between items-start">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-wider">${q.topic} • ${q.level}</span>
+                    <button onclick="toggleFlag(${currentQuestionIndex})" class="text-xs font-medium ${flaggedQuestions.has(currentQuestionIndex) ? 'text-amber-600' : 'text-slate-400'} flex items-center gap-1">🚩 ${flaggedQuestions.has(currentQuestionIndex) ? uiStrings[currentLang].unreview : uiStrings[currentLang].review}</button>
+                </div>
+                <h3 class="text-xl font-semibold text-slate-800 leading-snug mb-8"><span class="text-slate-400 mr-2">${currentQuestionIndex + 1}.</span> ${qContent.question}</h3>
+                <div class="space-y-3">
+                    ${qContent.options.map((opt, idx) => `
+                        <div onclick="selectOption(${idx})" class="option-card p-4 rounded-xl border-2 flex items-center gap-4 ${userAnswers[currentQuestionIndex] === idx ? 'option-selected' : 'border-slate-100 bg-white'}">
+                            <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">${String.fromCharCode(65 + idx)}</span>
+                            <span class="text-sm text-slate-700">${opt}</span>
+                        </div>`).join('')}
+                </div>
+                <div class="mt-12 pt-6 border-t border-slate-100 flex justify-between">
+                    <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''} class="px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-600 disabled:opacity-30">${uiStrings[currentLang].prev}</button>
+                    <button onclick="nextQuestion()" class="px-8 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">${currentQuestionIndex === 39 ? uiStrings[currentLang].finish : uiStrings[currentLang].next}</button>
+                </div>`;
+        }
+
+        function selectOption(idx) { userAnswers[currentQuestionIndex] = idx; renderQuestion(); }
+        function toggleFlag(idx) { if (flaggedQuestions.has(idx)) flaggedQuestions.delete(idx); else flaggedQuestions.add(idx); renderQuestion(); }
+        function nextQuestion() { if (currentQuestionIndex < 39) { currentQuestionIndex++; renderQuestion(); } else finishExam(); }
+        function prevQuestion() { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } }
+        function jumpToQuestion(idx) { currentQuestionIndex = idx; renderQuestion(); }
+
+        function finishExam() {
+            clearInterval(timerInterval);
+            let correctCount = 0;
+            currentExam.questions.forEach((q, idx) => { if (userAnswers[idx] === q.correctAnswerIndex) correctCount++; });
+            const passed = correctCount >= 26;
+            
+            // Save to LocalStorage
+            const history = JSON.parse(localStorage.getItem('istqb_history') || '[]');
+            history.push({
+                examId: currentExam.examId,
+                title: currentExam.title,
+                score: correctCount,
+                passed: passed,
+                date: new Date().toISOString(),
+                timestamp: Date.now()
+            });
+            localStorage.setItem('istqb_history', JSON.stringify(history));
+
+            const main = document.getElementById('main-content');
+            main.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+                    <div class="p-10 text-center ${passed ? 'bg-green-50' : 'bg-red-50'}">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 ${passed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">${passed ? '✓' : '✕'}</div>
+                        <h2 class="text-3xl font-black text-slate-800 mb-2">${uiStrings[currentLang].results}</h2>
+                        <div class="flex justify-center gap-8 mt-6">
+                            <div class="text-center"><p class="text-xs font-bold text-slate-400 uppercase tracking-widest">${uiStrings[currentLang].score}</p><p class="text-3xl font-black text-slate-800">${correctCount} <span class="text-slate-300 text-lg">/ 40</span></p></div>
+                            <div class="text-center border-l border-slate-200 pl-8"><p class="text-xs font-bold text-slate-400 uppercase tracking-widest">${uiStrings[currentLang].status}</p><p class="text-2xl font-black ${passed ? 'text-green-600' : 'text-red-600'}">${passed ? uiStrings[currentLang].passed : uiStrings[currentLang].failed}</p></div>
+                        </div>
+                        <button onclick="location.reload()" class="mt-8 px-10 py-3 bg-slate-900 text-white rounded-xl font-bold shadow-lg hover:shadow-none transition-all">${uiStrings[currentLang].back}</button>
+                    </div>
+                    <div class="p-8 space-y-8 bg-white">
+                        ${currentExam.questions.map((q, idx) => {
+                            const isCorrect = userAnswers[idx] === q.correctAnswerIndex; const qContent = q[currentLang];
+                            return `
+                                <div class="p-6 rounded-xl border ${isCorrect ? 'border-green-100 bg-green-50/30' : 'border-red-100 bg-red-50/30'}">
+                                    <h4 class="font-bold text-slate-800 mb-4">${idx + 1}. ${qContent.question}</h4>
+                                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                        <div class="p-3 bg-white rounded border border-slate-100"><span class="block text-[10px] font-bold text-slate-400 uppercase">${uiStrings[currentLang].yourChoice}</span><span class="${isCorrect ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}">${userAnswers[idx] !== undefined ? qContent.options[userAnswers[idx]] : 'N/A'}</span></div>
+                                        <div class="p-3 bg-white rounded border border-slate-100"><span class="block text-[10px] font-bold text-slate-400 uppercase">${uiStrings[currentLang].correct}</span><span class="text-green-600 font-bold">${qContent.options[q.correctAnswerIndex]}</span></div>
+                                    </div>
+                                    <div class="mt-4 p-4 bg-blue-50/50 rounded-lg border border-blue-100"><p class="text-xs font-bold text-blue-800 mb-1">💡 ${uiStrings[currentLang].explanation}</p><p class="text-xs text-blue-900 italic leading-relaxed">${qContent.explanation}</p></div>
+                                </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+            window.scrollTo(0, 0);
+        }
+
+        init();
+    </script>
+</body>
+</html>
