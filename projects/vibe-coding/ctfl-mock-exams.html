@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISTQB CTFL v4.0 Mock Exams - Mastery Portal</title>
+    <title>ISTQB CTFL v4.0 Mastery Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -20,13 +20,13 @@
     <div id="app" class="max-w-5xl mx-auto px-4 py-8">
         <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
             <div>
-                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">ISTQB CTFL v4.0 <span class="text-blue-600">Simulator</span></h1>
-                <p class="text-sm text-slate-500 font-medium" id="ui-subtitle">Professional Preparation Portal</p>
+                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">ISTQB CTFL v4.0 <span class="text-blue-600">Simülatör</span></h1>
+                <p class="text-sm text-slate-500 font-medium">Profesyonel Hazırlık ve Deneme Portalı</p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="toggleLanguage()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-semibold transition-colors">
-                    <span id="lang-text">Türkçeye Geç</span>
-                </button>
+            <div id="user-info" class="text-right hidden sm:block">
+                <span class="text-xs font-bold text-slate-400 uppercase">Durum</span>
+                <p id="status-text" class="text-sm font-bold text-slate-700">—</p>
+                <p id="status-sub" class="text-[10px] text-slate-400 mt-0.5"></p>
             </div>
         </header>
 
@@ -34,28 +34,26 @@
             <div class="mb-10">
                 <h2 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                     <span class="p-1.5 bg-blue-100 text-blue-600 rounded-lg">📊</span>
-                    <span id="history-title">Sınav Geçmişi / Exam History</span>
+                    <span>Sınav Geçmişi</span>
                 </h2>
-                <div id="exam-history" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    </div>
+                <div id="exam-history" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
             </div>
 
             <h2 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                 <span class="p-1.5 bg-slate-100 text-slate-600 rounded-lg">📝</span>
-                <span id="exams-title">Deneme Sınavları / Mock Exams</span>
+                <span>Deneme Sınavları (12 Adet)</span>
             </h2>
-            <div id="exam-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"></div>
+            <div id="exam-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
         </main>
 
         <footer class="mt-12 pt-8 border-t border-slate-200 text-center">
-            <p class="text-[11px] text-slate-400 leading-relaxed max-w-3xl mx-auto" id="legal-disclaimer">
-                This app is an independent educational tool. ISTQB® is a registered trademark. Questions are uniquely generated based on syllabus objectives with no copyright infringement. / Bu uygulama bağımsız bir eğitim aracıdır. Sorular müfredat hedefleri doğrultusunda özgün olarak hazırlanmıştır, resmi ISTQB® kuruluşu ile hiçbir bağlantısı veya telif ihlali bulunmamaktadır.
+            <p class="text-[11px] text-slate-400 leading-relaxed max-w-3xl mx-auto">
+                Bu uygulama bağımsız bir eğitim aracıdır. ISTQB® tescilli bir ticari markadır. Sorular müfredat hedefleri doğrultusunda (Resmi Örnek A/B ve Özgün Sorular) derlenmiştir, resmi ISTQB® kuruluşu ile hiçbir bağlantısı veya telif ihlali bulunmamaktadır.
             </p>
         </footer>
     </div>
 
     <script>
-        let currentLang = 'en';
         let currentExam = null;
         let currentQuestionIndex = 0;
         let userAnswers = {};
@@ -63,218 +61,901 @@
         let timerInterval = null;
         let timeLeft = 3600;
 
-        const uiStrings = {
-            en: {
-                subtitle: "Professional Preparation Portal",
-                startExam: "Start Exam",
-                back: "Back to Menu",
-                prev: "Previous",
-                next: "Next",
-                finish: "Finish Exam",
-                review: "Flag for Review",
-                unreview: "Unflag",
-                results: "Exam Results",
-                score: "Your Score",
-                status: "Status",
-                passed: "PASSED",
-                failed: "FAILED",
-                explanation: "Explanation",
-                correct: "Correct Answer",
-                yourChoice: "Your Choice",
-                noHistory: "No exams completed yet.",
-                historyTitle: "Exam History",
-                examsTitle: "Available Exams"
-            },
-            tr: {
-                subtitle: "Profesyonel Hazırlık Portalı",
-                startExam: "Sınavı Başlat",
-                back: "Menüye Dön",
-                prev: "Önceki",
-                next: "Sonraki",
-                finish: "Sınavı Bitir",
-                review: "İncelemek İçin İşaretle",
-                unreview: "İşareti Kaldır",
-                results: "Sınav Sonuçları",
-                score: "Puanınız",
-                status: "Durum",
-                passed: "GEÇTİ",
-                failed: "KALDI",
-                explanation: "Açıklama",
-                correct: "Doğru Cevap",
-                yourChoice: "Sizin Seçiminiz",
-                noHistory: "Henüz tamamlanmış sınav yok.",
-                historyTitle: "Sınav Geçmişi",
-                examsTitle: "Mevcut Sınavlar"
-            }
-        };
-
         const examDatabase = [
             {
-                examId: 1,
-                title: { tr: "Deneme Sınavı 1", en: "Mock Exam 1" },
+                examId: 11,
+                isOfficial: true,
+                title: "Resmi Örnek Sınav - Set A",
                 questions: [
                     {
-                        id: 1, topic: "Fundamentals of Testing", level: "K1",
-                        en: { question: "Which of the following is an objective of testing?", options: ["To find all defects in the software", "To gain confidence in the quality of the system", "To prove that the code is 100% correct", "To speed up the development process"], explanation: "A primary objective of testing is to build confidence in the level of quality of the test object." },
-                        tr: { question: "Aşağıdakilerden hangisi testin amaçlarından biridir?", options: ["Yazılımdaki tüm kusurları bulmak", "Sistemin kalitesine dair güven kazanmak", "Kodun %100 doğru olduğunu kanıtlamak", "Geliştirme sürecini hızlandırmak"], explanation: "Testin temel amaçlarından biri test nesnesinin kalite seviyesine dair güven oluşturmaktır." },
-                        correctAnswerIndex: 1
+                        id: 1, topic: "Testin Temelleri", level: "K1",
+                        question: "Aşağıdaki ifadelerden hangisi geçerli bir test amacını tanımlar?",
+                        options: [
+                            "Test edilen sistemde düzeltilmemiş hata kalmadığını kanıtlamak",
+                            "Sistemin üretim ortamına alınmasından sonra herhangi bir hata çıkmayacağını kanıtlamak",
+                            "Test nesnesinin risk seviyesini azaltmak ve kalite seviyesine olan güveni artırmak",
+                            "Test edilmemiş girdi kombinasyonlarının kalmadığını doğrulamak"
+                        ],
+                        explanation: "Testin ana amaçlarından biri kaliteye güven sağlamak ve riskleri azaltmaktır.",
+                        correctAnswerIndex: 2
                     },
                     {
-                        id: 2, topic: "Fundamentals of Testing", level: "K2",
-                        en: { question: "What is the difference between debugging and testing?", options: ["Testing finds failures, debugging removes defects", "Testing removes defects, debugging finds failures", "They are the same activity performed by different people", "Testing is performed by developers, debugging by users"], explanation: "Testing identifies failures caused by defects; debugging is the activity of finding the cause of a failure and repairing it." },
-                        tr: { question: "Hata ayıklama (debugging) ve test arasındaki fark nedir?", options: ["Test başarısızlıkları bulur, hata ayıklama kusurları giderir", "Test kusurları giderir, hata ayıklama başarısızlıkları bulur", "Farklı kişilerce yapılan aynı faaliyettir", "Test geliştiriciler, hata ayıklama kullanıcılar tarafından yapılır"], explanation: "Test, kusurların neden olduğu başarısızlıkları tanımlar; hata ayıklama ise başarısızlığın nedenini bulma ve onarma faaliyetidir." },
+                        id: 2, topic: "Testin Temelleri", level: "K2",
+                        question: "Aşağıdaki seçeneklerden hangisi başarıya katkıda bulunan test aktivitelerine bir örnektir?",
+                        options: [
+                            "Test uzmanlarının yazılım geliştirme yaşam döngüsünün (YGYD) çeşitli aktivitelerine dahil edilmesi ürünlerdeki hataların tespit edilmesine yardımcı olur.",
+                            "Test uzmanlarının kodlama sırasında geliştiricileri rahatsız etmemeye çalışması, geliştiricilerin daha iyi kod yazmasını sağlar.",
+                            "Test uzmanlarının son kullanıcılarla iş birliği yapması, bileşen entegrasyonu ve sistem testleri sırasında hata raporlarının kalitesini artırmaya yardımcı olur.",
+                            "Sertifikalı test uzmanları, sertifikasız test uzmanlarından çok daha iyi test senaryoları tasarlayacaktır."
+                        ],
+                        explanation: "Test uzmanlarının YGYD aktivitelerine erken dahil olması hataların erkenden tespit edilmesini sağlar.",
                         correctAnswerIndex: 0
                     },
                     {
-                        id: 3, topic: "Fundamentals of Testing", level: "K2",
-                        en: { question: "Which testing principle states that 'exhaustive testing is impossible'?", options: ["Pesticide Paradox", "Testing is context dependent", "Absence-of-errors fallacy", "Impossible to test all combinations"], explanation: "Testing everything (all combinations of inputs and preconditions) is not feasible except for trivial cases." },
-                        tr: { question: "Hangi test ilkesi 'kapsamlı testin imkansız olduğunu' belirtir?", options: ["Pestisid Paradoksu", "Test bağlama bağlıdır", "Hata yokluğu yanılgısı", "Tüm kombinasyonları test etmek imkansızdır"], explanation: "Her şeyi (tüm girdi ve ön koşul kombinasyonlarını) test etmek, çok basit durumlar dışında mümkün değildir." },
+                        id: 3, topic: "Testin Temelleri", level: "K2",
+                        question: "Yeni bir yazılımı, artımlı bir metodoloji kullanarak geliştiren bir ekibe test uzmanı olarak atandınız. Birkaç döngüdür mevcut regresyon test senaryolarında hiçbir değişiklik yapılmadığını ve yeni regresyon hatalarının tespit edilmediğini fark ettiniz. Sağlıklı bir test uzmanı yaklaşımını tanımlayan test prensibi aşağıdakilerden hangisidir?",
+                        options: ["Antibiyotik direnci", "Yeni hata bulamıyoruz başarılı bir yazılım elde ettik yanılgısı", "Hatalar yazılımın belli alanlarında yoğunlaşır", "Yazılımı %100 test etmek imkansızdır"],
+                        explanation: "Aynı testler tekrar tekrar koşulduğunda artık yeni hata bulamazlar; bu 'Antibiyotik Direnci' (Pestisid Paradoksu) olarak adlandırılır.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 4, topic: "Testin Temelleri", level: "K2",
+                        question: "Yemek siparişi için mobil uygulama geliştiren bir ekipte çalıştığınızı varsayın. Mevcut döngüde ekip ödeme fonksiyonunu hayata geçirmeye karar verdi. Aşağıdaki aktivitelerden hangisi test analizinin bir parçasıdır?",
+                        options: [
+                            "Ödeme hizmeti entegrasyonunu test etmenin 8 adam/gün süreceğini tahmin etmek",
+                            "Ödemenin birden fazla kullanıcı arasında düzgün bir şekilde paylaştırılıp paylaştırılmadığını test etmeye karar vermek",
+                            "Ödenmesi gereken minimum tutarın doğru şekilde işlenmesini kontrol edecek test senaryoları için sınır değer analizini (BVA) kullanarak test verisi oluşturmak",
+                            "Kredi kartıyla ödeme sürecini kontrol eden bir test senaryosunu koşturduktan sonra gerçekleşen sonuç ile beklenen sonuç arasındaki uyumsuzluğu analiz etmek ve bir hata raporu oluşturmak"
+                        ],
+                        explanation: "Neyin test edileceğine karar vermek (test koşullarının belirlenmesi) test analizinin bir parçasıdır.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 5, topic: "Testin Temelleri", level: "K2",
+                        question: "Aşağıdaki faktörlerden hangileri test süreci üzerinde ÖNEMLİ bir etkiye sahiptir?\ni. YGYD\nii. Daha önceki projelerde tespit edilen hata sayısı\niii. Belirlenen ürün riskleri\niv. Yeni yasal düzenlemelerle resmi beyaz kutu testinin zorunlu kılınması\nv. Test ortamı kurulumu",
+                        options: ["i, ii", "i, iii, iv", "ii, iv, v", "iii, v"],
+                        explanation: "YGYD, ürün riskleri ve yasal düzenlemeler test sürecini doğrudan etkileyen faktörlerdir.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 6, topic: "Testin Temelleri", level: "K2",
+                        question: "Aşağıdaki görevlerden HANGİ İKİSİ ESAS OLARAK bir test uzmanı rolüne aittir?\na) Test ortamlarını yapılandırmak\nb) Ürün backlog'unu yönetmek\nc) Yeni gereksinimler için çözümler tasarlamak\nd) Test planını oluşturmak\ne) Test esasını analiz etmek",
+                        options: ["a ve b", "b ve c", "c ve d", "a ve e"],
+                        explanation: "Test ortamlarını yapılandırmak ve test esasını analiz etmek test uzmanının temel görevlerindendir.",
                         correctAnswerIndex: 3
                     },
                     {
-                        id: 4, topic: "Testing Throughout the SDLC", level: "K1",
-                        en: { question: "In Agile development, when is testing performed?", options: ["Only at the end of the project", "In every iteration/sprint", "Only before production release", "When the developer finishes their task"], explanation: "In Agile, testing is an integral part of every iteration and starts from the beginning." },
-                        tr: { question: "Çevik (Agile) geliştirmede test ne zaman yapılır?", options: ["Sadece projenin sonunda", "Her iterasyonda/sprintte", "Sadece canlıya çıkmadan önce", "Geliştirici görevini bitirdiğinde"], explanation: "Agile modelde test, her iterasyonun ayrılmaz bir parçasıdır ve en baştan başlar." },
+                        id: 7, topic: "Testin Temelleri", level: "K2",
+                        question: "Aşağıdaki becerilerden hangileri bir test uzmanı için EN ÖNEMLİ becerilerdir?\ni. Alan (domain) bilgisine sahip olmak\nii. Ürünün vizyonunu belirlemek\niii. İyi bir takım oyuncusu olmak\niv. Ekibin çalışmalarını planlamak ve organize etmek\nv. Eleştirel düşünmek",
+                        options: ["ii ve iv önemlidir", "i, iii ve v önemlidir", "i, ii ve v önemlidir", "iii ve iv önemlidir"],
+                        explanation: "Alan bilgisi, takım çalışması ve eleştirel düşünme test uzmanları için kritik becerilerdir.",
                         correctAnswerIndex: 1
                     },
                     {
-                        id: 5, topic: "Testing Throughout the SDLC", level: "K2",
-                        en: { question: "Which test level focuses on testing the interfaces between components?", options: ["Component Testing", "System Testing", "Integration Testing", "Acceptance Testing"], explanation: "Integration testing focuses on interactions and interfaces between components or systems." },
-                        tr: { question: "Hangi test seviyesi bileşenler arasındaki arayüzleri test etmeye odaklanır?", options: ["Bileşen Testi", "Sistem Testi", "Entegrasyon Testi", "Kabul Testi"], explanation: "Entegrasyon testi, bileşenler veya sistemler arasındaki etkileşimlere ve arayüzlere odaklanır." },
+                        id: 8, topic: "Testin Temelleri", level: "K1",
+                        question: "Aşağıdakilerden hangisi test uzmanları ve iş birimlerindeki arasındaki etkileşimlerde tüm ekip yaklaşımına (whole team approach) güzel bir örnektir?",
+                        options: [
+                            "İş birimleri test otomasyonuna karar verir",
+                            "Test uzmanları, iş birimlerinin test stratejisini tanımlamasına yardımcı olur",
+                            "İş birimleri, tüm ekip yaklaşımının bir parçası değildir",
+                            "Test uzmanları, iş birimlerinin kabul testlerini oluşturmasına yardımcı olur"
+                        ],
+                        explanation: "Tüm ekip yaklaşımında test uzmanları iş birimlerine kabul testlerini oluşturmada destek olur.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 9, topic: "YGYD Boyunca Test", level: "K1",
+                        question: "'Her YGYD aktivitesine karşılık gelen bir test aktivitesi vardır'. Yukarıdaki kural hangi YGYD modellerinde geçerlidir?",
+                        options: ["Yalnızca sıralı YGYD modellerinde", "Yalnızca döngüsel YGYD modellerinde", "Yalnızca döngüsel ve sıralı YGYD modellerinde", "Sıralı, artımlı ve döngüsel YGYD modellerinde"],
+                        explanation: "Bu kural tüm modern YGYD modelleri için geçerli olan temel bir iyi uygulama ilkesidir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 10, topic: "YGYD Boyunca Test", level: "K1",
+                        question: "Aşağıdaki ifadelerden hangisi Kabul Testi Odaklı Geliştirme (ATDD) yaklaşımını EN İYİ şekilde açıklar?",
+                        options: [
+                            "ATDD'de, kabul kriterleri genellikle given/when/then formatına göre oluşturulur",
+                            "ATDD'de, test senaryoları esas olarak bileşen testinde oluşturulur ve kod odaklıdır",
+                            "ATDD'de, testler yazılımın geliştirilmesini yönlendirmek için kabul kriterlerine göre oluşturulur",
+                            "ATDD'de, testler sistem davranışına dayanır, bu da ekip üyelerinin testleri anlamasını kolaylaştırır"
+                        ],
+                        explanation: "ATDD'de testler, geliştirmeyi yönlendirmek amacıyla kabul kriterlerinden türetilir.",
                         correctAnswerIndex: 2
                     },
                     {
-                        id: 6, topic: "Static Testing", level: "K1",
-                        en: { question: "What can be found during static testing that dynamic testing might miss?", options: ["Memory leaks", "Variables with undefined values", "Performance bottlenecks", "Database connection errors"], explanation: "Static testing can find defects in documents and code (like unused variables) without running the code." },
-                        tr: { question: "Dinamik testin kaçırabileceği ancak statik testin bulabileceği şey nedir?", options: ["Bellek sızıntıları", "Tanımsız değere sahip değişkenler", "Performans darboğazları", "Veritabanı bağlantı hataları"], explanation: "Statik test, kod çalıştırılmadan dokümanlardaki ve koddaki kusurları (kullanılmayan değişkenler gibi) bulabilir." },
+                        id: 11, topic: "YGYD Boyunca Test", level: "K2",
+                        question: "Aşağıdakilerden hangisi 'shift-left' yaklaşımının bir örneği DEĞİLDİR?",
+                        options: [
+                            "Kullanıcı gereksinimlerini paydaşların kabulünden önce gözden geçirmek",
+                            "İlgili kod yazılmadan önce bir bileşen testi yazmak",
+                            "Bileşen testi sırasında performans testi koşmak",
+                            "Yapılandırma yönetim sürecini kurmadan önce bir test betiği (script) yazmak"
+                        ],
+                        explanation: "Yapılandırma yönetimi kurulmadan script yazmak bir test stratejisi olan shift-left ile ilgili değildir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 12, topic: "YGYD Boyunca Test", level: "K2",
+                        question: "Yöneticinizi her sürüm döngüsü sonunda geriye dönük toplantılar (retrospective) yapmaya ikna etmek istediğinizi varsayın. Bunun için aşağıdaki argümanlardan hangisini kullanırdınız?",
+                        options: [
+                            "Retrospektifler günümüzde çok popülerdir ve süreçlerimize eklersek müşteriler bundan memnun olurlar",
+                            "Retrospektifleri hayata geçirmek şirketimize tasarruf sağlar, çünkü bunlar olmadan son kullanıcılar ürün hakkında anında geri bildirim sağlayamaz",
+                            "Retrospektif sırasında süreçlerdeki eksiklikler analiz edilebilir ve organizasyonun sürekli süreç iyileştirme için yapacağı iyileştirmeler bulunabilir.",
+                            "Retrospektifler organizasyonda sürekli iyileştirmeyi sürdürmek için çok önemli olan cesaret ve saygı dahil beş değeri benimser"
+                        ],
+                        explanation: "Retrospektiflerin temel amacı süreçlerdeki eksiklikleri bulup sürekli iyileştirme sağlamaktır.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 13, topic: "YGYD Boyunca Test", level: "K2",
+                        question: "Aşağıdaki hangi hata türleri (1-4) hangi test seviyeleriyle (A-D) EN ÇOK ilgilidir?\n1. Kullanıcı ihtiyaçlarının karşılanamaması\n2. Bileşenler arasındaki iletişim hataları\n3. Modülün iç çalışma mantığı hataları\n4. İş kurallarının yanlış uygulanması\nA. Bileşen testi, B. Bileşen entegrasyon testi, C. Sistem testi, D. Kabul testi",
+                        options: ["1D, 2B, 3A, 4C", "1D, 2B, 3C, 4A", "1B, 2A, 3D, 4C", "1C, 2B, 3A, 4D"],
+                        explanation: "Resmi eşleşme: 1D (Kabul), 2B (Entegrasyon), 3A (Bileşen), 4C (Sistem).",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 14, topic: "YGYD Boyunca Test", level: "K2",
+                        question: "Üç kabul kriterine sahip bir kullanıcı hikayesinde (TC1, TC2, TC3), Koşum 1'de TC1 ve TC3 başarısız olmuş; Koşum 2'de TC1 başarılı, TC2 ve TC3 başarısız olmuş; Koşum 3'te hepsi başarılı olmuştur. Koşum 2'de TC2 ve Koşum 3'te TC2/TC1 regresyon testi olarak mı koşturulmuştur?",
+                        options: ["Sadece 4, 7, 8, 9", "Sadece 5, 7", "Sadece 4, 6, 8, 9", "Sadece 5, 6"],
+                        explanation: "Daha önce başarılı olan testlerin (TC2 gibi) tekrar koşulması regresyondur.",
                         correctAnswerIndex: 1
                     },
                     {
-                        id: 7, topic: "Static Testing", level: "K2",
-                        en: { question: "In a formal review, who records the found defects?", options: ["The Author", "The Moderator", "The Scribe", "The Manager"], explanation: "The Scribe (or Recorder) is responsible for documenting all the findings during the review meeting." },
-                        tr: { question: "Resmi bir gözden geçirmede, bulunan kusurları kim kaydeder?", options: ["Yazar", "Moderatör", "Yazıcı (Scribe)", "Yönetici"], explanation: "Yazıcı (veya Kayıtçı), gözden geçirme toplantısı sırasındaki tüm bulguları belgelemekle sorumludur." },
-                        correctAnswerIndex: 2
+                        id: 15, topic: "Statik Test", level: "K2",
+                        question: "Aşağıdakilerden hangisi statik testin faydalarından biri DEĞİLDİR?",
+                        options: [
+                            "Hataların YGYD'nin ilerleyen aşamalarında tespit edilmesini kolaylaştırdığı için, daha az maliyetli hata yönetimine sahip olmak",
+                            "Statik test sırasında bulunan hataları düzeltmenin genellikle dinamik test sırasında bulunan hataları düzeltmekten çok daha ucuz olması",
+                            "Dinamik testte bulunamayacak kodlama hatalarını bulmak",
+                            "Gereksinimlerdeki eksiklikleri ve tutarsızlıkları tespit etmek"
+                        ],
+                        explanation: "Statik test hataları ilerleyen aşamalarda değil, ERKEN aşamalarda bulduğu için faydalıdır.",
+                        correctAnswerIndex: 0
                     },
                     {
-                        id: 8, topic: "Test Analysis and Design", level: "K3",
-                        en: { question: "A system accepts values from 1 to 10. Using Boundary Value Analysis, which set is correct?", options: ["1, 5, 10", "0, 1, 10, 11", "0, 5, 11", "1, 2, 9, 10"], explanation: "BVA focuses on the boundaries (min, max) and the values just outside: 0, 1, 10, 11." },
-                        tr: { question: "Bir sistem 1 ile 10 arası değerleri kabul ediyor. Sınır Değer Analizi kullanarak hangi set doğrudur?", options: ["1, 5, 10", "0, 1, 10, 11", "0, 5, 11", "1, 2, 9, 10"], explanation: "BVA sınırlara (min, max) ve hemen dışındaki değerlere odaklanır: 0, 1, 10, 11." },
+                        id: 16, topic: "Statik Test", level: "K1",
+                        question: "Aşağıdakilerden hangisi erken ve sık geri bildirimin faydalarından biridir?",
+                        options: [
+                            "Sonraki projelerde test sürecinin iyileştirilmesini sağlar",
+                            "Müşterilerin, üzerinde anlaşılan risklere göre gereksinimleri önceliklendirmelerini sağlar",
+                            "Değişikliklerin kalitesini ölçmenin tek yoludur",
+                            "Gereksinimler konusunda yanlış anlaşılmaları önlemeye yardımcı olur"
+                        ],
+                        explanation: "Erken geri bildirim gereksinimlerdeki yanlış anlaşılmaların önüne geçer.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 17, topic: "Statik Test", level: "K2",
+                        question: "Scribe rolü var, asıl amaç kaliteyi değerlendirmek, yazar yönetiyor, bireysel hazırlık ve rapor var. Bu hangi gözden geçirme türüdür?",
+                        options: ["Gayri resmi gözden geçirme", "Üzerinden geçme (Walkthrough)", "Teknik gözden geçirme", "Teftiş (Inspection)"],
+                        explanation: "Yazar tarafından yönetilen ve kalite odaklı olan bu süreç bir 'Walkthrough'dur.",
                         correctAnswerIndex: 1
                     },
                     {
-                        id: 9, topic: "Test Analysis and Design", level: "K3",
-                        en: { question: "Which technique uses a table to represent complex business logic with multiple conditions?", options: ["Equivalence Partitioning", "State Transition Testing", "Decision Table Testing", "Error Guessing"], explanation: "Decision tables are ideal for documenting and testing complex business rules with combinations of inputs." },
-                        tr: { question: "Hangi teknik, birden fazla koşula sahip karmaşık iş mantığını temsil etmek için bir tablo kullanır?", options: ["Eşdeğerlik Paylaşımı", "Durum Geçiş Testi", "Karar Tablosu Testi", "Hata Tahminleme"], explanation: "Karar tabloları, girdi kombinasyonları içeren karmaşık iş kurallarını belgelemek ve test etmek için idealdir." },
+                        id: 18, topic: "Statik Test", level: "K1",
+                        question: "Bu ifadelerden hangisi başarılı gözden geçirmelere katkıda bulunan bir faktör DEĞİLDİR?",
+                        options: [
+                            "Katılımcılar gözden geçirme için yeterli zaman ayırmalıdır",
+                            "Gerekli eforu azaltmak için büyük iş ürünleri küçük parçalara bölünmelidir.",
+                            "Katılımcılar diğer katılımcılara karşı negatif davranışlardan kaçınmalıdır",
+                            "Bulunan hatalar hiç koşulsuz kabul edilmeli, takdir edilmeli ve nesnel olarak ele alınmalıdır"
+                        ],
+                        explanation: "Hatalar 'hiç koşulsuz' kabul edilmez, nesnel olarak tartışılır.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 19, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Aşağıdakilerden hangisi tecrübeye dayalı test tekniklerinin bir özelliğidir?",
+                        options: [
+                            "Test senaryoları ayrıntılı tasarım bilgilerine dayanarak oluşturulur",
+                            "Ara yüzler kod bölümünde test edilen öğelerin kapsamını ölçmek için kullanılır",
+                            "Bu tür teknikler büyük ölçüde test uzmanının yazılım ve alan bilgisine dayanır",
+                            "Test senaryoları gereksinimlerden sapmaları belirlemek için kullanılır"
+                        ],
+                        explanation: "Tecrübeye dayalı teknikler test uzmanının bilgi ve sezgisine dayanır.",
                         correctAnswerIndex: 2
                     },
                     {
-                        id: 10, topic: "Test Management", level: "K2",
-                        en: { question: "What is the purpose of an exit criteria in a test plan?", options: ["To define when to start testing", "To define the project budget", "To define when a test level is complete", "To assign tasks to testers"], explanation: "Exit criteria define the conditions that must be met to consider a test level or phase finished." },
-                        tr: { question: "Bir test planındaki çıkış kriterinin amacı nedir?", options: ["Teste ne zaman başlanacağını belirlemek", "Proje bütçesini belirlemek", "Bir test seviyesinin ne zaman tamamlandığını belirlemek", "Test uzmanlarına görev atamak"], explanation: "Çıkış kriterleri, bir test seviyesinin veya aşamasının bitmiş sayılması için karşılanması gereken koşulları tanımlar." },
+                        id: 20, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "Emlak formu: kat (zemin, 1, 2+) ve bahçe (bahçesiz, küçük, büyük). Sadece zemin katın bahçesi olabilir. %100 EP kapsamı için gereken minimum test sayısı?",
+                        options: ["3", "4", "5", "6"],
+                        explanation: "Zemin kat için 3 bahçe tipi (3 test) ve diğer katlar için bahçesiz seçeneği (1 test) ile toplam 4 test gerekir.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 21, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "0-50, 51-60, 61-70, 71-80, 81-90, 91-100 puan aralıkları var. TC'ler: 91, 50, 81, 60, 70, 80. 2-değerli BVA kapsamı yüzde kaçtır?",
+                        options: ["%50", "%60", "%33.3", "%100"],
+                        explanation: "Tüm sınır noktalarını test etmediği için kapsam %50 civarındadır.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 22, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "CRM: Bisiklet kiralama. Üyeler %20 indirim alır. İade süresi kaçırılırsa indirim yok. 15. kiralama hediye Tişört. Hangi kural (R1-R8) imkansızdır?",
+                        options: ["R4", "R2", "R6", "R8"],
+                        explanation: "Koşulların mantıksal çelişkisine göre R8 imkansızdır.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 23, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "Başlangıç -> Hata Ayıklama Modu -> Kapalı. Veya Başlangıç -> Operasyonda -> Beklemede -> Operasyonda -> Kapalı. Geçerli geçiş kapsamı için kaç test gerekir?",
+                        options: ["4", "2", "7", "3"],
+                        explanation: "Tüm geçerli yolları kapsamak için 3 test senaryosu yeterlidir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 24, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Test takımınız %100 komut (statement) kapsamına ulaştığında elde edilen çıkarım nedir?",
+                        options: [
+                            "Her komutun en az bir kez çalıştırıldığı",
+                            "Koştuğunuz test grubundan daha fazla test senaryosuna sahip herhangi bir test grubunun da %100 komut kapsamına ulaşabileceği",
+                            "Koddaki her yolun (path) en az bir kez çalıştırıldığı",
+                            "Girdilerin her kombinasyonunun en az bir kez test edilmiş olduğu"
+                        ],
+                        explanation: "Komut kapsamı her satırın (komutun) en az bir kez çalıştırıldığını gösterir.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 25, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Aşağıdakilerden hangisi beyaz kutu testi için YANLIŞTIR?",
+                        options: [
+                            "Beyaz kutu testi sırasında yazılımın iç çalışma mantığı dikkate alınır",
+                            "Beyaz kutu testi kapsam ölçümleri, kod kapsamını artırmak için ek testlerin belirlenmesine yardımcı olabilir",
+                            "Beyaz kutu test teknikleri statik testte kullanılabilir",
+                            "Beyaz kutu testi, gereksinimlerdeki eksikliklerin belirlenmesine yardımcı olabilir."
+                        ],
+                        explanation: "Beyaz kutu testi kod yapısına odaklanır, gereksinim eksikliklerini belirlemek kara kutu testinin işidir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 26, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Aşağıdakilerden hangisi hata tahmininin (error guessing) ardındaki mantığı EN İYİ şekilde açıklar?",
+                        options: [
+                            "Hata tahmini, geçmişte bulunan hatalar ve geliştiriciler tarafından yapılan tipik hatalar hakkındaki bilgi ve deneyimi kullanmayı içerir",
+                            "Hata tahmini, geliştirme konusundaki kişisel deneyiminizi ve bir geliştirici olarak yaptığınız hataları kullanmayı içerir",
+                            "Hata tahmini, test nesnesinin kullanıcısı olduğunuzu hayal etmenizi ve kullanıcının etkileşim sırasında yapabileceği hataları tahmin etmenizi gerektirir",
+                            "Hata tahmini, bir geliştiricinin yapabileceği hata türlerini belirlemek için geliştirme görevini hızla tekrarlamanızı gerektirir"
+                        ],
+                        explanation: "Deneyim ve geçmiş hata verilerinin kullanılması temel mantıktır.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 27, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Canlıya alım gecikti, test geç başladı, gereksinim listesi yok ama yönetim sonuç bekliyor. Hangi teknik uygundur?",
+                        options: ["Kontrol listesine dayalı test", "Hata tahmini", "Keşif testi", "Dal testi"],
+                        explanation: "Dokümantasyon eksikliğinde ve zaman darlığında 'Keşif Testi' en iyi seçenektir.",
                         correctAnswerIndex: 2
+                    },
+                    {
+                        id: 28, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Aşağıdakilerden hangisi kabul kriterlerinin EN İYİ şekilde dokümante edilme yöntemidir?",
+                        options: [
+                            "Kullanıcı hikayesini dokümante etmek için retrospektifler gerçekleştirmek",
+                            "Kullanıcı hikayesiyle ilgili örnek bir test koşulunu tanımlamak için given/when/then formatını kullanmak",
+                            "Kabul kriterlerinin başkaları tarafından yanlış anlaşılma riskini azaltmak için sözlü iletişimi kullanmak",
+                            "Belirli bir kullanıcı hikayesiyle ilgili riskleri test planında dokümante ederek, risk tabanlı testleri kolaylaştırmak"
+                        ],
+                        explanation: "Given/When/Then formatı kabul kriterleri için standart ve açıklayıcıdır.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 29, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "Editör kullanıcı hikayesi için bir ATDD testi örneği hangisidir?",
+                        options: [
+                            "Editörün sayfa içeriğini düzenledikten sonra belgeyi kaydedip kaydedemeyeceğinin test edilmesi",
+                            "İçerik sahibinin giriş yapıp içerikte güncelleme yapıp yapamayacağının test edilmesi",
+                            "Editörün düzenlenen içeriği yayınlanmak üzere planlamaya alıp alamayacağının test edilmesi",
+                            "Editörün güncelleme yapmak için başka bir editöre yeniden atama yapıp yapamayacağının test edilmesi"
+                        ],
+                        explanation: "Editörün iş akışını (düzenleme ve kaydetme) doğrulamak en iyi örnektir.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 30, topic: "Test Yönetimi", level: "K1",
+                        question: "Test uzmanları döngü ve sürüm planlamasına nasıl değer katar?",
+                        options: [
+                            "Test uzmanları geliştirilecek kullanıcı hikayelerinin önceliğini belirler",
+                            "Test uzmanları yalnızca test edilecek sistemin fonksiyonel yönlerine odaklanır",
+                            "Test uzmanları kullanıcı hikayelerinin ayrıntılı risk tanımlamasına ve risk değerlendirmesine katılır",
+                            "Test uzmanları sürüm planlaması sırasında erken test tasarımı yaparak yüksek kaliteli yazılımın yayınlanmasını garanti eder"
+                        ],
+                        explanation: "Test uzmanları risk değerlendirmesine katılarak planlamaya değer katar.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 31, topic: "Test Yönetimi", level: "K2",
+                        question: "Aşağıdaki seçeneklerden HANGİ İKİSİ bir sistemi test etmek için çıkış kriteri olarak kullanılabilir?",
+                        options: [
+                            "a) Test ortamı hazır olması ve b) Login olabilme",
+                            "c) Hata yoğunluğuna ulaşılması ve e) Regresyon testlerinin otomatize edilmesi",
+                            "b) Login olabilme ve d) Given/when/then formatı",
+                            "a) Ortam hazır olması ve e) Otomatize edilmesi"
+                        ],
+                        explanation: "Hata yoğunluğu ve otomasyon hedefleri çıkış kriteri olabilir.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 32, topic: "Test Yönetimi", level: "K3",
+                        question: "Üç-nokta tahmin: En iyimser 2 sa, en olası 11 sa, en kötümser 14 sa. Tahmin ne olmalıdır?",
+                        options: ["9 adam-saat", "14 adam-saat", "11 adam-saat", "10 adam-saat"],
+                        explanation: "(2 + 4*11 + 14) / 6 = 10 adam-saat.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 33, topic: "Test Yönetimi", level: "K3",
+                        question: "TS001: Yemek türü (Ön:3, Bağ:Yok), TS002: Restoran seç (Ön:2, Bağ:TS001), TS003: Yol tarifi (Ön:1, Bağ:TS002). Üçüncü sırada hangisi koşulmalıdır?",
+                        options: ["TS 003", "TS 005", "TS 002", "TS 001"],
+                        explanation: "Sıralama TS001 -> TS002 -> TS003 olmalıdır.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 34, topic: "Test Yönetimi", level: "K2",
+                        question: "Çevik test kadranları eşleşmesi: 1. Kullanılabilirlik, 2. Bileşen, 3. Fonksiyonel, 4. Güvenilirlik. A. Q1 (Teknoloji/Geliştirici), B. Q2 (İş/Geliştirici), C. Q3 (İş/Ürün), D. Q4 (Teknoloji/Ürün).",
+                        options: ["1C, 2A, 3B, 4D", "1D, 2A, 3C, 4B", "1C, 2B, 3D, 4A", "1D, 2B, 3C, 4A"],
+                        explanation: "Resmi eşleşme: 1C, 2A, 3B, 4D.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 35, topic: "Test Yönetimi", level: "K2",
+                        question: "Risk: Yanıt süresi çok uzun. Olasılık: Orta, Etki: Yüksek. Bağımsız ekip performans testi yapacak. Bu hangi yöntemdir?",
+                        options: ["Riskin kabulü", "Acil durum planı", "Riskin azaltılması", "Riskin devredilmesi"],
+                        explanation: "Test yaparak riski bulmak ve önlem almak azaltma (mitigation) yöntemidir.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 36, topic: "Test Yönetimi", level: "K2",
+                        question: "Çevik ekibin sprint için tamamlanan ve kalan iş miktarını gösteren çalışma ürünü hangisidir?",
+                        options: ["Kabul kriterleri", "Hata raporu", "Test tamamlama raporu", "Burndown tablosu"],
+                        explanation: "Burndown grafiği kalan işi zaman ekseninde gösterir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 37, topic: "Test Yönetimi", level: "K2",
+                        question: "Otomatik test betiğinin yeni bir sürümünü oluşturduğunuzu gösteren işlem nedir?",
+                        options: ["İzlenebilirlik yönetimi", "Bakım testi", "Yapılandırma yönetimi", "Gereksinim mühendisliği"],
+                        explanation: "Versiyonlama ve öğe kontrolü yapılandırma yönetimidir.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 38, topic: "Test Yönetimi", level: "K3",
+                        question: "Hata raporunda Ad alanına özel karakter girince kilitleniyor denmiş. Hangi kritik bilgi eksiktir?",
+                        options: ["Beklenen sonuç ve gerçekleşen sonuç", "Referanslar ve hata durumu", "Test ortamı ve test öğesi", "Öncelik ve önem derecesi"],
+                        explanation: "Hatanın hangi ortamda (browser, OS vb.) olduğu belirtilmemiş.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 39, topic: "Test Araçları", level: "K2",
+                        question: "Test verisi hazırlama aracı hangi test aktivitesini destekler?",
+                        options: ["Test izleme ve kontrolü", "Test analizi ve tasarımı", "Testun uyarlanması ve koşulması", "Test tamamlama"],
+                        explanation: "Veri hazırlığı uygulama ve koşum (execution) aşamasıyla ilgilidir.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 40, topic: "Test Araçları", level: "K1",
+                        question: "Aşağıdakilerden hangisi test otomasyonu gerçekleştirmenin potansiyel riskini doğru bir şekilde açıklar?",
+                        options: [
+                            "Canlıda bilinmeyen etkilere neden olabilir",
+                            "Testware'lerin bakımı için yeterli efor tahsis edilmeyebilir",
+                            "Testleri hızlandırabilir",
+                            "Manuel test için ayrılan süreyi azaltabilir"
+                        ],
+                        explanation: "Bakım maliyetini küçümsemek en büyük otomasyon risklerinden biridir.",
+                        correctAnswerIndex: 1
                     }
-                    // Sınavın geri kalan 30 sorusu ve diğer 9 sınav (Toplam 400 soru) 
-                    // aynı K1-K2-K3 dağılımı ve JSON yapısıyla buraya eklenecektir.
+                ]
+            },
+            {
+                examId: 12,
+                isOfficial: true,
+                title: "Resmi Örnek Sınav - Set B",
+                questions: [
+                    {
+                        id: 1, topic: "Testin Temelleri", level: "K2",
+                        question: "Aşağıdakilerden hangisi testin neden gerekli olduğuna dair bir örnektir?",
+                        options: [
+                            "Dinamik testler, test nesnelerinin başarısız olmasına neden olarak kaliteyi artırır.",
+                            "Statik testler, hataları dinamik testlerden daha erken tespit etmek için kullanılır.",
+                            "Statik analiz, sistemin piyasaya sürülmeye uygun olduğuna dair kanıt sağlar.",
+                            "İncelemeler gereksinim kalitesini artırır ve çalışma ürünlerinde daha az değişikliğe ihtiyaç duyulmasını sağlar."
+                        ],
+                        explanation: "İncelemeler gereksinimleri iyileştirerek hataları kaynağında önler.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 2, topic: "Testin Temelleri", level: "K1",
+                        question: "Kalite güvencesi (QA) ve/veya kalite kontrolü (QC) ile ilgili hangisi doğrudur?",
+                        options: [
+                            "QA, testin bir parçasıdır.",
+                            "Testler, QC'nin bir parçası olarak gerçekleştirilir.",
+                            "Test, QC'nin diğer adıdır.",
+                            "Testler, QA'nın bir parçasıdır."
+                        ],
+                        explanation: "Test faaliyetleri kalite kontrol (QC) kapsamındadır.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 3, topic: "Testin Temelleri", level: "K2",
+                        question: "%100 test etmenin imkansız olduğu ilkesinin pratiğe uygulanması hangisidir?",
+                        options: [
+                            "Her olası çıktının kapsanması",
+                            "Tüm girdilerin dokümante edilmesi ve önceliklendirilmesi",
+                            "Mümkün olduğunca erken başlanması",
+                            "Sınır değer analizi ve denklik paylarının kullanılması"
+                        ],
+                        explanation: "Seçicilik ve tekniklerle (BVA/EP) tüm olasılıklar yerine kritik olanlar test edilir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 4, topic: "Testin Temelleri", level: "K2",
+                        question: "Test verisi, koşulları, ortam gereksinimleri ve senaryoları ile çalışma hangi aktivitedir?",
+                        options: ["Test tasarımı", "Test koşumu", "Test analizi", "Test uyarlaması"],
+                        explanation: "Test senaryolarının detaylandırılması test tasarımıdır.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 5, topic: "Testin Temelleri", level: "K2",
+                        question: "Testin nasıl gerçekleştirildiğini etkileme olasılığı EN YÜKSEK olan hangisidir?",
+                        options: [
+                            "Pazarlama ekibinin deneyimi",
+                            "Kullanıcıların yeni sistemden haberdar olması",
+                            "Test ekibi üyelerinin deneyimi",
+                            "Müzik uygulamasının organizasyon yapısı"
+                        ],
+                        explanation: "Test ekibinin yetkinliği ve deneyimi süreci doğrudan etkiler.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 6, topic: "Testin Temelleri", level: "K2",
+                        question: "İzlenebilirliğin önemine ilişkin DOĞRU örnek hangisidir?",
+                        options: [
+                            "Riskler ve testler arası izlenebilirlik kalan risk seviyesini belirler",
+                            "Gereksinimler ve sonuçlar arası izlenebilirlik hedeflere göre ilerlemeyi ölçer",
+                            "Uzmanlar ve başarısız testler arası izlenebilirlik beceri ölçer",
+                            "Riskler ve koşullar arası izlenebilirlik hangi riskin test edileceğini belirler"
+                        ],
+                        explanation: "Gereksinim-Sonuç izlenebilirliği projenin hedefe ulaşma durumunu gösterir.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 7, topic: "Testin Temelleri", level: "K2",
+                        question: "Genel becerileri kullanmaya en uygun örnek hangisidir?",
+                        options: [
+                            "Bilgisayar oyunları bilgisini kullanmak",
+                            "Eski pilot olan test uzmanının helikopter sistemi kriterlerini daha iyi anlaması",
+                            "Eski programcı olanın analistlerle iyi iletişim kurması",
+                            "Metodik test senaryosu oluştururken dikkatli olmak"
+                        ],
+                        explanation: "Geçmiş iş tecrübesi (pilotluk) domain bilgisini artırarak test kalitesine katkı sağlar.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 8, topic: "Testin Temelleri", level: "K1",
+                        question: "Tüm ekip yaklaşımının avantajı hangisidir?",
+                        options: [
+                            "Herkes her rolü üstlenebilir",
+                            "Sadece tek bir ekibe ihtiyaç duyar",
+                            "İş birimi temsilcilerini geliştiricilerle aynı ekibe dahil eder",
+                            "Projeye fayda sağlayan bir ekip sinerjisi oluşturur"
+                        ],
+                        explanation: "Ekip sinerjisi ve ortak sorumluluk en büyük avantajdır.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 9, topic: "YGYD Boyunca Test", level: "K2",
+                        question: "YGYD çeşitleri ile ilgili hangisi doğrudur?",
+                        options: [
+                            "Çevik modelde otomasyon regresyon ihtiyacını yok eder",
+                            "Sıralı modelde dinamik testler genelde geç aşamalarla sınırlıdır",
+                            "Yinelemeli modelde bileşen testleri genelde manueldir",
+                            "Artımlı modelde statik testler erken, dinamik testler sonradır"
+                        ],
+                        explanation: "Sıralı (Waterfall gibi) modellerde test genelde kodlama bitince başlar.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 10, topic: "YGYD Boyunca Test", level: "K1",
+                        question: "Tüm YGYD modelleri için geçerli olan iyi bir uygulama hangisidir?",
+                        options: [
+                            "Çalışma ürünlerini sonraki aşamada gözden geçirmek",
+                            "Çalışma ürünlerini taslaklar hazır olur olmaz gözden geçirmek",
+                            "Analiz ve tasarımdan önce gözden geçirmek",
+                            "Yayınlandıktan hemen sonra gözden geçirmek"
+                        ],
+                        explanation: "Hataları erken bulmak için taslaklar biter bitmez inceleme başlamalıdır.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 11, topic: "YGYD Boyunca Test", level: "K1",
+                        question: "Test öncelikli geliştirme yaklaşımına örnek hangisidir?",
+                        options: ["Test Güdümlü Geliştirme (TDD)", "Kapsama Güdümlü Geliştirme", "Kalite Güdümlü Geliştirme", "Özellik Güdümlü Geliştirme"],
+                        explanation: "TDD'de test koddan önce yazılır.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 12, topic: "YGYD Boyunca Test", level: "K2",
+                        question: "DevOps ile ilgili hangisi doğrudur?",
+                        options: [
+                            "Sürekli entegrasyon bileşen testini atlamaya teşvik eder",
+                            "Regresyon tehlikesini azaltmak için otomatize testler gereklidir",
+                            "Test uzmanları shift-right ile sürüm testine daha çok odaklanır",
+                            "Testler manuel müdahale olmadan tamamen otomatik olmalıdır"
+                        ],
+                        explanation: "Sık sürüm çıkılan DevOps'ta regresyon riskini yönetmek için otomasyon şarttır.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 13, topic: "YGYD Boyunca Test", level: "K2",
+                        question: "Hangisinin sistem testinin bir parçası olarak gerçekleşme olasılığı EN YÜKSEKtir?",
+                        options: [
+                            "Güvenlik testi (bağımsız ekip)",
+                            "Harici bankacılık sistemi arayüz testi",
+                            "Beta testi",
+                            "UI ve DB etkileşim testi"
+                        ],
+                        explanation: "Tüm sistemin güvenliğini bağımsız bir ekiple test etmek sistem seviyesidir.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 14, topic: "YGYD Boyunca Test", level: "K2",
+                        question: "Hangisi DOĞRUDUR?",
+                        options: [
+                            "Regresyon artarken onaylama azalır",
+                            "Regresyon sabitlenince, onaylama geliştirilince koşulur",
+                            "Regresyon ortamı, onaylama değişiklikleri test eder",
+                            "Regresyon değişmeyen koddaki etkilerle, onaylama değişen kodla ilgilidir"
+                        ],
+                        explanation: "Regresyon 'bozulmayan yerleri', onaylama (re-testing) 'düzeltilen yeri' kontrol eder.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 15, topic: "Statik Test", level: "K2",
+                        question: "Statik test ile bulunup dinamik test ile bulunamayan hata hangisidir?",
+                        options: ["Kullanılabilirlik eksikliği", "Erişilemez kod (dead code)", "Zayıf yanıt süreleri", "Uygulanmayan özellikler"],
+                        explanation: "Hiç çalışmayan kod satırları sadece statik analizle tespit edilebilir.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 16, topic: "Statik Test", level: "K1",
+                        question: "Paydaşlardan erken ve sık geri bildirim almanın faydası nedir?",
+                        options: [
+                            "Üretkenliği düşük olanları belirler",
+                            "Etkileşimlere öncelik vermeyi sağlar",
+                            "Kalite sorunlarının erken iletişimini sağlar",
+                            "Gecikme nedenlerini anlatmayı sağlar"
+                        ],
+                        explanation: "Paydaşların beklentileriyle sistemin uyumunu erken teyit eder.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 17, topic: "Statik Test", level: "K2",
+                        question: "Eşleşme: 1. Çıkış kriteri seçimi, 2. Ürünlere erişim, 3. Anomali tespiti, 4. Anomali tartışması. A. Bireysel, B. Başlatma, C. Planlama, D. İletişim.",
+                        options: ["1B, 2C, 3D, 4A", "1B, 2D, 3C, 4A", "1C, 2A, 3B, 4D", "1C, 2B, 3A, 4D"],
+                        explanation: "Planlamada kriter seçilir, başlatmada doküman dağıtılır.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 18, topic: "Statik Test", level: "K1",
+                        question: "Eşleşme: 1. Katip, 2. Lider, 3. Kolaylaştırıcı, 4. Yönetici. A. Güvenli ortam sağlar, B. Bilgileri kaydeder, C. Kaynak sağlar, D. Genel sorumluluk.",
+                        options: ["1A, 2B, 3D, 4C", "1A, 2C, 3B, 4D", "1B, 2D, 3A, 4C", "1B, 2D, 3C, 4A"],
+                        explanation: "Katip kaydeder (B), Yönetici kaynak sağlar (C), Kolaylaştırıcı ortamı yönetir (A).",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 19, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Karar tablosu ile dal testi farkı hangisidir?",
+                        options: [
+                            "Karar tablosu koddaki ifadelerden, dal testi kontrol akışından türetilir",
+                            "Karar tablosu iş mantığından, dal testi hata öngörüsünden türetilir",
+                            "Karar tablosu kontrol akışından, dal testi iş mantığından türetilir",
+                            "Karar tablosu uygulamadan bağımsızdır, dal testi koddan sonra oluşturulur"
+                        ],
+                        explanation: "Dal testi için kodun yazılmış olması gerekirken, karar tablosu gereksinimlerden türetilir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 20, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "Oto yıkama: Her 10 yıkamada %10, her 20 yıkamada %50 indirim. Hangisi en yüksek EP kapsamına ulaşır?",
+                        options: ["19, 20, 30", "11, 12, 20", "1, 10, 50", "10, 29, 30, 31"],
+                        explanation: "İndirim olmayan, %10 olan ve %50 olan her grubu kapsayan (1, 10, 50) setidir.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 21, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "Parola 6-12 karakter. %100 2-değerli sınır kapsamı var. %100 3-değerli sınır kapsamı için hangileri eklenmeli?",
+                        options: ["4, 5, 13, 14", "7, 11", "1, 5, 13", "1, 4, 7, 11, 14"],
+                        explanation: "Sınırın kendisi dışında hemen içindeki değerler (7 ve 11) eklenmelidir.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 22, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "Kolesterol ve Kan basıncı karar tablosu (5 kural). TC'ler 5 adet. Karar tablosu kapsamı kaçtır?",
+                        options: ["%40", "%60", "%80", "%100"],
+                        explanation: "Verilen TC'ler kuralların %60'ını karşılamaktadır.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 23, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "Depolama (max 3). START -> NOT FULL -> FULL. En yüksek geçiş kapsamı hangisidir?",
+                        options: ["Ekle, Kaldır, Ekle, Ekle, Ekle", "Ekle, Ekle, Ekle, Kaldır, Kaldır", "Ekle, Ekle, Ekle, Kaldır, Kaldır (C)", "Ekle, Ekle, Ekle, Kaldır, Ekle"],
+                        explanation: "Tüm durumlar arası geçişleri en çok zorlayan set (Ekle, Ekle, Ekle, Kaldır, Kaldır) setidir.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 24, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "T1 %40, T2 %65 komut kapsamı elde etti. Hangisi KESİNLİKLE doğrudur?",
+                        options: [
+                            "Toplam kapsam %105'tir",
+                            "Hem T1 hem T2 tarafından koşulmuş en az bir komut vardır",
+                            "Kodun %5'i çalıştırılamaz",
+                            "Tam dal kapsamına ulaşılır"
+                        ],
+                        explanation: "Başlangıç/giriş komutları gibi ortak komutlar her iki testte de çalışmış olmalıdır.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 25, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Dal kapsama formülü BCov = (X/Y)*100. X ve Y nedir?",
+                        options: [
+                            "X=Karar sonuçları, Y=Toplam karar sonucu",
+                            "X=Koşullu dallar, Y=Toplam dal",
+                            "X=Uygulanan dal, Y=Toplam dal",
+                            "X=Koşullu dal, Y=Toplam karar sonucu"
+                        ],
+                        explanation: "Formülde X uygulanan dal sayısını, Y ise toplam dal sayısını temsil eder.",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 26, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Keşif testini kullanmak için EN İYİ gerekçe hangisidir?\na) Zaman yetersiz b) Strateji kara kutu ister c) Spesifikasyon resmidir d) Çevik ekip/kod becerisi e) Alan deneyimi/analitik beceri",
+                        options: ["a ve b", "b ve c", "c ve d", "a ve e"],
+                        explanation: "Zaman darlığı ve tecrübe keşif testi için ana motivasyonlardır.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 27, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Checklist unsuru olarak hangisi EN UYGUNdur?",
+                        options: ["Geliştirici hata yaptı", "%85 kapsam", "Fonksiyonel doğru çalışıyor", "Hata mesajları anlaşılır dilde"],
+                        explanation: "Checklist'ler genelde gözden kaçabilecek kalite niteliklerini (anlaşılırlık gibi) içerir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 28, topic: "Test Analizi ve Tasarımı", level: "K2",
+                        question: "Varsayıldığında/Tıkladığında/Görünmeli formatı hangisidir?",
+                        options: ["Kural odaklı", "Senaryo odaklı", "Ürün odaklı", "Süreç odaklı"],
+                        explanation: "Given/When/Then yapısı senaryo odaklı (scenario-based) bir yazım şeklidir.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 29, topic: "Test Analizi ve Tasarımı", level: "K3",
+                        question: "Sipariş görüntüleme hikayesiyle ilgili OLMAYACAK test senaryosu hangisidir?",
+                        options: [
+                            "Geçmişi listeleme",
+                            "Sipariş detaylarını görme",
+                            "Tarihe göre sıralama",
+                            "Yeni müşteri kaydı"
+                        ],
+                        explanation: "Kayıt olma süreci sipariş görüntüleme hikayesinin kapsamında değildir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 30, topic: "Test Yönetimi", level: "K2",
+                        question: "DevOps hattında 'Kodu birleştirme' adımı için giriş kriteri hangisidir?",
+                        options: [
+                            "Statik analiz uyarı vermemeli",
+                            "Çakışma (conflict) olmamalı",
+                            "Bileşen testleri hazır olmalı",
+                            "%80 kapsam sağlanmalı"
+                        ],
+                        explanation: "Kodu göndermeden önce statik analiz hatalarının temizlenmiş olması gerekir.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 31, topic: "Test Yönetimi", level: "K3",
+                        question: "Oran tahmini: Geçmiş 4 projenin ortalama test/gelistirme oranı kullanılarak 800.000$ geliştirme eforu olan yeni projenin testi kaç $ olur?",
+                        options: ["40,000$", "80,000$", "81,250$", "82,500$"],
+                        explanation: "Geçmiş projelerin test/gelistirme oranlarının ortalamasıyla hesaplanır.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 32, topic: "Test Yönetimi", level: "K3",
+                        question: "Öncelikler ve bağımlılıklar tablosu (ARA -> GÖR -> EKLE -> SİPARİŞ). 4. sırada hangisi koşulmalıdır?",
+                        options: ["TC3", "TC1", "TC7", "TC2"],
+                        explanation: "Bağımlılık zinciri takip edildiğinde 4. sıra belirlenir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 33, topic: "Test Yönetimi", level: "K2",
+                        question: "Test çeyrekleri Q1 (Teknoloji/Ekip destek) hangisidir?",
+                        options: ["Kullanılabilirlik", "Fonksiyonel", "Kabul", "Bileşen entegrasyon"],
+                        explanation: "Q1 teknik testleri (birim/entegrasyon) içerir.",
+                        correctAnswerIndex: 3
+                    },
+                    {
+                        id: 34, topic: "Test Yönetimi", level: "K2",
+                        question: "Risk eşleşmesi: 1. Uzun yanıt süresi, 2. Tüketici tercihi değişimi, 3. Su basması, 4. Yaşlılarda hatalı rapor. A. Kabul, B. Performans, C. BVA, D. Transfer.",
+                        options: ["1C, 2D, 3A, 4B", "1B, 2D, 3A, 4C", "1B, 2A, 3D, 4C", "1C, 2A, 3D, 4B"],
+                        explanation: "Yanıt süresi -> Performans (B), Yaş -> BVA (C).",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 35, topic: "Test Yönetimi", level: "K1",
+                        question: "Hangisi ürün kalite metriğidir?",
+                        options: ["Ortalama hata süresi (MTBF)", "Bulunan hata sayısı", "Gereksinim kapsamı", "Hata tespit yüzdesi"],
+                        explanation: "MTBF ürünün güvenilirliğini gösteren bir kalite metriğidir.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 36, topic: "Test Yönetimi", level: "K2",
+                        question: "Dağıtık bir ekipte (Amerika-Avrupa) ilerlemeyi müşteriye bildirmenin EN ETKİSİZ yolu hangisidir?",
+                        options: ["Yüz yüze", "Gösterge Tabloları", "E-posta", "Video konferans"],
+                        explanation: "Coğrafi uzaklık nedeniyle yüz yüze görüşme pratik ve etkili değildir.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 37, topic: "Test Yönetimi", level: "K2",
+                        question: "Yapılandırma yönetiminin (CM) desteğine EN İYİ örnek hangisidir?",
+                        options: [
+                            "Ortamdaki kütüphane sürümlerini alabilmesi",
+                            "Senaryoları yürütüp kapsam hesaplaması",
+                            "Lisans süresini haber vermesi",
+                            "Otomatik veri üretmesi"
+                        ],
+                        explanation: "CM'in ana görevi bileşenlerin ve sürümlerin kaydını tutmaktır.",
+                        correctAnswerIndex: 0
+                    },
+                    {
+                        id: 38, topic: "Test Yönetimi", level: "K3",
+                        question: "Sıralama fonksiyonu hatası: 'Sistem birkaç sayı kümesini sıralayamıyor' yerine hangi tanım EN İYİdir?",
+                        options: [
+                            "Genel başarısızlık tanımı",
+                            "Kopyaları göz ardı ediyor tanımı",
+                            "Negatif sayıları sıralayamıyor tanımı",
+                            "Hatalı giriş verisi tanımı"
+                        ],
+                        explanation: "Hatanın sebebine (tekrarlanan sayılar) odaklanan tanım en iyisidir.",
+                        correctAnswerIndex: 1
+                    },
+                    {
+                        id: 39, topic: "Test Araçları", level: "K2",
+                        question: "Eşleşme: 1. İş akışı, 2. İletişim, 3. Sanal makineler, 4. Gözden geçirme desteği. A. Statik, B. Ölçeklenebilirlik, C. DevOps, D. İş birliği.",
+                        options: ["1A, 2B, 3C, 4D", "1B, 2D, 3C, 4A", "1C, 2D, 3B, 4A", "1D, 2C, 3A, 4B"],
+                        explanation: "Sanal makineler ölçeklenebilirlik (B), İletişim iş birliği (D).",
+                        correctAnswerIndex: 2
+                    },
+                    {
+                        id: 40, topic: "Test Araçları", level: "K1",
+                        question: "Hangisi test otomasyonunun yararlarından biridir?",
+                        options: [
+                            "İnsanlar için karmaşık olan kapsam ölçütleri sağlar",
+                            "Sorumluluğu tedarikçi ile paylaşır",
+                            "Eleştirel düşünme ihtiyacını yok eder",
+                            "Koddan senaryo üretir"
+                        ],
+                        explanation: "Karmaşık ve zahmetli ölçümleri hatasız yapabilmesi bir faydadır.",
+                        correctAnswerIndex: 0
+                    }
                 ]
             }
         ];
 
-        function init() {
-            loadHistory();
-            renderExamGrid();
-            updateUI();
-        }
+        // Sınav 1-10 arası Özgün Sorular buraya eklenecek (Devam et komutuyla)
+        // [Şu an 11 ve 12 yüklü, 1-10 arası toplam 400 soru için placeholder yerine yazıma başlanıyor]
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'tr' : 'en';
-            updateUI();
-            if (currentExam) renderQuestion(); 
-            else { renderExamGrid(); loadHistory(); }
-        }
+        function updateStatus() {
+            const history = JSON.parse(localStorage.getItem('istqb_v4_history') || '[]');
+            const statusText = document.getElementById('status-text');
+            const statusSub = document.getElementById('status-sub');
+            const PASS_SCORE = 26; // %65 of 40
+            const READY_THRESHOLD = PASS_SCORE + 2; // 28/40
 
-        function updateUI() {
-            document.getElementById('ui-subtitle').innerText = uiStrings[currentLang].subtitle;
-            document.getElementById('lang-text').innerText = currentLang === 'en' ? 'Türkçeye Geç' : 'Switch to English';
-            document.getElementById('history-title').innerText = uiStrings[currentLang].historyTitle;
-            document.getElementById('exams-title').innerText = uiStrings[currentLang].examsTitle;
-        }
-
-        function loadHistory() {
-            const historyContainer = document.getElementById('exam-history');
-            const history = JSON.parse(localStorage.getItem('istqb_history') || '[]');
-            
             if (history.length === 0) {
-                historyContainer.innerHTML = `<p class="text-slate-400 text-sm italic col-span-full">${uiStrings[currentLang].noHistory}</p>`;
+                statusText.textContent = 'Sınav Yok';
+                statusText.className = 'text-sm font-bold text-slate-400';
+                statusSub.textContent = 'Bir sınav başlat';
                 return;
             }
 
-            historyContainer.innerHTML = history.reverse().map(entry => `
+            const recent = history.slice(-5);
+            const avg = recent.reduce((sum, e) => sum + e.score, 0) / recent.length;
+            const avgRounded = Math.round(avg * 10) / 10;
+
+            if (avg >= READY_THRESHOLD) {
+                statusText.textContent = 'Sınava Hazır ✓';
+                statusText.className = 'text-sm font-bold text-green-600';
+                statusSub.textContent = `Ort. ${avgRounded}/40 — Üstündesin`;
+            } else if (avg >= PASS_SCORE) {
+                statusText.textContent = 'Sınırda';
+                statusText.className = 'text-sm font-bold text-amber-500';
+                statusSub.textContent = `Ort. ${avgRounded}/40 — Biraz daha pratik`;
+            } else if (avg >= PASS_SCORE - 4) {
+                statusText.textContent = 'Pratik Yap';
+                statusText.className = 'text-sm font-bold text-orange-500';
+                statusSub.textContent = `Ort. ${avgRounded}/40 — ${Math.ceil(READY_THRESHOLD - avg)} puan daha lazım`;
+            } else {
+                statusText.textContent = 'Hazır Değil';
+                statusText.className = 'text-sm font-bold text-red-500';
+                statusSub.textContent = `Ort. ${avgRounded}/40 — Tekrar başla`;
+            }
+        }
+
+        function init() { loadHistory(); renderExamGrid(); updateStatus(); }
+
+        function loadHistory() {
+            const historyContainer = document.getElementById('exam-history');
+            const history = JSON.parse(localStorage.getItem('istqb_v4_history') || '[]');
+            if (history.length === 0) {
+                historyContainer.innerHTML = `<p class="text-slate-400 text-sm italic col-span-full text-center py-4 bg-white rounded-xl border border-dashed border-slate-200">Henüz tamamlanmış sınav yok.</p>`;
+                return;
+            }
+            historyContainer.innerHTML = history.reverse().slice(0, 4).map(entry => `
                 <div class="history-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-start mb-2">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${entry.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                                ${entry.passed ? uiStrings[currentLang].passed : uiStrings[currentLang].failed}
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${entry.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                ${entry.passed ? 'GEÇTİ' : 'KALDI'}
                             </span>
-                            <span class="text-[10px] text-slate-400">${new Date(entry.date).toLocaleDateString()}</span>
+                            <span class="text-[9px] text-slate-400">${new Date(entry.date).toLocaleDateString()}</span>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-800">${entry.title[currentLang]}</h4>
+                        <h4 class="text-xs font-bold text-slate-800 truncate">${entry.title}</h4>
                     </div>
-                    <div class="mt-4 flex justify-between items-end">
-                        <span class="text-xl font-black text-slate-700">${entry.score}<span class="text-xs text-slate-400 font-normal">/40</span></span>
-                        <button onclick="clearHistoryEntry('${entry.timestamp}')" class="text-[10px] text-slate-300 hover:text-red-400 transition-colors">Sil / Delete</button>
+                    <div class="mt-3 flex justify-between items-end">
+                        <span class="text-base font-black text-slate-700">${entry.score}<span class="text-[10px] text-slate-400 font-normal">/40</span></span>
                     </div>
                 </div>
             `).join('');
         }
 
-        function clearHistoryEntry(timestamp) {
-            let history = JSON.parse(localStorage.getItem('istqb_history') || '[]');
-            history = history.filter(e => e.timestamp != timestamp);
-            localStorage.setItem('istqb_history', JSON.stringify(history));
-            loadHistory();
-        }
-
         function renderExamGrid() {
             const grid = document.getElementById('exam-grid');
             grid.innerHTML = '';
+            const allPossibleExams = [...examDatabase];
+            // 1-10 arası olmayanları dummy olarak ekle (user "devam et" dediğinde dolacak)
             for(let i=1; i<=10; i++) {
-                const exam = examDatabase.find(e => e.examId === i) || { examId: i, title: {en:`Mock Exam ${i}`, tr:`Deneme Sınavı ${i}`} };
+                if(!allPossibleExams.find(e => e.examId === i)) {
+                    allPossibleExams.push({ examId: i, title: `Özgün Deneme Sınavı ${i}`, isOfficial: false, questions: [] });
+                }
+            }
+            
+            allPossibleExams.sort((a,b) => (b.isOfficial - a.isOfficial) || (a.examId - b.examId)).forEach(exam => {
                 const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between";
+                card.className = "bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all flex flex-col justify-between";
                 card.innerHTML = `
                     <div>
-                        <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">CTFL v4.0</span>
-                        <h3 class="text-lg font-bold text-slate-800 mt-1">${exam.title[currentLang]}</h3>
-                        <p class="text-xs text-slate-500 mt-2">40 Soru • 60 Dakika</p>
+                        <span class="text-[9px] font-bold ${exam.isOfficial ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'} px-2 py-0.5 rounded uppercase tracking-wider">
+                            ${exam.isOfficial ? 'RESMİ SET' : 'ÖZGÜN'}
+                        </span>
+                        <h3 class="text-sm font-bold text-slate-800 mt-2 h-8 overflow-hidden">${exam.title}</h3>
+                        <p class="text-[10px] text-slate-400 mt-1">40 Soru • 60 Dakika</p>
                     </div>
-                    <button onclick="startExam(${i})" class="mt-6 w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
-                        ${uiStrings[currentLang].startExam}
+                    <button onclick="startExam(${exam.examId})" class="mt-4 w-full py-2 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-blue-600 transition-colors">
+                        Sınavı Başlat
                     </button>`;
                 grid.appendChild(card);
-            }
+            });
         }
 
         function startExam(id) {
-            currentExam = examDatabase.find(e => e.examId === id) || examDatabase[0];
+            currentExam = examDatabase.find(e => e.examId === id);
+            if(!currentExam || currentExam.questions.length === 0) {
+                alert("Bu sınavın soruları henüz yükleniyor. Lütfen 'Devam Et' komutuyla kodun tamamlanmasını bekleyin.");
+                return;
+            }
             currentQuestionIndex = 0; userAnswers = {}; flaggedQuestions.clear(); timeLeft = 3600;
-            const main = document.getElementById('main-content');
-            main.innerHTML = `
+            document.getElementById('main-content').innerHTML = `
                 <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                    <div class="bg-slate-900 px-8 py-4 flex justify-between items-center text-white">
+                    <div class="bg-slate-900 px-6 py-4 flex justify-between items-center text-white">
                         <div class="flex items-center gap-4">
-                            <button onclick="location.reload()" class="text-slate-400 hover:text-white text-sm">← ${uiStrings[currentLang].back}</button>
-                            <h2 class="font-bold border-l border-slate-700 pl-4">${currentExam.title[currentLang]}</h2>
+                            <button onclick="location.reload()" class="text-slate-400 hover:text-white text-xs">← Vazgeç</button>
+                            <h2 class="font-bold border-l border-slate-700 pl-4 text-xs truncate max-w-[200px]">${currentExam.title}</h2>
                         </div>
-                        <div class="flex items-center gap-6">
-                            <div id="timer" class="font-mono text-xl text-blue-400 font-bold">60:00</div>
-                            <button onclick="finishExam()" class="px-4 py-1.5 bg-red-500 hover:bg-red-600 rounded-md text-xs font-bold transition-colors">${uiStrings[currentLang].finish}</button>
-                        </div>
+                        <div id="timer" class="font-mono text-lg text-blue-400 font-bold">60:00</div>
+                        <button onclick="finishExam()" class="px-3 py-1 bg-red-500 hover:bg-red-600 rounded text-[10px] font-bold">BİTİR</button>
                     </div>
-                    <div class="p-0 flex flex-col md:flex-row min-h-[500px]">
-                        <div class="w-full md:w-64 bg-slate-50 border-r border-slate-100 p-4 grid grid-cols-5 md:grid-cols-4 gap-2 h-fit md:h-auto overflow-y-auto">
-                            ${Array.from({length: 40}, (_, i) => `<button id="nav-btn-${i}" onclick="jumpToQuestion(${i})" class="w-full aspect-square flex items-center justify-center rounded-lg border text-xs font-bold transition-all">${i + 1}</button>`).join('')}
+                    <div class="flex flex-col md:flex-row min-h-[500px]">
+                        <div class="w-full md:w-56 bg-slate-50 border-r border-slate-100 p-3 grid grid-cols-8 md:grid-cols-4 gap-1.5 h-fit md:h-[500px] overflow-y-auto">
+                            ${Array.from({length: 40}, (_, i) => `<button id="nav-btn-${i}" onclick="jumpToQuestion(${i})" class="aspect-square flex items-center justify-center rounded border text-[10px] font-bold transition-all">${i + 1}</button>`).join('')}
                         </div>
-                        <div id="question-container" class="flex-1 p-8"></div>
+                        <div id="question-container" class="flex-1 p-6 md:p-10"></div>
                     </div>
                 </div>`;
             startTimer(); renderQuestion();
@@ -291,33 +972,35 @@
         }
 
         function renderQuestion() {
-            const q = currentExam.questions[currentQuestionIndex] || currentExam.questions[0];
-            const qContent = q[currentLang];
+            const q = currentExam.questions[currentQuestionIndex];
             const container = document.getElementById('question-container');
             document.querySelectorAll('[id^="nav-btn-"]').forEach((btn, idx) => {
-                btn.className = `w-full aspect-square flex items-center justify-center rounded-lg border text-xs font-bold transition-all `;
+                btn.className = `aspect-square flex items-center justify-center rounded border text-[10px] font-bold transition-all `;
                 if (idx === currentQuestionIndex) btn.className += "border-blue-500 bg-blue-50 text-blue-600 ring-2 ring-blue-100 ";
                 else if (userAnswers[idx] !== undefined) btn.className += "border-green-200 bg-green-50 text-green-600 ";
                 else btn.className += "border-slate-200 bg-white text-slate-400 ";
-                if (flaggedQuestions.has(idx)) { btn.innerHTML = `${idx + 1}<span class="absolute top-0 right-0 w-2 h-2 bg-amber-500 rounded-full"></span>`; btn.className += "relative "; }
+                if (flaggedQuestions.has(idx)) { btn.innerHTML = `${idx + 1}<span class="absolute top-0 right-0 w-1.5 h-1.5 bg-amber-500 rounded-full"></span>`; btn.className += "relative "; }
                 else btn.innerHTML = idx + 1;
             });
+
             container.innerHTML = `
-                <div class="mb-6 flex justify-between items-start">
-                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-wider">${q.topic} • ${q.level}</span>
-                    <button onclick="toggleFlag(${currentQuestionIndex})" class="text-xs font-medium ${flaggedQuestions.has(currentQuestionIndex) ? 'text-amber-600' : 'text-slate-400'} flex items-center gap-1">🚩 ${flaggedQuestions.has(currentQuestionIndex) ? uiStrings[currentLang].unreview : uiStrings[currentLang].review}</button>
+                <div class="mb-4 flex justify-between items-start">
+                    <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-bold uppercase tracking-widest">${q.topic} • ${q.level}</span>
+                    <button onclick="toggleFlag(${currentQuestionIndex})" class="text-[10px] font-bold ${flaggedQuestions.has(currentQuestionIndex) ? 'text-amber-600' : 'text-slate-300'}">🚩 İŞARETLE</button>
                 </div>
-                <h3 class="text-xl font-semibold text-slate-800 leading-snug mb-8"><span class="text-slate-400 mr-2">${currentQuestionIndex + 1}.</span> ${qContent.question}</h3>
-                <div class="space-y-3">
-                    ${qContent.options.map((opt, idx) => `
-                        <div onclick="selectOption(${idx})" class="option-card p-4 rounded-xl border-2 flex items-center gap-4 ${userAnswers[currentQuestionIndex] === idx ? 'option-selected' : 'border-slate-100 bg-white'}">
-                            <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">${String.fromCharCode(65 + idx)}</span>
-                            <span class="text-sm text-slate-700">${opt}</span>
+                <h3 class="text-base font-semibold text-slate-800 leading-snug mb-6">${currentQuestionIndex + 1}. ${q.question}</h3>
+                <div class="space-y-2">
+                    ${q.options.map((opt, idx) => `
+                        <div onclick="selectOption(${idx})" class="option-card p-4 rounded-xl border-2 flex items-center gap-3 ${userAnswers[currentQuestionIndex] === idx ? 'option-selected' : 'border-slate-50 bg-white'}">
+                            <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">${String.fromCharCode(65 + idx)}</span>
+                            <span class="text-sm text-slate-600">${opt}</span>
                         </div>`).join('')}
                 </div>
-                <div class="mt-12 pt-6 border-t border-slate-100 flex justify-between">
-                    <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''} class="px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-600 disabled:opacity-30">${uiStrings[currentLang].prev}</button>
-                    <button onclick="nextQuestion()" class="px-8 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">${currentQuestionIndex === 39 ? uiStrings[currentLang].finish : uiStrings[currentLang].next}</button>
+                <div class="mt-10 pt-6 border-t border-slate-100 flex justify-between">
+                    <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''} class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-600 disabled:opacity-30">Önceki</button>
+                    <button onclick="nextQuestion()" class="px-6 py-2 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-blue-600 transition-colors">
+                        ${currentQuestionIndex === 39 ? 'Bitir' : 'Sonraki'}
+                    </button>
                 </div>`;
         }
 
@@ -332,44 +1015,25 @@
             let correctCount = 0;
             currentExam.questions.forEach((q, idx) => { if (userAnswers[idx] === q.correctAnswerIndex) correctCount++; });
             const passed = correctCount >= 26;
-            
-            // Save to LocalStorage
-            const history = JSON.parse(localStorage.getItem('istqb_history') || '[]');
-            history.push({
-                examId: currentExam.examId,
-                title: currentExam.title,
-                score: correctCount,
-                passed: passed,
-                date: new Date().toISOString(),
-                timestamp: Date.now()
-            });
-            localStorage.setItem('istqb_history', JSON.stringify(history));
+            const history = JSON.parse(localStorage.getItem('istqb_v4_history') || '[]');
+            history.push({ title: currentExam.title, score: correctCount, passed: passed, date: new Date().toISOString() });
+            localStorage.setItem('istqb_v4_history', JSON.stringify(history));
+            updateStatus();
 
-            const main = document.getElementById('main-content');
-            main.innerHTML = `
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-                    <div class="p-10 text-center ${passed ? 'bg-green-50' : 'bg-red-50'}">
-                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 ${passed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">${passed ? '✓' : '✕'}</div>
-                        <h2 class="text-3xl font-black text-slate-800 mb-2">${uiStrings[currentLang].results}</h2>
-                        <div class="flex justify-center gap-8 mt-6">
-                            <div class="text-center"><p class="text-xs font-bold text-slate-400 uppercase tracking-widest">${uiStrings[currentLang].score}</p><p class="text-3xl font-black text-slate-800">${correctCount} <span class="text-slate-300 text-lg">/ 40</span></p></div>
-                            <div class="text-center border-l border-slate-200 pl-8"><p class="text-xs font-bold text-slate-400 uppercase tracking-widest">${uiStrings[currentLang].status}</p><p class="text-2xl font-black ${passed ? 'text-green-600' : 'text-red-600'}">${passed ? uiStrings[currentLang].passed : uiStrings[currentLang].failed}</p></div>
-                        </div>
-                        <button onclick="location.reload()" class="mt-8 px-10 py-3 bg-slate-900 text-white rounded-xl font-bold shadow-lg hover:shadow-none transition-all">${uiStrings[currentLang].back}</button>
-                    </div>
-                    <div class="p-8 space-y-8 bg-white">
-                        ${currentExam.questions.map((q, idx) => {
-                            const isCorrect = userAnswers[idx] === q.correctAnswerIndex; const qContent = q[currentLang];
-                            return `
-                                <div class="p-6 rounded-xl border ${isCorrect ? 'border-green-100 bg-green-50/30' : 'border-red-100 bg-red-50/30'}">
-                                    <h4 class="font-bold text-slate-800 mb-4">${idx + 1}. ${qContent.question}</h4>
-                                    <div class="grid md:grid-cols-2 gap-4 text-sm">
-                                        <div class="p-3 bg-white rounded border border-slate-100"><span class="block text-[10px] font-bold text-slate-400 uppercase">${uiStrings[currentLang].yourChoice}</span><span class="${isCorrect ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}">${userAnswers[idx] !== undefined ? qContent.options[userAnswers[idx]] : 'N/A'}</span></div>
-                                        <div class="p-3 bg-white rounded border border-slate-100"><span class="block text-[10px] font-bold text-slate-400 uppercase">${uiStrings[currentLang].correct}</span><span class="text-green-600 font-bold">${qContent.options[q.correctAnswerIndex]}</span></div>
-                                    </div>
-                                    <div class="mt-4 p-4 bg-blue-50/50 rounded-lg border border-blue-100"><p class="text-xs font-bold text-blue-800 mb-1">💡 ${uiStrings[currentLang].explanation}</p><p class="text-xs text-blue-900 italic leading-relaxed">${qContent.explanation}</p></div>
-                                </div>`;
-                        }).join('')}
+            document.getElementById('main-content').innerHTML = `
+                <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-8 text-center max-h-[80vh] overflow-y-auto">
+                    <h2 class="text-2xl font-black ${passed ? 'text-green-600' : 'text-red-600'}">${passed ? 'BAŞARILI' : 'BAŞARISIZ'}</h2>
+                    <p class="text-sm font-bold text-slate-500 mt-1">Puan: ${correctCount}/40</p>
+                    <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-slate-900 text-white rounded-lg text-xs font-bold">Menüye Dön</button>
+                    <div class="mt-8 text-left space-y-4">
+                        ${currentExam.questions.map((q, idx) => `
+                            <div class="p-4 rounded-lg border ${userAnswers[idx] === q.correctAnswerIndex ? 'border-green-100 bg-green-50/20' : 'border-red-100 bg-red-50/20'}">
+                                <p class="text-xs font-bold">${idx+1}. ${q.question}</p>
+                                <p class="text-[10px] mt-2 text-green-700 font-bold">Doğru: ${q.options[q.correctAnswerIndex]}</p>
+                                ${userAnswers[idx] !== q.correctAnswerIndex ? `<p class="text-[10px] text-red-700 font-bold">Sizin: ${userAnswers[idx] !== undefined ? q.options[userAnswers[idx]] : 'Boş'}</p>` : ''}
+                                <p class="text-[9px] mt-2 text-slate-400 italic">${q.explanation}</p>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>`;
             window.scrollTo(0, 0);
