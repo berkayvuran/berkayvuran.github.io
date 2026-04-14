@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PM Decision Simulator | PM Karar Simülatörü</title>
+    <link rel="shortcut icon" href="../../assets/images/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: hsl(220, 25%, 6%);
+            --bg-primary: hsl(220, 20%, 10%);
+            --bg-card: hsl(220, 18%, 14%);
+            --bg-card-hover: hsl(220, 18%, 17%);
+            --bg-surface: hsl(220, 15%, 18%);
+            --accent: #007AFF;
+            --accent-light: #5AC8FA;
+            --accent-glow: rgba(0, 122, 255, 0.15);
+            --accent-glow2: rgba(0, 122, 255, 0.08);
+            --green: #34C759;
+            --green-glow: rgba(52, 199, 89, 0.12);
+            --orange: #FF9F0A;
+            --orange-glow: rgba(255, 159, 10, 0.12);
+            --red: #FF3B30;
+            --red-glow: rgba(255, 59, 48, 0.12);
+            --text: #ffffff;
+            --text-2: hsl(220, 15%, 72%);
+            --text-3: hsl(220, 12%, 50%);
+            --border: hsl(220, 15%, 20%);
+            --border-light: hsla(220, 15%, 65%, 0.12);
+            --shadow: 0 8px 32px hsla(220, 50%, 3%, 0.5);
+            --shadow-lg: 0 20px 60px hsla(220, 50%, 3%, 0.6);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Background */
+        .bg-ambient {
+            position: fixed; inset:0; z-index:0; pointer-events:none;
+            background:
+                radial-gradient(ellipse 600px 400px at 20% 10%, rgba(0,122,255,0.07) 0%, transparent 100%),
+                radial-gradient(ellipse 500px 500px at 80% 90%, rgba(90,200,250,0.04) 0%, transparent 100%);
+        }
+
+        .wrap {
+            position: relative; z-index:1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+        }
+
+        /* TOP BAR */
+        .topbar {
+            position: sticky; top:0; z-index:50;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0;
+            background: linear-gradient(to bottom, var(--bg-deep) 60%, transparent);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        }
+        .topbar-back {
+            display: inline-flex; align-items:center; gap:6px;
+            color: var(--text-3); text-decoration:none;
+            font-size: 13px; font-weight:500;
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            transition: all .2s;
+        }
+        .topbar-back:hover { color: var(--accent); border-color: var(--accent); }
+        .topbar-back svg { width:14px; height:14px; }
+
+        .topbar-lang {
+            display:flex; gap:2px; padding:3px;
+            background: var(--bg-card); border:1px solid var(--border);
+            border-radius:10px;
+        }
+        .lang-btn {
+            padding: 6px 14px; border:none; border-radius:8px;
+            font-family:'Poppins',sans-serif; font-size:12px; font-weight:600;
+            cursor:pointer; transition: all .2s;
+            background:transparent; color: var(--text-3);
+            letter-spacing: 0.5px;
+        }
+        .lang-btn.active { background: var(--accent); color:#fff; }
+        .lang-btn:not(.active):hover { color: var(--text-2); }
+
+        /* HERO */
+        .hero {
+            text-align:center;
+            padding: 48px 0 40px;
+        }
+        .hero-badge {
+            display:inline-flex; align-items:center; gap:8px;
+            padding: 6px 16px;
+            background: var(--accent-glow2);
+            border: 1px solid rgba(0,122,255,0.2);
+            border-radius: 50px;
+            font-size:11px; font-weight:600;
+            color: var(--accent-light);
+            text-transform:uppercase; letter-spacing:1.5px;
+            margin-bottom:24px;
+        }
+        .hero-badge::before {
+            content:''; width:6px; height:6px; border-radius:50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: blink 2s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        .hero h1 {
+            font-size: clamp(26px, 5vw, 38px);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 14px;
+            color: var(--text);
+        }
+        .hero-sub {
+            color: var(--text-2); font-size:14px;
+            max-width:440px; margin:0 auto;
+            line-height:1.7; font-weight:400;
+        }
+
+        /* FEATURE GRID */
+        .features {
+            display:grid; grid-template-columns:1fr 1fr;
+            gap:10px; margin:36px 0 40px;
+        }
+        .feat {
+            padding: 18px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            transition: all .2s;
+        }
+        .feat:hover { border-color: rgba(0,122,255,0.3); }
+        .feat-icon { font-size:22px; margin-bottom:10px; }
+        .feat-title { font-size:13px; font-weight:600; margin-bottom:4px; color:var(--text); }
+        .feat-desc { font-size:11px; color:var(--text-3); line-height:1.55; font-weight:400; }
+
+        /* BUTTONS */
+        .btn-primary {
+            display:inline-flex; align-items:center; gap:10px;
+            padding: 15px 36px;
+            background: var(--accent);
+            color: #fff; border:none; border-radius:12px;
+            font-family:'Poppins',sans-serif; font-size:15px; font-weight:600;
+            cursor:pointer; transition: all .25s;
+            box-shadow: 0 4px 20px rgba(0,122,255,0.3);
+        }
+        .btn-primary:hover {
+            background: #0069d9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,122,255,0.35);
+        }
+        .btn-primary svg { width:18px; height:18px; }
+
+        /* PROGRESS */
+        .progress-section { margin-bottom:28px; }
+        .progress-top {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:8px;
+        }
+        .progress-label {
+            font-size:12px; font-weight:500; color:var(--text-3);
+            letter-spacing:0.5px; text-transform:uppercase;
+        }
+        .progress-pct {
+            font-family:'JetBrains Mono',monospace;
+            font-size:12px; font-weight:700; color:var(--accent);
+        }
+        .progress-track {
+            height:3px; background:var(--bg-surface); border-radius:3px; overflow:hidden;
+        }
+        .progress-bar {
+            height:100%; border-radius:3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            transition: width .5s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* SCENARIO CARD */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: var(--shadow);
+            animation: cardIn .35s ease;
+        }
+        @keyframes cardIn {
+            from { opacity:0; transform:translateY(16px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+
+        .card-tag {
+            font-family:'JetBrains Mono',monospace;
+            font-size:11px; font-weight:500; color:var(--accent);
+            letter-spacing:2px; text-transform:uppercase;
+            margin-bottom:14px;
+        }
+        .card h2 {
+            font-size:22px; font-weight:700; line-height:1.3;
+            margin-bottom:18px; color:var(--text);
+        }
+        .card-context {
+            font-size:14px; color:var(--text-2); line-height:1.75;
+            margin-bottom:28px; font-weight:400;
+        }
+
+        /* CHOICES */
+        .choices { display:flex; flex-direction:column; gap:10px; }
+
+        .choice {
+            display:flex; align-items:flex-start; gap:14px;
+            width:100%; padding:18px 18px;
+            background: var(--bg-primary);
+            border: 1.5px solid var(--border);
+            border-radius:14px;
+            cursor:pointer; text-align:left;
+            font-family:'Poppins',sans-serif;
+            transition: all .2s; color:var(--text);
+        }
+        .choice:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow2);
+        }
+        .choice-key {
+            flex-shrink:0; width:30px; height:30px;
+            border-radius:8px;
+            display:flex; align-items:center; justify-content:center;
+            font-family:'JetBrains Mono',monospace;
+            font-size:12px; font-weight:700;
+            background: var(--accent-glow); color:var(--accent);
+        }
+        .choice-text {
+            font-size:13px; line-height:1.65; color:var(--text-2);
+            padding-top:3px; font-weight:400;
+        }
+        .choice:hover .choice-text { color:var(--text); }
+
+        /* FEEDBACK */
+        .feedback { animation: cardIn .35s ease; }
+        .fb-header {
+            display:flex; align-items:center; gap:10px;
+            margin-bottom:18px; padding-bottom:18px;
+            border-bottom:1px solid var(--border);
+        }
+        .fb-dot {
+            width:10px; height:10px; border-radius:50%; flex-shrink:0;
+        }
+        .fb-dot.good { background:var(--green); box-shadow:0 0 10px var(--green-glow); }
+        .fb-dot.ok { background:var(--orange); box-shadow:0 0 10px var(--orange-glow); }
+        .fb-dot.risk { background:var(--red); box-shadow:0 0 10px var(--red-glow); }
+        .fb-label { font-size:13px; font-weight:600; }
+        .fb-label.good { color:var(--green); }
+        .fb-label.ok { color:var(--orange); }
+        .fb-label.risk { color:var(--red); }
+
+        .fb-text {
+            font-size:14px; color:var(--text-2); line-height:1.75;
+            margin-bottom:20px; font-weight:400;
+        }
+        .fb-ref {
+            display:inline-flex; align-items:center; gap:8px;
+            font-size:12px; color:var(--accent); font-weight:500;
+            text-decoration:none;
+            padding:10px 16px;
+            background:var(--accent-glow2);
+            border:1px solid rgba(0,122,255,0.15);
+            border-radius:10px;
+            transition: all .2s;
+            line-height:1.4;
+        }
+        .fb-ref:hover { background:var(--accent-glow); border-color:rgba(0,122,255,0.3); }
+
+        .btn-next {
+            display:block; width:100%; padding:15px;
+            margin-top:20px;
+            background:var(--accent); color:#fff; border:none;
+            border-radius:12px;
+            font-family:'Poppins',sans-serif; font-size:14px; font-weight:600;
+            cursor:pointer; transition:all .2s;
+            box-shadow: 0 4px 16px rgba(0,122,255,0.25);
+        }
+        .btn-next:hover { background:#0069d9; transform:translateY(-1px); }
+
+        /* RESULT */
+        .result { animation: cardIn .4s ease; }
+
+        .result-hero {
+            text-align:center; padding:40px 20px 32px;
+            background: var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:16px;
+            margin-bottom:16px;
+            box-shadow: var(--shadow);
+        }
+        .result-badge {
+            display:inline-block; padding:5px 14px;
+            background:var(--accent-glow2);
+            border:1px solid rgba(0,122,255,0.15);
+            border-radius:50px;
+            font-size:11px; font-weight:600; color:var(--accent-light);
+            text-transform:uppercase; letter-spacing:1.2px;
+            margin-bottom:20px;
+        }
+        .result-name {
+            font-size: clamp(24px,4.5vw,34px);
+            font-weight:700; margin-bottom:6px;
+            color:var(--text);
+        }
+        .result-sub {
+            font-size:13px; color:var(--text-3); font-weight:400;
+        }
+
+        /* RADAR */
+        .radar-card {
+            background: var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:32px 20px 28px;
+            margin-bottom:16px;
+            box-shadow: var(--shadow);
+        }
+        .radar-svg-wrap {
+            display:flex; justify-content:center;
+            margin-bottom:28px;
+        }
+        .radar-svg-wrap svg { max-width:300px; width:100%; }
+
+        .dim-row { margin-bottom:14px; }
+        .dim-row:last-child { margin-bottom:0; }
+        .dim-top {
+            display:flex; justify-content:space-between; align-items:baseline;
+            margin-bottom:5px;
+        }
+        .dim-label { font-size:12px; font-weight:500; color:var(--text-2); }
+        .dim-val {
+            font-family:'JetBrains Mono',monospace;
+            font-size:12px; font-weight:600; color:var(--accent);
+        }
+        .dim-track {
+            height:4px; background:var(--bg-surface);
+            border-radius:4px; overflow:hidden; margin-bottom:4px;
+        }
+        .dim-fill { height:100%; border-radius:4px; transition:width .8s ease; }
+        .dim-range {
+            display:flex; justify-content:space-between;
+            font-size:10px; color:var(--text-3); font-weight:400;
+        }
+
+        /* ARTICLES */
+        .articles-card {
+            background: var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:24px;
+            margin-bottom:16px;
+            box-shadow: var(--shadow);
+        }
+        .articles-card h3 {
+            font-size:14px; font-weight:600; margin-bottom:14px; color:var(--text);
+        }
+        .article-item {
+            display:flex; align-items:center; gap:12px;
+            padding:12px 14px; margin-bottom:6px;
+            background:var(--bg-primary);
+            border:1px solid var(--border);
+            border-radius:10px;
+            text-decoration:none; color:var(--text-2);
+            font-size:12px; font-weight:400; line-height:1.5;
+            transition: all .2s;
+        }
+        .article-item:last-child { margin-bottom:0; }
+        .article-item:hover {
+            border-color:rgba(0,122,255,0.3);
+            color:var(--accent);
+            background:var(--accent-glow2);
+        }
+        .article-item span:first-child { flex-shrink:0; font-size:14px; }
+
+        /* ACTION ROW */
+        .actions {
+            display:flex; gap:10px;
+        }
+        .act-btn {
+            flex:1; padding:14px; border-radius:12px;
+            font-family:'Poppins',sans-serif; font-size:13px; font-weight:600;
+            cursor:pointer; transition:all .2s;
+            display:flex; align-items:center; justify-content:center; gap:8px;
+            text-decoration:none;
+        }
+        .act-btn.fill {
+            background:var(--accent); color:#fff; border:none;
+            box-shadow:0 4px 16px rgba(0,122,255,0.25);
+        }
+        .act-btn.fill:hover { background:#0069d9; transform:translateY(-1px); }
+        .act-btn.outline {
+            background:transparent; color:var(--text-2);
+            border:1.5px solid var(--border);
+        }
+        .act-btn.outline:hover { border-color:var(--accent); color:var(--accent); }
+        .act-btn svg { width:16px; height:16px; }
+
+        /* HISTORY */
+        .history-card {
+            background: var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:24px;
+            margin-top:32px;
+            box-shadow: var(--shadow);
+        }
+        .history-card h3 { font-size:14px; font-weight:600; margin-bottom:14px; color:var(--text); }
+        .hist-row {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:10px 0; font-size:13px;
+            border-bottom:1px solid var(--border);
+        }
+        .hist-row:last-child { border-bottom:none; }
+        .hist-name { font-weight:600; color:var(--accent); }
+        .hist-date { color:var(--text-3); font-family:'JetBrains Mono',monospace; font-size:11px; }
+
+        /* TOAST */
+        .toast {
+            position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+            background:var(--bg-card); border:1px solid var(--accent);
+            color:var(--accent); padding:12px 24px; border-radius:12px;
+            font-size:13px; font-weight:500; z-index:100;
+            box-shadow: var(--shadow-lg);
+            transition: transform .3s ease;
+            pointer-events:none;
+        }
+        .toast.show { transform:translateX(-50%) translateY(0); }
+
+        .hidden { display:none !important; }
+
+        @media (max-width:480px) {
+            .wrap { padding: 0 16px 60px; }
+            .features { grid-template-columns:1fr; }
+            .card { padding:24px 20px; }
+            .actions { flex-direction:column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-ambient"></div>
+
+    <div class="wrap">
+        <div class="topbar">
+            <a href="../../index.html#builder" class="topbar-back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <span data-t="back">Builder</span>
+            </a>
+            <div class="topbar-lang">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="tr">TR</button>
+            </div>
+        </div>
+
+        <!-- START -->
+        <div id="view-start">
+            <div class="hero">
+                <div class="hero-badge"><span data-t="badge">Interactive Simulation</span></div>
+                <h1 data-t="title">PM Decision Simulator</h1>
+                <p class="hero-sub" data-t="subtitle">10 real-world product management dilemmas. Every choice reveals your PM DNA. No right answers — only trade-offs.</p>
+            </div>
+
+            <div class="features">
+                <div class="feat">
+                    <div class="feat-icon">🎯</div>
+                    <div class="feat-title" data-t="f1t">10 Scenarios</div>
+                    <div class="feat-desc" data-t="f1d">Real PM dilemmas from prioritization to AI strategy</div>
+                </div>
+                <div class="feat">
+                    <div class="feat-icon">📊</div>
+                    <div class="feat-title" data-t="f2t">5-Axis Profile</div>
+                    <div class="feat-desc" data-t="f2d">Radar chart maps your unique PM style</div>
+                </div>
+                <div class="feat">
+                    <div class="feat-icon">📚</div>
+                    <div class="feat-title" data-t="f3t">Research-Backed</div>
+                    <div class="feat-desc" data-t="f3d">PMBOK, Kotter, Pareto & psychology</div>
+                </div>
+                <div class="feat">
+                    <div class="feat-icon">🔄</div>
+                    <div class="feat-title" data-t="f4t">Replayable</div>
+                    <div class="feat-desc" data-t="f4d">Track your PM profile over time</div>
+                </div>
+            </div>
+
+            <div style="text-align:center">
+                <button class="btn-primary" id="btn-start">
+                    <span data-t="startBtn">Start Simulation</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+
+            <div id="history-area"></div>
+        </div>
+
+        <!-- GAME -->
+        <div id="view-game" class="hidden">
+            <div class="progress-section">
+                <div class="progress-top">
+                    <span class="progress-label" id="prog-label">SCENARIO 1 / 10</span>
+                    <span class="progress-pct" id="prog-pct">10%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar" id="prog-bar" style="width:10%"></div>
+                </div>
+            </div>
+            <div id="game-area"></div>
+        </div>
+
+        <!-- RESULT -->
+        <div id="view-result" class="hidden"></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════
+const L = {
+en: {
+    back:"Builder", badge:"Interactive Simulation",
+    title:"PM Decision Simulator",
+    subtitle:"10 real-world product management dilemmas. Every choice reveals your PM DNA. No right answers — only trade-offs.",
+    f1t:"10 Scenarios", f1d:"Real PM dilemmas from prioritization to AI strategy",
+    f2t:"5-Axis Profile", f2d:"Radar chart maps your unique PM style",
+    f3t:"Research-Backed", f3d:"PMBOK, Kotter, Pareto & psychology",
+    f4t:"Replayable", f4d:"Track your PM profile over time",
+    startBtn:"Start Simulation",
+    scenario:"SCENARIO", next:"Next Scenario", seeResult:"See My PM Profile",
+    ref:"Related reading",
+    resultBadge:"YOUR PM PROFILE",
+    resultSub:"Based on 10 decisions across real product management scenarios",
+    dim:["Strategic Thinking","Data Orientation","User Advocacy","Risk Appetite","Leadership Style"],
+    dimLo:["Tactical","Intuitive","Business-First","Cautious","Facilitator"],
+    dimHi:["Visionary","Data-Driven","User-Centric","Bold","Directive"],
+    readTitle:"Recommended Reading",
+    btnAgain:"Play Again", btnLinkedin:"Share on LinkedIn",
+    histTitle:"Past Sessions",
+    good:"Strong choice", ok:"Balanced approach", risk:"Risky move",
+},
+tr: {
+    back:"İnşacı", badge:"İnteraktif Simülasyon",
+    title:"PM Karar Simülatörü",
+    subtitle:"10 gerçek dünya ürün yönetimi ikilemi. Her seçim PM DNA'nızı ortaya çıkarır. Doğru cevap yok — sadece ödünleşimler.",
+    f1t:"10 Senaryo", f1d:"Önceliklendirmeden AI stratejisine gerçek ikilemleri",
+    f2t:"5 Eksenli Profil", f2d:"Radar grafik benzersiz PM tarzınızı haritalıyor",
+    f3t:"Araştırma Destekli", f3d:"PMBOK, Kotter, Pareto ve psikoloji",
+    f4t:"Tekrar Oynanabilir", f4d:"PM profilinizi zaman içinde takip edin",
+    startBtn:"Simülasyonu Başlat",
+    scenario:"SENARYO", next:"Sonraki Senaryo", seeResult:"PM Profilimi Gör",
+    ref:"İlgili okuma",
+    resultBadge:"PM PROFİLİNİZ",
+    resultSub:"10 gerçek ürün yönetimi senaryosundaki kararlarınıza dayalı",
+    dim:["Stratejik Düşünce","Veri Odaklılık","Kullanıcı Savunuculuğu","Risk İştahı","Liderlik Stili"],
+    dimLo:["Taktikçi","Sezgisel","İş Odaklı","Temkinli","Kolaylaştırıcı"],
+    dimHi:["Vizyoner","Veri Güdümlü","Kullanıcı Merkezli","Cesur","Yönlendirici"],
+    readTitle:"Önerilen Okumalar",
+    btnAgain:"Tekrar Oyna", btnLinkedin:"LinkedIn'de Paylaş",
+    histTitle:"Geçmiş Oturumlar",
+    good:"Güçlü tercih", ok:"Dengeli yaklaşım", risk:"Riskli hamle",
+}
+};
+
+// ═══════════════════════════════════════
+// SCENARIOS
+// ═══════════════════════════════════════
+// scores order: [strategy, data, user, risk, leadership]
+const S = [
+{
+    en:{title:"The Prioritization Showdown",
+        ctx:"Sprint planning is tomorrow. Three powerful stakeholders each demand their feature is #1. The CEO wants a dashboard revamp for an investor demo. Sales needs a CRM integration to close a huge deal. Support says a critical bug is causing 30% of tickets. Your backlog can only fit one.",
+        ch:[
+            {t:"Prioritize the critical bug — 30% of support tickets is a burning platform. Use data to show the others why user pain must come first.",s:[4,9,10,3,5]},
+            {t:"Run a quick RICE scoring session with all three stakeholders. Let the framework decide, not politics.",s:[8,10,6,4,4]},
+            {t:"Negotiate a compromise sprint: partial bug fix, lightweight CRM hook, and a dashboard mockup for the demo.",s:[7,5,7,7,8]}
+        ]},
+    tr:{title:"Önceliklendirme Krizi",
+        ctx:"Sprint planlama yarın. Üç güçlü paydaş, her biri kendi feature'ının 1 numara olmasını istiyor. CEO yatırımcı demosu için dashboard yenilemesi, Satış büyük anlaşma için CRM entegrasyonu, Destek ise taleplerin %30'una neden olan kritik bug'ı gösteriyor. Backlog'a sadece biri sığıyor.",
+        ch:[
+            {t:"Kritik bug'ı öncelikle — %30 destek talebi yanan platform. Diğerlerine kullanıcı acısının önce gelmesi gerektiğini veriyle göster.",s:[4,9,10,3,5]},
+            {t:"Üç paydaşla hızlı RICE skorlama oturumu yap. Kararı politika değil çerçeve versin.",s:[8,10,6,4,4]},
+            {t:"Uzlaşma sprinti müzakere et: kısmi bug düzeltmesi, hafif CRM bağlantısı ve demo için dashboard mockup.",s:[7,5,7,7,8]}
+        ]},
+    fb:[
+        {t:"good",en:"User advocacy backed by data. Support ticket volume is a strong signal — this protects NPS while demonstrating data maturity.",tr:"Veri destekli kullanıcı savunuculuğu. Destek talep hacmi güçlü bir sinyal — NPS'i korurken veri olgunluğu gösteriyor."},
+        {t:"good",en:"RICE scoring depersonalizes the debate. A framework-first approach builds trust and repeatability across stakeholder conflicts.",tr:"RICE skorlama tartışmayı kişisellikten çıkarır. Çerçeve öncelikli yaklaşım güven ve tekrarlanabilirlik inşa eder."},
+        {t:"ok",en:"Diplomatic but risky — partial delivery can mean nothing ships well. However, strong negotiation keeps all stakeholders engaged.",tr:"Diplomatik ama riskli — kısmi teslimat hiçbir şeyin iyi çıkmaması demek olabilir. Ancak güçlü müzakere paydaşları oyunda tutar."}
+    ],
+    ref:{t:"Strategic Prioritization: A Psychological and OB Perspective",u:"https://berkayvuran.medium.com/strategic-prioritization-a-psychological-and-organizational-behavior-perspective-b7fa037c17d3"}
+},
+{
+    en:{title:"Ship It or Polish It?",
+        ctx:"Your team built a new feature for 8 weeks. Launch is in 5 days. Core flow works but edge cases are unhandled, onboarding is rough, and design says the UI 'doesn't feel right.' Marketing already announced the date. Delaying means missing a conference with 2,000 target users.",
+        ch:[
+            {t:"Ship the MVP — real user feedback beats internal perfectionism. Fix edge cases in a fast-follow sprint.",s:[6,5,8,9,7]},
+            {t:"Delay 2 weeks. Tell marketing to adjust. A half-baked launch does more brand damage than a delayed one.",s:[8,6,5,3,8]},
+            {t:"Ship a 'beta' version — frame it as early access at the conference. Honest expectations + real feedback.",s:[9,7,8,7,6]}
+        ]},
+    tr:{title:"Çıkar mı, Cilala mı?",
+        ctx:"Ekip 8 haftadır yeni özellik geliştiriyor. 5 gün sonra lansman. Ana akış çalışıyor ama edge case'ler eksik, onboarding kaba, tasarım 'doğru hissetmiyor' diyor. Pazarlama tarihi duyurdu. Ertelemek 2.000 hedef kullanıcılı konferansı kaçırmak demek.",
+        ch:[
+            {t:"MVP'yi çıkar — gerçek kullanıcı geri bildirimi iç mükemmeliyetçiliği yener. Edge case'leri hızlı takip sprintinde düzelt.",s:[6,5,8,9,7]},
+            {t:"2 hafta ertele. Pazarlamaya mesajı ayarla. Yarım yamalak lansman ertelenmişten daha çok hasar verir.",s:[8,6,5,3,8]},
+            {t:"'Beta' versiyonu çıkar — konferansta erken erişim olarak çerçevele. Dürüst beklentiler + gerçek geri bildirim.",s:[9,7,8,7,6]}
+        ]},
+    fb:[
+        {t:"ok",en:"Classic MVP bet. 'If you're not embarrassed by v1, you shipped too late.' But make sure MVP doesn't become an excuse for low quality.",tr:"Klasik MVP bahsi. 'V1'den utanmıyorsan geç çıkardın.' Ama MVP'nin düşük kalite bahanesi olmamasına dikkat."},
+        {t:"risk",en:"Quality over speed shows discipline, but missing the conference has real opportunity cost. Pareto says 80% might be enough.",tr:"Hız yerine kalite disiplin gösterir ama konferansı kaçırmanın fırsat maliyeti var. Pareto %80'in yeterli olabileceğini söylüyor."},
+        {t:"good",en:"Strategic framing — 'beta' sets honest expectations while capturing the conference window. Positioning is the PM's superpower.",tr:"Stratejik çerçeveleme — 'beta' dürüst beklentiler koyarken konferans fırsatını yakalar. Konumlandırma PM'in süper gücü."}
+    ],
+    ref:{t:"Mükemmel Ürün İyi Ürünün Ne Kadar Düşmanı: MVP",u:"https://medium.com/@berkayvuran/m%C3%BCkemmel-%C3%BCr%C3%BCn-i%CC%87yi-%C3%BCr%C3%BCn%C3%BCn-ne-kadar-d%C3%BC%C5%9Fman%C4%B1-mvp-6a199628dafa"}
+},
+{
+    en:{title:"Escalate or Own It?",
+        ctx:"Friday evening. Monitoring shows a critical data pipeline bug — revenue reports for the last 48 hours silently report 15% higher than actual. Finance hasn't noticed. The fix requires a 4-hour database migration. Monday is the board meeting where these numbers will be presented.",
+        ch:[
+            {t:"Escalate immediately to CTO and CFO. Transparency is non-negotiable when financial data is wrong, regardless of timing.",s:[6,8,5,4,9]},
+            {t:"Fix it quietly over the weekend. Correct the numbers and brief leadership Monday morning before the board meeting.",s:[5,7,4,8,7]},
+            {t:"Escalate to your direct manager only. Propose a fix plan with timeline, let them decide how high to take it.",s:[7,6,6,5,6]}
+        ]},
+    tr:{title:"Eskale Et mi, Sahiplen mi?",
+        ctx:"Cuma akşamı. İzleme paneli kritik veri hattı hatası gösteriyor — son 48 saatin gelir raporları sessizce gerçeğin %15 üstünü raporluyor. Finans fark etmedi. Düzeltme 4 saatlik veritabanı migrasyonu gerektiriyor. Pazartesi bu rakamların sunulacağı yönetim kurulu toplantısı var.",
+        ch:[
+            {t:"Hemen CTO ve CFO'ya eskale et. Finansal veri yanlışken şeffaflık tartışılmaz, zamanlama ne olursa olsun.",s:[6,8,5,4,9]},
+            {t:"Hafta sonu sessizce düzelt. Rakamları düzelt, Pazartesi sabahı yönetim kurulundan önce liderliğe bilgi ver.",s:[5,7,4,8,7]},
+            {t:"Sadece direkt yöneticine eskale et. Zaman çizelgesiyle düzeltme planı öner, yukarı eskalasyona karar versin.",s:[7,6,6,5,6]}
+        ]},
+    fb:[
+        {t:"good",en:"Full transparency with financial data is the safest path. If the board discovers the error themselves, trust is destroyed forever.",tr:"Finansal verilerle tam şeffaflık en güvenli yol. Yönetim kurulu hatayı kendisi keşfederse güven kalıcı olarak yıkılır."},
+        {t:"risk",en:"Fixing quietly shows ownership but hiding financial data errors — even temporarily — is a governance risk. If it leaks, credibility is gone.",tr:"Sessizce düzeltmek sahiplenme gösterir ama finansal veri hatasını gizlemek yönetişim riski. Sızarsa güvenilirlik biter."},
+        {t:"ok",en:"Chain-of-command escalation is process-correct but may lose precious time. In financial accuracy matters, speed of transparency matters.",tr:"Komuta zinciri eskalasyonu süreç olarak doğru ama değerli zaman kaybettirebilir. Finansal doğrulukta şeffaflık hızı önemli."}
+    ],
+    ref:{t:"Mastering Escalation and Delegation",u:"https://berkayvuran.medium.com/mastering-escalation-and-delegation-core-competencies-for-product-managers-17286d299ded?source=rss-3eba33c864cf------2"}
+},
+{
+    en:{title:"The Data Paradox",
+        ctx:"A/B test on the new checkout flow is done. New flow has 3% higher conversion but 12% more cart abandonment at step 2. Statistical significance is borderline (p=0.07). Your UX researcher says users love the new flow but get confused by a specific field. The VP of Growth wants to ship based on conversion lift.",
+        ch:[
+            {t:"Trust the qualitative signal — fix the confusing field and run another test. Data is inconclusive but the user insight is clear.",s:[7,6,10,5,5]},
+            {t:"Ship the new flow. 3% conversion lift at p=0.07 is close enough. Perfect is the enemy of good.",s:[5,8,4,9,7]},
+            {t:"Design a third variant combining the conversion win with the UX fix. Test again with a larger sample.",s:[9,9,8,4,6]}
+        ]},
+    tr:{title:"Veri Paradoksu",
+        ctx:"Yeni ödeme akışı A/B testi bitti. Yeni akışta %3 daha yüksek dönüşüm ama 2. adımda %12 daha fazla sepet terk. İstatistiksel anlamlılık sınırda (p=0.07). UX araştırmacısı kullanıcıların yeni akışı sevdiğini ama belirli bir alandan şaşırdığını söylüyor. Büyüme VP'si dönüşüme göre çıkarmak istiyor.",
+        ch:[
+            {t:"Nitel sinyale güven — kafa karıştıran alanı düzelt ve başka test yap. Veri belirsiz ama kullanıcı içgörüsü net.",s:[7,6,10,5,5]},
+            {t:"Yeni akışı çıkar. p=0.07'de %3 dönüşüm artışı bir iş kararı için yeterli. Mükemmel iyinin düşmanı.",s:[5,8,4,9,7]},
+            {t:"Dönüşüm kazancını UX düzeltmesiyle birleştiren üçüncü varyant tasarla. Daha büyük örneklemle tekrar test et.",s:[9,9,8,4,6]}
+        ]},
+    fb:[
+        {t:"good",en:"Qualitative + quantitative triangulation is gold. The 'confused by a specific field' insight is actionable and explains the abandonment spike.",tr:"Nitel + nicel üçgenleme altın değerinde. 'Belirli bir alandan şaşkınlık' içgörüsü eyleme geçirilebilir ve terk artışını açıklıyor."},
+        {t:"risk",en:"p=0.07 means 7% chance you're seeing noise. Shipping on borderline significance with a known UX issue is gambling with user trust.",tr:"p=0.07, %7 ihtimalle gürültü görüyorsunuz demek. Bilinen UX sorunuyla sınır anlamlılıkta çıkmak kullanıcı güveniyle kumar."},
+        {t:"good",en:"Iterate-and-validate maximizes learning. Takes longer but reduces risk of shipping conversion lift with hidden churn.",tr:"Tekrarla-ve-doğrula öğrenmeyi maksimize eder. Daha uzun sürer ama gizli kayıpla dönüşüm artışı çıkma riskini azaltır."}
+    ],
+    ref:{t:"Challenges in Data-Driven Decision-Making for PMs",u:"https://globalcybersecuritynetwork.com/blog/data-driven-decision-making-for-effective-product-management/"}
+},
+{
+    en:{title:"The AI Bet",
+        ctx:"CEO returns from a conference buzzing about AI. They want an AI-powered recommendation engine in 6 weeks. Your team has zero ML experience. Options: third-party API (fast but expensive, black-box), rule-based 'AI' (fast, transparent, not really AI), or push for an ML hire and 3-month timeline.",
+        ch:[
+            {t:"Third-party API. Ship fast, learn from real usage data, replace with in-house ML later when you understand the problem better.",s:[7,7,6,8,7]},
+            {t:"Build rule-based recommendations. Be honest it's not 'AI' — ships in 2 weeks, you own it, and it establishes the UX pattern.",s:[8,5,7,4,6]},
+            {t:"Push back. Present a 3-month plan with ML hire. Doing AI right matters more than doing it fast.",s:[10,8,5,3,9]}
+        ]},
+    tr:{title:"AI Bahsi",
+        ctx:"CEO konferanstan AI heyecanıyla döndü. 6 haftada AI destekli öneri motoru istiyor. Ekibin sıfır ML deneyimi var. Seçenekler: üçüncü parti API (hızlı ama pahalı, kara kutu), kural tabanlı 'AI' (hızlı, şeffaf, gerçek AI değil) veya ML işe alımı ve 3 aylık plan.",
+        ch:[
+            {t:"Üçüncü parti API. Hızlı çıkar, gerçek kullanım verisinden öğren, sorunu anladığında kendi ML'inle değiştir.",s:[7,7,6,8,7]},
+            {t:"Kural tabanlı öneriler oluştur. 'AI' olmadığı konusunda dürüst ol — 2 haftada çıkar, tamamen sahiplenirsin, UX kalıbını kurar.",s:[8,5,7,4,6]},
+            {t:"Geri it. ML işe alımıyla 3 aylık plan sun. AI'ı doğru yapmak hızlı yapmaktan önemli.",s:[10,8,5,3,9]}
+        ]},
+    fb:[
+        {t:"ok",en:"API-first is pragmatic — learn what users want from recommendations before investing in infrastructure. Watch the cost curve.",tr:"API-öncelikli pragmatik — altyapıya yatırım yapmadan kullanıcıların önerilerden ne istediğini öğren. Maliyet eğrisini takip et."},
+        {t:"good",en:"Honest framing builds trust. A rule-based system that works beats AI hype that disappoints. This is KISS in action.",tr:"Dürüst çerçeveleme güven inşa eder. Çalışan kural tabanlı sistem hayal kırıklığı yaratan AI hype'ından iyi. KISS prensibi uygulamada."},
+        {t:"risk",en:"Strategic and principled, but 3 months is eternity in startup time. If the CEO's conviction is strong, find a middle path.",tr:"Stratejik ve ilkeli ama 3 ay startup zamanında sonsuzluk. CEO'nun inancı güçlüyse orta yol bul."}
+    ],
+    ref:{t:"AI-First Product Strategy: Psychological & Organizational Dynamics",u:"https://berkayvuran.medium.com/ai-first-product-strategy-psychological-organizational-dynamics-fe2f6ca2bd05?source=rss-3eba33c864cf------2"}
+},
+{
+    en:{title:"The Bad News Delivery",
+        ctx:"Your flagship feature will miss its deadline by 3 weeks. A third-party integration turned out far more complex than estimated. Team is demoralized. The CPO expects a status update in tomorrow's all-hands meeting. 200+ people will be watching.",
+        ch:[
+            {t:"Full transparency in the all-hands. Show the exact problem, revised timeline, and what you learned. Vulnerability builds trust.",s:[7,7,6,8,9]},
+            {t:"Brief the CPO privately first. Align on messaging, then present a united front with a clear recovery plan.",s:[9,6,5,5,8]},
+            {t:"Reframe — present what IS shipping on time, frame the delay as 'phased rollout'. Protect team morale.",s:[8,4,6,6,7]}
+        ]},
+    tr:{title:"Kötü Haber Teslimatı",
+        ctx:"Amiral gemisi özelliğiniz deadline'ı 3 hafta kaçıracak. Üçüncü parti entegrasyon tahmin edilenden çok daha karmaşık çıktı. Ekip moral bozukluğunda. CPO yarınki all-hands'te güncelleme bekliyor. 200+ kişi izleyecek.",
+        ch:[
+            {t:"All-hands'te tam şeffaflık. Sorunu, revize zaman çizelgesini ve öğrenilenleri göster. Kırılganlık güven inşa eder.",s:[7,7,6,8,9]},
+            {t:"Önce CPO'yu özel olarak bilgilendir. Mesajda uyum sağla, net kurtarma planıyla birleşik cephe sun.",s:[9,6,5,5,8]},
+            {t:"Yeniden çerçevele — zamanında çıkacakları sun, gecikmeyi 'aşamalı lansman' olarak göster. Ekip moralini koru.",s:[8,4,6,6,7]}
+        ]},
+    fb:[
+        {t:"ok",en:"Radical transparency is powerful but can be chaotic in 200-person meetings without leadership alignment. Right message, risky venue.",tr:"Radikal şeffaflık güçlü ama liderlik uyumu olmadan 200 kişilik toplantıda kaotik olabilir. Doğru mesaj, riskli mekan."},
+        {t:"good",en:"Pre-aligning with CPO is masterclass escalation. No public surprises = trust preserved. All-hands becomes a solution presentation.",tr:"CPO ile önceden uyum, eskalasyonda ustalık dersi. Kamuda sürpriz yok = güven korunur. All-hands çözüm sunumu olur."},
+        {t:"risk",en:"Reframing can work short-term but 'phased rollout' language for a delay risks credibility. Teams — especially engineers — see through spin.",tr:"Yeniden çerçeveleme kısa vadede işe yarar ama gecikme için 'aşamalı lansman' güvenilirliği riske atar. Ekipler süslemeyi fark eder."}
+    ],
+    ref:{t:"How to Announce Bad News in the Workplace",u:"https://berkayvuran.medium.com/how-to-announce-bad-news-in-the-workplace-a-guide-for-leaders-326d0db96e83"}
+},
+{
+    en:{title:"Build or Fix?",
+        ctx:"Engineering is frustrated. 18 months of tech debt — deploy takes 45 min, tests are flaky, new engineer onboarding takes 3 weeks instead of 3 days. They want a full refactor sprint. Meanwhile, sales landed a Fortune 500 pilot requiring 3 features in 6 weeks.",
+        ch:[
+            {t:"Full sprint for tech debt. The Fortune 500 can wait 2 weeks — sustainable velocity beats any single deal.",s:[8,5,4,4,8]},
+            {t:"Split: 60% features, 40% tech debt. Negotiate a 7-week timeline with the client. Neither gets full attention but both move.",s:[7,6,6,6,6]},
+            {t:"Ship features first, promise the refactor sprint right after. This is a once-in-a-quarter opportunity.",s:[5,7,5,9,7]}
+        ]},
+    tr:{title:"İnşa Et mi, Düzelt mi?",
+        ctx:"Mühendislik hayal kırıklığında. 18 aydır biriken teknik borç — deploy 45 dk, testler güvenilmez, yeni mühendis adaptasyonu 3 gün yerine 3 hafta. Tam refactor sprinti istiyorlar. Bu arada satış 6 haftada 3 feature gerektiren Fortune 500 pilotu kapattı.",
+        ch:[
+            {t:"Tam sprinti teknik borca ayır. Fortune 500 2 hafta bekleyebilir — sürdürülebilir hız bir anlaşmadan önemli.",s:[8,5,4,4,8]},
+            {t:"Böl: %60 feature, %40 teknik borç. Müşteriyle 7 hafta müzakere et. İkisi de tam ilgi görmez ama ikisi de ilerler.",s:[7,6,6,6,6]},
+            {t:"Önce feature'ları çıkar, refactor sprintini hemen sonra söz ver. Bu çeyrekte bir gelen fırsat.",s:[5,7,5,9,7]}
+        ]},
+    fb:[
+        {t:"ok",en:"Bold call for long-term health. YAGNI and DRY matter — but leadership needs data on deploy time and onboarding cost to back this.",tr:"Uzun vadeli sağlık için cesur hamle. YAGNI ve DRY önemli — ama liderlik deploy süresi ve onboarding maliyeti verisi ister."},
+        {t:"good",en:"60/40 split acknowledges both realities. KISS principle in action. Watch that 40% doesn't become 10% in practice.",tr:"%60/40 her iki gerçeği kabul eder. KISS prensibi uygulamada. %40'ın pratikte %10'a düşmemesine dikkat."},
+        {t:"risk",en:"'Promise the refactor after' is tech's most common lie. Every PM has said it, few kept it. Put it in writing if you choose this.",tr:"'Sonra refactor sözü' teknolojideki en yaygın yalan. Her PM söyledi, azı tuttu. Bunu seçersen yazılı kaydet."}
+    ],
+    ref:{t:"KISS, DRY, and YAGNI in Product Management",u:"https://berkayvuran.medium.com/kiss-dry-and-yagni-in-product-management-simplicity-wins-2f1c674446ac?source=rss-3eba33c864cf------2"}
+},
+{
+    en:{title:"The Big Reorg",
+        ctx:"Leadership restructures from project-based teams to product squads. You lead the transition for 40 people. Half excited, half terrified. Two senior engineers threaten to quit. Timeline: 4 weeks. HR says 'just communicate the change and move on.'",
+        ch:[
+            {t:"Follow Kotter's 8-step model: create urgency, build a coalition of champions from both camps, cascade the vision before structural changes.",s:[10,5,7,5,9]},
+            {t:"Move fast — announce the structure, let people self-organize into squads. Rip the band-aid. Deal with issues as they come.",s:[5,4,5,10,8]},
+            {t:"Start with the two senior engineers. 1:1s, understand fears, co-design their roles. If they buy in, the rest follows.",s:[8,4,9,6,7]}
+        ]},
+    tr:{title:"Büyük Yeniden Yapılanma",
+        ctx:"Liderlik proje tabanlıdan ürün squad'larına geçiyor. 40 kişilik geçişi yönetiyorsunuz. Yarısı heyecanlı, yarısı korkuda. İki kıdemli mühendis istifa tehdidinde. Süre: 4 hafta. İK 'değişikliği ilet devam et' diyor.",
+        ch:[
+            {t:"Kotter'ın 8 adımını takip et: aciliyet yarat, her iki kamptan şampiyonlarla koalisyon kur, yapısal değişiklikten önce vizyonu aktar.",s:[10,5,7,5,9]},
+            {t:"Hızlı hareket et — yapıyı duyur, kendi kendine organize olsunlar. Bandı çek. Sorunları geldikçe çöz.",s:[5,4,5,10,8]},
+            {t:"İki kıdemli mühendisle başla. 1:1 yap, korkularını anla, yeni yapıdaki rollerini birlikte tasarla. Onlar ikna olursa gerisi gelir.",s:[8,4,9,6,7]}
+        ]},
+    fb:[
+        {t:"good",en:"Kotter's model is battle-tested for this scale. Urgency + coalition = the two most skipped steps that cause reorgs to fail.",tr:"Kotter'ın modeli bu ölçek için savaşta test edilmiş. Aciliyet + koalisyon = yeniden yapılanmaların başarısız olmasına neden olan en çok atlanan iki adım."},
+        {t:"risk",en:"Speed works in small teams, but 40 people with 2 flight risks? Self-organization without structure often creates chaos, not agility.",tr:"Hız küçük ekiplerde işe yarar ama 2 ayrılma riskiyle 40 kişi? Yapı olmadan kendi kendine organizasyon çoğu zaman kaos yaratır."},
+        {t:"good",en:"Influence the influencers — psychologically the smartest move. Senior engineers are informal leaders; their buy-in cascades.",tr:"Etki edenleri etkile — psikolojik olarak en akıllı hamle. Kıdemli mühendisler gayri resmi lider; katılımları kaskad yapar."}
+    ],
+    ref:{t:"'Değişim', ama Nasıl?: Kotter'ın Uygulama Planı",u:"https://berkayvuran.medium.com/de%C4%9Fi%C5%9Fim-ama-nas%C4%B1l-kotter-%C4%B1n-uygulama-plan%C4%B1-fee599137121"}
+},
+{
+    en:{title:"The Stakeholder Standoff",
+        ctx:"Lead designer and lead engineer in open conflict. Designer wants pixel-perfect, animation-heavy onboarding. Engineer says it's expensive, delays the sprint a week, and 'nobody cares about animations.' Both escalated to you. The team watches how you handle it.",
+        ch:[
+            {t:"Pull onboarding completion rates and drop-off analytics. Let the data decide if animation investment is justified.",s:[6,10,7,4,6]},
+            {t:"Facilitate a design-engineering workshop. Co-create a solution that meets design intent within technical constraints.",s:[7,5,9,5,5]},
+            {t:"Make the call: simplified animations that are technically cheap. Sometimes PMs need to be the tiebreaker.",s:[6,6,6,7,9]}
+        ]},
+    tr:{title:"Paydaş Çıkmazı",
+        ctx:"Baş tasarımcı ve baş mühendis açık çatışmada. Tasarımcı piksel mükemmeliyetinde animasyonlu onboarding istiyor. Mühendis pahalı, sprinti geciktirir, 'kimse animasyonu umursamaz' diyor. İkisi de size eskale etti. Ekip izliyor.",
+        ch:[
+            {t:"Onboarding tamamlanma oranlarını ve terk analitiğini çek. Animasyon yatırımının haklı olup olmadığına veriler karar versin.",s:[6,10,7,4,6]},
+            {t:"Tasarım-mühendislik atölyesi düzenle. Teknik kısıtlar içinde tasarım amacını karşılayan çözümü birlikte yarat.",s:[7,5,9,5,5]},
+            {t:"Kararı kendin ver: teknik olarak ucuz basitleştirilmiş animasyonlar. Bazen PM'ler berabere bozucu olmalı.",s:[6,6,6,7,9]}
+        ]},
+    fb:[
+        {t:"good",en:"Data as arbitrator removes ego. If drop-off is 40%, designer wins. If 5%, engineer has a point.",tr:"Hakem olarak veri egoyu çıkarır. Terk oranı %40 ise tasarımcı kazanır. %5 ise mühendisin noktası var."},
+        {t:"good",en:"Co-creation builds ownership. When both collaborate, both feel heard and the result is better than either's original proposal.",tr:"Birlikte yaratma sahiplenme oluşturur. İkisi işbirliği yaptığında duyulmuş hisseder ve sonuç ikisinin önerisinden iyi olur."},
+        {t:"ok",en:"Decisive leadership has its place, but overriding both experts can breed resentment. Show your reasoning when you do.",tr:"Kararlı liderliğin yeri var ama iki uzmanı da geçersiz kılmak kırgınlık yaratabilir. Yaptığında gerekçeni göster."}
+    ],
+    ref:{t:"Paydaş Yönetimi: Geliştirici Perspektifinden",u:"https://berkayvuran.medium.com/payda%C5%9F-y%C3%B6netimi-geli%C5%9Ftirici-perspektifinden-%C3%B6rnekler-bf0c2bb4632e"}
+},
+{
+    en:{title:"The Silent Team",
+        ctx:"Your distributed team across 3 time zones has gone quiet. Standup attendance dropped 40%. Two members haven't turned on cameras in weeks. Sprint velocity fell 25%. Retro feedback: literally zero comments. You suspect burnout. 1:1s are this week.",
+        ch:[
+            {t:"In 1:1s, skip status updates. Ask 'What's draining your energy?' and 'What would make this team feel alive again?' Listen first.",s:[6,3,10,5,5]},
+            {t:"Introduce async-first: written standups, Loom updates, flexible retro windows. Remove synchronous meeting burden.",s:[8,7,7,6,6]},
+            {t:"Call it out in the next team meeting. Name the pattern, share the data (velocity, attendance), ask the team to co-own the solution.",s:[7,8,6,8,9]}
+        ]},
+    tr:{title:"Sessiz Takım",
+        ctx:"3 zaman dilimindeki dağıtık ekibiniz sessizleşti. Standup katılımı %40 düştü. İki üye haftalardır kamera açmıyor. Sprint hızı %25 geriledi. Retro geri bildirimi: tam anlamıyla sıfır yorum. Tükenmişlikten şüpheleniyorsunuz. 1:1'ler bu hafta.",
+        ch:[
+            {t:"1:1'lerde durum güncellemelerini atla. 'Enerjini ne tüketiyor?' ve 'Takımın tekrar canlı hissetmesi için ne gerekir?' sor. Önce dinle.",s:[6,3,10,5,5]},
+            {t:"Asenkron-öncelikli tanıt: yazılı standup'lar, Loom güncellemeleri, esnek retro pencereleri. Senkron toplantı yükünü kaldır.",s:[8,7,7,6,6]},
+            {t:"Sonraki ekip toplantısında doğrudan söyle. Kalıbı adlandır, veriyi paylaş (hız, katılım), ekipten çözümü birlikte sahiplenmesini iste.",s:[7,8,6,8,9]}
+        ]},
+    fb:[
+        {t:"good",en:"Leading with empathy in 1:1s is psychologically safest. Burnout rarely surfaces in groups — private conversations unlock honesty.",tr:"1:1'lerde empatiyle liderlik psikolojik olarak en güvenli. Tükenmişlik gruplarda nadiren çıkar — özel görüşmeler dürüstlüğü açar."},
+        {t:"good",en:"Async-first is structural empathy. Sometimes the fix isn't emotional — it's removing friction that causes exhaustion. Honors time zones.",tr:"Asenkron-öncelikli yapısal empati. Bazen düzeltme duygusal değil — yorgunluğa neden olan sürtünmeyi kaldırmak. Zaman dilimlerini onurlandırır."},
+        {t:"ok",en:"Brave and data-backed, but calling out silence publicly can backfire if trust is low. Works best with high psychological safety.",tr:"Cesur ve veri destekli ama güven düşükse sessizliği kamuoyunda işaret etmek geri tepebilir. Yüksek psikolojik güvenlikte işe yarar."}
+    ],
+    ref:{t:"Uzaktan Çalışanlarda Takım İletişimi ve Birebir İletişim",u:"https://berkayvuran.medium.com/uzaktan-%C3%A7al%C4%B1%C5%9Fanlarda-tak%C4%B1m-i%CC%87leti%C5%9Fimi-ve-birebir-i%CC%87leti%C5%9Fim-1fa7f23e50d6"}
+}
+];
+
+// ═══════════════════════════════════════
+// PROFILE NAMES
+// ═══════════════════════════════════════
+const PROFILES = {
+en:[
+    {n:"The Data Warrior",c:d=>d[1]>=8},
+    {n:"The Empathy Engine",c:d=>d[2]>=8},
+    {n:"The Bold Navigator",c:d=>d[3]>=8},
+    {n:"The Strategic Architect",c:d=>d[0]>=8},
+    {n:"The Commanding Captain",c:d=>d[4]>=8},
+    {n:"The Balanced Orchestrator",c:d=>Math.max(...d)-Math.min(...d)<=2},
+    {n:"The Pragmatic Builder",c:()=>true}
+],
+tr:[
+    {n:"Veri Savaşçısı",c:d=>d[1]>=8},
+    {n:"Empati Motoru",c:d=>d[2]>=8},
+    {n:"Cesur Navigatör",c:d=>d[3]>=8},
+    {n:"Stratejik Mimar",c:d=>d[0]>=8},
+    {n:"Komutan Kaptan",c:d=>d[4]>=8},
+    {n:"Dengeli Orkestratör",c:d=>Math.max(...d)-Math.min(...d)<=2},
+    {n:"Pragmatik İnşacı",c:()=>true}
+]};
+
+const DIM_COLORS = ['#007AFF','#5AC8FA','#34C759','#FF9F0A','#FF375F'];
+const ARTICLES = [
+    {d:0,t:"Strategic Prioritization: A Psychological and OB Perspective",u:"https://berkayvuran.medium.com/strategic-prioritization-a-psychological-and-organizational-behavior-perspective-b7fa037c17d3"},
+    {d:1,t:"Challenges in Data-Driven Decision-Making for PMs",u:"https://globalcybersecuritynetwork.com/blog/data-driven-decision-making-for-effective-product-management/"},
+    {d:2,t:"Unleashing Human-Centric Innovation",u:"https://berkayvuran.medium.com/unleashing-human-centric-innovation-psychology-neuroscience-and-product-growth-5644df861557"},
+    {d:3,t:"Disruption is Not Optional",u:"https://berkayvuran.medium.com/disruption-is-not-optional-why-we-must-embrace-radical-change-to-survive-ae719b18dfe6?source=rss-3eba33c864cf------2"},
+    {d:4,t:"Product Leadership Styles",u:"https://berkayvuran.medium.com/product-leadership-styles-the-hidden-forces-behind-breakthrough-products-9759c3b93b3e?source=rss-3eba33c864cf------2"},
+];
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let lang = localStorage.getItem('pmSimLang') || localStorage.getItem('language') || 'en';
+let cur = 0;
+let scores = [0,0,0,0,0];
+let picks = [];
+
+const $=id=>document.getElementById(id);
+const vStart=$('view-start'), vGame=$('view-game'), vResult=$('view-result');
+
+// ═══════════════════════════════════════
+// LANGUAGE
+// ═══════════════════════════════════════
+function setLang(l){
+    lang=l; localStorage.setItem('pmSimLang',l);
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));
+    document.querySelectorAll('[data-t]').forEach(el=>{
+        const k=el.dataset.t;
+        if(L[l]&&L[l][k]) el.textContent=L[l][k];
+    });
+}
+document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+
+// ═══════════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════════
+function show(v){ [vStart,vGame,vResult].forEach(x=>x.classList.add('hidden')); v.classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function init(){
+    cur=0; scores=[0,0,0,0,0]; picks=[];
+    show(vStart); renderHistory(); setLang(lang);
+}
+
+$('btn-start').addEventListener('click',()=>{ show(vGame); renderScenario(); });
+
+// ═══════════════════════════════════════
+// RENDER SCENARIO
+// ═══════════════════════════════════════
+function renderScenario(){
+    const s=S[cur], d=s[lang]||s.en;
+    const pct=Math.round((cur+1)/S.length*100);
+    $('prog-label').textContent=`${L[lang].scenario} ${cur+1} / ${S.length}`;
+    $('prog-pct').textContent=pct+'%';
+    $('prog-bar').style.width=pct+'%';
+
+    const keys=['A','B','C'];
+    $('game-area').innerHTML=`
+        <div class="card">
+            <div class="card-tag">${L[lang].scenario} ${cur+1} / ${S.length}</div>
+            <h2>${d.title}</h2>
+            <p class="card-context">${d.ctx}</p>
+            <div class="choices">
+                ${d.ch.map((c,i)=>`
+                    <button class="choice" data-i="${i}">
+                        <span class="choice-key">${keys[i]}</span>
+                        <span class="choice-text">${c.t}</span>
+                    </button>
+                `).join('')}
+            </div>
+        </div>`;
+
+    $('game-area').querySelectorAll('.choice').forEach(b=>
+        b.addEventListener('click',()=>pick(+b.dataset.i)));
+}
+
+// ═══════════════════════════════════════
+// PICK
+// ═══════════════════════════════════════
+function pick(idx){
+    const s=S[cur], d=(s[lang]||s.en);
+    const sc=d.ch[idx].s;
+    for(let i=0;i<5;i++) scores[i]+=sc[i];
+    picks.push(idx);
+
+    const fb=s.fb[idx];
+    const fbText=lang==='tr'?fb.tr:fb.en;
+    const isLast=cur===S.length-1;
+
+    $('game-area').innerHTML=`
+        <div class="card feedback">
+            <div class="fb-header">
+                <span class="fb-dot ${fb.t}"></span>
+                <span class="fb-label ${fb.t}">${L[lang][fb.t]}</span>
+            </div>
+            <p class="fb-text">${fbText}</p>
+            <a href="${s.ref.u}" target="_blank" rel="noopener noreferrer" class="fb-ref">
+                📖 ${L[lang].ref} — ${s.ref.t}
+            </a>
+            <button class="btn-next" id="btn-next">${isLast?L[lang].seeResult:L[lang].next} →</button>
+        </div>`;
+
+    $('btn-next').addEventListener('click',()=>{
+        if(isLast) showResult(); else { cur++; renderScenario(); }
+    });
+
+    $('game-area').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ═══════════════════════════════════════
+// RESULT
+// ═══════════════════════════════════════
+function showResult(){
+    show(vResult);
+    const maxP=S.length*10;
+    const dims=scores.map(s=>Math.round(s/maxP*100)/10);
+    const profileName=PROFILES[lang].find(p=>p.c(dims)).n;
+
+    saveHistory(profileName,dims);
+
+    const t=L[lang];
+    vResult.innerHTML=`
+        <div class="result-hero">
+            <div class="result-badge">${t.resultBadge}</div>
+            <div class="result-name">${profileName}</div>
+            <p class="result-sub">${t.resultSub}</p>
+        </div>
+
+        <div class="radar-card">
+            <div class="radar-svg-wrap">${radar(dims)}</div>
+            ${dims.map((d,i)=>`
+                <div class="dim-row">
+                    <div class="dim-top">
+                        <span class="dim-label">${t.dim[i]}</span>
+                        <span class="dim-val">${d.toFixed(1)}</span>
+                    </div>
+                    <div class="dim-track"><div class="dim-fill" style="width:${d*10}%;background:${DIM_COLORS[i]}"></div></div>
+                    <div class="dim-range"><span>${t.dimLo[i]}</span><span>${t.dimHi[i]}</span></div>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="articles-card">
+            <h3>${t.readTitle}</h3>
+            ${[...ARTICLES].sort((a,b)=>dims[b.d]-dims[a.d]).slice(0,3).map(a=>`
+                <a href="${a.u}" target="_blank" rel="noopener noreferrer" class="article-item">
+                    <span>📄</span><span>${a.t}</span>
+                </a>
+            `).join('')}
+        </div>
+
+        <div class="actions">
+            <button class="act-btn fill" id="btn-again">${t.btnAgain}</button>
+            <button class="act-btn outline" id="btn-linkedin">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                ${t.btnLinkedin}
+            </button>
+        </div>`;
+
+    $('btn-again').addEventListener('click',init);
+    $('btn-linkedin').addEventListener('click',()=>shareLinkedIn(profileName,dims));
+}
+
+// ═══════════════════════════════════════
+// RADAR SVG
+// ═══════════════════════════════════════
+function radar(dims){
+    const W=300,cx=W/2,cy=W/2,R=105,n=5;
+    const step=Math.PI*2/n, start=-Math.PI/2;
+    const pt=(a,r)=>[cx+Math.cos(a)*r, cy+Math.sin(a)*r];
+
+    let svg=`<svg viewBox="0 0 ${W} ${W}" xmlns="http://www.w3.org/2000/svg">`;
+
+    // Grid
+    for(let l=1;l<=5;l++){
+        const r=R/5*l;
+        let pts=[];for(let i=0;i<n;i++) pts.push(pt(start+step*i,r));
+        svg+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="hsla(220,15%,30%,0.4)" stroke-width="0.8"/>`;
+    }
+    // Axes
+    for(let i=0;i<n;i++){
+        const [x,y]=pt(start+step*i,R);
+        svg+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="hsla(220,15%,30%,0.3)" stroke-width="0.8"/>`;
+    }
+    // Data
+    let dp=[];for(let i=0;i<n;i++) dp.push(pt(start+step*i,R*dims[i]/10));
+    svg+=`<polygon points="${dp.map(p=>p.join(',')).join(' ')}" fill="rgba(0,122,255,0.12)" stroke="#007AFF" stroke-width="2"/>`;
+    dp.forEach((p,i)=>svg+=`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${DIM_COLORS[i]}" stroke="var(--bg-card)" stroke-width="2"/>`);
+    // Labels
+    const t=L[lang];
+    const lr=R+26;
+    for(let i=0;i<n;i++){
+        const [x,y]=pt(start+step*i,lr);
+        const a=x<cx-10?'end':x>cx+10?'start':'middle';
+        svg+=`<text x="${x}" y="${y}" text-anchor="${a}" dominant-baseline="middle" fill="hsl(220,15%,60%)" font-size="10.5" font-family="Poppins,sans-serif" font-weight="500">${t.dim[i]}</text>`;
+    }
+    svg+='</svg>';
+    return svg;
+}
+
+// ═══════════════════════════════════════
+// LINKEDIN SHARE
+// ═══════════════════════════════════════
+function shareLinkedIn(profileName, dims){
+    const pageUrl = 'https://berkayvuran.com/projects/vibe-coding/pm-decision-sim.html';
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
+    window.open(linkedInUrl, '_blank', 'width=600,height=500');
+}
+
+// ═══════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════
+function getHist(){ try{return JSON.parse(localStorage.getItem('pmSimHistory')||'[]')}catch{return[]} }
+
+function saveHistory(name,dims){
+    const h=getHist();
+    h.unshift({p:name,d:dims,date:new Date().toISOString().split('T')[0],l:lang});
+    if(h.length>10) h.pop();
+    localStorage.setItem('pmSimHistory',JSON.stringify(h));
+}
+
+function renderHistory(){
+    const h=getHist();
+    if(!h.length){$('history-area').innerHTML='';return;}
+    $('history-area').innerHTML=`
+        <div class="history-card">
+            <h3>${L[lang].histTitle}</h3>
+            ${h.slice(0,5).map(x=>`
+                <div class="hist-row">
+                    <span class="hist-name">${x.p}</span>
+                    <span class="hist-date">${x.date}</span>
+                </div>
+            `).join('')}
+        </div>`;
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+init();
+</script>
+</body>
+</html>
