@@ -340,26 +340,32 @@
         }
         .radar-svg-wrap svg { max-width:300px; width:100%; }
 
-        .dim-row { margin-bottom:14px; }
+        .dim-row { margin-bottom:18px; }
         .dim-row:last-child { margin-bottom:0; }
-        .dim-top {
-            display:flex; justify-content:space-between; align-items:baseline;
-            margin-bottom:5px;
+        .dim-header {
+            font-size:12px; font-weight:500; color:var(--text-2);
+            text-align:center; margin-bottom:8px;
         }
-        .dim-label { font-size:12px; font-weight:500; color:var(--text-2); }
-        .dim-val {
-            font-family:'JetBrains Mono',monospace;
-            font-size:12px; font-weight:600; color:var(--accent);
+        .dim-spectrum {
+            position:relative; height:6px;
+            background: linear-gradient(90deg, var(--spec-left), var(--bg-surface) 45%, var(--bg-surface) 55%, var(--spec-right));
+            border-radius:6px; margin-bottom:6px;
         }
-        .dim-track {
-            height:4px; background:var(--bg-surface);
-            border-radius:4px; overflow:hidden; margin-bottom:4px;
+        .dim-dot {
+            position:absolute; top:50%; transform:translate(-50%,-50%);
+            width:16px; height:16px; border-radius:50%;
+            border:3px solid var(--bg-card);
+            box-shadow: 0 0 0 1px var(--border), 0 2px 8px rgba(0,0,0,.3);
+            transition: left .8s cubic-bezier(.4,0,.2,1);
         }
-        .dim-fill { height:100%; border-radius:4px; transition:width .8s ease; }
-        .dim-range {
-            display:flex; justify-content:space-between;
-            font-size:10px; color:var(--text-3); font-weight:400;
+        .dim-poles {
+            display:flex; justify-content:space-between; align-items:center;
         }
+        .dim-pole {
+            font-size:11px; font-weight:500; color:var(--text-3);
+            max-width:45%;
+        }
+        .dim-pole.active { color:var(--text); font-weight:600; }
 
         /* ARTICLES */
         .articles-card {
@@ -959,16 +965,22 @@ function showResult(){
 
         <div class="radar-card">
             <div class="radar-svg-wrap">${radar(dims)}</div>
-            ${dims.map((d,i)=>`
+            ${dims.map((d,i)=>{
+                const pct = d * 10;
+                const leansRight = pct >= 55;
+                const leansLeft = pct <= 45;
+                return `
                 <div class="dim-row">
-                    <div class="dim-top">
-                        <span class="dim-label">${t.dim[i]}</span>
-                        <span class="dim-val">${d.toFixed(1)}</span>
+                    <div class="dim-header">${t.dim[i]}</div>
+                    <div class="dim-spectrum" style="--spec-left:${DIM_COLORS[i]}44;--spec-right:${DIM_COLORS[i]}44">
+                        <div class="dim-dot" style="left:${pct}%;background:${DIM_COLORS[i]}"></div>
                     </div>
-                    <div class="dim-track"><div class="dim-fill" style="width:${d*10}%;background:${DIM_COLORS[i]}"></div></div>
-                    <div class="dim-range"><span>${t.dimLo[i]}</span><span>${t.dimHi[i]}</span></div>
-                </div>
-            `).join('')}
+                    <div class="dim-poles">
+                        <span class="dim-pole${leansLeft?' active':''}">${t.dimLo[i]}</span>
+                        <span class="dim-pole${leansRight?' active':''}" style="text-align:right">${t.dimHi[i]}</span>
+                    </div>
+                </div>`;
+            }).join('')}
         </div>
 
         <div class="articles-card">
@@ -1033,9 +1045,20 @@ function radar(dims){
 // LINKEDIN SHARE
 // ═══════════════════════════════════════
 function shareLinkedIn(profileName, dims){
+    const t = L[lang];
+    const orientations = dims.map((d,i) => {
+        const pct = d * 10;
+        const label = pct <= 40 ? t.dimLo[i] : pct >= 60 ? t.dimHi[i] : t.dimLo[i] + ' ↔ ' + t.dimHi[i];
+        return `${t.dim[i]}: ${label}`;
+    }).join('\n');
     const pageUrl = 'https://berkayvuran.com/projects/vibe-coding/pm-decision-sim.html';
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
-    window.open(linkedInUrl, '_blank', 'width=600,height=500');
+
+    const text = lang === 'tr'
+        ? `🎯 PM Karar Simülatörü'nü tamamladım!\n\nProfilim: ${profileName}\n\n${orientations}\n\n10 gerçek ürün yönetimi senaryosunda kararlar verdim ve PM DNA'm ortaya çıktı. Doğru cevap yok — sadece ödünleşimler.\n\nSen de dene 👇\n${pageUrl}\n\n#ProductManagement #Leadership #PMSimulator`
+        : `🎯 Just completed the PM Decision Simulator!\n\nMy profile: ${profileName}\n\n${orientations}\n\nI made decisions across 10 real-world product management scenarios and discovered my PM DNA. No right answers — only trade-offs.\n\nTry it yourself 👇\n${pageUrl}\n\n#ProductManagement #Leadership #PMSimulator`;
+
+    const linkedInUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`;
+    window.open(linkedInUrl, '_blank', 'width=700,height=600');
 }
 
 // ═══════════════════════════════════════
