@@ -10,28 +10,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep: hsl(220, 25%, 6%);
-            --bg-primary: hsl(220, 20%, 10%);
-            --bg-card: hsl(220, 18%, 14%);
-            --bg-card-hover: hsl(220, 18%, 17%);
-            --bg-surface: hsl(220, 15%, 18%);
-            --accent: #007AFF;
-            --accent-light: #5AC8FA;
-            --accent-glow: rgba(0, 122, 255, 0.15);
-            --accent-glow2: rgba(0, 122, 255, 0.08);
-            --green: #34C759;
-            --green-glow: rgba(52, 199, 89, 0.12);
-            --orange: #FF9F0A;
-            --orange-glow: rgba(255, 159, 10, 0.12);
-            --red: #FF3B30;
-            --red-glow: rgba(255, 59, 48, 0.12);
-            --text: #ffffff;
-            --text-2: hsl(220, 15%, 72%);
-            --text-3: hsl(220, 12%, 50%);
-            --border: hsl(220, 15%, 20%);
-            --border-light: hsla(220, 15%, 65%, 0.12);
-            --shadow: 0 8px 32px hsla(220, 50%, 3%, 0.5);
-            --shadow-lg: 0 20px 60px hsla(220, 50%, 3%, 0.6);
+            --bg-deep: #0d0d0d;
+            --bg-primary: #121212;
+            --bg-card: #1a1a1a;
+            --bg-card-hover: #202020;
+            --bg-surface: #262626;
+            --accent: #6366f1;
+            --accent-light: #a5b4fc;
+            --accent-glow: rgba(99,102,241,0.12);
+            --accent-glow2: rgba(99,102,241,0.06);
+            --green: #4ade80;
+            --green-glow: rgba(74,222,128,0.07);
+            --orange: #fb923c;
+            --orange-glow: rgba(251,146,60,0.07);
+            --red: #f87171;
+            --red-glow: rgba(248,113,113,0.07);
+            --text: #efefef;
+            --text-2: #8a8a8a;
+            --text-3: #505050;
+            --border: #282828;
+            --border-light: rgba(255,255,255,0.05);
+            --shadow: 0 4px 20px rgba(0,0,0,0.4);
+            --shadow-lg: 0 16px 48px rgba(0,0,0,0.55);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -45,19 +45,15 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Background */
-        .bg-ambient {
-            position: fixed; inset:0; z-index:0; pointer-events:none;
-            background:
-                radial-gradient(ellipse 600px 400px at 20% 10%, rgba(0,122,255,0.07) 0%, transparent 100%),
-                radial-gradient(ellipse 500px 500px at 80% 90%, rgba(90,200,250,0.04) 0%, transparent 100%);
-        }
-
         .wrap {
             position: relative; z-index:1;
-            max-width: 640px;
+            max-width: 720px;
             margin: 0 auto;
-            padding: 0 20px 80px;
+            padding: 0 24px 80px;
+        }
+
+        @media (min-width: 900px) {
+            .wrap { max-width: 1080px; padding: 0 40px 80px; }
         }
 
         /* TOP BAR */
@@ -104,21 +100,14 @@
         .hero-badge {
             display:inline-flex; align-items:center; gap:8px;
             padding: 6px 16px;
-            background: var(--accent-glow2);
-            border: 1px solid rgba(0,122,255,0.2);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 50px;
-            font-size:11px; font-weight:600;
-            color: var(--accent-light);
+            font-size:11px; font-weight:500;
+            color: var(--text-3);
             text-transform:uppercase; letter-spacing:1.5px;
             margin-bottom:24px;
         }
-        .hero-badge::before {
-            content:''; width:6px; height:6px; border-radius:50%;
-            background: var(--green);
-            box-shadow: 0 0 8px var(--green);
-            animation: blink 2s infinite;
-        }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
         .hero h1 {
             font-size: clamp(26px, 5vw, 38px);
@@ -138,14 +127,17 @@
             display:grid; grid-template-columns:1fr 1fr;
             gap:10px; margin:36px 0 40px;
         }
+        @media (min-width: 900px) {
+            .features { grid-template-columns: repeat(4,1fr); gap:12px; }
+        }
         .feat {
-            padding: 18px 16px;
+            padding: 20px 18px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 14px;
-            transition: all .2s;
+            transition: border-color .2s;
         }
-        .feat:hover { border-color: rgba(0,122,255,0.3); }
+        .feat:hover { border-color: var(--border-light); }
         .feat-icon { font-size:22px; margin-bottom:10px; }
         .feat-title { font-size:13px; font-weight:600; margin-bottom:4px; color:var(--text); }
         .feat-desc { font-size:11px; color:var(--text-3); line-height:1.55; font-weight:400; }
@@ -157,14 +149,9 @@
             background: var(--accent);
             color: #fff; border:none; border-radius:12px;
             font-family:'Poppins',sans-serif; font-size:15px; font-weight:600;
-            cursor:pointer; transition: all .25s;
-            box-shadow: 0 4px 20px rgba(0,122,255,0.3);
+            cursor:pointer; transition: all .2s;
         }
-        .btn-primary:hover {
-            background: #0069d9;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,122,255,0.35);
-        }
+        .btn-primary:hover { background: #4f52d9; transform: translateY(-1px); }
         .btn-primary svg { width:18px; height:18px; }
 
         /* PROGRESS */
@@ -186,7 +173,7 @@
         }
         .progress-bar {
             height:100%; border-radius:3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            background: var(--accent);
             transition: width .5s cubic-bezier(.4,0,.2,1);
         }
 
@@ -198,6 +185,21 @@
             padding: 32px 28px;
             box-shadow: var(--shadow);
             animation: cardIn .35s ease;
+        }
+        @media (min-width: 900px) {
+            .card { padding: 40px 36px; }
+            .card h2 { font-size: 26px; }
+            .card-context { font-size: 15px; }
+        }
+        /* Desktop game: context left, choices right */
+        @media (min-width: 900px) {
+            .scenario-desktop {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+                align-items: start;
+            }
+            .scenario-choices { border-left: 1px solid var(--border); padding-left: 32px; }
         }
         @keyframes cardIn {
             from { opacity:0; transform:translateY(16px); }
@@ -260,9 +262,9 @@
         .fb-dot {
             width:10px; height:10px; border-radius:50%; flex-shrink:0;
         }
-        .fb-dot.good { background:var(--green); box-shadow:0 0 10px var(--green-glow); }
-        .fb-dot.ok { background:var(--orange); box-shadow:0 0 10px var(--orange-glow); }
-        .fb-dot.risk { background:var(--red); box-shadow:0 0 10px var(--red-glow); }
+        .fb-dot.good { background:var(--green); }
+        .fb-dot.ok { background:var(--orange); }
+        .fb-dot.risk { background:var(--red); }
         .fb-label { font-size:13px; font-weight:600; }
         .fb-label.good { color:var(--green); }
         .fb-label.ok { color:var(--orange); }
@@ -274,16 +276,16 @@
         }
         .fb-ref {
             display:inline-flex; align-items:center; gap:8px;
-            font-size:12px; color:var(--accent); font-weight:500;
+            font-size:12px; color:var(--text-2); font-weight:500;
             text-decoration:none;
             padding:10px 16px;
-            background:var(--accent-glow2);
-            border:1px solid rgba(0,122,255,0.15);
+            background:var(--bg-surface);
+            border:1px solid var(--border);
             border-radius:10px;
             transition: all .2s;
             line-height:1.4;
         }
-        .fb-ref:hover { background:var(--accent-glow); border-color:rgba(0,122,255,0.3); }
+        .fb-ref:hover { border-color:var(--accent); color:var(--accent-light); }
 
         .btn-next {
             display:block; width:100%; padding:15px;
@@ -292,9 +294,8 @@
             border-radius:12px;
             font-family:'Poppins',sans-serif; font-size:14px; font-weight:600;
             cursor:pointer; transition:all .2s;
-            box-shadow: 0 4px 16px rgba(0,122,255,0.25);
         }
-        .btn-next:hover { background:#0069d9; transform:translateY(-1px); }
+        .btn-next:hover { background:#4f52d9; transform:translateY(-1px); }
 
         /* RESULT */
         .result { animation: cardIn .4s ease; }
@@ -326,19 +327,33 @@
         }
 
         /* RADAR */
+        .result-cols {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        @media (min-width: 900px) {
+            .result-cols { grid-template-columns: 1fr 1fr; }
+        }
         .radar-card {
             background: var(--bg-card);
             border:1px solid var(--border);
             border-radius:16px;
-            padding:32px 20px 28px;
-            margin-bottom:16px;
-            box-shadow: var(--shadow);
+            padding:28px 20px 24px;
+            margin-bottom:0;
+        }
+        .dims-card {
+            background: var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:28px 24px 24px;
         }
         .radar-svg-wrap {
             display:flex; justify-content:center;
-            margin-bottom:28px;
+            margin-bottom:8px;
         }
-        .radar-svg-wrap svg { max-width:300px; width:100%; }
+        .radar-svg-wrap svg { max-width:280px; width:100%; }
 
         .dim-row { margin-bottom:18px; }
         .dim-row:last-child { margin-bottom:0; }
@@ -374,7 +389,6 @@
             border-radius:16px;
             padding:24px;
             margin-bottom:16px;
-            box-shadow: var(--shadow);
         }
         .articles-card h3 {
             font-size:14px; font-weight:600; margin-bottom:14px; color:var(--text);
@@ -391,9 +405,9 @@
         }
         .article-item:last-child { margin-bottom:0; }
         .article-item:hover {
-            border-color:rgba(0,122,255,0.3);
-            color:var(--accent);
-            background:var(--accent-glow2);
+            border-color: var(--border-light);
+            color:var(--accent-light);
+            background:var(--bg-card-hover);
         }
         .article-item span:first-child { flex-shrink:0; font-size:14px; }
 
@@ -410,14 +424,13 @@
         }
         .act-btn.fill {
             background:var(--accent); color:#fff; border:none;
-            box-shadow:0 4px 16px rgba(0,122,255,0.25);
         }
-        .act-btn.fill:hover { background:#0069d9; transform:translateY(-1px); }
+        .act-btn.fill:hover { background:#4f52d9; transform:translateY(-1px); }
         .act-btn.outline {
             background:transparent; color:var(--text-2);
             border:1.5px solid var(--border);
         }
-        .act-btn.outline:hover { border-color:var(--accent); color:var(--accent); }
+        .act-btn.outline:hover { border-color:var(--accent); color:var(--accent-light); }
         .act-btn svg { width:16px; height:16px; }
 
         /* HISTORY */
@@ -427,16 +440,21 @@
             border-radius:16px;
             padding:24px;
             margin-top:32px;
-            box-shadow: var(--shadow);
         }
         .history-card h3 { font-size:14px; font-weight:600; margin-bottom:14px; color:var(--text); }
         .hist-row {
             display:flex; justify-content:space-between; align-items:center;
             padding:10px 0; font-size:13px;
             border-bottom:1px solid var(--border);
+            cursor:pointer; transition: background .15s;
+            border-radius:6px; margin:0 -8px; padding:10px 8px;
         }
         .hist-row:last-child { border-bottom:none; }
-        .hist-name { font-weight:600; color:var(--accent); }
+        .hist-row:hover { background:var(--bg-surface); }
+        .hist-row:hover .hist-name { color:var(--accent-light); }
+        .hist-name { font-weight:600; color:var(--accent); display:flex; align-items:center; gap:8px; transition:color .15s; }
+        .hist-name::after { content:'→'; font-size:11px; opacity:0; transition:opacity .15s; }
+        .hist-row:hover .hist-name::after { opacity:1; }
         .hist-date { color:var(--text-3); font-family:'JetBrains Mono',monospace; font-size:11px; }
 
         /* TOAST */
@@ -453,8 +471,7 @@
 
         .hidden { display:none !important; }
 
-        @media (max-width:480px) {
-            .wrap { padding: 0 16px 60px; }
+        @media (max-width:600px) {
             .features { grid-template-columns:1fr; }
             .card { padding:24px 20px; }
             .actions { flex-direction:column; }
@@ -462,8 +479,6 @@
     </style>
 </head>
 <body>
-    <div class="bg-ambient"></div>
-
     <div class="wrap">
         <div class="topbar">
             <a href="../../index.html#builder" class="topbar-back">
@@ -595,9 +610,9 @@ const S = [
     en:{title:"The Prioritization Showdown",
         ctx:"Sprint planning is tomorrow. Three powerful stakeholders each demand their feature is #1. The CEO wants a dashboard revamp for an investor demo. Sales needs a CRM integration to close a huge deal. Support says a critical bug is causing 30% of tickets. Your backlog can only fit one.",
         ch:[
-            {t:"Prioritize the critical bug — 30% of support tickets is a burning platform. Use data to show the others why user pain must come first.",s:[4,9,10,3,5]},
-            {t:"Run a quick RICE scoring session with all three stakeholders. Let the framework decide, not politics.",s:[8,10,6,4,4]},
-            {t:"Negotiate a compromise sprint: partial bug fix, lightweight CRM hook, and a dashboard mockup for the demo.",s:[7,5,7,7,8]}
+            {t:"Prioritize the critical bug — 30% of support tickets is a burning platform. Use data to show the others why user pain must come first.",s:[2,8,10,2,3]},
+            {t:"Run a quick RICE scoring session with all three stakeholders. Let the framework decide, not politics.",s:[9,10,2,4,5]},
+            {t:"Negotiate a compromise sprint: partial bug fix, lightweight CRM hook, and a dashboard mockup for the demo.",s:[6,3,6,8,9]}
         ]},
     tr:{title:"Önceliklendirme Krizi",
         ctx:"Sprint planlama yarın. Üç güçlü paydaş, her biri kendi feature'ının 1 numara olmasını istiyor. CEO yatırımcı demosu için dashboard yenilemesi, Satış büyük anlaşma için CRM entegrasyonu, Destek ise taleplerin %30'una neden olan kritik bug'ı gösteriyor. Backlog'a sadece biri sığıyor.",
@@ -617,9 +632,9 @@ const S = [
     en:{title:"Ship It or Polish It?",
         ctx:"Your team built a new feature for 8 weeks. Launch is in 5 days. Core flow works but edge cases are unhandled, onboarding is rough, and design says the UI 'doesn't feel right.' Marketing already announced the date. Delaying means missing a conference with 2,000 target users.",
         ch:[
-            {t:"Ship the MVP — real user feedback beats internal perfectionism. Fix edge cases in a fast-follow sprint.",s:[6,5,8,9,7]},
-            {t:"Delay 2 weeks. Tell marketing to adjust. A half-baked launch does more brand damage than a delayed one.",s:[8,6,5,3,8]},
-            {t:"Ship a 'beta' version — frame it as early access at the conference. Honest expectations + real feedback.",s:[9,7,8,7,6]}
+            {t:"Ship the MVP — real user feedback beats internal perfectionism. Fix edge cases in a fast-follow sprint.",s:[3,2,8,10,5]},
+            {t:"Delay 2 weeks. Tell marketing to adjust. A half-baked launch does more brand damage than a delayed one.",s:[10,5,2,1,8]},
+            {t:"Ship a 'beta' version — frame it as early access at the conference. Honest expectations + real feedback.",s:[8,6,8,6,3]}
         ]},
     tr:{title:"Çıkar mı, Cilala mı?",
         ctx:"Ekip 8 haftadır yeni özellik geliştiriyor. 5 gün sonra lansman. Ana akış çalışıyor ama edge case'ler eksik, onboarding kaba, tasarım 'doğru hissetmiyor' diyor. Pazarlama tarihi duyurdu. Ertelemek 2.000 hedef kullanıcılı konferansı kaçırmak demek.",
@@ -639,9 +654,9 @@ const S = [
     en:{title:"Escalate or Own It?",
         ctx:"Friday evening. Monitoring shows a critical data pipeline bug — revenue reports for the last 48 hours silently report 15% higher than actual. Finance hasn't noticed. The fix requires a 4-hour database migration. Monday is the board meeting where these numbers will be presented.",
         ch:[
-            {t:"Escalate immediately to CTO and CFO. Transparency is non-negotiable when financial data is wrong, regardless of timing.",s:[6,8,5,4,9]},
-            {t:"Fix it quietly over the weekend. Correct the numbers and brief leadership Monday morning before the board meeting.",s:[5,7,4,8,7]},
-            {t:"Escalate to your direct manager only. Propose a fix plan with timeline, let them decide how high to take it.",s:[7,6,6,5,6]}
+            {t:"Escalate immediately to CTO and CFO. Transparency is non-negotiable when financial data is wrong, regardless of timing.",s:[5,7,3,2,10]},
+            {t:"Fix it quietly over the weekend. Correct the numbers and brief leadership Monday morning before the board meeting.",s:[3,5,2,10,3]},
+            {t:"Escalate to your direct manager only. Propose a fix plan with timeline, let them decide how high to take it.",s:[8,5,5,5,6]}
         ]},
     tr:{title:"Eskale Et mi, Sahiplen mi?",
         ctx:"Cuma akşamı. İzleme paneli kritik veri hattı hatası gösteriyor — son 48 saatin gelir raporları sessizce gerçeğin %15 üstünü raporluyor. Finans fark etmedi. Düzeltme 4 saatlik veritabanı migrasyonu gerektiriyor. Pazartesi bu rakamların sunulacağı yönetim kurulu toplantısı var.",
@@ -661,9 +676,9 @@ const S = [
     en:{title:"The Data Paradox",
         ctx:"A/B test on the new checkout flow is done. New flow has 3% higher conversion but 12% more cart abandonment at step 2. Statistical significance is borderline (p=0.07). Your UX researcher says users love the new flow but get confused by a specific field. The VP of Growth wants to ship based on conversion lift.",
         ch:[
-            {t:"Trust the qualitative signal — fix the confusing field and run another test. Data is inconclusive but the user insight is clear.",s:[7,6,10,5,5]},
-            {t:"Ship the new flow. 3% conversion lift at p=0.07 is close enough. Perfect is the enemy of good.",s:[5,8,4,9,7]},
-            {t:"Design a third variant combining the conversion win with the UX fix. Test again with a larger sample.",s:[9,9,8,4,6]}
+            {t:"Trust the qualitative signal — fix the confusing field and run another test. Data is inconclusive but the user insight is clear.",s:[5,2,10,4,3]},
+            {t:"Ship the new flow. 3% conversion lift at p=0.07 is close enough. Perfect is the enemy of good.",s:[3,10,1,10,7]},
+            {t:"Design a third variant combining the conversion win with the UX fix. Test again with a larger sample.",s:[10,8,7,1,5]}
         ]},
     tr:{title:"Veri Paradoksu",
         ctx:"Yeni ödeme akışı A/B testi bitti. Yeni akışta %3 daha yüksek dönüşüm ama 2. adımda %12 daha fazla sepet terk. İstatistiksel anlamlılık sınırda (p=0.07). UX araştırmacısı kullanıcıların yeni akışı sevdiğini ama belirli bir alandan şaşırdığını söylüyor. Büyüme VP'si dönüşüme göre çıkarmak istiyor.",
@@ -683,9 +698,9 @@ const S = [
     en:{title:"The AI Bet",
         ctx:"CEO returns from a conference buzzing about AI. They want an AI-powered recommendation engine in 6 weeks. Your team has zero ML experience. Options: third-party API (fast but expensive, black-box), rule-based 'AI' (fast, transparent, not really AI), or push for an ML hire and 3-month timeline.",
         ch:[
-            {t:"Third-party API. Ship fast, learn from real usage data, replace with in-house ML later when you understand the problem better.",s:[7,7,6,8,7]},
-            {t:"Build rule-based recommendations. Be honest it's not 'AI' — ships in 2 weeks, you own it, and it establishes the UX pattern.",s:[8,5,7,4,6]},
-            {t:"Push back. Present a 3-month plan with ML hire. Doing AI right matters more than doing it fast.",s:[10,8,5,3,9]}
+            {t:"Third-party API. Ship fast, learn from real usage data, replace with in-house ML later when you understand the problem better.",s:[3,7,5,10,5]},
+            {t:"Build rule-based recommendations. Be honest it's not 'AI' — ships in 2 weeks, you own it, and it establishes the UX pattern.",s:[8,2,7,2,5]},
+            {t:"Push back. Present a 3-month plan with ML hire. Doing AI right matters more than doing it fast.",s:[10,8,2,1,10]}
         ]},
     tr:{title:"AI Bahsi",
         ctx:"CEO konferanstan AI heyecanıyla döndü. 6 haftada AI destekli öneri motoru istiyor. Ekibin sıfır ML deneyimi var. Seçenekler: üçüncü parti API (hızlı ama pahalı, kara kutu), kural tabanlı 'AI' (hızlı, şeffaf, gerçek AI değil) veya ML işe alımı ve 3 aylık plan.",
@@ -705,9 +720,9 @@ const S = [
     en:{title:"The Bad News Delivery",
         ctx:"Your flagship feature will miss its deadline by 3 weeks. A third-party integration turned out far more complex than estimated. Team is demoralized. The CPO expects a status update in tomorrow's all-hands meeting. 200+ people will be watching.",
         ch:[
-            {t:"Full transparency in the all-hands. Show the exact problem, revised timeline, and what you learned. Vulnerability builds trust.",s:[7,7,6,8,9]},
-            {t:"Brief the CPO privately first. Align on messaging, then present a united front with a clear recovery plan.",s:[9,6,5,5,8]},
-            {t:"Reframe — present what IS shipping on time, frame the delay as 'phased rollout'. Protect team morale.",s:[8,4,6,6,7]}
+            {t:"Full transparency in the all-hands. Show the exact problem, revised timeline, and what you learned. Vulnerability builds trust.",s:[5,6,7,8,10]},
+            {t:"Brief the CPO privately first. Align on messaging, then present a united front with a clear recovery plan.",s:[9,5,2,4,8]},
+            {t:"Reframe — present what IS shipping on time, frame the delay as 'phased rollout'. Protect team morale.",s:[6,1,6,9,3]}
         ]},
     tr:{title:"Kötü Haber Teslimatı",
         ctx:"Amiral gemisi özelliğiniz deadline'ı 3 hafta kaçıracak. Üçüncü parti entegrasyon tahmin edilenden çok daha karmaşık çıktı. Ekip moral bozukluğunda. CPO yarınki all-hands'te güncelleme bekliyor. 200+ kişi izleyecek.",
@@ -727,9 +742,9 @@ const S = [
     en:{title:"Build or Fix?",
         ctx:"Engineering is frustrated. 18 months of tech debt — deploy takes 45 min, tests are flaky, new engineer onboarding takes 3 weeks instead of 3 days. They want a full refactor sprint. Meanwhile, sales landed a Fortune 500 pilot requiring 3 features in 6 weeks.",
         ch:[
-            {t:"Full sprint for tech debt. The Fortune 500 can wait 2 weeks — sustainable velocity beats any single deal.",s:[8,5,4,4,8]},
-            {t:"Split: 60% features, 40% tech debt. Negotiate a 7-week timeline with the client. Neither gets full attention but both move.",s:[7,6,6,6,6]},
-            {t:"Ship features first, promise the refactor sprint right after. This is a once-in-a-quarter opportunity.",s:[5,7,5,9,7]}
+            {t:"Full sprint for tech debt. The Fortune 500 can wait 2 weeks — sustainable velocity beats any single deal.",s:[9,4,2,1,7]},
+            {t:"Split: 60% features, 40% tech debt. Negotiate a 7-week timeline with the client. Neither gets full attention but both move.",s:[6,6,5,6,5]},
+            {t:"Ship features first, promise the refactor sprint right after. This is a once-in-a-quarter opportunity.",s:[1,6,5,10,6]}
         ]},
     tr:{title:"İnşa Et mi, Düzelt mi?",
         ctx:"Mühendislik hayal kırıklığında. 18 aydır biriken teknik borç — deploy 45 dk, testler güvenilmez, yeni mühendis adaptasyonu 3 gün yerine 3 hafta. Tam refactor sprinti istiyorlar. Bu arada satış 6 haftada 3 feature gerektiren Fortune 500 pilotu kapattı.",
@@ -749,9 +764,9 @@ const S = [
     en:{title:"The Big Reorg",
         ctx:"Leadership restructures from project-based teams to product squads. You lead the transition for 40 people. Half excited, half terrified. Two senior engineers threaten to quit. Timeline: 4 weeks. HR says 'just communicate the change and move on.'",
         ch:[
-            {t:"Follow Kotter's 8-step model: create urgency, build a coalition of champions from both camps, cascade the vision before structural changes.",s:[10,5,7,5,9]},
-            {t:"Move fast — announce the structure, let people self-organize into squads. Rip the band-aid. Deal with issues as they come.",s:[5,4,5,10,8]},
-            {t:"Start with the two senior engineers. 1:1s, understand fears, co-design their roles. If they buy in, the rest follows.",s:[8,4,9,6,7]}
+            {t:"Follow Kotter's 8-step model: create urgency, build a coalition of champions from both camps, cascade the vision before structural changes.",s:[10,3,5,3,9]},
+            {t:"Move fast — announce the structure, let people self-organize into squads. Rip the band-aid. Deal with issues as they come.",s:[1,1,2,10,8]},
+            {t:"Start with the two senior engineers. 1:1s, understand fears, co-design their roles. If they buy in, the rest follows.",s:[6,2,10,4,1]}
         ]},
     tr:{title:"Büyük Yeniden Yapılanma",
         ctx:"Liderlik proje tabanlıdan ürün squad'larına geçiyor. 40 kişilik geçişi yönetiyorsunuz. Yarısı heyecanlı, yarısı korkuda. İki kıdemli mühendis istifa tehdidinde. Süre: 4 hafta. İK 'değişikliği ilet devam et' diyor.",
@@ -771,9 +786,9 @@ const S = [
     en:{title:"The Stakeholder Standoff",
         ctx:"Lead designer and lead engineer in open conflict. Designer wants pixel-perfect, animation-heavy onboarding. Engineer says it's expensive, delays the sprint a week, and 'nobody cares about animations.' Both escalated to you. The team watches how you handle it.",
         ch:[
-            {t:"Pull onboarding completion rates and drop-off analytics. Let the data decide if animation investment is justified.",s:[6,10,7,4,6]},
-            {t:"Facilitate a design-engineering workshop. Co-create a solution that meets design intent within technical constraints.",s:[7,5,9,5,5]},
-            {t:"Make the call: simplified animations that are technically cheap. Sometimes PMs need to be the tiebreaker.",s:[6,6,6,7,9]}
+            {t:"Pull onboarding completion rates and drop-off analytics. Let the data decide if animation investment is justified.",s:[5,10,5,2,8]},
+            {t:"Facilitate a design-engineering workshop. Co-create a solution that meets design intent within technical constraints.",s:[5,2,10,3,1]},
+            {t:"Make the call: simplified animations that are technically cheap. Sometimes PMs need to be the tiebreaker.",s:[6,5,3,8,10]}
         ]},
     tr:{title:"Paydaş Çıkmazı",
         ctx:"Baş tasarımcı ve baş mühendis açık çatışmada. Tasarımcı piksel mükemmeliyetinde animasyonlu onboarding istiyor. Mühendis pahalı, sprinti geciktirir, 'kimse animasyonu umursamaz' diyor. İkisi de size eskale etti. Ekip izliyor.",
@@ -793,9 +808,9 @@ const S = [
     en:{title:"The Silent Team",
         ctx:"Your distributed team across 3 time zones has gone quiet. Standup attendance dropped 40%. Two members haven't turned on cameras in weeks. Sprint velocity fell 25%. Retro feedback: literally zero comments. You suspect burnout. 1:1s are this week.",
         ch:[
-            {t:"In 1:1s, skip status updates. Ask 'What's draining your energy?' and 'What would make this team feel alive again?' Listen first.",s:[6,3,10,5,5]},
-            {t:"Introduce async-first: written standups, Loom updates, flexible retro windows. Remove synchronous meeting burden.",s:[8,7,7,6,6]},
-            {t:"Call it out in the next team meeting. Name the pattern, share the data (velocity, attendance), ask the team to co-own the solution.",s:[7,8,6,8,9]}
+            {t:"In 1:1s, skip status updates. Ask 'What's draining your energy?' and 'What would make this team feel alive again?' Listen first.",s:[3,1,10,3,1]},
+            {t:"Introduce async-first: written standups, Loom updates, flexible retro windows. Remove synchronous meeting burden.",s:[8,8,5,5,5]},
+            {t:"Call it out in the next team meeting. Name the pattern, share the data (velocity, attendance), ask the team to co-own the solution.",s:[5,7,4,9,10]}
         ]},
     tr:{title:"Sessiz Takım",
         ctx:"3 zaman dilimindeki dağıtık ekibiniz sessizleşti. Standup katılımı %40 düştü. İki üye haftalardır kamera açmıyor. Sprint hızı %25 geriledi. Retro geri bildirimi: tam anlamıyla sıfır yorum. Tükenmişlikten şüpheleniyorsunuz. 1:1'ler bu hafta.",
@@ -836,7 +851,7 @@ tr:[
     {n:"Pragmatik İnşacı",c:()=>true}
 ]};
 
-const DIM_COLORS = ['#007AFF','#5AC8FA','#34C759','#FF9F0A','#FF375F'];
+const DIM_COLORS = ['#6366f1','#a5b4fc','#4ade80','#fb923c','#f472b6'];
 const ARTICLES = [
     {d:0,t:"Strategic Prioritization: A Psychological and OB Perspective",u:"https://berkayvuran.medium.com/strategic-prioritization-a-psychological-and-organizational-behavior-perspective-b7fa037c17d3"},
     {d:1,t:"Challenges in Data-Driven Decision-Making for PMs",u:"https://globalcybersecuritynetwork.com/blog/data-driven-decision-making-for-effective-product-management/"},
@@ -895,15 +910,19 @@ function renderScenario(){
     $('game-area').innerHTML=`
         <div class="card">
             <div class="card-tag">${L[lang].scenario} ${cur+1} / ${S.length}</div>
-            <h2>${d.title}</h2>
-            <p class="card-context">${d.ctx}</p>
-            <div class="choices">
-                ${d.ch.map((c,i)=>`
-                    <button class="choice" data-i="${i}">
-                        <span class="choice-key">${keys[i]}</span>
-                        <span class="choice-text">${c.t}</span>
-                    </button>
-                `).join('')}
+            <div class="scenario-desktop">
+                <div class="scenario-info">
+                    <h2>${d.title}</h2>
+                    <p class="card-context">${d.ctx}</p>
+                </div>
+                <div class="scenario-choices choices">
+                    ${d.ch.map((c,i)=>`
+                        <button class="choice" data-i="${i}">
+                            <span class="choice-key">${keys[i]}</span>
+                            <span class="choice-text">${c.t}</span>
+                        </button>
+                    `).join('')}
+                </div>
             </div>
         </div>`;
 
@@ -963,24 +982,28 @@ function showResult(){
             <p class="result-sub">${t.resultSub}</p>
         </div>
 
-        <div class="radar-card">
-            <div class="radar-svg-wrap">${radar(dims)}</div>
-            ${dims.map((d,i)=>{
-                const pct = d * 10;
-                const leansRight = pct >= 55;
-                const leansLeft = pct <= 45;
-                return `
-                <div class="dim-row">
-                    <div class="dim-header">${t.dim[i]}</div>
-                    <div class="dim-spectrum" style="--spec-left:${DIM_COLORS[i]}44;--spec-right:${DIM_COLORS[i]}44">
-                        <div class="dim-dot" style="left:${pct}%;background:${DIM_COLORS[i]}"></div>
-                    </div>
-                    <div class="dim-poles">
-                        <span class="dim-pole${leansLeft?' active':''}">${t.dimLo[i]}</span>
-                        <span class="dim-pole${leansRight?' active':''}" style="text-align:right">${t.dimHi[i]}</span>
-                    </div>
-                </div>`;
-            }).join('')}
+        <div class="result-cols">
+            <div class="radar-card">
+                <div class="radar-svg-wrap">${radar(dims)}</div>
+            </div>
+            <div class="dims-card">
+                ${dims.map((d,i)=>{
+                    const pct = d * 10;
+                    const leansRight = pct >= 55;
+                    const leansLeft = pct <= 45;
+                    return `
+                    <div class="dim-row">
+                        <div class="dim-header">${t.dim[i]}</div>
+                        <div class="dim-spectrum" style="--spec-left:${DIM_COLORS[i]}33;--spec-right:${DIM_COLORS[i]}33">
+                            <div class="dim-dot" style="left:${pct}%;background:${DIM_COLORS[i]}"></div>
+                        </div>
+                        <div class="dim-poles">
+                            <span class="dim-pole${leansLeft?' active':''}">${t.dimLo[i]}</span>
+                            <span class="dim-pole${leansRight?' active':''}" style="text-align:right">${t.dimHi[i]}</span>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
         </div>
 
         <div class="articles-card">
@@ -1007,7 +1030,9 @@ function showResult(){
 // ═══════════════════════════════════════
 // RADAR SVG
 // ═══════════════════════════════════════
-function radar(dims){
+function radarForLang(dims, l){ return radar(dims, l); }
+function radar(dims, l){
+    l = l || lang;
     const W=300,cx=W/2,cy=W/2,R=105,n=5;
     const step=Math.PI*2/n, start=-Math.PI/2;
     const pt=(a,r)=>[cx+Math.cos(a)*r, cy+Math.sin(a)*r];
@@ -1027,10 +1052,10 @@ function radar(dims){
     }
     // Data
     let dp=[];for(let i=0;i<n;i++) dp.push(pt(start+step*i,R*dims[i]/10));
-    svg+=`<polygon points="${dp.map(p=>p.join(',')).join(' ')}" fill="rgba(0,122,255,0.12)" stroke="#007AFF" stroke-width="2"/>`;
+    svg+=`<polygon points="${dp.map(p=>p.join(',')).join(' ')}" fill="rgba(99,102,241,0.12)" stroke="#6366f1" stroke-width="2"/>`;
     dp.forEach((p,i)=>svg+=`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${DIM_COLORS[i]}" stroke="var(--bg-card)" stroke-width="2"/>`);
     // Labels
-    const t=L[lang];
+    const t=L[l];
     const lr=R+26;
     for(let i=0;i<n;i++){
         const [x,y]=pt(start+step*i,lr);
@@ -1046,19 +1071,128 @@ function radar(dims){
 // ═══════════════════════════════════════
 function shareLinkedIn(profileName, dims){
     const t = L[lang];
-    const orientations = dims.map((d,i) => {
-        const pct = d * 10;
-        const label = pct <= 40 ? t.dimLo[i] : pct >= 60 ? t.dimHi[i] : t.dimLo[i] + ' ↔ ' + t.dimHi[i];
-        return `${t.dim[i]}: ${label}`;
-    }).join('\n');
     const pageUrl = 'https://berkayvuran.com/projects/vibe-coding/pm-decision-sim.html';
 
-    const text = lang === 'tr'
-        ? `🎯 PM Karar Simülatörü'nü tamamladım!\n\nProfilim: ${profileName}\n\n${orientations}\n\n10 gerçek ürün yönetimi senaryosunda kararlar verdim ve PM DNA'm ortaya çıktı. Doğru cevap yok — sadece ödünleşimler.\n\nSen de dene 👇\n${pageUrl}\n\n#ProductManagement #Leadership #PMSimulator`
-        : `🎯 Just completed the PM Decision Simulator!\n\nMy profile: ${profileName}\n\n${orientations}\n\nI made decisions across 10 real-world product management scenarios and discovered my PM DNA. No right answers — only trade-offs.\n\nTry it yourself 👇\n${pageUrl}\n\n#ProductManagement #Leadership #PMSimulator`;
+    const topArticles = [...ARTICLES].sort((a,b) => dims[b.d] - dims[a.d]).slice(0,3);
 
-    const linkedInUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`;
-    window.open(linkedInUrl, '_blank', 'width=700,height=600');
+    const orientations = dims.map((d,i) => {
+        const pct = d * 10;
+        const label = pct <= 45 ? t.dimLo[i] : pct >= 55 ? t.dimHi[i] : t.dimLo[i] + ' / ' + t.dimHi[i];
+        return `- ${t.dim[i]}: ${label}`;
+    }).join('\n');
+
+    const articleList = topArticles.map(a => `- ${a.t}`).join('\n');
+
+    const postText = lang === 'tr'
+        ? `PM Karar Simulatoru - 10 senaryo, dogru cevap yok, sadece odunlesimler.\n\nProfil: ${profileName}\n\n${orientations}\n\nKararlarima gore onerilmis okumalar (psyduct.com'dan):\n${articleList}\n\nSiz de kendi profilinizi kesfetmek ister misiniz:\n${pageUrl}\n\n#ProductManagement #PMSimulator #Leadership #ProductThinking`
+        : `PM Decision Simulator - 10 scenarios, no right answers, only trade-offs.\n\nProfile: ${profileName}\n\n${orientations}\n\nReads surfaced by my decisions (from psyduct.com):\n${articleList}\n\nDiscover yours:\n${pageUrl}\n\n#ProductManagement #PMSimulator #Leadership #ProductThinking`;
+
+    const liUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(postText)}`;
+    window.open(liUrl, '_blank', 'width=720,height=600');
+}
+
+function buildShareCanvas(profileName, dims, t){
+    const W = 1200, H = 630;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+
+    // Background
+    ctx.fillStyle = '#0d0d0d';
+    ctx.fillRect(0, 0, W, H);
+
+    // Subtle top-left accent bar
+    ctx.fillStyle = '#6366f1';
+    ctx.fillRect(0, 0, 4, H);
+
+    // Grid lines (subtle)
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for(let y = 60; y < H; y += 60){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // Header label
+    ctx.fillStyle = '#505050';
+    ctx.font = '500 13px sans-serif';
+    ctx.letterSpacing = '3px';
+    ctx.fillText('PM DECISION SIMULATOR', 64, 72);
+    ctx.letterSpacing = '0px';
+
+    // Profile name
+    ctx.fillStyle = '#efefef';
+    ctx.font = 'bold 56px sans-serif';
+    ctx.fillText(profileName, 64, 160);
+
+    // Divider
+    ctx.fillStyle = '#282828';
+    ctx.fillRect(64, 185, W - 128, 1);
+
+    // Dimensions
+    const dimColors = ['#6366f1','#a5b4fc','#4ade80','#fb923c','#f472b6'];
+    const colW = (W - 128) / 5;
+    dims.forEach((d, i) => {
+        const x = 64 + i * colW;
+        const pct = d * 10;
+        const leansRight = pct >= 55;
+        const leansLeft  = pct <= 45;
+        const label = leansLeft ? t.dimLo[i] : leansRight ? t.dimHi[i] : '↔';
+
+        // Dim name
+        ctx.fillStyle = '#505050';
+        ctx.font = '400 11px sans-serif';
+        const nameLines = t.dim[i].split(' ');
+        nameLines.forEach((w, wi) => ctx.fillText(w, x, 230 + wi * 16));
+
+        // Orientation label
+        ctx.fillStyle = dimColors[i];
+        ctx.font = 'bold 15px sans-serif';
+        ctx.fillText(label, x, 310);
+
+        // Spectrum bar
+        const barW = colW - 20;
+        const barH = 6;
+        const barY = 330;
+        ctx.fillStyle = '#262626';
+        ctx.beginPath();
+        ctx.roundRect(x, barY, barW, barH, 3);
+        ctx.fill();
+
+        // Dot
+        const dotX = x + barW * (pct / 100);
+        ctx.fillStyle = dimColors[i];
+        ctx.beginPath();
+        ctx.arc(dotX, barY + barH/2, 7, 0, Math.PI*2);
+        ctx.fill();
+    });
+
+    // Divider 2
+    ctx.fillStyle = '#282828';
+    ctx.fillRect(64, 370, W - 128, 1);
+
+    // Bottom tagline
+    ctx.fillStyle = '#505050';
+    ctx.font = '400 14px sans-serif';
+    ctx.fillText(lang === 'tr'
+        ? '10 gerçek PM senaryosu · Doğru cevap yok — sadece ödünleşimler'
+        : '10 real-world PM scenarios · No right answers — only trade-offs', 64, 410);
+
+    // URL
+    ctx.fillStyle = '#6366f1';
+    ctx.font = '500 14px sans-serif';
+    ctx.fillText('berkayvuran.com', 64, H - 48);
+
+    // Author
+    ctx.fillStyle = '#505050';
+    ctx.font = '400 13px sans-serif';
+    ctx.fillText('by Berkay Vuran', W - 200, H - 48);
+
+    return c;
+}
+
+function showToast(msg){
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 4000);
 }
 
 // ═══════════════════════════════════════
@@ -1079,13 +1213,83 @@ function renderHistory(){
     $('history-area').innerHTML=`
         <div class="history-card">
             <h3>${L[lang].histTitle}</h3>
-            ${h.slice(0,5).map(x=>`
-                <div class="hist-row">
+            ${h.slice(0,5).map((x,i)=>`
+                <div class="hist-row" data-idx="${i}">
                     <span class="hist-name">${x.p}</span>
                     <span class="hist-date">${x.date}</span>
                 </div>
             `).join('')}
         </div>`;
+
+    $('history-area').querySelectorAll('.hist-row').forEach(row => {
+        row.addEventListener('click', () => {
+            const idx = +row.dataset.idx;
+            showHistoryResult(h[idx]);
+        });
+    });
+}
+
+function showHistoryResult(entry){
+    const savedLang = lang;
+    // Temporarily use the session's lang for labels if available
+    const displayLang = entry.l || lang;
+    const t = L[displayLang];
+
+    show(vResult);
+    window.scrollTo({top:0, behavior:'smooth'});
+
+    const dims = entry.d;
+    const profileName = entry.p;
+
+    vResult.innerHTML=`
+        <div style="margin-bottom:12px;">
+            <button id="btn-back-hist" class="act-btn outline" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;font-size:13px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer;font-family:Poppins,sans-serif;font-weight:500;">
+                ← ${displayLang==='tr'?'Geçmişe dön':'Back to history'}
+            </button>
+            <span style="margin-left:12px;font-size:11px;color:var(--text-3);font-family:JetBrains Mono,monospace;">${entry.date}</span>
+        </div>
+
+        <div class="result-hero">
+            <div class="result-badge">${t.resultBadge}</div>
+            <div class="result-name">${profileName}</div>
+            <p class="result-sub">${t.resultSub}</p>
+        </div>
+
+        <div class="result-cols">
+            <div class="radar-card">
+                <div class="radar-svg-wrap">${radarForLang(dims, displayLang)}</div>
+            </div>
+            <div class="dims-card">
+                ${dims.map((d,i)=>{
+                    const pct = d * 10;
+                    const leansRight = pct >= 55;
+                    const leansLeft = pct <= 45;
+                    return `
+                    <div class="dim-row">
+                        <div class="dim-header">${t.dim[i]}</div>
+                        <div class="dim-spectrum" style="--spec-left:${DIM_COLORS[i]}33;--spec-right:${DIM_COLORS[i]}33">
+                            <div class="dim-dot" style="left:${pct}%;background:${DIM_COLORS[i]}"></div>
+                        </div>
+                        <div class="dim-poles">
+                            <span class="dim-pole${leansLeft?' active':''}">${t.dimLo[i]}</span>
+                            <span class="dim-pole${leansRight?' active':''}" style="text-align:right">${t.dimHi[i]}</span>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="act-btn fill" id="btn-hist-again">${t.btnAgain}</button>
+            <button class="act-btn outline" id="btn-hist-linkedin">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                ${t.btnLinkedin}
+            </button>
+        </div>`;
+
+    $('btn-back-hist').addEventListener('click', ()=>{ show(vStart); renderHistory(); setLang(savedLang); });
+    $('btn-hist-again').addEventListener('click', init);
+    $('btn-hist-linkedin').addEventListener('click', ()=> shareLinkedIn(profileName, dims));
 }
 
 // ═══════════════════════════════════════
