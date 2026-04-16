@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Graveyard | Ürün Mezarlığı</title>
+    <link rel="shortcut icon" href="../../assets/images/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:#0c0d14;
+            --bg-card:linear-gradient(180deg,#1c1d28 0%,#14151e 100%);
+            --bg-card-hover:#24253a;
+            --bg-surface:#252636;
+            --gold:#d4b068;
+            --gold-dim:#9a8454;
+            --gold-glow:rgba(212,176,104,0.12);
+            --text:#ececf0;
+            --text-2:#9898a8;
+            --text-3:#5e5e72;
+            --border:#2e2e40;
+            --shadow:0 8px 32px rgba(0,0,0,0.5);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:'Poppins',sans-serif;
+            background:var(--bg);
+            color:var(--text);
+            min-height:100vh;
+            overflow-x:hidden;
+            -webkit-font-smoothing:antialiased;
+            cursor:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><line x1="11" y1="3" x2="11" y2="19" stroke="%23d4b068" stroke-width="1.2" opacity="0.7"/><line x1="3" y1="11" x2="19" y2="11" stroke="%23d4b068" stroke-width="1.2" opacity="0.7"/></svg>') 11 11, crosshair;
+        }
+
+        .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:0 20px 100px;}
+        @media(min-width:900px){.wrap{max-width:1100px;padding:0 40px 100px;}}
+
+        /* TOPBAR */
+        .topbar{
+            position:sticky;top:0;z-index:50;
+            display:flex;align-items:center;justify-content:space-between;
+            padding:16px 0;
+            background:linear-gradient(to bottom,var(--bg) 60%,transparent);
+            backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+        }
+        .topbar-back{
+            display:inline-flex;align-items:center;gap:6px;
+            color:var(--text-3);text-decoration:none;font-size:13px;font-weight:500;
+            transition:color .2s;
+        }
+        .topbar-back:hover{color:var(--text);}
+        .lang-toggle{display:flex;gap:4px;}
+        .lang-toggle button{
+            padding:6px 14px;border-radius:20px;border:1px solid var(--border);
+            background:transparent;color:var(--text-3);font-size:12px;font-weight:600;
+            cursor:pointer;transition:all .2s;font-family:inherit;
+        }
+        .lang-toggle button.active{background:var(--gold);color:#08080e;border-color:var(--gold);}
+
+        /* HERO */
+        .hero{text-align:center;padding:48px 0 32px;}
+        .hero-icon{font-size:40px;margin-bottom:12px;opacity:0.7;}
+        .hero h1{font-size:clamp(28px,5vw,42px);font-weight:700;color:var(--text);letter-spacing:-0.5px;}
+        .hero-sub{font-size:15px;color:var(--text-2);margin-top:8px;font-style:italic;}
+        .hero-stats{
+            display:flex;align-items:center;justify-content:center;gap:12px;
+            margin-top:20px;font-size:13px;color:var(--text-3);
+            font-family:'JetBrains Mono',monospace;
+        }
+        .stat-dot{color:var(--gold-dim);}
+
+        /* TOOLBAR */
+        .toolbar{
+            display:flex;align-items:center;justify-content:space-between;
+            margin-bottom:28px;gap:12px;flex-wrap:wrap;
+        }
+        .filter-tabs{display:flex;gap:4px;}
+        .tab{
+            padding:8px 18px;border-radius:20px;border:1px solid var(--border);
+            background:transparent;color:var(--text-3);font-size:13px;font-weight:500;
+            cursor:pointer;transition:all .2s;font-family:inherit;
+        }
+        .tab.active{background:var(--bg-surface);color:var(--text);border-color:var(--gold-dim);}
+        .tab:hover:not(.active){color:var(--text-2);}
+        .btn-add{
+            padding:8px 20px;border-radius:20px;border:1px solid var(--gold-dim);
+            background:var(--gold-glow);color:var(--gold);font-size:13px;font-weight:600;
+            cursor:pointer;transition:all .2s;font-family:inherit;
+        }
+        .btn-add:hover{background:var(--gold);color:#08080e;}
+
+        /* GRID */
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:18px;
+        }
+        @media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr);gap:20px;}}
+        @media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr);gap:22px;}}
+        .grid-empty{
+            grid-column:1/-1;text-align:center;padding:60px 20px;
+            color:var(--text-3);font-size:14px;
+        }
+
+        /* TOMBSTONE */
+        @keyframes rise{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+        .tombstone{
+            position:relative;
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:70px 70px 6px 6px;
+            padding:28px 14px 18px;
+            text-align:center;
+            cursor:pointer;
+            transition:transform .25s ease,box-shadow .25s ease,border-color .25s;
+            animation:rise .5s ease-out both;
+            animation-delay:calc(var(--i) * 0.04s);
+        }
+        .tombstone:hover{
+            transform:translateY(-6px);
+            box-shadow:0 16px 48px rgba(0,0,0,0.6);
+            border-color:var(--gold-dim);
+        }
+        .tombstone::after{
+            content:'';position:absolute;bottom:-6px;left:25%;right:25%;height:6px;
+            background:var(--bg-surface);border-radius:0 0 4px 4px;border:1px solid var(--border);border-top:0;
+        }
+        .tomb-rip{
+            font-size:10px;letter-spacing:4px;color:var(--text-3);
+            margin-bottom:14px;font-weight:600;text-transform:uppercase;
+        }
+        .tomb-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3;}
+        .tomb-years{
+            font-family:'JetBrains Mono',monospace;font-size:11px;
+            color:var(--text-3);letter-spacing:1px;margin-bottom:12px;
+        }
+        .tomb-epitaph{
+            font-size:12px;color:var(--text-2);font-style:italic;line-height:1.5;
+            display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+        }
+        .tomb-cause{
+            display:inline-block;margin-top:12px;padding:3px 10px;border-radius:20px;
+            font-size:10px;font-weight:600;letter-spacing:0.5px;
+        }
+        .tomb-badge{
+            position:absolute;top:12px;right:12px;
+            font-size:8px;font-weight:700;letter-spacing:1px;
+            padding:2px 8px;border-radius:10px;
+            background:var(--gold-glow);color:var(--gold);border:1px solid var(--gold-dim);
+        }
+
+        /* MODAL */
+        .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;}
+        .modal.hidden{display:none;}
+        .modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);}
+        .modal-content{
+            position:relative;background:#181924;border:1px solid var(--border);
+            border-radius:20px;padding:32px;max-width:480px;width:100%;
+            max-height:85vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.7);
+        }
+        .modal-close{
+            position:absolute;top:16px;right:16px;width:32px;height:32px;
+            border-radius:50%;border:1px solid var(--border);background:transparent;
+            color:var(--text-3);font-size:18px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;transition:all .2s;
+        }
+        .modal-close:hover{color:var(--text);border-color:var(--text-3);}
+
+        /* DETAIL */
+        .detail-cross{text-align:center;font-size:24px;color:var(--text-3);margin-bottom:4px;}
+        .detail-name{text-align:center;font-size:24px;font-weight:700;margin-bottom:4px;}
+        .detail-years{
+            text-align:center;font-family:'JetBrains Mono',monospace;
+            font-size:13px;color:var(--text-3);letter-spacing:2px;margin-bottom:16px;
+        }
+        .detail-cause-tag{
+            display:block;text-align:center;margin-bottom:20px;
+        }
+        .detail-cause-tag span{
+            display:inline-block;padding:4px 14px;border-radius:20px;
+            font-size:12px;font-weight:600;
+        }
+        .detail-epitaph{
+            text-align:center;font-size:16px;font-style:italic;
+            color:var(--gold);margin-bottom:24px;line-height:1.6;
+        }
+        .detail-section{margin-bottom:20px;}
+        .detail-section h3{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;}
+        .detail-section p{font-size:14px;line-height:1.7;color:var(--text-2);}
+        .detail-actions{display:flex;gap:10px;margin-top:24px;}
+        .detail-actions button{
+            flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);
+            background:transparent;color:var(--text-2);font-size:13px;font-weight:600;
+            cursor:pointer;transition:all .2s;font-family:inherit;
+        }
+        .detail-actions .btn-share{border-color:var(--gold-dim);color:var(--gold);}
+        .detail-actions .btn-share:hover{background:var(--gold);color:#08080e;}
+        .detail-actions .btn-delete{border-color:#f8717144;color:#f87171;}
+        .detail-actions .btn-delete:hover{background:#f87171;color:#fff;}
+
+        /* ADD FORM */
+        .form-title{font-size:20px;font-weight:700;margin-bottom:24px;text-align:center;}
+        .form-group{margin-bottom:16px;}
+        .form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px;}
+        .form-group input,.form-group textarea,.form-group select{
+            width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);
+            background:#12131c;color:var(--text);font-size:14px;font-family:inherit;
+            transition:border-color .2s;
+        }
+        .form-group input:focus,.form-group textarea:focus,.form-group select:focus{
+            outline:none;border-color:var(--gold-dim);
+        }
+        .form-group textarea{resize:vertical;min-height:70px;}
+        .form-group .hint{font-size:11px;color:var(--text-3);margin-top:4px;}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+        .form-actions{display:flex;gap:10px;margin-top:24px;}
+        .form-actions button{
+            flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);
+            background:transparent;color:var(--text-2);font-size:14px;font-weight:600;
+            cursor:pointer;transition:all .2s;font-family:inherit;
+        }
+        .form-actions .btn-submit{border-color:var(--gold-dim);color:var(--gold);}
+        .form-actions .btn-submit:hover{background:var(--gold);color:#08080e;}
+
+        /* TOAST */
+        .toast{
+            position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(80px);
+            background:#1c1c28;border:1px solid var(--border);border-radius:12px;
+            padding:12px 24px;font-size:14px;color:var(--text);z-index:200;
+            opacity:0;transition:all .3s ease;pointer-events:none;
+        }
+        .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+        .hidden{display:none!important;}
+
+        /* ═══ ATMOSPHERE ═══ */
+
+        /* Moon */
+        .moon{
+            position:fixed;top:-30px;right:8%;width:140px;height:140px;border-radius:50%;
+            background:radial-gradient(circle,rgba(255,250,205,0.12) 0%,rgba(255,250,205,0.04) 40%,transparent 70%);
+            box-shadow:0 0 80px 40px rgba(255,250,205,0.04);
+            pointer-events:none;z-index:0;
+        }
+        .moon::after{
+            content:'';position:absolute;inset:30px;border-radius:50%;
+            background:radial-gradient(circle,rgba(255,250,205,0.08) 0%,transparent 60%);
+        }
+
+        /* Cobwebs */
+        .cobweb{position:fixed;pointer-events:none;z-index:3;opacity:0.13;}
+        .cobweb-tl{top:0;left:0;width:180px;height:180px;}
+        .cobweb-tr{top:0;right:0;width:160px;height:160px;transform:scaleX(-1);}
+
+        /* Fog */
+        .fog{
+            position:fixed;bottom:0;left:0;right:0;height:180px;
+            pointer-events:none;z-index:2;
+        }
+        .fog-layer{
+            position:absolute;bottom:0;left:-10%;width:120%;height:100%;
+            background:linear-gradient(transparent 0%,rgba(12,13,20,0.4) 40%,rgba(12,13,20,0.85) 100%);
+        }
+        .fog-layer:nth-child(1){animation:fog-drift 25s ease-in-out infinite alternate;}
+        .fog-layer:nth-child(2){animation:fog-drift 18s ease-in-out infinite alternate-reverse;opacity:0.6;}
+        @keyframes fog-drift{
+            from{transform:translateX(-3%);}to{transform:translateX(3%);}
+        }
+
+        /* Fireflies / Particles */
+        .particle{
+            position:fixed;width:3px;height:3px;border-radius:50%;
+            background:rgba(212,176,104,0.5);
+            pointer-events:none;z-index:2;
+            animation:particle-float linear infinite;
+        }
+        @keyframes particle-float{
+            0%{transform:translateY(0) translateX(0);opacity:0;}
+            8%{opacity:0.7;}
+            50%{opacity:0.3;}
+            92%{opacity:0.6;}
+            100%{transform:translateY(-100vh) translateX(30px);opacity:0;}
+        }
+
+        /* Sound toggle */
+        .sound-toggle{
+            position:fixed;bottom:24px;right:24px;z-index:20;
+            width:44px;height:44px;border-radius:50%;
+            border:1px solid var(--border);background:var(--bg-surface);
+            color:var(--text-3);font-size:18px;
+            cursor:pointer;transition:all .2s;
+            display:flex;align-items:center;justify-content:center;
+        }
+        .sound-toggle:hover{border-color:var(--gold-dim);color:var(--gold);}
+        .sound-toggle.active{border-color:var(--gold-dim);color:var(--gold);background:var(--gold-glow);}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <nav class="topbar">
+        <a href="../../index.html#builder" class="topbar-back">← Builder</a>
+        <div class="lang-toggle">
+            <button id="btn-en" class="active">EN</button>
+            <button id="btn-tr">TR</button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-icon">&#9760;</div>
+        <h1 id="h-title"></h1>
+        <p id="h-sub" class="hero-sub"></p>
+        <div class="hero-stats">
+            <span id="stat-count"></span>
+            <span class="stat-dot">&middot;</span>
+            <span id="stat-lessons"></span>
+        </div>
+    </header>
+
+    <div class="toolbar">
+        <div class="filter-tabs" id="filter-tabs"></div>
+        <button id="btn-add" class="btn-add"></button>
+    </div>
+
+    <div id="grid" class="grid"></div>
+</div>
+
+<!-- Detail Modal -->
+<div id="modal-detail" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeDetail()"></div>
+    <div class="modal-content" id="detail-body">
+        <button class="modal-close" onclick="closeDetail()">&times;</button>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div id="modal-add" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeAdd()"></div>
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeAdd()">&times;</button>
+        <div class="form-title" id="form-title"></div>
+        <div class="form-group">
+            <label id="lbl-name"></label>
+            <input type="text" id="f-name" maxlength="60">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label id="lbl-born"></label>
+                <input type="number" id="f-born" min="1950" max="2026">
+            </div>
+            <div class="form-group">
+                <label id="lbl-died"></label>
+                <input type="number" id="f-died" min="1950" max="2026">
+            </div>
+        </div>
+        <div class="form-group">
+            <label id="lbl-cause"></label>
+            <select id="f-cause"></select>
+        </div>
+        <div class="form-group">
+            <label id="lbl-epitaph"></label>
+            <input type="text" id="f-epitaph" maxlength="100">
+            <div class="hint" id="hint-epitaph"></div>
+        </div>
+        <div class="form-group">
+            <label id="lbl-lesson"></label>
+            <textarea id="f-lesson" maxlength="300"></textarea>
+            <div class="hint" id="hint-lesson"></div>
+        </div>
+        <div class="form-actions">
+            <button onclick="closeAdd()" id="btn-cancel"></button>
+            <button class="btn-submit" onclick="submitEntry()" id="btn-submit"></button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- Atmosphere -->
+<div class="moon"></div>
+
+<svg class="cobweb cobweb-tl" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="currentColor" fill="none" stroke-width="0.6" color="#9898a8">
+        <line x1="0" y1="0" x2="200" y2="200"/><line x1="0" y1="0" x2="200" y2="80"/>
+        <line x1="0" y1="0" x2="80" y2="200"/><line x1="0" y1="0" x2="200" y2="0"/>
+        <line x1="0" y1="0" x2="0" y2="200"/><line x1="0" y1="0" x2="200" y2="140"/>
+        <line x1="0" y1="0" x2="140" y2="200"/>
+        <path d="M 35 0 Q 35 35 0 35"/><path d="M 70 0 Q 70 70 0 70"/>
+        <path d="M 110 0 Q 110 110 0 110"/><path d="M 160 0 Q 160 160 0 160"/>
+        <path d="M 35 0 Q 38 18 30 30 Q 18 38 0 35"/>
+        <path d="M 70 0 Q 75 35 58 58 Q 35 75 0 70"/>
+        <path d="M 110 0 Q 115 52 90 90 Q 52 115 0 110"/>
+        <path d="M 160 0 Q 168 76 130 130 Q 76 168 0 160"/>
+    </g>
+</svg>
+<svg class="cobweb cobweb-tr" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="currentColor" fill="none" stroke-width="0.6" color="#9898a8">
+        <line x1="0" y1="0" x2="200" y2="200"/><line x1="0" y1="0" x2="200" y2="80"/>
+        <line x1="0" y1="0" x2="80" y2="200"/><line x1="0" y1="0" x2="200" y2="0"/>
+        <line x1="0" y1="0" x2="0" y2="200"/><line x1="0" y1="0" x2="200" y2="140"/>
+        <path d="M 35 0 Q 35 35 0 35"/><path d="M 70 0 Q 70 70 0 70"/>
+        <path d="M 110 0 Q 110 110 0 110"/><path d="M 160 0 Q 160 160 0 160"/>
+        <path d="M 70 0 Q 75 35 58 58 Q 35 75 0 70"/>
+        <path d="M 110 0 Q 115 52 90 90 Q 52 115 0 110"/>
+    </g>
+</svg>
+
+<div class="fog"><div class="fog-layer"></div><div class="fog-layer"></div></div>
+
+<div id="particles"></div>
+
+<button id="btn-sound" class="sound-toggle" title="Toggle ambient sound">&#128264;</button>
+
+<script>
+const $=id=>document.getElementById(id);
+
+// ═══════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════
+const L={
+en:{
+    title:'Product Graveyard',
+    subtitle:'"Where good ideas come to rest."',
+    statCount:' products rest in peace',
+    statLessons:' lessons to learn',
+    filterAll:'All', filterFamous:'Famous', filterYours:'Yours',
+    addBtn:'+ Bury Yours',
+    rip:'R.I.P.',
+    lessonTitle:'LESSON LEARNED',
+    causeTitle:'CAUSE OF DEATH',
+    shareBtn:'Share', deleteBtn:'Delete',
+    addTitle:'Add to the Graveyard',
+    lblName:'Product / Feature Name',
+    lblBorn:'Year Born', lblDied:'Year Died',
+    lblCause:'Cause of Death',
+    lblEpitaph:'Epitaph', lblLesson:'Lesson Learned',
+    hintEpitaph:'Short, memorable last words (max 100 chars)',
+    hintLesson:'What can we learn from this?',
+    submitBtn:'Bury It', cancelBtn:'Cancel',
+    toastAdded:'Rest in peace.',
+    toastDeleted:'Exhumed.',
+    emptyYours:'Your graveyard is empty.',
+    yourBadge:'YOURS',
+},
+tr:{
+    title:'Ürün Mezarlığı',
+    subtitle:'"İyi fikirlerin son durağı."',
+    statCount:' ürün huzur içinde yatıyor',
+    statLessons:' ders alınacak',
+    filterAll:'Tümü', filterFamous:'Ünlüler', filterYours:'Seninkiler',
+    addBtn:'+ Kendi Ürününü Göm',
+    rip:'H.İ.Y.',
+    lessonTitle:'ALINAN DERS',
+    causeTitle:'ÖLÜM SEBEBİ',
+    shareBtn:'Paylaş', deleteBtn:'Sil',
+    addTitle:'Mezarlığa Ekle',
+    lblName:'Ürün / Feature Adı',
+    lblBorn:'Doğum Yılı', lblDied:'Ölüm Yılı',
+    lblCause:'Ölüm Sebebi',
+    lblEpitaph:'Mezar Yazısı', lblLesson:'Alınan Ders',
+    hintEpitaph:'Kısa, akılda kalıcı son sözler (maks 100 karakter)',
+    hintLesson:'Bundan ne öğrenebiliriz?',
+    submitBtn:'Göm', cancelBtn:'İptal',
+    toastAdded:'Huzur içinde yatsın.',
+    toastDeleted:'Mezardan çıkarıldı.',
+    emptyYours:'Mezarlığın boş.',
+    yourBadge:'SENİN',
+}};
+
+// ═══════════════════════════════════════
+// CAUSES
+// ═══════════════════════════════════════
+const CAUSES=[
+    {id:'pmf',en:'No Product-Market Fit',tr:'Ürün-Pazar Uyumu Yok',color:'#f87171',bg:'#f8717118'},
+    {id:'late',en:'Late to Market',tr:'Pazara Geç Kaldı',color:'#fb923c',bg:'#fb923c18'},
+    {id:'parent',en:'Killed by Parent Co.',tr:'Ana Şirket Öldürdü',color:'#a78bfa',bg:'#a78bfa18'},
+    {id:'money',en:'Monetization Failure',tr:'Monetizasyon Başarısızlığı',color:'#fbbf24',bg:'#fbbf2418'},
+    {id:'disrupted',en:'Disrupted',tr:'Disrupt Edildi',color:'#60a5fa',bg:'#60a5fa18'},
+    {id:'users',en:'Ignored Users',tr:'Kullanıcılar İhmal Edildi',color:'#f472b6',bg:'#f472b618'},
+    {id:'tech',en:'Technical Limitations',tr:'Teknik Yetersizlik',color:'#4ade80',bg:'#4ade8018'},
+    {id:'pivot',en:'Pivot Failure',tr:'Pivot Başarısızlığı',color:'#c084fc',bg:'#c084fc18'},
+    {id:'hubris',en:'Hubris',tr:'Kibir',color:'#e879f9',bg:'#e879f918'},
+    {id:'other',en:'Other',tr:'Diğer',color:'#94a3b8',bg:'#94a3b818'},
+];
+function causeById(id){return CAUSES.find(c=>c.id===id)||CAUSES[CAUSES.length-1];}
+
+// ═══════════════════════════════════════
+// FAMOUS GRAVES
+// ═══════════════════════════════════════
+const FAMOUS=[
+{name:'Google+',born:2011,died:2019,cause:'pmf',
+    epitaph:{en:'Nobody came to the party',tr:'Partiye kimse gelmedi'},
+    lesson:{en:'Having a billion users on another product doesn\'t mean they want your social network. Distribution is not product-market fit.',
+            tr:'Başka bir üründe milyar kullanıcınız olması sosyal ağınızı istedikleri anlamına gelmez. Dağıtım, ürün-pazar uyumu değildir.'}},
+{name:'Vine',born:2013,died:2017,cause:'money',
+    epitaph:{en:'6 seconds of glory, 0 seconds of revenue',tr:'6 saniyelik şan, 0 saniyelik gelir'},
+    lesson:{en:'Creator platforms must monetize for creators, not just the platform. When TikTok offered money, Vine\'s talent walked.',
+            tr:'İçerik platformları sadece platform için değil, içerik üreticileri için de monetize etmeli. TikTok para teklif edince Vine\'ın yetenekleri gitti.'}},
+{name:'Clippy',born:1997,died:2007,cause:'users',
+    epitaph:{en:'It looks like you\'re writing my obituary',tr:'Görünüşe göre ölüm ilanımı yazıyorsunuz'},
+    lesson:{en:'Help should be requested, not imposed. The most hated UX pattern in history was an assistant that never learned to read the room.',
+            tr:'Yardım talep edilmeli, dayatılmamalı. Tarihteki en nefret edilen UX kalıbı, ortamı okumayı öğrenemeyen bir asistandi.'}},
+{name:'Windows Phone',born:2010,died:2019,cause:'late',
+    epitaph:{en:'Beautiful design, empty app store',tr:'Güzel tasarım, boş uygulama mağazası'},
+    lesson:{en:'A platform is only as strong as its ecosystem. When developers don\'t come, users don\'t stay.',
+            tr:'Bir platform ekosistemi kadar güçlüdür. Geliştiriciler gelmezse, kullanıcılar kalmaz.'}},
+{name:'Google Reader',born:2005,died:2013,cause:'parent',
+    epitaph:{en:'Killed with 24 million loyal users watching',tr:'24 milyon sadık kullanıcının gözü önünde öldürüldü'},
+    lesson:{en:'Google killed a beloved product because "beloved" wasn\'t in their KPIs. Sometimes the metric is wrong, not the product.',
+            tr:'Google sevilen bir ürünü öldürdü çünkü "sevilen" KPI\'larında yoktu. Bazen yanlış olan ürün değil, metriktir.'}},
+{name:'Quibi',born:2020,died:2020,cause:'pmf',
+    epitaph:{en:'$1.75B spent, 0 problems solved',tr:'1.75 milyar dolar harcandı, 0 sorun çözüldü'},
+    lesson:{en:'No amount of funding replaces understanding your user. "Short-form premium video for mobile" was a solution looking for a problem.',
+            tr:'Hiçbir yatırım, kullanıcını anlamanın yerini tutmaz. "Mobil için premium kısa video" sorun arayan bir çözümdü.'}},
+{name:'Internet Explorer',born:1995,died:2022,cause:'tech',
+    epitaph:{en:'Only used to download other browsers',tr:'Sadece başka tarayıcı indirmek için kullanıldı'},
+    lesson:{en:'Monopoly breeds complacency. When you stop innovating because users "have no choice," you\'re already dead.',
+            tr:'Tekel rehavet doğurur. Kullanıcılar "başka seçeneği yok" diye yenilemeyi bıraktığınızda zaten ölüsünüz.'}},
+{name:'Zune',born:2006,died:2012,cause:'late',
+    epitaph:{en:'The iPod from a parallel universe',tr:'Paralel bir evrenden gelen iPod'},
+    lesson:{en:'Being "as good as" the leader isn\'t enough. You need a reason to switch, not just a reason to exist.',
+            tr:'"Lider kadar iyi olmak" yetmez. Var olma sebebi değil, geçiş sebebi gerekir.'}},
+{name:'Amazon Fire Phone',born:2014,died:2015,cause:'hubris',
+    epitaph:{en:'Even Amazon couldn\'t buy its way into your pocket',tr:'Amazon bile cebinize satın alarak giremedi'},
+    lesson:{en:'Building for the company\'s goals (more shopping) instead of user goals (better phone) is the fastest path to irrelevance.',
+            tr:'Şirket hedefleri için inşa etmek, kullanıcı hedefleri yerine, en hızlı önemsizleşme yoludur.'}},
+{name:'BlackBerry',born:1999,died:2022,cause:'disrupted',
+    epitaph:{en:'The keyboard died with it',tr:'Klavye onunla birlikte öldü'},
+    lesson:{en:'When the iPhone launched, BlackBerry laughed. "No keyboard? Business users will never switch." They all switched.',
+            tr:'iPhone çıktığında BlackBerry güldü. "Klavyesiz mi? İş kullanıcıları asla geçmez." Hepsi geçti.'}},
+{name:'Google Stadia',born:2019,died:2023,cause:'pmf',
+    epitaph:{en:'The future of gaming that gamers didn\'t want',tr:'Oyuncuların istemediği oyunculuğun geleceği'},
+    lesson:{en:'Gamers value ownership and low latency over convenience. Understanding your user\'s identity matters more than technology.',
+            tr:'Oyuncular sahiplik ve düşük gecikmeyi kolaylığa tercih eder. Kullanıcı kimliğini anlamak teknolojiden önemlidir.'}},
+{name:'Tumblr',born:2007,died:2019,cause:'pivot',
+    epitaph:{en:'Acquired for $1.1B, sold for $3M',tr:'1.1 milyar dolara alındı, 3 milyon dolara satıldı'},
+    lesson:{en:'Tumblr\'s NSFW ban killed its core community overnight. When you remove the reason people came, they leave permanently.',
+            tr:'Tumblr\'ın NSFW yasağı çekirdek topluluğunu bir gecede öldürdü. İnsanların gelme sebebini kaldırınca, kalıcı olarak giderler.'}},
+];
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let lang = localStorage.getItem('graveyardLang')||'en';
+let filter = 'all';
+
+function getUserEntries(){
+    try{return JSON.parse(localStorage.getItem('graveyardEntries'))||[];}catch(e){return[];}
+}
+function setUserEntries(arr){localStorage.setItem('graveyardEntries',JSON.stringify(arr));}
+
+function allGraves(){
+    const user = getUserEntries().map(e=>({...e,famous:false}));
+    const famous = FAMOUS.map(e=>({...e,famous:true}));
+    return [...famous,...user];
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function setLang(l){
+    lang=l;
+    localStorage.setItem('graveyardLang',l);
+    document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.remove('active'));
+    $(l==='en'?'btn-en':'btn-tr').classList.add('active');
+    const t=L[l];
+    $('h-title').textContent=t.title;
+    $('h-sub').textContent=t.subtitle;
+    $('btn-add').textContent=t.addBtn;
+    $('form-title').textContent=t.addTitle;
+    $('lbl-name').textContent=t.lblName;
+    $('lbl-born').textContent=t.lblBorn;
+    $('lbl-died').textContent=t.lblDied;
+    $('lbl-cause').textContent=t.lblCause;
+    $('lbl-epitaph').textContent=t.lblEpitaph;
+    $('lbl-lesson').textContent=t.lblLesson;
+    $('hint-epitaph').textContent=t.hintEpitaph;
+    $('hint-lesson').textContent=t.hintLesson;
+    $('btn-submit').textContent=t.submitBtn;
+    $('btn-cancel').textContent=t.cancelBtn;
+    renderFilters();
+    renderGrid();
+    populateCauseSelect();
+}
+
+function renderFilters(){
+    const t=L[lang];
+    const tabs=[{k:'all',l:t.filterAll},{k:'famous',l:t.filterFamous},{k:'yours',l:t.filterYours}];
+    $('filter-tabs').innerHTML=tabs.map(f=>
+        `<button class="tab${filter===f.k?' active':''}" data-filter="${f.k}">${f.l}</button>`
+    ).join('');
+    $('filter-tabs').querySelectorAll('.tab').forEach(b=>{
+        b.addEventListener('click',()=>{filter=b.dataset.filter;renderFilters();renderGrid();});
+    });
+}
+
+function renderGrid(){
+    const t=L[lang];
+    let items=allGraves();
+    if(filter==='famous') items=items.filter(g=>g.famous);
+    if(filter==='yours') items=items.filter(g=>!g.famous);
+
+    const total=allGraves().length;
+    $('stat-count').textContent=total+t.statCount;
+    $('stat-lessons').textContent=total+t.statLessons;
+
+    if(!items.length){
+        $('grid').innerHTML=`<div class="grid-empty">${t.emptyYours}</div>`;
+        return;
+    }
+
+    items.sort((a,b)=>b.died-a.died);
+
+    $('grid').innerHTML=items.map((g,i)=>{
+        const c=causeById(g.cause);
+        const ep=typeof g.epitaph==='object'?(g.epitaph[lang]||g.epitaph.en):g.epitaph;
+        const causeName=c[lang]||c.en;
+        return `
+        <div class="tombstone" style="--i:${i}" onclick='openDetail(${JSON.stringify(g).replace(/'/g,"\\'")})'>
+            ${!g.famous?`<div class="tomb-badge">${t.yourBadge}</div>`:''}
+            <div class="tomb-rip">${t.rip}</div>
+            <div class="tomb-name">${g.name}</div>
+            <div class="tomb-years">${g.born} &mdash; ${g.died}</div>
+            <div class="tomb-epitaph">"${ep}"</div>
+            <div class="tomb-cause" style="color:${c.color};background:${c.bg}">${causeName}</div>
+        </div>`;
+    }).join('');
+}
+
+// ═══════════════════════════════════════
+// DETAIL MODAL
+// ═══════════════════════════════════════
+function openDetail(g){
+    const t=L[lang];
+    const c=causeById(g.cause);
+    const ep=typeof g.epitaph==='object'?(g.epitaph[lang]||g.epitaph.en):g.epitaph;
+    const les=typeof g.lesson==='object'?(g.lesson[lang]||g.lesson.en):g.lesson;
+    const causeName=c[lang]||c.en;
+
+    $('detail-body').innerHTML=`
+        <button class="modal-close" onclick="closeDetail()">&times;</button>
+        <div class="detail-cross">&#10013;</div>
+        <div class="detail-name">${g.name}</div>
+        <div class="detail-years">${g.born} &mdash; ${g.died}</div>
+        <div class="detail-cause-tag">
+            <span style="color:${c.color};background:${c.bg}">${causeName}</span>
+        </div>
+        <div class="detail-epitaph">"${ep}"</div>
+        <div class="detail-section">
+            <h3>${t.lessonTitle}</h3>
+            <p>${les}</p>
+        </div>
+        <div class="detail-actions">
+            <button class="btn-share" onclick='shareGrave(${JSON.stringify(g).replace(/'/g,"\\'")})'>${t.shareBtn}</button>
+            ${!g.famous?`<button class="btn-delete" onclick='deleteEntry("${g.name}")'>${t.deleteBtn}</button>`:''}
+        </div>`;
+    $('modal-detail').classList.remove('hidden');
+    document.body.style.overflow='hidden';
+}
+function closeDetail(){
+    $('modal-detail').classList.add('hidden');
+    document.body.style.overflow='';
+}
+
+// ═══════════════════════════════════════
+// ADD MODAL
+// ═══════════════════════════════════════
+function populateCauseSelect(){
+    $('f-cause').innerHTML=CAUSES.map(c=>
+        `<option value="${c.id}">${c[lang]||c.en}</option>`
+    ).join('');
+}
+function openAdd(){
+    $('f-name').value='';$('f-born').value='';$('f-died').value='';
+    $('f-epitaph').value='';$('f-lesson').value='';$('f-cause').selectedIndex=0;
+    $('modal-add').classList.remove('hidden');
+    document.body.style.overflow='hidden';
+}
+function closeAdd(){
+    $('modal-add').classList.add('hidden');
+    document.body.style.overflow='';
+}
+function submitEntry(){
+    const name=$('f-name').value.trim();
+    const born=+$('f-born').value;
+    const died=+$('f-died').value;
+    const cause=$('f-cause').value;
+    const epitaph=$('f-epitaph').value.trim();
+    const lesson=$('f-lesson').value.trim();
+    if(!name||!born||!died||!epitaph||!lesson) return;
+    const entries=getUserEntries();
+    entries.push({name,born,died,cause,epitaph,lesson,ts:Date.now()});
+    setUserEntries(entries);
+    closeAdd();
+    filter='all';
+    renderFilters();
+    renderGrid();
+    showToast(L[lang].toastAdded);
+}
+
+// ═══════════════════════════════════════
+// DELETE
+// ═══════════════════════════════════════
+function deleteEntry(name){
+    if(!confirm(L[lang].toastDeleted+'?')) return;
+    const entries=getUserEntries().filter(e=>e.name!==name);
+    setUserEntries(entries);
+    closeDetail();
+    renderGrid();
+    showToast(L[lang].toastDeleted);
+}
+
+// ═══════════════════════════════════════
+// SHARE
+// ═══════════════════════════════════════
+function shareGrave(g){
+    const pageUrl='https://berkayvuran.com/projects/vibe-coding/product-graveyard.html';
+    const c=causeById(g.cause);
+    const ep=typeof g.epitaph==='object'?(g.epitaph[lang]||g.epitaph.en):g.epitaph;
+    const les=typeof g.lesson==='object'?(g.lesson[lang]||g.lesson.en):g.lesson;
+    const causeName=c[lang]||c.en;
+
+    const postText = lang==='tr'
+        ? `Urun Mezarligi: ${g.name} (${g.born}-${g.died})\n\n"${ep}"\n\nOlum sebebi: ${causeName}\nDers: ${les}\n\nTum mezarligi kesfet + kendi urununu gom:\n${pageUrl}\n\n#ProductManagement #ProductGraveyard #LessonsLearned`
+        : `Product Graveyard: ${g.name} (${g.born}-${g.died})\n\n"${ep}"\n\nCause of death: ${causeName}\nLesson: ${les}\n\nExplore the full graveyard + bury your own:\n${pageUrl}\n\n#ProductManagement #ProductGraveyard #LessonsLearned`;
+
+    const liUrl=`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(postText)}`;
+    window.open(liUrl,'_blank','width=720,height=600');
+}
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+function showToast(msg){
+    const el=$('toast');el.textContent=msg;el.classList.add('show');
+    setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+$('btn-en').addEventListener('click',()=>setLang('en'));
+$('btn-tr').addEventListener('click',()=>setLang('tr'));
+$('btn-add').addEventListener('click',openAdd);
+document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){closeDetail();closeAdd();}
+});
+setLang(lang);
+
+// ═══════════════════════════════════════
+// PARTICLES (fireflies)
+// ═══════════════════════════════════════
+(function(){
+    const container=$('particles');
+    for(let i=0;i<18;i++){
+        const p=document.createElement('div');
+        p.className='particle';
+        p.style.left=Math.random()*100+'%';
+        p.style.bottom=Math.random()*20+'%';
+        p.style.animationDuration=(12+Math.random()*20)+'s';
+        p.style.animationDelay=(Math.random()*15)+'s';
+        p.style.width=p.style.height=(2+Math.random()*2)+'px';
+        container.appendChild(p);
+    }
+})();
+
+// ═══════════════════════════════════════
+// AMBIENT SOUND (Web Audio API)
+// ═══════════════════════════════════════
+let audioCtx=null, audioPlaying=false;
+function toggleAmbient(){
+    if(!audioCtx){
+        audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+        // Low drone
+        const osc1=audioCtx.createOscillator();
+        osc1.type='sine'; osc1.frequency.value=55;
+        const g1=audioCtx.createGain(); g1.gain.value=0.035;
+        osc1.connect(g1); g1.connect(audioCtx.destination); osc1.start();
+        // Eerie high
+        const osc2=audioCtx.createOscillator();
+        osc2.type='sine'; osc2.frequency.value=440;
+        const g2=audioCtx.createGain(); g2.gain.value=0.006;
+        osc2.connect(g2); g2.connect(audioCtx.destination); osc2.start();
+        // LFO warble on high
+        const lfo=audioCtx.createOscillator();
+        lfo.frequency.value=0.25;
+        const lfoG=audioCtx.createGain(); lfoG.gain.value=8;
+        lfo.connect(lfoG); lfoG.connect(osc2.frequency); lfo.start();
+        // Wind noise
+        const bufSize=2*audioCtx.sampleRate;
+        const buf=audioCtx.createBuffer(1,bufSize,audioCtx.sampleRate);
+        const data=buf.getChannelData(0);
+        for(let i=0;i<bufSize;i++) data[i]=(Math.random()*2-1);
+        const noise=audioCtx.createBufferSource();
+        noise.buffer=buf; noise.loop=true;
+        const noiseG=audioCtx.createGain(); noiseG.gain.value=0.012;
+        const noiseF=audioCtx.createBiquadFilter();
+        noiseF.type='lowpass'; noiseF.frequency.value=200;
+        noise.connect(noiseF); noiseF.connect(noiseG); noiseG.connect(audioCtx.destination);
+        noise.start();
+        audioPlaying=true;
+    } else if(audioPlaying){
+        audioCtx.suspend(); audioPlaying=false;
+    } else {
+        audioCtx.resume(); audioPlaying=true;
+    }
+    $('btn-sound').classList.toggle('active',audioPlaying);
+    $('btn-sound').innerHTML=audioPlaying?'&#128266;':'&#128264;';
+}
+$('btn-sound').addEventListener('click',toggleAmbient);
+</script>
+</body>
+</html>
