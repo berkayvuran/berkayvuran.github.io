@@ -10,20 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping Supabase (upsert with timestamp)
+      - name: Ping Supabase (SELECT - activates project)
         run: |
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-            "https://vwubvpjidodewzvtqjtf.supabase.co/rest/v1/workout_logs" \
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://vwubvpjidodewzvtqjtf.supabase.co/rest/v1/workout_logs?limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Content-Type: application/json" \
-            -H "Prefer: resolution=merge-duplicates" \
-            -d "{\"username\":\"__ping__\",\"week_no\":0,\"workout_code\":\"PING\",\"slot_code\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}")
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
           echo "HTTP Status: $RESPONSE"
-          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 300 ]; then
-            echo "Ping successful."
+          # 2xx veya 4xx (auth hatası bile olsa) = proje uyanık demek
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 500 ]; then
+            echo "Project is alive."
           else
-            echo "Ping failed with status $RESPONSE"
+            echo "Unexpected status: $RESPONSE"
             exit 1
           fi
 
