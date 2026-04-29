@@ -17,8 +17,8 @@ const tasks = [
     { id: 105, title: 'VPN kurulumu tamamlandı mı?', category: 'IT', points: 50, week: 1, difficulty: 'Kolay', link: 'https://sestek-my.sharepoint.com/my?id=%2Fpersonal%2Fberkay%5Fvuran%5Fsestek%5Fcom%2FDocuments%2FAttachments%2FSESTEK%20SSL%20VPN%20KURULUMU%2Epdf&parent=%2Fpersonal%2Fberkay%5Fvuran%5Fsestek%5Fcom%2FDocuments%2FAttachments&ga=1' },
     { id: 106, title: "TFS'te uygun grubun altına eklendi mi?", category: 'IT', points: 50, week: 1, difficulty: 'Kolay', link: 'https://tf-server.sestek.com.tr/tfs/Sestek' },
     { id: 107, title: "Smartsheet'te yetkiler tanımlandı mı?", category: 'IT', points: 75, week: 1, difficulty: 'Orta', link: 'https://app.smartsheet.com/b/home' },
-    { id: 108, title: "docs.knovvu'da editör yetkisi verildi mi?", category: 'IT', points: 50, week: 1, difficulty: 'Kolay', link: 'https://portal.document360.io/' },
-    { id: 109, title: "Knovvu Feedback'te editör yetkisi verildi mi?", category: 'IT', points: 50, week: 1, difficulty: 'Kolay', link: 'https://feedback.knovvu.com/' },
+    { id: 108, title: "docs.sestek'da editör yetkisi verildi mi?", category: 'IT', points: 50, week: 1, difficulty: 'Kolay', link: 'https://portal.document360.io/' },
+    { id: 109, title: "SESTEK Feedback'te editör yetkisi verildi mi?", category: 'IT', points: 50, week: 1, difficulty: 'Kolay', link: 'https://feedback.sestek.com/' },
     { id: 110, title: "Figma'da editör yetkisi verildi mi?", category: 'IT', points: 50, week: 1, difficulty: 'Kolay', link: 'https://www.figma.com/files/team/1349856567558419474/all-projects?fuid=1418209360007880033' },
     { id: 111, title: 'TFS bildirim ayarları aktarıldı mı?', category: 'IT', points: 50, week: 1, difficulty: 'Kolay', link: 'https://tf-server.sestek.com.tr/tfs/Sestek/_usersSettings/notifications' },
 
