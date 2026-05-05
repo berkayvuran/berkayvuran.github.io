@@ -189,8 +189,8 @@
     // 5 ana hareket: g1 grubu (3) + g2 grubu deadlift & row (2)
     const CHART_SLOTS = [
       { slotCode: 'G1_1', dayCode: '1', label: 'Chest Press',    color: '#1C6B4A' },
-      { slotCode: 'G2_1', dayCode: '2', label: 'Squat',          color: '#7C5800' },
-      { slotCode: 'G3_1', dayCode: '3', label: 'Shoulder Press', color: '#0061A4' },
+      { slotCode: 'G2_1', dayCode: '2', label: 'Leg Press',              color: '#7C5800' },
+      { slotCode: 'G3_1', dayCode: '3', label: 'Shoulder Press Machine', color: '#0061A4' },
       { slotCode: 'G1_3', dayCode: '1', label: 'Romanian DL',    color: '#B3261E' },
       { slotCode: 'G3_3', dayCode: '3', label: 'Barbell Row',    color: '#6750A4' },
     ];
@@ -201,24 +201,24 @@
       { slotCode:'G1_3', dayCode:'1', setsReps:'3x8',     incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:3, threshold:8  },
       { slotCode:'G1_4', dayCode:'1', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
       { slotCode:'G1_5', dayCode:'1', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
-      { slotCode:'G1_6', dayCode:'1', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
+      { slotCode:'G1_6', dayCode:'1', setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
       { slotCode:'G2_1', dayCode:'2', setsReps:'4x5+',    incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
       { slotCode:'G2_2', dayCode:'2', setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
       { slotCode:'G2_3', dayCode:'2', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
       { slotCode:'G2_4', dayCode:'2', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
       { slotCode:'G2_5', dayCode:'2', setsReps:'3x8-12',  incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:36 },
-      { slotCode:'G2_6', dayCode:'2', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
+      { slotCode:'G2_6', dayCode:'2', setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
       { slotCode:'G3_1', dayCode:'3', setsReps:'4x5+',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
-      { slotCode:'G3_2', dayCode:'3', setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
+      { slotCode:'G3_2', dayCode:'3', setsReps:'3x10',    incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
       { slotCode:'G3_3', dayCode:'3', setsReps:'4x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:10 },
       { slotCode:'G3_4', dayCode:'3', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
       { slotCode:'G3_5', dayCode:'3', setsReps:'3x8-12',  incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:36 },
-      { slotCode:'G3_6', dayCode:'3', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
+      { slotCode:'G3_6', dayCode:'3', setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
     ];
 
     function mround(val, mult) {
-      if (!Number.isFinite(val) || !mult) return null;
-      return Math.round(val / mult) * mult;
+      if (!Number.isFinite(val)) return null;
+      return Math.ceil(val / 5) * 5;
     }
     function setsCount(scheme) { return scheme?.startsWith('4x') ? 4 : 3; }
 
