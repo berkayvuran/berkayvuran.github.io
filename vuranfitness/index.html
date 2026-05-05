@@ -149,16 +149,30 @@
   }
 
   let _audioCtx = null;
+  function _ensureAudio() {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (_audioCtx.state === 'suspended') _audioCtx.resume();
+    return _audioCtx;
+  }
   function _beep(freq, duration, volume = 0.4) {
     try {
-      if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = _audioCtx.createOscillator();
-      const gain = _audioCtx.createGain();
-      osc.connect(gain); gain.connect(_audioCtx.destination);
+      const ctx = _ensureAudio();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
       osc.frequency.value = freq;
-      gain.gain.setValueAtTime(volume, _audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + duration);
-      osc.start(); osc.stop(_audioCtx.currentTime + duration);
+      gain.gain.setValueAtTime(volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.start(); osc.stop(ctx.currentTime + duration);
+    } catch(e) {}
+  }
+  function unlockAudio() {
+    // Tarayıcı ses kısıtlamasını kullanıcı etkileşimiyle kaldır
+    try {
+      const ctx = _ensureAudio();
+      const buf = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buf; src.connect(ctx.destination); src.start();
     } catch(e) {}
   }
   function playCountdownBeep() { _beep(880, 0.15); }
@@ -483,6 +497,7 @@
 
   // ── Session ──
   function startSession() {
+    unlockAudio();
     const week = state._week, dayCode = state._dayCode;
     const program = { ...state.program, username: state.username };
     const slots = byDay(dayCode);
