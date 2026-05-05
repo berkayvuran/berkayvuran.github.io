@@ -181,7 +181,8 @@
     leg_accessory:  ['Leg Extension', 'Dumbbell Lunges', 'Bulgarian Split Squat'],
     triceps:        ['Cable Pushdown', 'Overhead Triceps Extension', 'Skull Crushers'],
     biceps:         ['Incline Dumbbell Curl', 'Dumbbell Curl', 'Cable Curl'],
-    abs:            ['Crunch', 'Leg Raises', 'Plank']
+    abs:            ['Crunch', 'Leg Raises', 'Plank'],
+    hip_adductor:   ['Hip Adductor Machine', 'Cable Hip Adduction', 'Banded Hip Adduction']
   };
 
   const TEMPLATE_SLOTS = [
@@ -191,21 +192,21 @@
     { slotCode:'G1_3', dayCode:'1', group:'g2', family:'hinge',          setsReps:'3x8',     warmupSets:2, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:8,  rpe:8 },
     { slotCode:'G1_4', dayCode:'1', group:'g3', family:'vertical_pull',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42, rpe:8 },
     { slotCode:'G1_5', dayCode:'1', group:'g3', family:'leg_accessory',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42, rpe:9 },
-    { slotCode:'G1_6', dayCode:'1', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:9 },
+    { slotCode:'G1_6', dayCode:'1', group:'g4', family:'hip_adductor',   setsReps:'3x15',    warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:45, rpe:9 },
     // Gün 2
     { slotCode:'G2_1', dayCode:'2', group:'g1', family:'squat',          setsReps:'4x5+',    warmupSets:3, incrementKg:5,   isBodyweight:false, startFactor:0.7,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5,  rpe:8 },
     { slotCode:'G2_2', dayCode:'2', group:'g2', family:'chest_press',    setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10, rpe:8 },
     { slotCode:'G2_3', dayCode:'2', group:'g2', family:'vertical_pull',  setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:9 },
     { slotCode:'G2_4', dayCode:'2', group:'g3', family:'lateral_raise',  setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'total_reps', threshold:42, rpe:9 },
     { slotCode:'G2_5', dayCode:'2', group:'g4', family:'biceps',         setsReps:'3x8-12',  warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:36, rpe:9 },
-    { slotCode:'G2_6', dayCode:'2', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:9 },
+    { slotCode:'G2_6', dayCode:'2', group:'g4', family:'hip_adductor',   setsReps:'3x15',    warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:45, rpe:9 },
     // Gün 3
     { slotCode:'G3_1', dayCode:'3', group:'g1', family:'shoulder_press', setsReps:'4x5+',    warmupSets:3, incrementKg:2.5, isBodyweight:false, startFactor:0.7,  trackEstimated1RM:true,  progression:'last_set',   checkSet:4, threshold:5,  rpe:8 },
-    { slotCode:'G3_2', dayCode:'3', group:'g2', family:'squat',          setsReps:'3x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10, rpe:8 },
+    { slotCode:'G3_2', dayCode:'3', group:'g2', family:'squat',          setsReps:'3x10',    warmupSets:2, incrementKg:5,   isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:3, threshold:10, rpe:8 },
     { slotCode:'G3_3', dayCode:'3', group:'g2', family:'row',            setsReps:'4x10',    warmupSets:2, incrementKg:2.5, isBodyweight:false, startFactor:0.6,  trackEstimated1RM:false, progression:'last_set',   checkSet:4, threshold:10, rpe:8 },
     { slotCode:'G3_4', dayCode:'3', group:'g3', family:'chest_fly',      setsReps:'3x10-14', warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.65, trackEstimated1RM:false, progression:'total_reps', threshold:42, rpe:8 },
     { slotCode:'G3_5', dayCode:'3', group:'g4', family:'triceps',        setsReps:'3x8-12',  warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:36, rpe:9 },
-    { slotCode:'G3_6', dayCode:'3', group:'g4', family:'abs',            setsReps:'3xmax',   warmupSets:0, incrementKg:null,isBodyweight:true,  startFactor:null, trackEstimated1RM:false, progression:'none', rpe:9 },
+    { slotCode:'G3_6', dayCode:'3', group:'g4', family:'hip_adductor',   setsReps:'3x15',    warmupSets:0, incrementKg:5,   isBodyweight:false, startFactor:0.75, trackEstimated1RM:false, progression:'total_reps', threshold:45, rpe:9 },
     // Dinlenme
     { slotCode:'D1_1', dayCode:'D1', group:'g1', family:'squat',          setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G2_1', rpe:6 },
     { slotCode:'D1_2', dayCode:'D1', group:'g1', family:'chest_press',    setsReps:'3x5', warmupSets:0, incrementKg:null, isBodyweight:false, startFactor:null, trackEstimated1RM:false, progression:'none', deloadFromSlot:'G1_1', rpe:6 },
@@ -232,8 +233,8 @@
 
   // ── Helpers ──
   function mround(v, m) {
-    if (v == null || !Number.isFinite(v) || m === 0) return null;
-    return Math.round(v / m) * m;
+    if (v == null || !Number.isFinite(v)) return null;
+    return Math.ceil(v / 5) * 5;
   }
   function estimate1RM(w, r) {
     if (!w || !r) return null;
@@ -352,6 +353,50 @@
     return REST_SECONDS[group] || 60;
   }
 
+  // ── Migrations ──
+  async function runMigrations(program) {
+    if (!program?.setup_data?.selections) return program;
+    const selections = program.setup_data.selections;
+    let changed = false;
+
+    for (const sel of selections) {
+      const slot = TEMPLATE_SLOTS.find(s => s.slotCode === sel.slotCode);
+      if (slot?.family === 'squat' && sel.selectedExercise === 'Squat') {
+        sel.selectedExercise = 'Leg Press';
+        if (sel.initialWorkingWeight != null)
+          sel.initialWorkingWeight = Math.ceil((sel.initialWorkingWeight * 2) / 5) * 5;
+        changed = true;
+      }
+      if (sel.slotCode === 'G3_1' && sel.selectedExercise === 'Over Head Press') {
+        sel.selectedExercise = 'Shoulder Press Machine';
+        changed = true;
+      }
+    }
+
+    for (const [slotCode, dayCode] of [['G1_6','1'],['G2_6','2'],['G3_6','3']]) {
+      let sel = selections.find(s => s.slotCode === slotCode);
+      if (!sel) {
+        selections.push({ slotCode, dayCode, family: 'hip_adductor',
+          selectedExercise: 'Hip Adductor Machine', initialWorkingWeight: 25,
+          inputWeight: null, inputReps: null });
+        changed = true;
+      } else if (sel.selectedExercise !== 'Hip Adductor Machine' || sel.initialWorkingWeight == null) {
+        sel.selectedExercise = 'Hip Adductor Machine';
+        sel.family = 'hip_adductor';
+        if (sel.initialWorkingWeight == null) sel.initialWorkingWeight = 25;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      await supabase.from('programs').upsert(
+        { username: program.username, status: program.status, setup_data: program.setup_data },
+        { onConflict: 'username' }
+      );
+    }
+    return program;
+  }
+
   // ── Data ──
   async function loadData() {
     state.phase = 'loading';
@@ -362,7 +407,7 @@
     ]);
     if (pErr) { alert('Program yüklenemedi: ' + pErr.message); state.phase = 'identity'; render(); return; }
     if (lErr) { alert('Loglar yüklenemedi: ' + lErr.message); state.phase = 'identity'; render(); return; }
-    state.program = prog || null;
+    state.program = prog ? await runMigrations(prog) : null;
     state.logs = logs || [];
     if (state.program) {
       const { week, dayCode } = openDay({ ...state.program, username: state.username });
