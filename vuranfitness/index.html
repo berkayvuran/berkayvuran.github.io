@@ -387,6 +387,19 @@
       }
     }
 
+    // +10 kg leg press kalibrasyon düzeltmesi (bir kez çalışır)
+    if (!program.setup_data.migrations?.includes('legpress_plus10')) {
+      if (!program.setup_data.migrations) program.setup_data.migrations = [];
+      program.setup_data.migrations.push('legpress_plus10');
+      for (const sel of selections) {
+        const slot = TEMPLATE_SLOTS.find(s => s.slotCode === sel.slotCode);
+        if (slot?.family === 'squat' && sel.selectedExercise === 'Leg Press' && sel.initialWorkingWeight != null) {
+          sel.initialWorkingWeight = Math.ceil((sel.initialWorkingWeight + 10) / 5) * 5;
+        }
+      }
+      changed = true;
+    }
+
     for (const [slotCode, dayCode] of [['G1_6','1'],['G2_6','2'],['G3_6','3']]) {
       let sel = selections.find(s => s.slotCode === slotCode);
       if (!sel) {
