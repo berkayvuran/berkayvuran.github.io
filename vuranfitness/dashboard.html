@@ -188,11 +188,11 @@
 
     // 5 ana hareket: g1 grubu (3) + g2 grubu deadlift & row (2)
     const CHART_SLOTS = [
-      { slotCode: 'G1_1', dayCode: '1', label: 'Chest Press',    color: '#1C6B4A' },
-      { slotCode: 'G2_1', dayCode: '2', label: 'Leg Press',              color: '#7C5800' },
-      { slotCode: 'G3_1', dayCode: '3', label: 'Shoulder Press Machine', color: '#0061A4' },
-      { slotCode: 'G1_3', dayCode: '1', label: 'Romanian DL',    color: '#B3261E' },
-      { slotCode: 'G3_3', dayCode: '3', label: 'Barbell Row',    color: '#6750A4' },
+      { slotCode: 'G1_1', dayCode: '1', label: 'Chest Press',    color: '#1C6B4A', dash: [] },
+      { slotCode: 'G2_1', dayCode: '2', label: 'Leg Press',              color: '#7C5800', dash: [8, 4] },
+      { slotCode: 'G3_1', dayCode: '3', label: 'Shoulder Press Machine', color: '#0061A4', dash: [4, 4] },
+      { slotCode: 'G1_3', dayCode: '1', label: 'Romanian DL',    color: '#B3261E', dash: [12, 3, 3, 3] },
+      { slotCode: 'G3_3', dayCode: '3', label: 'Barbell Row',    color: '#6750A4', dash: [6, 3] },
     ];
 
     const TEMPLATE_SLOTS = [
@@ -301,6 +301,7 @@
         pointRadius: 5,
         pointHoverRadius: 7,
         borderWidth: 2.5,
+        borderDash: ex.dash || [],
         tension: 0.3,
         spanGaps: false,
       }));
@@ -372,12 +373,16 @@
           const exRows = dayLogs.map(log => {
             const exName = getSlotSelection(log.slot_code)?.selectedExercise || log.slot_code;
             const reps = Array.isArray(log.reps) ? log.reps : [];
+            const kg = getWeightAtWeek(log.slot_code, week);
+            const kgHtml = kg != null
+              ? `<span style="font-size:11px; font-weight:800; color:var(--muted); background:rgba(0,0,0,.06); border-radius:5px; padding:1px 6px; margin-right:4px; white-space:nowrap;">${kg} kg</span>`
+              : '';
             return `
               <div class="ex-row">
                 <div class="ex-name">${esc(exName)}</div>
                 <div>
-                  <div class="reps-chips">
-                    ${reps.map(r => `<span class="rep-chip">${r}</span>`).join('')}
+                  <div class="reps-chips" style="align-items:center;">
+                    ${kgHtml}${reps.map(r => `<span class="rep-chip">${r}</span>`).join('')}
                   </div>
                   ${log.notes ? `<div class="note-text">💬 ${esc(log.notes)}</div>` : ''}
                 </div>
@@ -412,7 +417,24 @@
       }).join('');
     }
 
+    // Precomputed weight series per slot: { slotCode: [w1, w2, ...] }
+    let weightSeriesCache = {};
+
+    function buildWeightCache() {
+      weightSeriesCache = {};
+      for (const slot of TEMPLATE_SLOTS) {
+        weightSeriesCache[slot.slotCode] = computeWeightSeries(slot.slotCode);
+      }
+    }
+
+    function getWeightAtWeek(slotCode, weekNo) {
+      const series = weightSeriesCache[slotCode];
+      if (!series) return null;
+      return series[weekNo - 1] ?? null;
+    }
+
     function render() {
+      buildWeightCache();
       const root = document.getElementById('root');
 
       const togglesHtml = CHART_SLOTS.map((ex, i) => `
