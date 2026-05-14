@@ -259,14 +259,6 @@
       const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
       if (!slot || slot.isBodyweight) return Array(12).fill(null);
 
-      // boksimoron + G3_1 için sabit kalibrasyon: 52.5'ten +2.5 (hafta 6=65)
-      if (state.username === 'boksimoron' && slotCode === 'G3_1') {
-        return Array.from({ length: 12 }, (_, i) => {
-          const log = getLog(i + 1, slot.dayCode, slotCode);
-          return log ? 52.5 + i * 2.5 : null;
-        });
-      }
-
       let current = sel.initialWorkingWeight ?? null;
       if (current == null) return Array(12).fill(null);
 
@@ -380,13 +372,10 @@
           const exRows = dayLogs.map(log => {
             const exName = getSlotSelection(log.slot_code)?.selectedExercise || log.slot_code;
             const reps = Array.isArray(log.reps) ? log.reps : [];
-            const weightSeries = computeWeightSeries(log.slot_code);
-            const w = weightSeries[week - 1];
             return `
               <div class="ex-row">
                 <div class="ex-name">${esc(exName)}</div>
                 <div>
-                  ${w != null ? `<div style="font-size:12px; font-weight:700; color:var(--muted); margin-bottom:4px;">${w} kg</div>` : ''}
                   <div class="reps-chips">
                     ${reps.map(r => `<span class="rep-chip">${r}</span>`).join('')}
                   </div>
@@ -485,20 +474,6 @@
         ]);
         state.program = prog;
         state.logs = logs || [];
-
-        // FORCE: G3_1 boksimoron için her zaman 52.5 + hafta 1-5 [5,5,5,5] backfill.
-        if (state.username === 'boksimoron' && state.program) {
-          const sel = state.program.setup_data?.selections?.find(s => s.slotCode === 'G3_1');
-          if (sel) sel.initialWorkingWeight = 52.5;
-          const futureG3 = state.logs.filter(l => l.slot_code === 'G3_1' && l.week_no >= 6);
-          state.logs = state.logs.filter(l => l.slot_code !== 'G3_1');
-          for (let w = 1; w <= 5; w++) {
-            state.logs.push({ username: 'boksimoron', week_no: w, workout_code: '3',
-              slot_code: 'G3_1', reps: [5,5,5,5] });
-          }
-          state.logs.push(...futureG3);
-        }
-
         render();
       } catch (err) {
         document.getElementById('root').innerHTML =

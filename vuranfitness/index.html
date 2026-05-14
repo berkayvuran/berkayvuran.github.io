@@ -4,9 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
   <meta name="theme-color" content="#1C6B4A"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-  <meta http-equiv="Pragma" content="no-cache"/>
-  <meta http-equiv="Expires" content="0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -29,20 +26,20 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
-    #root { max-width: 480px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
-    .screen { flex: 1; display: flex; flex-direction: column; padding: 14px 14px 24px; }
-    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+    .screen { flex: 1; display: flex; flex-direction: column; padding: 20px 16px 32px; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     .app-title { font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
     .progress-wrap { background: var(--surface2); border-radius: 999px; height: 4px; margin-bottom: 6px; overflow: hidden; }
     .progress-bar { height: 4px; border-radius: 999px; background: var(--accent); transition: width .4s ease; }
     .progress-label { font-size: 12px; color: var(--muted); text-align: right; margin-bottom: 18px; }
-    .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 18px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-    .h1 { font-size: 24px; font-weight: 900; line-height: 1.2; }
-    .h2 { font-size: 20px; font-weight: 800; line-height: 1.2; }
-    .h3 { font-size: 14px; font-weight: 800; }
-    .caption { font-size: 12px; color: var(--muted); }
-    .big-num { font-size: 48px; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
-    .btn { width: 100%; padding: 15px; border-radius: 14px; border: none; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit; transition: opacity .15s, transform .1s; }
+    .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .h1 { font-size: 28px; font-weight: 900; line-height: 1.2; }
+    .h2 { font-size: 22px; font-weight: 800; line-height: 1.2; }
+    .h3 { font-size: 15px; font-weight: 800; }
+    .caption { font-size: 13px; color: var(--muted); }
+    .big-num { font-size: 60px; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
+    .btn { width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 17px; font-weight: 800; cursor: pointer; font-family: inherit; transition: opacity .15s, transform .1s; }
     .btn:active { opacity: .75; transform: scale(.97); }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
@@ -67,11 +64,11 @@
     .ex-item-name { font-weight: 700; font-size: 15px; }
     .ex-item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .ex-item-alts { font-size: 11px; color: var(--muted); opacity: .65; margin-top: 3px; }
-    .set-dots { display: flex; gap: 8px; justify-content: center; margin: 14px 0; }
-    .set-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all .2s; }
+    .set-dots { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+    .set-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all .2s; }
     .set-dot.done { background: var(--accent); border-color: var(--accent); }
     .set-dot.current { background: transparent; border-color: var(--accent); border-width: 3px; box-shadow: 0 0 0 3px var(--accent-dim); }
-    .rep-input { font-size: 54px; font-weight: 900; width: 140px; text-align: center; background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 10px; color: var(--text); font-family: inherit; -moz-appearance: textfield; display: block; margin: 0 auto; }
+    .rep-input { font-size: 72px; font-weight: 900; width: 180px; text-align: center; background: var(--surface2); border: 2px solid var(--border); border-radius: 20px; padding: 16px; color: var(--text); font-family: inherit; -moz-appearance: textfield; display: block; margin: 0 auto; }
     .rep-input:focus { border-color: var(--accent); }
     .rep-input::-webkit-inner-spin-button, .rep-input::-webkit-outer-spin-button { -webkit-appearance: none; }
     .divider { border-top: 1px solid var(--border); margin: 14px 0; }
@@ -90,23 +87,6 @@
     @keyframes fade-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
     .fade-in { animation: fade-in .22s cubic-bezier(.25,.46,.45,.94); }
     ::-webkit-scrollbar { display: none; } * { scrollbar-width: none; }
-    /* iPhone 13 mini ve küçük ekranlar için kompakt mod (max-width 390 = iPhone 13 mini/13/14) */
-    @media (max-width: 400px), (max-height: 740px) {
-      .screen { padding: 10px 12px 16px; }
-      .card { padding: 12px 14px; margin-bottom: 8px; border-radius: 14px; }
-      .header { margin-bottom: 8px; }
-      .h1 { font-size: 22px; }
-      .h2 { font-size: 18px; }
-      .big-num { font-size: 44px; }
-      .rep-input { font-size: 54px; width: 140px; padding: 8px; border-radius: 14px; }
-      .set-dots { margin: 10px 0; }
-      .set-dot { width: 10px; height: 10px; }
-      .progress-label { margin-bottom: 8px; }
-      .ex-item { padding: 10px 0; }
-      .ex-item-name { font-size: 14px; }
-      .ex-item-sub { font-size: 11px; }
-      .ex-item-alts { font-size: 10px; }
-    }
   </style>
 </head>
 <body>
@@ -117,7 +97,7 @@
   const SUPABASE_URL = 'https://vwubvpjidodewzvtqjtf.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_Pyhx-5-wLHw199bcT6URCA_O2Xu6QQY';
   const MASTER_PASSWORD = 'Nakama123!';
-  const ACTIVE_USER = 'boksimoron';
+  const ALLOWED_USERS = ['nakama', 'boksimoron'];
   const REST_SECONDS = { g1: 120, g2: 90, g3: 60, g4: 60 };
   const WARMUP_REST_SECONDS = 30;
 
@@ -333,10 +313,6 @@
     return cur;
   }
   function prevWeight(program, slotCode, weekNo) {
-    // boksimoron + G3_1 için sabit kalibrasyon: hafta 1=52.5, sonra her hafta +2.5 (hafta 6=65)
-    if (program?.username === 'boksimoron' && slotCode === 'G3_1') {
-      return 52.5 + (weekNo - 1) * 2.5;
-    }
     const sel = getSel(program, slotCode);
     if (!sel) return null;
     const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
@@ -439,34 +415,6 @@
       }
     }
 
-    // G3_1 shoulder press: prevWeight override ile kalibre edildi, migration kaldırıldı.
-    // Hafta 1-5 backfill yalnızca bir kez yapılır.
-    if (program.username === 'boksimoron' && !program.setup_data.migrations?.includes('g3_1_backfill_once')) {
-      if (!program.setup_data.migrations) program.setup_data.migrations = [];
-      program.setup_data.migrations.push('g3_1_backfill_once');
-      const { data: g3Logs } = await supabase.from('workout_logs')
-        .select('week_no, reps').eq('username', program.username).eq('slot_code', 'G3_1');
-      const have = (g3Logs || []).filter(l => l.week_no >= 1 && l.week_no <= 5).length;
-      if (have < 5) {
-        const rows = [1,2,3,4,5].map(w => ({
-          username: program.username, week_no: w, workout_code: '3',
-          slot_code: 'G3_1', reps: [5,5,5,5]
-        }));
-        await supabase.from('workout_logs').upsert(rows,
-          { onConflict: 'username,week_no,workout_code,slot_code' });
-      }
-      changed = true;
-    }
-
-    // nakama kullanıcısının tüm verilerini sil
-    if (!program.setup_data.migrations?.includes('remove_nakama_v1')) {
-      if (!program.setup_data.migrations) program.setup_data.migrations = [];
-      program.setup_data.migrations.push('remove_nakama_v1');
-      await supabase.from('workout_logs').delete().eq('username', 'nakama');
-      await supabase.from('programs').delete().eq('username', 'nakama');
-      changed = true;
-    }
-
     if (changed) {
       await supabase.from('programs').upsert(
         { username: program.username, status: program.status, setup_data: program.setup_data },
@@ -484,29 +432,10 @@
       supabase.from('programs').select('*').eq('username', state.username).maybeSingle(),
       supabase.from('workout_logs').select('*').eq('username', state.username).order('week_no')
     ]);
-    if (pErr) { alert('Program yüklenemedi: ' + pErr.message); state.phase = 'gate'; render(); return; }
-    if (lErr) { alert('Loglar yüklenemedi: ' + lErr.message); state.phase = 'gate'; render(); return; }
+    if (pErr) { alert('Program yüklenemedi: ' + pErr.message); state.phase = 'identity'; render(); return; }
+    if (lErr) { alert('Loglar yüklenemedi: ' + lErr.message); state.phase = 'identity'; render(); return; }
     state.program = prog ? await runMigrations(prog) : null;
-    // Migration sonrası logları yeniden çek (silme/insert sonrası bellek bayat olmasın)
-    const { data: freshLogs } = await supabase.from('workout_logs')
-      .select('*').eq('username', state.username).order('week_no');
-    state.logs = freshLogs || logs || [];
-
-    // FORCE: G3_1 boksimoron için her zaman 52.5 + hafta 1-5 [5,5,5,5] backfill.
-    // DB ne durumda olursa olsun bellekte zorla doğru duruma getir.
-    // Hafta 6+ logları korunur.
-    if (state.username === 'boksimoron' && state.program) {
-      const sel = state.program.setup_data?.selections?.find(s => s.slotCode === 'G3_1');
-      if (sel) sel.initialWorkingWeight = 52.5;
-      const futureG3 = state.logs.filter(l => l.slot_code === 'G3_1' && l.week_no >= 6);
-      state.logs = state.logs.filter(l => l.slot_code !== 'G3_1');
-      for (let w = 1; w <= 5; w++) {
-        state.logs.push({ username: 'boksimoron', week_no: w, workout_code: '3',
-          slot_code: 'G3_1', reps: [5,5,5,5] });
-      }
-      state.logs.push(...futureG3);
-    }
-
+    state.logs = logs || [];
     if (state.program) {
       const { week, dayCode } = openDay({ ...state.program, username: state.username });
       state._week = week;
@@ -711,6 +640,7 @@
     stopRest();
     switch (state.phase) {
       case 'gate':     return renderGate();
+      case 'identity': return renderIdentity();
       case 'loading':  return renderLoading();
       case 'setup':    return renderSetup();
       case 'home':     return renderHome();
@@ -735,15 +665,14 @@
           <button class="btn btn-primary" type="submit">Giriş Yap</button>
         </form>
       </div>`;
-    document.getElementById('gateForm').onsubmit = async e => {
+    document.getElementById('gateForm').onsubmit = e => {
       e.preventDefault();
       const v = document.getElementById('pw').value;
       if (v === MASTER_PASSWORD) {
         localStorage.setItem('vaft_gate','true');
-        localStorage.setItem('vaft_user', ACTIVE_USER);
         state.gatePassed = true;
-        state.username = ACTIVE_USER;
-        await loadData();
+        state.phase = 'identity';
+        render();
       } else {
         const inp = document.getElementById('pw');
         inp.style.borderColor = 'var(--danger)';
@@ -751,6 +680,35 @@
         inp.placeholder = 'Yanlış şifre, tekrar dene';
         setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = '••••••••'; }, 2000);
       }
+    };
+  }
+
+  function renderIdentity() {
+    root.innerHTML = `
+      <div class="screen fade-in" style="justify-content:center;">
+        <div style="text-align:center; margin-bottom:40px;">
+          <div class="app-title" style="margin-bottom:8px;">Vuran Ailesi Fitness Takip</div>
+          <div class="h2">Kim antrenman yapıyor?</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <button class="btn btn-secondary" id="u-nakama" style="font-size:20px; padding:22px; letter-spacing:.02em;">nakama</button>
+          <button class="btn btn-secondary" id="u-boksimoron" style="font-size:20px; padding:22px; letter-spacing:.02em;">boksimoron</button>
+        </div>
+        <div style="height:20px;"></div>
+        <button class="btn btn-ghost" id="backBtn">← Şifre Ekranına Dön</button>
+      </div>`;
+    for (const name of ALLOWED_USERS) {
+      document.getElementById(`u-${name}`).onclick = async () => {
+        localStorage.setItem('vaft_user', name);
+        state.username = name;
+        await loadData();
+      };
+    }
+    document.getElementById('backBtn').onclick = () => {
+      localStorage.removeItem('vaft_gate');
+      state.gatePassed = false;
+      state.phase = 'gate';
+      render();
     };
   }
 
@@ -821,6 +779,9 @@
           </button>
         </div>
 
+        <div class="bottom">
+          <button class="btn btn-ghost" id="logoutBtn">Kullanıcıyı Değiştir</button>
+        </div>
       </div>`;
 
     if (!hasMissing) document.getElementById('goWorkoutBtn').onclick = () => { state.phase = 'overview'; render(); };
@@ -829,6 +790,7 @@
       localStorage.setItem('superhero_username', state.username);
       window.location.href = 'dashboard.html';
     };
+    document.getElementById('logoutBtn').onclick = handleLogout;
     document.getElementById('menuBtn').onclick = showMenu;
     const fixBtn = document.getElementById('fixMissingBtn');
     if (fixBtn) fixBtn.onclick = renderSettingsOverlay;
@@ -997,18 +959,6 @@
             ${warmups.length ? `<span class="pill">${warmups.length} ısınma seti</span>` : ''}
             ${slot.incrementKg ? `<span class="pill">+${slot.incrementKg} kg/hafta</span>` : ''}
           </div>
-          ${(() => {
-            if (state._week <= 1) return '';
-            const prevLog = getLog(state.username, state._week - 1, slot.dayCode, slot.slotCode);
-            if (!prevLog || !Array.isArray(prevLog.reps) || !prevLog.reps.length) return '';
-            const prevW = computedWeight({ ...state.program, username: state.username }, slot.slotCode, state._week - 1);
-            return `
-              <div style="margin-top:14px; padding:10px 14px; background:var(--surface2); border-radius:12px;">
-                <div class="caption" style="margin-bottom:6px;">GEÇEN HAFTA</div>
-                ${prevW != null ? `<span style="font-size:13px; font-weight:700; color:var(--muted); margin-right:8px;">${prevW} kg</span>` : ''}
-                ${prevLog.reps.map((r,i) => `<span class="pill" style="font-size:11px;">Set ${i+1}: ${r}</span>`).join('')}
-              </div>`;
-          })()}
         </div>
         ${warmups.length ? `
           <div class="card">
@@ -1055,49 +1005,38 @@
             <span class="caption">Set ${prevDone+1} / ${setCount}</span>
             ${workingGif ? `<button onclick="toggleExGif()" id="gifToggleBtn" style="margin-left:auto; background:var(--surface2); border:1.5px solid var(--border); border-radius:8px; padding:3px 10px; font-size:11px; font-weight:700; color:var(--muted); cursor:pointer; font-family:inherit;">🎬 Göster</button>` : ''}
           </div>
-          ${workingGif ? `<div id="exGifWrap" style="display:none; text-align:center; margin-bottom:10px; border-radius:12px; overflow:hidden; background:var(--surface2);"><img src="exercise-gifs/${workingGif}" alt="${esc(exName)}" style="width:100%; max-height:140px; object-fit:contain; display:block;"/></div>` : ''}
-          <div class="h2" style="color:${gc}; margin-bottom:${exChanged ? '2px' : '8px'};">${esc(exName)}</div>
-          ${exChanged ? `<div style="font-size:11px; color:#fbbf24; margin-bottom:6px;">↩ ${esc(plannedExName)} yerine</div>` : ''}
-          <div style="display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px;">
-            ${!slot.isBodyweight && weight != null ? `
-              <div style="display:flex; align-items:baseline; gap:3px;">
-                <span style="font-size:32px; font-weight:900;">${weight}</span>
-                <span style="font-size:13px; color:var(--muted);">kg</span>
-              </div>` : `<div style="color:var(--muted); font-size:14px;">Vücut ağırlığı</div>`}
-            <div><span class="caption">HEDEF </span><span style="font-size:16px; font-weight:800; color:var(--accent);">${slot.isBodyweight ? 'max' : esc(targetReps)}</span></div>
-            ${slot.rpe != null ? `<span style="font-size:13px; font-weight:900; color:${rpeColor(slot.rpe)}; padding:2px 8px; background:${rpeColor(slot.rpe)}18; border-radius:6px;">RPE ${slot.rpe}</span>` : ''}
-          </div>
+          ${workingGif ? `<div id="exGifWrap" style="display:none; text-align:center; margin-bottom:12px; border-radius:12px; overflow:hidden; background:var(--surface2);"><img src="exercise-gifs/${workingGif}" alt="${esc(exName)}" style="width:100%; max-height:180px; object-fit:contain; display:block;"/></div>` : ''}
+          <div class="h2" style="color:${gc}; margin-bottom:${exChanged ? '4px' : '14px'};">${esc(exName)}</div>
+          ${exChanged ? `<div style="font-size:11px; color:#fbbf24; margin-bottom:10px;">↩ ${esc(plannedExName)} yerine</div>` : ''}
+          ${!slot.isBodyweight && weight != null ? `
+            <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:10px;">
+              <span style="font-size:44px; font-weight:900;">${weight}</span>
+              <span style="font-size:18px; color:var(--muted);">kg</span>
+            </div>` : `<div style="margin-bottom:10px; color:var(--muted);">Vücut ağırlığı</div>`}
+          <div style="margin-bottom:6px;"><span class="caption">HEDEF </span><span style="font-size:20px; font-weight:800; color:var(--accent);">${slot.isBodyweight ? 'maksimum' : esc(targetReps)} tekrar</span></div>
+          ${slot.rpe != null ? `
+          <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.06em;">RPE</span>
+            <span style="font-size:17px; font-weight:900; color:${rpeColor(slot.rpe)}; padding:2px 10px; background:${rpeColor(slot.rpe)}18; border-radius:8px;">${slot.rpe}</span>
+            <span style="font-size:12px; color:${rpeColor(slot.rpe)};">${rpeDesc(slot.rpe)}</span>
+          </div>` : ''}
           <div class="set-dots">
             ${Array.from({length:setCount}).map((_,i) => `
               <div class="set-dot ${i < prevDone ? 'done' : i === prevDone ? 'current' : ''}"></div>`).join('')}
           </div>
         </div>
-        <div class="card" style="text-align:center; padding:10px;">
-          <div class="caption" style="margin-bottom:8px;">KAÇ TEKRAR YAPTIN?</div>
+        <div class="card" style="text-align:center;">
+          <div class="caption" style="margin-bottom:14px;">KAÇ TEKRAR YAPTIN?</div>
           <input class="rep-input" type="number" id="repInput" min="0" max="99" step="1"
             value="${doneReps[prevDone] ?? ''}" inputmode="numeric" autofocus/>
         </div>
-        ${(() => {
-          const prevLog = state._week > 1
-            ? getLog(state.username, state._week - 1, slot.dayCode, slot.slotCode) : null;
-          const hasPrev = prevLog && Array.isArray(prevLog.reps) && prevLog.reps.length;
-          const prevW = hasPrev
-            ? computedWeight({ ...state.program, username: state.username }, slot.slotCode, state._week - 1) : null;
-          if (prevDone === 0 && !hasPrev) return '';
-          return `
-            <div class="card" style="padding:10px 14px;">
-              ${prevDone > 0 ? `
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                  <span class="caption" style="font-size:11px;">BU SET:</span>
-                  ${doneReps.slice(0, prevDone).map((r,i) => `<span class="pill accent" style="font-size:11px; padding:3px 8px;">${i+1}: ${r}</span>`).join('')}
-                </div>` : ''}
-              ${hasPrev ? `
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; ${prevDone > 0 ? 'margin-top:6px; padding-top:6px; border-top:1px solid var(--border);' : ''}">
-                  <span class="caption" style="font-size:11px;">GEÇEN HAFTA${prevW != null ? ` · ${prevW}kg` : ''}:</span>
-                  ${prevLog.reps.map((r,i) => `<span class="pill" style="font-size:11px; padding:3px 8px;">${i+1}: ${r}</span>`).join('')}
-                </div>` : ''}
-            </div>`;
-        })()}`;
+        ${prevDone > 0 ? `
+          <div class="card" style="padding:12px 16px;">
+            <div class="caption" style="margin-bottom:8px;">ÖNCEKİ SETLER</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              ${doneReps.slice(0, prevDone).map((r,i) => `<span class="pill accent">Set ${i+1}: ${r}</span>`).join('')}
+            </div>
+          </div>` : ''}`;
     }
 
     else if (subPhase === 'rest') {
@@ -1501,10 +1440,8 @@
   function handleLogout() {
     stopRest();
     localStorage.removeItem('vaft_user');
-    localStorage.removeItem('vaft_gate');
     state.username = ''; state.program = null; state.logs = []; state.session = null;
-    state.gatePassed = false;
-    state.phase = 'gate';
+    state.phase = 'identity';
     render();
   }
 
@@ -1521,14 +1458,9 @@
 
   // ── Init ──
   async function init() {
-    if (state.gatePassed) {
-      state.username = ACTIVE_USER;
-      localStorage.setItem('vaft_user', ACTIVE_USER);
-      await loadData();
-    } else {
-      state.phase = 'gate';
-      render();
-    }
+    if (state.gatePassed && state.username) { await loadData(); }
+    else if (state.gatePassed) { state.phase = 'identity'; render(); }
+    else { state.phase = 'gate'; render(); }
   }
 
   init();
