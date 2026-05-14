@@ -26,20 +26,20 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
-    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-    .screen { flex: 1; display: flex; flex-direction: column; padding: 20px 16px 32px; }
-    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
+    .screen { flex: 1; display: flex; flex-direction: column; padding: 14px 14px 24px; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .app-title { font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
     .progress-wrap { background: var(--surface2); border-radius: 999px; height: 4px; margin-bottom: 6px; overflow: hidden; }
     .progress-bar { height: 4px; border-radius: 999px; background: var(--accent); transition: width .4s ease; }
     .progress-label { font-size: 12px; color: var(--muted); text-align: right; margin-bottom: 18px; }
-    .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-    .h1 { font-size: 28px; font-weight: 900; line-height: 1.2; }
-    .h2 { font-size: 22px; font-weight: 800; line-height: 1.2; }
-    .h3 { font-size: 15px; font-weight: 800; }
-    .caption { font-size: 13px; color: var(--muted); }
-    .big-num { font-size: 60px; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
-    .btn { width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 17px; font-weight: 800; cursor: pointer; font-family: inherit; transition: opacity .15s, transform .1s; }
+    .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 18px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .h1 { font-size: 24px; font-weight: 900; line-height: 1.2; }
+    .h2 { font-size: 20px; font-weight: 800; line-height: 1.2; }
+    .h3 { font-size: 14px; font-weight: 800; }
+    .caption { font-size: 12px; color: var(--muted); }
+    .big-num { font-size: 48px; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
+    .btn { width: 100%; padding: 15px; border-radius: 14px; border: none; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit; transition: opacity .15s, transform .1s; }
     .btn:active { opacity: .75; transform: scale(.97); }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
@@ -64,11 +64,11 @@
     .ex-item-name { font-weight: 700; font-size: 15px; }
     .ex-item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .ex-item-alts { font-size: 11px; color: var(--muted); opacity: .65; margin-top: 3px; }
-    .set-dots { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
-    .set-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all .2s; }
+    .set-dots { display: flex; gap: 8px; justify-content: center; margin: 14px 0; }
+    .set-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all .2s; }
     .set-dot.done { background: var(--accent); border-color: var(--accent); }
     .set-dot.current { background: transparent; border-color: var(--accent); border-width: 3px; box-shadow: 0 0 0 3px var(--accent-dim); }
-    .rep-input { font-size: 72px; font-weight: 900; width: 180px; text-align: center; background: var(--surface2); border: 2px solid var(--border); border-radius: 20px; padding: 16px; color: var(--text); font-family: inherit; -moz-appearance: textfield; display: block; margin: 0 auto; }
+    .rep-input { font-size: 54px; font-weight: 900; width: 140px; text-align: center; background: var(--surface2); border: 2px solid var(--border); border-radius: 16px; padding: 10px; color: var(--text); font-family: inherit; -moz-appearance: textfield; display: block; margin: 0 auto; }
     .rep-input:focus { border-color: var(--accent); }
     .rep-input::-webkit-inner-spin-button, .rep-input::-webkit-outer-spin-button { -webkit-appearance: none; }
     .divider { border-top: 1px solid var(--border); margin: 14px 0; }
@@ -87,6 +87,19 @@
     @keyframes fade-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
     .fade-in { animation: fade-in .22s cubic-bezier(.25,.46,.45,.94); }
     ::-webkit-scrollbar { display: none; } * { scrollbar-width: none; }
+    /* iPhone 13 mini ve küçük ekranlar için kompakt mod */
+    @media (max-height: 740px) {
+      .screen { padding: 12px 14px 16px; }
+      .card { padding: 14px; margin-bottom: 8px; border-radius: 16px; }
+      .header { margin-bottom: 10px; }
+      .h1 { font-size: 24px; }
+      .h2 { font-size: 19px; }
+      .big-num { font-size: 48px; }
+      .rep-input { font-size: 56px; width: 150px; padding: 10px; border-radius: 16px; }
+      .set-dots { margin: 12px 0; }
+      .set-dot { width: 11px; height: 11px; }
+      .progress-label { margin-bottom: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -97,7 +110,7 @@
   const SUPABASE_URL = 'https://vwubvpjidodewzvtqjtf.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_Pyhx-5-wLHw199bcT6URCA_O2Xu6QQY';
   const MASTER_PASSWORD = 'Nakama123!';
-  const ALLOWED_USERS = ['nakama', 'boksimoron'];
+  const ACTIVE_USER = 'boksimoron';
   const REST_SECONDS = { g1: 120, g2: 90, g3: 60, g4: 60 };
   const WARMUP_REST_SECONDS = 30;
 
@@ -415,21 +428,39 @@
       }
     }
 
-    // G3_1 shoulder press kalibrasyon v3: tüm loglar silinir, 52.5'ten başlatılır,
-    // hafta 1-5 backfill ile week 6'da tam 65 kg hedeflenir (bir kez çalışır)
-    if (!program.setup_data.migrations?.includes('shoulder_g3_calibration_v3')) {
-      if (!program.setup_data.migrations) program.setup_data.migrations = [];
-      program.setup_data.migrations.push('shoulder_g3_calibration_v3');
+    // G3_1 shoulder press kalibrasyon: initialWorkingWeight=52.5,
+    // hafta 1-5 backfill [5,5,5,5] → hafta 6'da 65 kg.
+    // Idempotent: doğru durumda olana kadar her seferde tekrar uygular.
+    if (program.username === 'boksimoron') {
       const g3sel = selections.find(s => s.slotCode === 'G3_1');
-      if (g3sel) g3sel.initialWorkingWeight = 52.5;
-      // Önce tümünü sil, sonra backfill ekle
-      await supabase.from('workout_logs').delete()
-        .eq('username', program.username).eq('slot_code', 'G3_1');
-      const backfill = [1,2,3,4,5].map(w => ({
-        username: program.username, week_no: w, workout_code: '3',
-        slot_code: 'G3_1', reps: [5,5,5,5]
-      }));
-      await supabase.from('workout_logs').insert(backfill);
+      if (g3sel && g3sel.initialWorkingWeight !== 52.5) {
+        g3sel.initialWorkingWeight = 52.5;
+        changed = true;
+      }
+      const { data: g3Logs } = await supabase.from('workout_logs')
+        .select('week_no, reps').eq('username', program.username).eq('slot_code', 'G3_1');
+      const need = [1,2,3,4,5];
+      const have = (g3Logs || []).filter(l => need.includes(l.week_no)
+        && Array.isArray(l.reps) && l.reps.length === 4 && l.reps.every(r => r === 5));
+      const extras = (g3Logs || []).filter(l => l.week_no >= 6);
+      if (have.length !== 5 || extras.length > 0) {
+        await supabase.from('workout_logs').delete()
+          .eq('username', program.username).eq('slot_code', 'G3_1');
+        const rows = need.map(w => ({
+          username: program.username, week_no: w, workout_code: '3',
+          slot_code: 'G3_1', reps: [5,5,5,5]
+        }));
+        await supabase.from('workout_logs').insert(rows);
+        changed = true;
+      }
+    }
+
+    // nakama kullanıcısının tüm verilerini sil
+    if (!program.setup_data.migrations?.includes('remove_nakama_v1')) {
+      if (!program.setup_data.migrations) program.setup_data.migrations = [];
+      program.setup_data.migrations.push('remove_nakama_v1');
+      await supabase.from('workout_logs').delete().eq('username', 'nakama');
+      await supabase.from('programs').delete().eq('username', 'nakama');
       changed = true;
     }
 
@@ -450,10 +481,13 @@
       supabase.from('programs').select('*').eq('username', state.username).maybeSingle(),
       supabase.from('workout_logs').select('*').eq('username', state.username).order('week_no')
     ]);
-    if (pErr) { alert('Program yüklenemedi: ' + pErr.message); state.phase = 'identity'; render(); return; }
-    if (lErr) { alert('Loglar yüklenemedi: ' + lErr.message); state.phase = 'identity'; render(); return; }
+    if (pErr) { alert('Program yüklenemedi: ' + pErr.message); state.phase = 'gate'; render(); return; }
+    if (lErr) { alert('Loglar yüklenemedi: ' + lErr.message); state.phase = 'gate'; render(); return; }
     state.program = prog ? await runMigrations(prog) : null;
-    state.logs = logs || [];
+    // Migration sonrası logları yeniden çek (silme/insert sonrası bellek bayat olmasın)
+    const { data: freshLogs } = await supabase.from('workout_logs')
+      .select('*').eq('username', state.username).order('week_no');
+    state.logs = freshLogs || logs || [];
     if (state.program) {
       const { week, dayCode } = openDay({ ...state.program, username: state.username });
       state._week = week;
@@ -658,7 +692,6 @@
     stopRest();
     switch (state.phase) {
       case 'gate':     return renderGate();
-      case 'identity': return renderIdentity();
       case 'loading':  return renderLoading();
       case 'setup':    return renderSetup();
       case 'home':     return renderHome();
@@ -683,14 +716,15 @@
           <button class="btn btn-primary" type="submit">Giriş Yap</button>
         </form>
       </div>`;
-    document.getElementById('gateForm').onsubmit = e => {
+    document.getElementById('gateForm').onsubmit = async e => {
       e.preventDefault();
       const v = document.getElementById('pw').value;
       if (v === MASTER_PASSWORD) {
         localStorage.setItem('vaft_gate','true');
+        localStorage.setItem('vaft_user', ACTIVE_USER);
         state.gatePassed = true;
-        state.phase = 'identity';
-        render();
+        state.username = ACTIVE_USER;
+        await loadData();
       } else {
         const inp = document.getElementById('pw');
         inp.style.borderColor = 'var(--danger)';
@@ -698,35 +732,6 @@
         inp.placeholder = 'Yanlış şifre, tekrar dene';
         setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = '••••••••'; }, 2000);
       }
-    };
-  }
-
-  function renderIdentity() {
-    root.innerHTML = `
-      <div class="screen fade-in" style="justify-content:center;">
-        <div style="text-align:center; margin-bottom:40px;">
-          <div class="app-title" style="margin-bottom:8px;">Vuran Ailesi Fitness Takip</div>
-          <div class="h2">Kim antrenman yapıyor?</div>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <button class="btn btn-secondary" id="u-nakama" style="font-size:20px; padding:22px; letter-spacing:.02em;">nakama</button>
-          <button class="btn btn-secondary" id="u-boksimoron" style="font-size:20px; padding:22px; letter-spacing:.02em;">boksimoron</button>
-        </div>
-        <div style="height:20px;"></div>
-        <button class="btn btn-ghost" id="backBtn">← Şifre Ekranına Dön</button>
-      </div>`;
-    for (const name of ALLOWED_USERS) {
-      document.getElementById(`u-${name}`).onclick = async () => {
-        localStorage.setItem('vaft_user', name);
-        state.username = name;
-        await loadData();
-      };
-    }
-    document.getElementById('backBtn').onclick = () => {
-      localStorage.removeItem('vaft_gate');
-      state.gatePassed = false;
-      state.phase = 'gate';
-      render();
     };
   }
 
@@ -1060,25 +1065,25 @@
           <input class="rep-input" type="number" id="repInput" min="0" max="99" step="1"
             value="${doneReps[prevDone] ?? ''}" inputmode="numeric" autofocus/>
         </div>
-        ${prevDone > 0 ? `
-          <div class="card" style="padding:12px 16px;">
-            <div class="caption" style="margin-bottom:8px;">ÖNCEKİ SETLER</div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              ${doneReps.slice(0, prevDone).map((r,i) => `<span class="pill accent">Set ${i+1}: ${r}</span>`).join('')}
-            </div>
-          </div>` : ''}
         ${(() => {
-          if (state._week <= 1) return '';
-          const prevLog = getLog(state.username, state._week - 1, slot.dayCode, slot.slotCode);
-          if (!prevLog || !Array.isArray(prevLog.reps) || !prevLog.reps.length) return '';
-          const prevW = computedWeight({ ...state.program, username: state.username }, slot.slotCode, state._week - 1);
+          const prevLog = state._week > 1
+            ? getLog(state.username, state._week - 1, slot.dayCode, slot.slotCode) : null;
+          const hasPrev = prevLog && Array.isArray(prevLog.reps) && prevLog.reps.length;
+          const prevW = hasPrev
+            ? computedWeight({ ...state.program, username: state.username }, slot.slotCode, state._week - 1) : null;
+          if (prevDone === 0 && !hasPrev) return '';
           return `
-            <div class="card" style="padding:12px 16px; background:var(--surface2);">
-              <div class="caption" style="margin-bottom:8px;">GEÇEN HAFTA</div>
-              ${prevW != null ? `<div style="font-size:13px; font-weight:700; color:var(--muted); margin-bottom:6px;">${prevW} kg</div>` : ''}
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                ${prevLog.reps.map((r,i) => `<span class="pill">Set ${i+1}: ${r}</span>`).join('')}
-              </div>
+            <div class="card" style="padding:10px 14px;">
+              ${prevDone > 0 ? `
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <span class="caption" style="font-size:11px;">BU SET:</span>
+                  ${doneReps.slice(0, prevDone).map((r,i) => `<span class="pill accent" style="font-size:11px; padding:3px 8px;">${i+1}: ${r}</span>`).join('')}
+                </div>` : ''}
+              ${hasPrev ? `
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; ${prevDone > 0 ? 'margin-top:6px; padding-top:6px; border-top:1px solid var(--border);' : ''}">
+                  <span class="caption" style="font-size:11px;">GEÇEN HAFTA${prevW != null ? ` · ${prevW}kg` : ''}:</span>
+                  ${prevLog.reps.map((r,i) => `<span class="pill" style="font-size:11px; padding:3px 8px;">${i+1}: ${r}</span>`).join('')}
+                </div>` : ''}
             </div>`;
         })()}`;
     }
@@ -1484,8 +1489,10 @@
   function handleLogout() {
     stopRest();
     localStorage.removeItem('vaft_user');
+    localStorage.removeItem('vaft_gate');
     state.username = ''; state.program = null; state.logs = []; state.session = null;
-    state.phase = 'identity';
+    state.gatePassed = false;
+    state.phase = 'gate';
     render();
   }
 
@@ -1502,9 +1509,14 @@
 
   // ── Init ──
   async function init() {
-    if (state.gatePassed && state.username) { await loadData(); }
-    else if (state.gatePassed) { state.phase = 'identity'; render(); }
-    else { state.phase = 'gate'; render(); }
+    if (state.gatePassed) {
+      state.username = ACTIVE_USER;
+      localStorage.setItem('vaft_user', ACTIVE_USER);
+      await loadData();
+    } else {
+      state.phase = 'gate';
+      render();
+    }
   }
 
   init();
