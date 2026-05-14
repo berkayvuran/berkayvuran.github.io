@@ -415,6 +415,23 @@
       }
     }
 
+    // G3_1 shoulder press orijinal verisi: initialWorkingWeight=30, hafta 1-5 başarılı [5,5,5,5]
+    // → hafta 5'te 40 kg yapıldı, hafta 6 için 42.5 kg önerilir (bir kez çalışır)
+    if (program.username === 'boksimoron' && !program.setup_data.migrations?.includes('g3_1_restore_original')) {
+      if (!program.setup_data.migrations) program.setup_data.migrations = [];
+      program.setup_data.migrations.push('g3_1_restore_original');
+      const g3sel = selections.find(s => s.slotCode === 'G3_1');
+      if (g3sel) g3sel.initialWorkingWeight = 30;
+      await supabase.from('workout_logs').delete()
+        .eq('username', program.username).eq('slot_code', 'G3_1');
+      const rows = [1,2,3,4,5].map(w => ({
+        username: program.username, week_no: w, workout_code: '3',
+        slot_code: 'G3_1', reps: [5,5,5,5]
+      }));
+      await supabase.from('workout_logs').insert(rows);
+      changed = true;
+    }
+
     if (changed) {
       await supabase.from('programs').upsert(
         { username: program.username, status: program.status, setup_data: program.setup_data },
