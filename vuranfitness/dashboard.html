@@ -224,7 +224,8 @@
     const FAMILY_SEGMENT = {
       chest_press: 'Göğüs', chest_fly: 'Göğüs',
       shoulder_press: 'Omuz', lateral_raise: 'Omuz',
-      biceps: 'Kol', triceps: 'Kol', vertical_pull: 'Kol', row: 'Kol',
+      biceps: 'Kol', triceps: 'Kol',
+      vertical_pull: 'Sırt', row: 'Sırt',
       squat: 'Bacak', hinge: 'Bacak', leg_accessory: 'Bacak', hip_adductor: 'Bacak',
     };
 
@@ -538,7 +539,7 @@
 
       let tabContent = '';
 
-      const SEGMENTS = ['Göğüs', 'Omuz', 'Kol', 'Bacak'];
+      const SEGMENTS = ['Göğüs', 'Omuz', 'Kol', 'Sırt', 'Bacak'];
 
       function segmentedExHtml(renderItem) {
         return SEGMENTS.map(seg => {
