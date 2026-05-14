@@ -1040,28 +1040,25 @@
             <span class="caption">Set ${prevDone+1} / ${setCount}</span>
             ${workingGif ? `<button onclick="toggleExGif()" id="gifToggleBtn" style="margin-left:auto; background:var(--surface2); border:1.5px solid var(--border); border-radius:8px; padding:3px 10px; font-size:11px; font-weight:700; color:var(--muted); cursor:pointer; font-family:inherit;">🎬 Göster</button>` : ''}
           </div>
-          ${workingGif ? `<div id="exGifWrap" style="display:none; text-align:center; margin-bottom:12px; border-radius:12px; overflow:hidden; background:var(--surface2);"><img src="exercise-gifs/${workingGif}" alt="${esc(exName)}" style="width:100%; max-height:180px; object-fit:contain; display:block;"/></div>` : ''}
-          <div class="h2" style="color:${gc}; margin-bottom:${exChanged ? '4px' : '14px'};">${esc(exName)}</div>
-          ${exChanged ? `<div style="font-size:11px; color:#fbbf24; margin-bottom:10px;">↩ ${esc(plannedExName)} yerine</div>` : ''}
-          ${!slot.isBodyweight && weight != null ? `
-            <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:10px;">
-              <span style="font-size:44px; font-weight:900;">${weight}</span>
-              <span style="font-size:18px; color:var(--muted);">kg</span>
-            </div>` : `<div style="margin-bottom:10px; color:var(--muted);">Vücut ağırlığı</div>`}
-          <div style="margin-bottom:6px;"><span class="caption">HEDEF </span><span style="font-size:20px; font-weight:800; color:var(--accent);">${slot.isBodyweight ? 'maksimum' : esc(targetReps)} tekrar</span></div>
-          ${slot.rpe != null ? `
-          <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-            <span style="font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.06em;">RPE</span>
-            <span style="font-size:17px; font-weight:900; color:${rpeColor(slot.rpe)}; padding:2px 10px; background:${rpeColor(slot.rpe)}18; border-radius:8px;">${slot.rpe}</span>
-            <span style="font-size:12px; color:${rpeColor(slot.rpe)};">${rpeDesc(slot.rpe)}</span>
-          </div>` : ''}
+          ${workingGif ? `<div id="exGifWrap" style="display:none; text-align:center; margin-bottom:10px; border-radius:12px; overflow:hidden; background:var(--surface2);"><img src="exercise-gifs/${workingGif}" alt="${esc(exName)}" style="width:100%; max-height:140px; object-fit:contain; display:block;"/></div>` : ''}
+          <div class="h2" style="color:${gc}; margin-bottom:${exChanged ? '2px' : '8px'};">${esc(exName)}</div>
+          ${exChanged ? `<div style="font-size:11px; color:#fbbf24; margin-bottom:6px;">↩ ${esc(plannedExName)} yerine</div>` : ''}
+          <div style="display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px;">
+            ${!slot.isBodyweight && weight != null ? `
+              <div style="display:flex; align-items:baseline; gap:3px;">
+                <span style="font-size:32px; font-weight:900;">${weight}</span>
+                <span style="font-size:13px; color:var(--muted);">kg</span>
+              </div>` : `<div style="color:var(--muted); font-size:14px;">Vücut ağırlığı</div>`}
+            <div><span class="caption">HEDEF </span><span style="font-size:16px; font-weight:800; color:var(--accent);">${slot.isBodyweight ? 'max' : esc(targetReps)}</span></div>
+            ${slot.rpe != null ? `<span style="font-size:13px; font-weight:900; color:${rpeColor(slot.rpe)}; padding:2px 8px; background:${rpeColor(slot.rpe)}18; border-radius:6px;">RPE ${slot.rpe}</span>` : ''}
+          </div>
           <div class="set-dots">
             ${Array.from({length:setCount}).map((_,i) => `
               <div class="set-dot ${i < prevDone ? 'done' : i === prevDone ? 'current' : ''}"></div>`).join('')}
           </div>
         </div>
-        <div class="card" style="text-align:center;">
-          <div class="caption" style="margin-bottom:14px;">KAÇ TEKRAR YAPTIN?</div>
+        <div class="card" style="text-align:center; padding:10px;">
+          <div class="caption" style="margin-bottom:8px;">KAÇ TEKRAR YAPTIN?</div>
           <input class="rep-input" type="number" id="repInput" min="0" max="99" step="1"
             value="${doneReps[prevDone] ?? ''}" inputmode="numeric" autofocus/>
         </div>
