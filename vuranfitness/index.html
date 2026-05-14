@@ -293,21 +293,37 @@
     return { week, dayCode: '1' };
   }
   function decideNext(slot, cur, repsArr) {
-    if (slot.progression === 'none' || slot.isBodyweight) return cur;
-    const reps = (repsArr || []).map(v => Number(v || 0));
-    if (slot.progression === 'last_set') {
-      const val = reps[(slot.checkSet || 1) - 1] || 0;
-      const t = slot.threshold || 0;
-      const met = slot.setsReps?.includes('+') ? val >= t : val === t;
-      if (met) return mround(Number(cur) + Number(slot.incrementKg || 0), 2.5);
-      return mround(Number(cur) * 0.9, 2.5);
+  if (slot.progression === 'none' || slot.isBodyweight) return cur;
+  const reps = (repsArr || []).map(v => Number(v || 0));
+
+  // TİP 1 ve TİP 2: Son sete bakanlar (+ olanlar ve tam sayılar)
+  if (slot.progression === 'last_set') {
+    const val = reps[(slot.checkSet || 1) - 1] || 0;
+    const t = slot.threshold || 0;
+    
+    // İşin sırrı burası: Artı işareti olsun ya da olmasın, 
+    // hedef sayıya ULAŞTIYSA veya GEÇTİYSE başarılıdır.
+    const met = val >= t; 
+
+    if (met) {
+      return mround(Number(cur) + Number(slot.incrementKg || 0), 2.5); // Ağırlığı artır
+    } else {
+      return mround(Number(cur) * 0.9, 2.5); // Hedef tutmadıysa %10 deload yap
     }
-    if (slot.progression === 'total_reps') {
-      const total = reps.slice(0, setsCount(slot.setsReps)).reduce((a,b) => a+b, 0);
-      if (total >= (slot.threshold || 0)) return mround(Number(cur) + Number(slot.incrementKg || 0), 2.5);
-      return cur;
+  }
+
+  // TİP 3: Aralık olanlar (Double Progression / Çift İlerleme)
+  if (slot.progression === 'total_reps') {
+    const total = reps.slice(0, setsCount(slot.setsReps)).reduce((a,b) => a+b, 0);
+    
+    if (total >= (slot.threshold || 0)) {
+      return mround(Number(cur) + Number(slot.incrementKg || 0), 2.5); // Tavan tekrara ulaşıldı, ağırlığı artır
+    } else {
+      return cur; // Tavan tekrara ulaşılamadı, ağırlığı AYNI TUT (Düşürme)
     }
-    return cur;
+  }
+
+  return cur;
   }
   function prevWeight(program, slotCode, weekNo) {
     const sel = getSel(program, slotCode);
