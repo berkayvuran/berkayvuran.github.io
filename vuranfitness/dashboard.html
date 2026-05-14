@@ -365,7 +365,7 @@
           }
         }
       }
-      return best != null ? Math.round(best / 5) * 5 : null;
+      return best != null ? Math.ceil(best / 5) * 5 : null;
     }
 
     function esc(s) {
@@ -601,7 +601,7 @@
         tabContent = `
           <div class="card">
             <div class="section-label" style="margin-bottom:2px;">TAHMİNİ MAKSİMUM (1RM)</div>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:14px;">Epley formülü · en iyi setten · en yakın 5'e yuvarlandı</div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:14px;">Epley formülü · en iyi setten · üst 5'e yuvarlandı</div>
             ${ormContent || '<div style="color:var(--muted);text-align:center;padding:20px;font-size:13px;">Henüz log yok.</div>'}
           </div>`;
 
