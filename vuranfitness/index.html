@@ -415,14 +415,20 @@
       }
     }
 
-    // G3_1 shoulder press kalibrasyon: 45→65 kg, loglar temizlenir (bir kez çalışır)
-    if (!program.setup_data.migrations?.includes('shoulder_g3_calibration')) {
+    // G3_1 shoulder press kalibrasyon: loglar temizlenip 52.5'ten başlatılır,
+    // hafta 1-5 backfill ile week 6'da 65 kg hedeflenir (bir kez çalışır)
+    if (!program.setup_data.migrations?.includes('shoulder_g3_calibration_v2')) {
       if (!program.setup_data.migrations) program.setup_data.migrations = [];
-      program.setup_data.migrations.push('shoulder_g3_calibration');
+      program.setup_data.migrations.push('shoulder_g3_calibration_v2');
       const g3sel = selections.find(s => s.slotCode === 'G3_1');
-      if (g3sel) g3sel.initialWorkingWeight = 65;
+      if (g3sel) g3sel.initialWorkingWeight = 52.5;
       await supabase.from('workout_logs').delete()
         .eq('username', program.username).eq('slot_code', 'G3_1');
+      const backfill = [1,2,3,4,5].map(w => ({
+        username: program.username, week_no: w, workout_code: '3',
+        slot_code: 'G3_1', reps: [5,5,5,5]
+      }));
+      await supabase.from('workout_logs').upsert(backfill, { onConflict: 'username,week_no,workout_code,slot_code' });
       changed = true;
     }
 
