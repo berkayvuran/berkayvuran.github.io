@@ -4,6 +4,9 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
   <meta name="theme-color" content="#1C6B4A"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -87,18 +90,22 @@
     @keyframes fade-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
     .fade-in { animation: fade-in .22s cubic-bezier(.25,.46,.45,.94); }
     ::-webkit-scrollbar { display: none; } * { scrollbar-width: none; }
-    /* iPhone 13 mini ve küçük ekranlar için kompakt mod */
-    @media (max-height: 740px) {
-      .screen { padding: 12px 14px 16px; }
-      .card { padding: 14px; margin-bottom: 8px; border-radius: 16px; }
-      .header { margin-bottom: 10px; }
-      .h1 { font-size: 24px; }
-      .h2 { font-size: 19px; }
-      .big-num { font-size: 48px; }
-      .rep-input { font-size: 56px; width: 150px; padding: 10px; border-radius: 16px; }
-      .set-dots { margin: 12px 0; }
-      .set-dot { width: 11px; height: 11px; }
-      .progress-label { margin-bottom: 10px; }
+    /* iPhone 13 mini ve küçük ekranlar için kompakt mod (max-width 390 = iPhone 13 mini/13/14) */
+    @media (max-width: 400px), (max-height: 740px) {
+      .screen { padding: 10px 12px 16px; }
+      .card { padding: 12px 14px; margin-bottom: 8px; border-radius: 14px; }
+      .header { margin-bottom: 8px; }
+      .h1 { font-size: 22px; }
+      .h2 { font-size: 18px; }
+      .big-num { font-size: 44px; }
+      .rep-input { font-size: 54px; width: 140px; padding: 8px; border-radius: 14px; }
+      .set-dots { margin: 10px 0; }
+      .set-dot { width: 10px; height: 10px; }
+      .progress-label { margin-bottom: 8px; }
+      .ex-item { padding: 10px 0; }
+      .ex-item-name { font-size: 14px; }
+      .ex-item-sub { font-size: 11px; }
+      .ex-item-alts { font-size: 10px; }
     }
   </style>
 </head>
@@ -433,25 +440,35 @@
     // Idempotent: doğru durumda olana kadar her seferde tekrar uygular.
     if (program.username === 'boksimoron') {
       const g3sel = selections.find(s => s.slotCode === 'G3_1');
-      if (g3sel && g3sel.initialWorkingWeight !== 52.5) {
+      const curIww = g3sel ? Number(g3sel.initialWorkingWeight) : null;
+      console.log('[MIG G3_1] current initialWorkingWeight:', curIww);
+      if (g3sel && Math.abs(curIww - 52.5) > 0.01) {
         g3sel.initialWorkingWeight = 52.5;
         changed = true;
+        console.log('[MIG G3_1] set to 52.5');
       }
-      const { data: g3Logs } = await supabase.from('workout_logs')
+      const { data: g3Logs, error: g3Err } = await supabase.from('workout_logs')
         .select('week_no, reps').eq('username', program.username).eq('slot_code', 'G3_1');
+      if (g3Err) console.error('[MIG G3_1] select error:', g3Err);
+      console.log('[MIG G3_1] current logs:', g3Logs);
       const need = [1,2,3,4,5];
       const have = (g3Logs || []).filter(l => need.includes(l.week_no)
-        && Array.isArray(l.reps) && l.reps.length === 4 && l.reps.every(r => r === 5));
+        && Array.isArray(l.reps) && l.reps.length === 4 && l.reps.every(r => Number(r) === 5));
       const extras = (g3Logs || []).filter(l => l.week_no >= 6);
+      console.log('[MIG G3_1] have:', have.length, 'extras:', extras.length);
       if (have.length !== 5 || extras.length > 0) {
-        await supabase.from('workout_logs').delete()
+        const delRes = await supabase.from('workout_logs').delete()
           .eq('username', program.username).eq('slot_code', 'G3_1');
+        if (delRes.error) console.error('[MIG G3_1] delete error:', delRes.error);
         const rows = need.map(w => ({
           username: program.username, week_no: w, workout_code: '3',
           slot_code: 'G3_1', reps: [5,5,5,5]
         }));
-        await supabase.from('workout_logs').insert(rows);
+        const insRes = await supabase.from('workout_logs').upsert(rows,
+          { onConflict: 'username,week_no,workout_code,slot_code' });
+        if (insRes.error) console.error('[MIG G3_1] insert error:', insRes.error);
         changed = true;
+        console.log('[MIG G3_1] backfill done');
       }
     }
 
@@ -488,6 +505,22 @@
     const { data: freshLogs } = await supabase.from('workout_logs')
       .select('*').eq('username', state.username).order('week_no');
     state.logs = freshLogs || logs || [];
+
+    // FORCE: G3_1 boksimoron için her zaman 52.5 + hafta 1-5 [5,5,5,5] backfill.
+    // DB ne durumda olursa olsun bellekte zorla doğru duruma getir.
+    // Hafta 6+ logları korunur.
+    if (state.username === 'boksimoron' && state.program) {
+      const sel = state.program.setup_data?.selections?.find(s => s.slotCode === 'G3_1');
+      if (sel) sel.initialWorkingWeight = 52.5;
+      const futureG3 = state.logs.filter(l => l.slot_code === 'G3_1' && l.week_no >= 6);
+      state.logs = state.logs.filter(l => l.slot_code !== 'G3_1');
+      for (let w = 1; w <= 5; w++) {
+        state.logs.push({ username: 'boksimoron', week_no: w, workout_code: '3',
+          slot_code: 'G3_1', reps: [5,5,5,5] });
+      }
+      state.logs.push(...futureG3);
+    }
+
     if (state.program) {
       const { week, dayCode } = openDay({ ...state.program, username: state.username });
       state._week = week;
