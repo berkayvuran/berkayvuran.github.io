@@ -802,9 +802,6 @@
           </button>
         </div>
 
-        <div class="bottom">
-          <button class="btn btn-ghost" id="logoutBtn">Kullanıcıyı Değiştir</button>
-        </div>
       </div>`;
 
     if (!hasMissing) document.getElementById('goWorkoutBtn').onclick = () => { state.phase = 'overview'; render(); };
@@ -813,7 +810,6 @@
       localStorage.setItem('superhero_username', state.username);
       window.location.href = 'dashboard.html';
     };
-    document.getElementById('logoutBtn').onclick = handleLogout;
     document.getElementById('menuBtn').onclick = showMenu;
     const fixBtn = document.getElementById('fixMissingBtn');
     if (fixBtn) fixBtn.onclick = renderSettingsOverlay;
