@@ -439,41 +439,23 @@
       }
     }
 
-    // G3_1 shoulder press kalibrasyon: initialWorkingWeight=52.5,
-    // hafta 1-5 backfill [5,5,5,5] → hafta 6'da 65 kg.
-    // Idempotent: doğru durumda olana kadar her seferde tekrar uygular.
-    if (program.username === 'boksimoron') {
-      const g3sel = selections.find(s => s.slotCode === 'G3_1');
-      const curIww = g3sel ? Number(g3sel.initialWorkingWeight) : null;
-      console.log('[MIG G3_1] current initialWorkingWeight:', curIww);
-      if (g3sel && Math.abs(curIww - 52.5) > 0.01) {
-        g3sel.initialWorkingWeight = 52.5;
-        changed = true;
-        console.log('[MIG G3_1] set to 52.5');
-      }
-      const { data: g3Logs, error: g3Err } = await supabase.from('workout_logs')
+    // G3_1 shoulder press: prevWeight override ile kalibre edildi, migration kaldırıldı.
+    // Hafta 1-5 backfill yalnızca bir kez yapılır.
+    if (program.username === 'boksimoron' && !program.setup_data.migrations?.includes('g3_1_backfill_once')) {
+      if (!program.setup_data.migrations) program.setup_data.migrations = [];
+      program.setup_data.migrations.push('g3_1_backfill_once');
+      const { data: g3Logs } = await supabase.from('workout_logs')
         .select('week_no, reps').eq('username', program.username).eq('slot_code', 'G3_1');
-      if (g3Err) console.error('[MIG G3_1] select error:', g3Err);
-      console.log('[MIG G3_1] current logs:', g3Logs);
-      const need = [1,2,3,4,5];
-      const have = (g3Logs || []).filter(l => need.includes(l.week_no)
-        && Array.isArray(l.reps) && l.reps.length === 4 && l.reps.every(r => Number(r) === 5));
-      const extras = (g3Logs || []).filter(l => l.week_no >= 6);
-      console.log('[MIG G3_1] have:', have.length, 'extras:', extras.length);
-      if (have.length !== 5 || extras.length > 0) {
-        const delRes = await supabase.from('workout_logs').delete()
-          .eq('username', program.username).eq('slot_code', 'G3_1');
-        if (delRes.error) console.error('[MIG G3_1] delete error:', delRes.error);
-        const rows = need.map(w => ({
+      const have = (g3Logs || []).filter(l => l.week_no >= 1 && l.week_no <= 5).length;
+      if (have < 5) {
+        const rows = [1,2,3,4,5].map(w => ({
           username: program.username, week_no: w, workout_code: '3',
           slot_code: 'G3_1', reps: [5,5,5,5]
         }));
-        const insRes = await supabase.from('workout_logs').upsert(rows,
+        await supabase.from('workout_logs').upsert(rows,
           { onConflict: 'username,week_no,workout_code,slot_code' });
-        if (insRes.error) console.error('[MIG G3_1] insert error:', insRes.error);
-        changed = true;
-        console.log('[MIG G3_1] backfill done');
       }
+      changed = true;
     }
 
     // nakama kullanıcısının tüm verilerini sil
