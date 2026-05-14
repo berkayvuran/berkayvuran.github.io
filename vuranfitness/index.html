@@ -976,6 +976,18 @@
             ${warmups.length ? `<span class="pill">${warmups.length} ısınma seti</span>` : ''}
             ${slot.incrementKg ? `<span class="pill">+${slot.incrementKg} kg/hafta</span>` : ''}
           </div>
+          ${(() => {
+            if (state._week <= 1) return '';
+            const prevLog = getLog(state.username, state._week - 1, slot.dayCode, slot.slotCode);
+            if (!prevLog || !Array.isArray(prevLog.reps) || !prevLog.reps.length) return '';
+            const prevW = computedWeight({ ...state.program, username: state.username }, slot.slotCode, state._week - 1);
+            return `
+              <div style="margin-top:14px; padding:10px 14px; background:var(--surface2); border-radius:12px;">
+                <div class="caption" style="margin-bottom:6px;">GEÇEN HAFTA</div>
+                ${prevW != null ? `<span style="font-size:13px; font-weight:700; color:var(--muted); margin-right:8px;">${prevW} kg</span>` : ''}
+                ${prevLog.reps.map((r,i) => `<span class="pill" style="font-size:11px;">Set ${i+1}: ${r}</span>`).join('')}
+              </div>`;
+          })()}
         </div>
         ${warmups.length ? `
           <div class="card">
@@ -1053,7 +1065,21 @@
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
               ${doneReps.slice(0, prevDone).map((r,i) => `<span class="pill accent">Set ${i+1}: ${r}</span>`).join('')}
             </div>
-          </div>` : ''}`;
+          </div>` : ''}
+        ${(() => {
+          if (state._week <= 1) return '';
+          const prevLog = getLog(state.username, state._week - 1, slot.dayCode, slot.slotCode);
+          if (!prevLog || !Array.isArray(prevLog.reps) || !prevLog.reps.length) return '';
+          const prevW = computedWeight({ ...state.program, username: state.username }, slot.slotCode, state._week - 1);
+          return `
+            <div class="card" style="padding:12px 16px; background:var(--surface2);">
+              <div class="caption" style="margin-bottom:8px;">GEÇEN HAFTA</div>
+              ${prevW != null ? `<div style="font-size:13px; font-weight:700; color:var(--muted); margin-bottom:6px;">${prevW} kg</div>` : ''}
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                ${prevLog.reps.map((r,i) => `<span class="pill">Set ${i+1}: ${r}</span>`).join('')}
+              </div>
+            </div>`;
+        })()}`;
     }
 
     else if (subPhase === 'rest') {
