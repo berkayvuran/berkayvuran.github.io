@@ -333,6 +333,10 @@
     return cur;
   }
   function prevWeight(program, slotCode, weekNo) {
+    // boksimoron + G3_1 için sabit kalibrasyon: hafta 1=52.5, sonra her hafta +2.5 (hafta 6=65)
+    if (program?.username === 'boksimoron' && slotCode === 'G3_1') {
+      return 52.5 + (weekNo - 1) * 2.5;
+    }
     const sel = getSel(program, slotCode);
     if (!sel) return null;
     const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);

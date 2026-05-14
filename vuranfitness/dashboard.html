@@ -259,6 +259,14 @@
       const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
       if (!slot || slot.isBodyweight) return Array(12).fill(null);
 
+      // boksimoron + G3_1 için sabit kalibrasyon: 52.5'ten +2.5 (hafta 6=65)
+      if (state.username === 'boksimoron' && slotCode === 'G3_1') {
+        return Array.from({ length: 12 }, (_, i) => {
+          const log = getLog(i + 1, slot.dayCode, slotCode);
+          return log ? 52.5 + i * 2.5 : null;
+        });
+      }
+
       let current = sel.initialWorkingWeight ?? null;
       if (current == null) return Array(12).fill(null);
 
