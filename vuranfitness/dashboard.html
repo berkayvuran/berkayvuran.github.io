@@ -372,10 +372,13 @@
           const exRows = dayLogs.map(log => {
             const exName = getSlotSelection(log.slot_code)?.selectedExercise || log.slot_code;
             const reps = Array.isArray(log.reps) ? log.reps : [];
+            const weightSeries = computeWeightSeries(log.slot_code);
+            const w = weightSeries[week - 1];
             return `
               <div class="ex-row">
                 <div class="ex-name">${esc(exName)}</div>
                 <div>
+                  ${w != null ? `<div style="font-size:12px; font-weight:700; color:var(--muted); margin-bottom:4px;">${w} kg</div>` : ''}
                   <div class="reps-chips">
                     ${reps.map(r => `<span class="rep-chip">${r}</span>`).join('')}
                   </div>
