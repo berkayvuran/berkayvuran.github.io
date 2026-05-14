@@ -165,6 +165,35 @@
     }
     .note-text { font-size: 11px; color: var(--muted); margin-top: 3px; font-style: italic; }
     .spinner { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+    /* Tabs */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 4px;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 9px 6px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--accent);
+      box-shadow: 0 1px 4px rgba(0,0,0,.10);
+    }
   </style>
 </head>
 <body>
@@ -186,13 +215,10 @@
       logs: []
     };
 
-    // 5 ana hareket: g1 grubu (3) + g2 grubu deadlift & row (2)
-    const CHART_SLOTS = [
-      { slotCode: 'G1_1', dayCode: '1', label: 'Chest Press',    color: '#1C6B4A', dash: [] },
-      { slotCode: 'G2_1', dayCode: '2', label: 'Leg Press',              color: '#7C5800', dash: [8, 4] },
-      { slotCode: 'G3_1', dayCode: '3', label: 'Shoulder Press Machine', color: '#0061A4', dash: [4, 4] },
-      { slotCode: 'G1_3', dayCode: '1', label: 'Romanian DL',    color: '#B3261E', dash: [12, 3, 3, 3] },
-      { slotCode: 'G3_3', dayCode: '3', label: 'Barbell Row',    color: '#6750A4', dash: [6, 3] },
+    const PALETTE = [
+      '#1C6B4A','#B3261E','#0061A4','#7C5800','#6750A4',
+      '#00695C','#AD1457','#1565C0','#558B2F','#4527A0',
+      '#C62828','#0277BD','#E65100','#37474F','#2E7D32','#6D4C41'
     ];
 
     const TEMPLATE_SLOTS = [
@@ -253,17 +279,22 @@
     }
 
     // Compute weight used in week W for slot (only for logged weeks → null otherwise)
-    function computeWeightSeries(slotCode) {
+    function maxLoggedWeek() {
+      if (!state.logs?.length) return 1;
+      return Math.max(...state.logs.map(l => l.week_no || 1));
+    }
+
+    function computeWeightSeries(slotCode, totalWeeks) {
       const sel = getSlotSelection(slotCode);
-      if (!sel) return Array(12).fill(null);
+      if (!sel) return Array(totalWeeks).fill(null);
       const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
-      if (!slot || slot.isBodyweight) return Array(12).fill(null);
+      if (!slot || slot.isBodyweight) return Array(totalWeeks).fill(null);
 
       let current = sel.initialWorkingWeight ?? null;
-      if (current == null) return Array(12).fill(null);
+      if (current == null) return Array(totalWeeks).fill(null);
 
       const series = [];
-      for (let w = 1; w <= 12; w++) {
+      for (let w = 1; w <= totalWeeks; w++) {
         const log = getLog(w, slot.dayCode, slotCode);
         if (log) {
           series.push(Number(current));
@@ -276,9 +307,56 @@
     }
 
     function getExerciseName(slotCode) {
-      return getSlotSelection(slotCode)?.selectedExercise
-        || CHART_SLOTS.find(s => s.slotCode === slotCode)?.label
-        || slotCode;
+      return getSlotSelection(slotCode)?.selectedExercise || slotCode;
+    }
+
+    // Tüm non-bodyweight slotları egzersiz adına göre grupla, renk ata
+    function buildExerciseGroups(totalWeeks) {
+      const groups = {}; // exName → { color, series, slotCodes }
+      let colorIdx = 0;
+      for (const slot of TEMPLATE_SLOTS) {
+        if (slot.isBodyweight) continue;
+        const exName = getExerciseName(slot.slotCode);
+        if (!exName || exName === slot.slotCode) continue; // seçim yapılmamış slot
+        const series = computeWeightSeries(slot.slotCode, totalWeeks);
+        // Herhangi bir log var mı kontrol et
+        const hasAny = series.some(v => v != null);
+        if (!hasAny) continue;
+        if (!groups[exName]) {
+          groups[exName] = { color: PALETTE[colorIdx++ % PALETTE.length], series: Array(totalWeeks).fill(null), slotCodes: [] };
+        }
+        groups[exName].slotCodes.push(slot.slotCode);
+        // Aynı egzersiz birden fazla slotta varsa yüksek ağırlığı al
+        for (let i = 0; i < totalWeeks; i++) {
+          if (series[i] != null) {
+            groups[exName].series[i] = groups[exName].series[i] == null
+              ? series[i] : Math.max(groups[exName].series[i], series[i]);
+          }
+        }
+      }
+      return Object.entries(groups).map(([label, g]) => ({ label, ...g }));
+    }
+
+    // Epley 1RM tahmini: en iyi setten hesapla
+    function computeBest1RM(slotCodes) {
+      let best = null;
+      for (const slotCode of slotCodes) {
+        const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
+        if (!slot) continue;
+        for (const log of state.logs) {
+          if (log.slot_code !== slotCode) continue;
+          const w = getWeightAtWeek(slotCode, log.week_no);
+          if (!w) continue;
+          const reps = Array.isArray(log.reps) ? log.reps : [];
+          for (const r of reps) {
+            if (r > 0) {
+              const orm = w * (1 + r / 30);
+              if (best == null || orm > best) best = orm;
+            }
+          }
+        }
+      }
+      return best != null ? Math.round(best / 5) * 5 : null;
     }
 
     function esc(s) {
@@ -288,12 +366,14 @@
     }
 
     let chart = null;
+    let _exGroups = [];
 
     function renderChart() {
-      const labels = Array.from({ length: 12 }, (_, i) => `H${i + 1}`);
-      const datasets = CHART_SLOTS.map(ex => ({
-        label: getExerciseName(ex.slotCode),
-        data: computeWeightSeries(ex.slotCode),
+      if (!_exGroups.length) _exGroups = buildExerciseGroups(_totalWeeks);
+      const labels = Array.from({ length: _totalWeeks }, (_, i) => `H${i + 1}`);
+      const datasets = _exGroups.map(ex => ({
+        label: ex.label,
+        data: ex.series,
         borderColor: ex.color,
         backgroundColor: ex.color + '18',
         pointBackgroundColor: ex.color,
@@ -301,7 +381,6 @@
         pointRadius: 5,
         pointHoverRadius: 7,
         borderWidth: 2.5,
-        borderDash: ex.dash || [],
         tension: 0.3,
         spanGaps: false,
       }));
@@ -419,11 +498,13 @@
 
     // Precomputed weight series per slot: { slotCode: [w1, w2, ...] }
     let weightSeriesCache = {};
+    let _totalWeeks = 1;
 
     function buildWeightCache() {
+      _totalWeeks = Math.max(maxLoggedWeek(), 1);
       weightSeriesCache = {};
       for (const slot of TEMPLATE_SLOTS) {
-        weightSeriesCache[slot.slotCode] = computeWeightSeries(slot.slotCode);
+        weightSeriesCache[slot.slotCode] = computeWeightSeries(slot.slotCode, _totalWeeks);
       }
     }
 
@@ -433,17 +514,66 @@
       return series[weekNo - 1] ?? null;
     }
 
+    let _activeTab = 'chart'; // 'chart' | 'orm' | 'history'
+
     function render() {
       buildWeightCache();
+      _exGroups = buildExerciseGroups(_totalWeeks);
       const root = document.getElementById('root');
 
-      const togglesHtml = CHART_SLOTS.map((ex, i) => `
-        <button class="ex-toggle" id="toggle-${i}"
-          style="border-color:${ex.color}; color:${ex.color};"
-          onclick="toggleExercise(${i})">
-          <span class="ex-dot" style="background:${ex.color};"></span>
-          ${esc(getExerciseName(ex.slotCode))}
-        </button>`).join('');
+      const tabBar = `
+        <div class="tab-bar">
+          <button class="tab-btn ${_activeTab === 'chart' ? 'active' : ''}" onclick="setTab('chart')">Gelişim</button>
+          <button class="tab-btn ${_activeTab === 'orm' ? 'active' : ''}" onclick="setTab('orm')">1RM</button>
+          <button class="tab-btn ${_activeTab === 'history' ? 'active' : ''}" onclick="setTab('history')">Geçmiş</button>
+        </div>`;
+
+      let tabContent = '';
+
+      if (_activeTab === 'chart') {
+        const togglesHtml = _exGroups.map((ex, i) => `
+          <button class="ex-toggle" id="toggle-${i}"
+            style="border-color:${ex.color}; color:${ex.color};"
+            onclick="toggleExercise(${i})">
+            <span class="ex-dot" style="background:${ex.color};"></span>
+            ${esc(ex.label)}
+          </button>`).join('');
+        tabContent = `
+          <div class="card">
+            <div class="section-label">GELİŞİM GRAFİĞİ</div>
+            <div class="toggle-row">${togglesHtml}</div>
+            <div class="chart-container">
+              <canvas id="progressChart"></canvas>
+            </div>
+          </div>`;
+
+      } else if (_activeTab === 'orm') {
+        const ormRows = _exGroups.map(ex => {
+          const orm = computeBest1RM(ex.slotCodes);
+          if (orm == null) return '';
+          return `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="width:9px; height:9px; border-radius:50%; background:${ex.color}; flex-shrink:0; display:inline-block;"></span>
+                <span style="font-size:14px; font-weight:700;">${esc(ex.label)}</span>
+              </div>
+              <span style="font-size:18px; font-weight:900; color:${ex.color};">${orm} <span style="font-size:13px; font-weight:700; color:var(--muted);">kg</span></span>
+            </div>`;
+        }).filter(Boolean).join('');
+        tabContent = `
+          <div class="card">
+            <div class="section-label" style="margin-bottom:4px;">TAHMİNİ MAKSİMUM (1RM)</div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Epley formülü · en iyi setten · en yakın 5'e yuvarlandı</div>
+            ${ormRows || '<div style="color:var(--muted);text-align:center;padding:20px;font-size:13px;">Henüz log yok.</div>'}
+          </div>`;
+
+      } else {
+        tabContent = `
+          <div class="card">
+            <div class="section-label" style="margin-bottom:14px;">ANTRENMAN GEÇMİŞİ</div>
+            ${buildHistory()}
+          </div>`;
+      }
 
       root.innerHTML = `
         <div class="header">
@@ -453,21 +583,10 @@
             <div class="caption">${esc(state.username)}</div>
           </div>
         </div>
+        ${tabBar}
+        ${tabContent}`;
 
-        <div class="card">
-          <div class="section-label">GELİŞİM GRAFİĞİ</div>
-          <div class="toggle-row">${togglesHtml}</div>
-          <div class="chart-container">
-            <canvas id="progressChart"></canvas>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-label" style="margin-bottom:14px;">ANTRENMAN GEÇMİŞİ</div>
-          ${buildHistory()}
-        </div>`;
-
-      renderChart();
+      if (_activeTab === 'chart') renderChart();
     }
 
     window.toggleExercise = function(i) {
@@ -475,6 +594,11 @@
       chart.data.datasets[i].hidden = !chart.data.datasets[i].hidden;
       chart.update();
       document.getElementById(`toggle-${i}`).classList.toggle('off', !!chart.data.datasets[i].hidden);
+    };
+
+    window.setTab = function(tab) {
+      _activeTab = tab;
+      render();
     };
 
     window.toggleWeek = function(week) {
