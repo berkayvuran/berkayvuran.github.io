@@ -281,19 +281,16 @@
     return byDay(dayCode).every(s => getLog(username, week, dayCode, s.slotCode));
   }
   function openWeek(program) {
-    for (let w = 1; w <= 12; w++) {
+    for (let w = 1; ; w++) {
       if (!['1','2','3'].every(c => dayDone(program.username, w, c))) return w;
     }
-    if (!['D1','D2'].every(c => dayDone(program.username, 13, c))) return 13;
-    return 13;
   }
   function openDay(program) {
     const week = openWeek(program);
-    const codes = week === 13 ? ['D1','D2'] : ['1','2','3'];
-    for (const dc of codes) {
+    for (const dc of ['1','2','3']) {
       if (!dayDone(program.username, week, dc)) return { week, dayCode: dc };
     }
-    return { week, dayCode: codes[0] };
+    return { week, dayCode: '1' };
   }
   function decideNext(slot, cur, repsArr) {
     if (slot.progression === 'none' || slot.isBodyweight) return cur;
@@ -333,7 +330,6 @@
   function computedWeight(program, slotCode, weekNo) {
     const slot = TEMPLATE_SLOTS.find(s => s.slotCode === slotCode);
     if (!slot || slot.isBodyweight) return null;
-    if (weekNo === 13) return deloadW(program, slot);
     return prevWeight(program, slotCode, weekNo);
   }
   function rpeColor(rpe) {
@@ -727,16 +723,10 @@
     const week = state._week, dayCode = state._dayCode;
     const program = { ...state.program, username: state.username };
     const slots = byDay(dayCode);
-    const isDeload = week === 13;
     const missing = missingWeightSlots(program);
     const totalSets = slots.reduce((sum, s) => sum + setsCount(s.setsReps), 0);
     const hasMissing = missing.length > 0;
-
-    // Completed weeks count
-    let completedWeeks = 0;
-    for (let w = 1; w < week; w++) {
-      if (['1','2','3'].every(c => dayDone(state.username, w, c))) completedWeeks++;
-    }
+    const completedWeeks = week - 1;
 
     root.innerHTML = `
       <div class="screen fade-in">
@@ -749,7 +739,7 @@
           <div class="card" style="border-left:4px solid var(--accent);">
             <div class="caption" style="margin-bottom:4px;">HOŞ GELDİN</div>
             <div class="h2" style="margin-bottom:2px;">${esc(state.username)}</div>
-            <div class="caption">${isDeload ? 'Dinlenme Haftası' : `Hafta ${week} / 12`} · ${completedWeeks > 0 ? `${completedWeeks} hafta tamamlandı` : 'Yeni başlıyorsun'}</div>
+            <div class="caption">Hafta ${week} · ${completedWeeks > 0 ? `${completedWeeks} hafta tamamlandı` : 'Yeni başlıyorsun'}</div>
           </div>
 
           ${hasMissing ? `
@@ -809,7 +799,6 @@
     const week = state._week, dayCode = state._dayCode;
     const program = { ...state.program, username: state.username };
     const slots = byDay(dayCode);
-    const isDeload = week === 13;
     const missing = missingWeightSlots(program);
 
     const list = slots.map(slot => {
@@ -844,7 +833,7 @@
         <div class="card" style="border-left: 4px solid var(--accent);">
           <div style="display:flex; align-items:baseline; justify-content:space-between;">
             <div class="h2">${esc(dayName(dayCode))}</div>
-            <div class="caption">${isDeload ? 'Dinlenme Haftası' : `Hafta ${week} / 12`}</div>
+            <div class="caption">Hafta ${week}</div>
           </div>
           <div class="caption" style="margin-top:4px;">${slots.length} hareket</div>
         </div>
