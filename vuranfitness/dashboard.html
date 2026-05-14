@@ -221,25 +221,32 @@
       '#C62828','#0277BD','#E65100','#37474F','#2E7D32','#6D4C41'
     ];
 
+    const FAMILY_SEGMENT = {
+      chest_press: 'Göğüs', chest_fly: 'Göğüs',
+      shoulder_press: 'Omuz', lateral_raise: 'Omuz',
+      biceps: 'Kol', triceps: 'Kol', vertical_pull: 'Kol', row: 'Kol',
+      squat: 'Bacak', hinge: 'Bacak', leg_accessory: 'Bacak', hip_adductor: 'Bacak',
+    };
+
     const TEMPLATE_SLOTS = [
-      { slotCode:'G1_1', dayCode:'1', setsReps:'4x5+',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
-      { slotCode:'G1_2', dayCode:'1', setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
-      { slotCode:'G1_3', dayCode:'1', setsReps:'3x8',     incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:3, threshold:8  },
-      { slotCode:'G1_4', dayCode:'1', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
-      { slotCode:'G1_5', dayCode:'1', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
-      { slotCode:'G1_6', dayCode:'1', setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
-      { slotCode:'G2_1', dayCode:'2', setsReps:'4x5+',    incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
-      { slotCode:'G2_2', dayCode:'2', setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
-      { slotCode:'G2_3', dayCode:'2', setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
-      { slotCode:'G2_4', dayCode:'2', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
-      { slotCode:'G2_5', dayCode:'2', setsReps:'3x8-12',  incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:36 },
-      { slotCode:'G2_6', dayCode:'2', setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
-      { slotCode:'G3_1', dayCode:'3', setsReps:'4x5+',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
-      { slotCode:'G3_2', dayCode:'3', setsReps:'3x10',    incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
-      { slotCode:'G3_3', dayCode:'3', setsReps:'4x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:10 },
-      { slotCode:'G3_4', dayCode:'3', setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
-      { slotCode:'G3_5', dayCode:'3', setsReps:'3x8-12',  incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:36 },
-      { slotCode:'G3_6', dayCode:'3', setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
+      { slotCode:'G1_1', dayCode:'1', family:'chest_press',    setsReps:'4x5+',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
+      { slotCode:'G1_2', dayCode:'1', family:'shoulder_press', setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
+      { slotCode:'G1_3', dayCode:'1', family:'hinge',          setsReps:'3x8',     incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:3, threshold:8  },
+      { slotCode:'G1_4', dayCode:'1', family:'vertical_pull',  setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
+      { slotCode:'G1_5', dayCode:'1', family:'leg_accessory',  setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
+      { slotCode:'G1_6', dayCode:'1', family:'hip_adductor',   setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
+      { slotCode:'G2_1', dayCode:'2', family:'squat',          setsReps:'4x5+',    incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
+      { slotCode:'G2_2', dayCode:'2', family:'chest_press',    setsReps:'3x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
+      { slotCode:'G2_3', dayCode:'2', family:'vertical_pull',  setsReps:'3xmax',   incrementKg:null,isBodyweight:true,  progression:'none' },
+      { slotCode:'G2_4', dayCode:'2', family:'lateral_raise',  setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
+      { slotCode:'G2_5', dayCode:'2', family:'biceps',         setsReps:'3x8-12',  incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:36 },
+      { slotCode:'G2_6', dayCode:'2', family:'hip_adductor',   setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
+      { slotCode:'G3_1', dayCode:'3', family:'shoulder_press', setsReps:'4x5+',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:5  },
+      { slotCode:'G3_2', dayCode:'3', family:'squat',          setsReps:'3x10',    incrementKg:5,   isBodyweight:false, progression:'last_set',   checkSet:3, threshold:10 },
+      { slotCode:'G3_3', dayCode:'3', family:'row',            setsReps:'4x10',    incrementKg:2.5, isBodyweight:false, progression:'last_set',   checkSet:4, threshold:10 },
+      { slotCode:'G3_4', dayCode:'3', family:'chest_fly',      setsReps:'3x10-14', incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:42 },
+      { slotCode:'G3_5', dayCode:'3', family:'triceps',        setsReps:'3x8-12',  incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:36 },
+      { slotCode:'G3_6', dayCode:'3', family:'hip_adductor',   setsReps:'3x15',    incrementKg:5,   isBodyweight:false, progression:'total_reps', threshold:45 },
     ];
 
     function mround(val, mult) {
@@ -323,7 +330,8 @@
         const hasAny = series.some(v => v != null);
         if (!hasAny) continue;
         if (!groups[exName]) {
-          groups[exName] = { color: PALETTE[colorIdx++ % PALETTE.length], series: Array(totalWeeks).fill(null), slotCodes: [] };
+          const seg = FAMILY_SEGMENT[slot.family] || 'Diğer';
+          groups[exName] = { color: PALETTE[colorIdx++ % PALETTE.length], series: Array(totalWeeks).fill(null), slotCodes: [], segment: seg };
         }
         groups[exName].slotCodes.push(slot.slotCode);
         // Aynı egzersiz birden fazla slotta varsa yüksek ağırlığı al
@@ -530,41 +538,70 @@
 
       let tabContent = '';
 
+      const SEGMENTS = ['Göğüs', 'Omuz', 'Kol', 'Bacak'];
+
+      function segmentedExHtml(renderItem) {
+        return SEGMENTS.map(seg => {
+          const items = _exGroups
+            .map((ex, i) => ({ ex, i }))
+            .filter(({ ex }) => ex.segment === seg)
+            .map(({ ex, i }) => renderItem(ex, i))
+            .filter(Boolean).join('');
+          if (!items) return '';
+          return `
+            <div style="margin-bottom:14px;">
+              <div class="section-label" style="margin-bottom:8px;">${seg}</div>
+              ${items}
+            </div>`;
+        }).join('');
+      }
+
       if (_activeTab === 'chart') {
-        const togglesHtml = _exGroups.map((ex, i) => `
-          <button class="ex-toggle" id="toggle-${i}"
-            style="border-color:${ex.color}; color:${ex.color};"
-            onclick="toggleExercise(${i})">
-            <span class="ex-dot" style="background:${ex.color};"></span>
-            ${esc(ex.label)}
-          </button>`).join('');
+        const togglesHtml = SEGMENTS.map(seg => {
+          const btns = _exGroups
+            .map((ex, i) => ({ ex, i }))
+            .filter(({ ex }) => ex.segment === seg)
+            .map(({ ex, i }) => `
+              <button class="ex-toggle" id="toggle-${i}"
+                style="border-color:${ex.color}; color:${ex.color};"
+                onclick="toggleExercise(${i})">
+                <span class="ex-dot" style="background:${ex.color};"></span>
+                ${esc(ex.label)}
+              </button>`).join('');
+          if (!btns) return '';
+          return `
+            <div style="margin-bottom:10px;">
+              <div class="section-label" style="margin-bottom:6px;">${seg}</div>
+              <div class="toggle-row" style="margin-bottom:0;">${btns}</div>
+            </div>`;
+        }).join('');
         tabContent = `
           <div class="card">
             <div class="section-label">GELİŞİM GRAFİĞİ</div>
-            <div class="toggle-row">${togglesHtml}</div>
+            <div style="margin-bottom:12px;">${togglesHtml}</div>
             <div class="chart-container">
               <canvas id="progressChart"></canvas>
             </div>
           </div>`;
 
       } else if (_activeTab === 'orm') {
-        const ormRows = _exGroups.map(ex => {
+        const ormContent = segmentedExHtml((ex) => {
           const orm = computeBest1RM(ex.slotCodes);
           if (orm == null) return '';
           return `
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
               <div style="display:flex; align-items:center; gap:8px;">
                 <span style="width:9px; height:9px; border-radius:50%; background:${ex.color}; flex-shrink:0; display:inline-block;"></span>
                 <span style="font-size:14px; font-weight:700;">${esc(ex.label)}</span>
               </div>
               <span style="font-size:18px; font-weight:900; color:${ex.color};">${orm} <span style="font-size:13px; font-weight:700; color:var(--muted);">kg</span></span>
             </div>`;
-        }).filter(Boolean).join('');
+        });
         tabContent = `
           <div class="card">
-            <div class="section-label" style="margin-bottom:4px;">TAHMİNİ MAKSİMUM (1RM)</div>
-            <div style="font-size:11px; color:var(--muted); margin-bottom:12px;">Epley formülü · en iyi setten · en yakın 5'e yuvarlandı</div>
-            ${ormRows || '<div style="color:var(--muted);text-align:center;padding:20px;font-size:13px;">Henüz log yok.</div>'}
+            <div class="section-label" style="margin-bottom:2px;">TAHMİNİ MAKSİMUM (1RM)</div>
+            <div style="font-size:11px; color:var(--muted); margin-bottom:14px;">Epley formülü · en iyi setten · en yakın 5'e yuvarlandı</div>
+            ${ormContent || '<div style="color:var(--muted);text-align:center;padding:20px;font-size:13px;">Henüz log yok.</div>'}
           </div>`;
 
       } else {
