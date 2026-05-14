@@ -627,15 +627,27 @@
       if (_activeTab === 'chart') renderChart();
     }
 
+    const _selectedEx = new Set();
+
     window.toggleExercise = function(i) {
       if (!chart) return;
-      chart.data.datasets[i].hidden = !chart.data.datasets[i].hidden;
+      if (_selectedEx.has(i)) {
+        _selectedEx.delete(i);
+      } else {
+        _selectedEx.add(i);
+      }
+      const total = chart.data.datasets.length;
+      for (let j = 0; j < total; j++) {
+        chart.data.datasets[j].hidden = _selectedEx.size > 0 && !_selectedEx.has(j);
+        const btn = document.getElementById(`toggle-${j}`);
+        if (btn) btn.classList.toggle('off', !!chart.data.datasets[j].hidden);
+      }
       chart.update();
-      document.getElementById(`toggle-${i}`).classList.toggle('off', !!chart.data.datasets[i].hidden);
     };
 
     window.setTab = function(tab) {
       _activeTab = tab;
+      _selectedEx.clear();
       render();
     };
 
