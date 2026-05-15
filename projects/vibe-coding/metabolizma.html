@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yağ Yakımı Planı — Berkay</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #000;
+    --gray-1: #fafafa;
+    --gray-2: #f0f0f0;
+    --gray-3: #d0d0d0;
+    --gray-4: #888;
+    --gray-5: #555;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--black);
+    background: white;
+    padding: 32px 20px 60px;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  header {
+    border-bottom: 2px solid var(--black);
+    padding-bottom: 16px;
+    margin-bottom: 28px;
+  }
+  .kicker {
+    font-size: 11px; letter-spacing: 1.5px; color: var(--gray-5);
+    font-weight: 600; text-transform: uppercase;
+  }
+  h1 {
+    font-size: 28px; font-weight: 700; margin: 4px 0 8px;
+    letter-spacing: -0.5px;
+  }
+  .sub { font-size: 13px; color: var(--gray-5); }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px; margin-top: 16px;
+  }
+  .stat {
+    background: var(--gray-2); border-left: 3px solid var(--black);
+    padding: 8px 12px;
+  }
+  .stat-val { font-size: 18px; font-weight: 700; }
+  .stat-lab {
+    font-size: 10px; letter-spacing: 0.5px;
+    text-transform: uppercase; color: var(--gray-5);
+  }
+
+  section { margin-bottom: 32px; }
+  h2 {
+    font-size: 13px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; border-bottom: 1px solid var(--black);
+    padding-bottom: 6px; margin-bottom: 16px;
+  }
+
+  /* Today's tracker */
+  .today-card {
+    background: var(--gray-1); border: 1px solid var(--gray-3);
+    padding: 20px;
+  }
+  .today-header {
+    display: flex; justify-content: space-between;
+    align-items: baseline; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  }
+  .today-date { font-size: 15px; font-weight: 600; }
+  .today-weight { font-size: 13px; }
+  .today-weight input {
+    width: 70px; text-align: right;
+    border: 1px solid var(--gray-3); padding: 4px 6px;
+    font-size: 13px; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  .water-section { margin-bottom: 16px; }
+  .water-label {
+    font-size: 11px; color: var(--gray-5); margin-bottom: 6px;
+    display: flex; justify-content: space-between;
+    text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600;
+  }
+  .water-glasses { display: flex; gap: 4px; flex-wrap: wrap; }
+  .glass {
+    width: 30px; height: 36px;
+    border: 1.5px solid var(--black); cursor: pointer;
+    transition: background 0.1s;
+  }
+  .glass.filled { background: var(--black); }
+  .glass:hover { background: var(--gray-3); }
+  .glass.filled:hover { background: var(--gray-5); }
+
+  .meal-checks {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 4px; margin-bottom: 16px;
+  }
+  .meal-check {
+    border: 1px solid var(--gray-3); padding: 8px 4px;
+    text-align: center; cursor: pointer; user-select: none;
+    transition: background 0.1s;
+  }
+  .meal-check.done {
+    background: var(--black); color: white; border-color: var(--black);
+  }
+  .meal-check .time {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-weight: 700; font-size: 11px;
+  }
+  .meal-check .name {
+    font-size: 9px; margin-top: 2px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+
+  .daily-notes {
+    width: 100%; border: 1px solid var(--gray-3); padding: 8px;
+    font-family: inherit; font-size: 13px;
+    resize: vertical; min-height: 44px;
+  }
+
+  .reset-btn {
+    margin-top: 10px; background: none;
+    border: 1px solid var(--gray-3); padding: 6px 14px;
+    font-size: 11px; cursor: pointer;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .reset-btn:hover { background: var(--gray-2); }
+
+  /* Plan */
+  .plan-row {
+    display: flex; gap: 16px; padding: 10px 0;
+    border-bottom: 1px solid var(--gray-2);
+  }
+  .plan-row:last-child { border-bottom: none; }
+  .plan-time {
+    flex: 0 0 50px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 13px; font-weight: 700;
+  }
+  .plan-content { flex: 1; min-width: 0; }
+  .plan-name {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.5px; margin-bottom: 4px;
+  }
+  .plan-macros {
+    font-weight: 400; font-size: 11px;
+    color: var(--gray-5); margin-left: 6px;
+  }
+  .plan-items { list-style: none; }
+  .plan-items li {
+    position: relative; padding-left: 12px;
+    font-size: 13px; margin-bottom: 2px;
+  }
+  .plan-items li:before {
+    content: "·"; position: absolute; left: 3px; font-weight: 700;
+  }
+
+  .workout-row {
+    background: var(--gray-2); padding: 8px 12px;
+    border-left: 3px solid var(--black); margin: 4px 0;
+  }
+  .workout-row .plan-row {
+    padding: 0; border: none;
+  }
+
+  /* Shopping */
+  .shop-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+  }
+  .shop-group h3 {
+    font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--gray-5);
+    margin-bottom: 6px; font-weight: 700;
+  }
+  .shop-item {
+    display: flex; align-items: center; padding: 5px 0;
+    border-bottom: 1px dotted var(--gray-3);
+    cursor: pointer; user-select: none;
+  }
+  .shop-item:last-child { border-bottom: none; }
+  .shop-check {
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--black);
+    margin-right: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .shop-item.checked .shop-check::after { content: "✓"; }
+  .shop-item.checked { color: var(--gray-4); text-decoration: line-through; }
+  .shop-name { flex: 1; font-size: 13px; }
+  .shop-qty {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px; white-space: nowrap; padding-left: 8px;
+  }
+  .shop-note {
+    font-size: 12px; color: var(--gray-5); font-style: italic;
+    margin-top: 14px; padding-top: 10px;
+    border-top: 1px solid var(--gray-2);
+    grid-column: 1 / -1;
+  }
+
+  /* Rules */
+  .rules-list { list-style: none; }
+  .rules-list li {
+    position: relative; padding-left: 18px;
+    margin-bottom: 8px; font-size: 13px; line-height: 1.5;
+  }
+  .rules-list li:before {
+    content: "■"; position: absolute;
+    left: 0; top: 5px; font-size: 7px;
+  }
+
+  /* Weight log */
+  .weight-log table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  .weight-log th, .weight-log td {
+    padding: 7px 8px; text-align: left;
+    border-bottom: 1px solid var(--gray-2);
+  }
+  .weight-log th {
+    font-weight: 700; font-size: 10px;
+    letter-spacing: 0.5px; text-transform: uppercase; color: var(--gray-5);
+  }
+  .weight-log td.num {
+    text-align: right;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  .weight-log .diff-down { color: var(--black); font-weight: 600; }
+  .weight-log .diff-up { color: var(--gray-5); }
+  .weight-input {
+    width: 80px; text-align: right;
+    border: 1px solid var(--gray-3); padding: 4px 6px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 13px;
+  }
+  .date-input {
+    border: 1px solid var(--gray-3); padding: 4px 6px;
+    font-size: 13px; font-family: inherit;
+  }
+  .add-btn {
+    background: var(--black); color: white; border: 0;
+    padding: 5px 12px; cursor: pointer; font-size: 11px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .add-btn:hover { background: var(--gray-5); }
+  .empty-log {
+    text-align: center; color: var(--gray-4);
+    font-style: italic; padding: 16px 0;
+  }
+
+  /* Editable */
+  [contenteditable="true"] {
+    outline: none; border-radius: 2px; padding: 1px 2px;
+    transition: background 0.1s;
+  }
+  [contenteditable="true"]:hover { background: var(--gray-2); }
+  [contenteditable="true"]:focus {
+    background: var(--gray-2);
+    box-shadow: 0 0 0 1px var(--black);
+  }
+
+  footer {
+    margin-top: 40px; padding-top: 16px;
+    border-top: 1px solid var(--gray-3);
+    font-size: 11px; color: var(--gray-5); line-height: 1.6;
+  }
+
+  .save-indicator {
+    position: fixed; bottom: 20px; right: 20px;
+    background: var(--black); color: white;
+    padding: 8px 14px; font-size: 11px;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    font-weight: 600;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  .help-text {
+    font-size: 11px; color: var(--gray-5);
+    margin-top: 8px; font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 20px 14px 40px; }
+    h1 { font-size: 22px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .meal-checks { grid-template-columns: repeat(4, 1fr); }
+    .shop-grid { grid-template-columns: 1fr; }
+    .glass { width: 26px; height: 32px; }
+  }
+
+  @media print {
+    .today-card, .reset-btn, .save-indicator, .add-btn,
+    .weight-input, .date-input, #addWeightRow { display: none; }
+    body { padding: 10mm; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="kicker">METABOLİK PROGRAM</div>
+  <h1>Yağ Yakımı Günlük Planı</h1>
+  <div class="sub">Berkay · <span contenteditable="true" data-key="weight-current">142</span> kg · TDEE ~3200 · hedef tempo 0.7–1 kg/hafta</div>
+  <div class="stats">
+    <div class="stat"><div class="stat-val" contenteditable="true" data-key="stat-kcal">2000</div><div class="stat-lab">kcal/gün</div></div>
+    <div class="stat"><div class="stat-val" contenteditable="true" data-key="stat-protein">215g+</div><div class="stat-lab">protein</div></div>
+    <div class="stat"><div class="stat-val" contenteditable="true" data-key="stat-water">4.5L</div><div class="stat-lab">su</div></div>
+    <div class="stat"><div class="stat-val" contenteditable="true" data-key="stat-training">6+1</div><div class="stat-lab">antrenman</div></div>
+  </div>
+</header>
+
+<section>
+  <h2>Bugün</h2>
+  <div class="today-card">
+    <div class="today-header">
+      <div class="today-date" id="todayDate"></div>
+      <div class="today-weight">Tartı: <input type="number" id="todayWeight" step="0.1" placeholder="142.0"> kg</div>
+    </div>
+
+    <div class="water-section">
+      <div class="water-label">
+        <span>Su</span>
+        <span><span id="waterCount">0</span> / 9 bardak · 4.5 L</span>
+      </div>
+      <div class="water-glasses" id="waterGlasses"></div>
+    </div>
+
+    <div class="meal-checks" id="mealChecks"></div>
+
+    <textarea class="daily-notes" id="dailyNotes" placeholder="Bugüne notlar (enerji, açlık, performans, uyku)..."></textarea>
+
+    <button class="reset-btn" id="resetDayBtn">Günü sıfırla</button>
+  </div>
+</section>
+
+<section>
+  <h2>Günlük Plan</h2>
+
+  <div class="plan-row">
+    <div class="plan-time">07:00</div>
+    <div class="plan-content">
+      <div class="plan-name">KAHVALTI <span class="plan-macros">~410 kcal · 40P / 25C / 18F</span></div>
+      <ul class="plan-items" contenteditable="true" data-key="meal-breakfast">
+        <li>4 yumurta omleti (1 tam + 3 beyaz), 1 tatlı kaşığı zeytinyağı ile</li>
+        <li>100g lor veya çökelek (yaklaşık 4 yemek kaşığı)</li>
+        <li>Salatalık, domates, biber, roka, maydanoz — sınırsız</li>
+        <li>1 dilim çavdar veya ekşi mayalı tam buğday ekmeği</li>
+        <li>Şekersiz Türk kahvesi veya yeşil çay</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="plan-row">
+    <div class="plan-time">12:30</div>
+    <div class="plan-content">
+      <div class="plan-name">ÖĞLE <span class="plan-macros">~610 kcal · 76P / 50C / 15F</span></div>
+      <ul class="plan-items" contenteditable="true" data-key="meal-lunch">
+        <li>200g ızgara veya haşlama tavuk veya hindi göğsü</li>
+        <li>5 yemek kaşığı pişmiş karabuğday veya kinoa</li>
+        <li>Bol yeşil salata + 1 tatlı kaşığı sızma zeytinyağı + limon</li>
+        <li>1 kase yoğurt</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="plan-row">
+    <div class="plan-time">15:30</div>
+    <div class="plan-content">
+      <div class="plan-name">ANTRENMAN ÖNCESİ <span class="plan-macros">~290 kcal · 15P / 30C / 13F</span></div>
+      <ul class="plan-items" contenteditable="true" data-key="meal-pre">
+        <li>200g yoğurt</li>
+        <li>1 muz</li>
+        <li>10-12 badem</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="workout-row">
+    <div class="plan-row">
+      <div class="plan-time">17:30</div>
+      <div class="plan-content">
+        <div class="plan-name">ANTRENMAN <span class="plan-macros">60-75 dk · antrenman içi 1 L su</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="plan-row">
+    <div class="plan-time">18:45</div>
+    <div class="plan-content">
+      <div class="plan-name">ANTRENMAN SONRASI <span class="plan-macros">~220 kcal · 33P / 16C / 4F</span></div>
+      <ul class="plan-items" contenteditable="true" data-key="meal-post">
+        <li>1 ölçek whey protein</li>
+        <li>250 ml laktozsuz süt</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="plan-row">
+    <div class="plan-time">19:30</div>
+    <div class="plan-content">
+      <div class="plan-name">AKŞAM <span class="plan-macros">~430 kcal · 53P / 18C / 16F</span></div>
+      <ul class="plan-items" contenteditable="true" data-key="meal-dinner">
+        <li>150g ızgara tavuk veya hindi göğsü</li>
+        <li>Bol pişmiş sebze: ıspanak, kabak, brokoli, taze fasulye (1 tatlı kaşığı zeytinyağı)</li>
+        <li>1 kase cacık</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="plan-row">
+    <div class="plan-time">20:30</div>
+    <div class="plan-content">
+      <div class="plan-name">DUKAN BİRASI <span class="plan-macros">~5 kcal · serbest, akşam içeceği</span></div>
+      <ul class="plan-items" contenteditable="true" data-key="meal-evening">
+        <li>Soğutulmuş 1 fincan demli yeşil çay + 250 ml sade soda + ½ limonun suyu, buzla</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="help-text">Her öğünün içeriğini tıklayıp düzenleyebilirsin. Değişiklikler tarayıcında otomatik kaydedilir.</div>
+</section>
+
+<section>
+  <h2>Haftalık Alışveriş</h2>
+  <div class="shop-grid">
+    <div class="shop-group">
+      <h3>Protein</h3>
+      <div class="shop-item" data-id="yumurta"><div class="shop-check"></div><div class="shop-name">Yumurta</div><div class="shop-qty">30 adet</div></div>
+      <div class="shop-item" data-id="lor"><div class="shop-check"></div><div class="shop-name">Lor veya çökelek</div><div class="shop-qty">700 g</div></div>
+      <div class="shop-item" data-id="yogurt"><div class="shop-check"></div><div class="shop-name">Yoğurt</div><div class="shop-qty">4 kg</div></div>
+      <div class="shop-item" data-id="tavuk"><div class="shop-check"></div><div class="shop-name">Tavuk veya hindi göğsü</div><div class="shop-qty">2.5 kg</div></div>
+      <div class="shop-item" data-id="sut"><div class="shop-check"></div><div class="shop-name">Laktozsuz süt</div><div class="shop-qty">2 L</div></div>
+    </div>
+    <div class="shop-group">
+      <h3>Tahıl</h3>
+      <div class="shop-item" data-id="ekmek"><div class="shop-check"></div><div class="shop-name">Çavdar veya ekşi maya ekmeği</div><div class="shop-qty">1 somun</div></div>
+      <div class="shop-item" data-id="karabuğday"><div class="shop-check"></div><div class="shop-name">Karabuğday veya kinoa</div><div class="shop-qty">500 g</div></div>
+
+      <h3 style="margin-top: 18px;">Meyve ve kuruyemiş</h3>
+      <div class="shop-item" data-id="muz"><div class="shop-check"></div><div class="shop-name">Muz</div><div class="shop-qty">7 adet</div></div>
+      <div class="shop-item" data-id="badem"><div class="shop-check"></div><div class="shop-name">Badem (çiğ, kabuksuz)</div><div class="shop-qty">100 g</div></div>
+    </div>
+    <div class="shop-note">Sebze, sızma zeytinyağı, whey protein ve mutfak stokları (yeşil çay, kahve, sade soda, limon, baharat) listede değildir.</div>
+  </div>
+  <div class="help-text">Kalemleri tıklayarak işaretle. Liste her hafta otomatik sıfırlanır (yeni haftada bütün işaretler temiz başlar).</div>
+</section>
+
+<section>
+  <h2>Değişmez Kurallar</h2>
+  <ul class="rules-list" contenteditable="true" data-key="rules">
+    <li><strong>Sıvı.</strong> Günde 4.5 L su, gün boyuna yay. Antrenman içi 1 L bunun parçasıdır. Sodyumu yemekten al, ayrıca takviye gerekmez.</li>
+    <li><strong>Sıfır içecek.</strong> Alkol, meyve suyu, gazlı içecek, şekerli paketli — hepsi devre dışı. Sade soda ve Dukan birası serbest.</li>
+    <li><strong>Akşam kapanışı.</strong> Son lokma 20:00. Sonrası sadece su, sade soda, şekersiz bitki çayı veya Dukan birası.</li>
+    <li><strong>Tuz makul.</strong> İşlenmiş et, salam, sucuk, hazır sos yok. Yemeğin doğal tuzu serbest.</li>
+    <li><strong>Protein önce.</strong> Tabakta önce protein bitir, sonra karbonhidrat. Hedef bozulursa whey ile telafi.</li>
+    <li><strong>Tartı haftalık.</strong> Sabah aç, aynı saat, aynı kıyafet. Günlük tartı kafa karıştırır.</li>
+    <li><strong>Adım hedefi.</strong> Antrenman dışı 8.000+ adım/gün. Masa başı işin için ayağa kalk-yürü ritmi.</li>
+    <li><strong>Uyku.</strong> 7 saat altı haftalar yağ kaybını yarıya indirir. Aç hissinin önemli kısmı uyku eksikliğidir.</li>
+    <li><strong>Antrenman bölünmesi.</strong> 3 gün ağırlık (squat / bench / sırt), 3 gün kardiyo (45-60 dk LISS veya tempo), 1 gün esneme.</li>
+  </ul>
+</section>
+
+<section class="weight-log">
+  <h2>Kilo Takibi</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tarih</th>
+        <th>Hafta</th>
+        <th style="text-align: right;">Kilo (kg)</th>
+        <th style="text-align: right;">Değişim</th>
+      </tr>
+    </thead>
+    <tbody id="weightLogBody"></tbody>
+  </table>
+  <div id="addWeightRow" style="display: flex; gap: 8px; margin-top: 12px; align-items: center; flex-wrap: wrap;">
+    <input type="date" id="newDate" class="date-input">
+    <input type="number" id="newWeight" step="0.1" class="weight-input" placeholder="kg">
+    <button onclick="addWeightEntry()" class="add-btn">Kayıt ekle</button>
+  </div>
+  <div class="help-text">Üst panelden "Tartı" girince otomatik kaydedilir. Geçmiş günler için bu satırı kullan.</div>
+</section>
+
+<footer>
+  ⚠ Bu plan kan tahlili sonuçlarına dayalı genel bir çerçevedir, tıbbi tavsiye değildir. Hızlı kilo verme protokolünde safra taşı, kas kaybı ve yorgunluk riskleri için 8-12 hafta sonra kontrol tahlili ve gerekirse hekim değerlendirmesi önerilir.
+  <br><br>
+  Tüm veriler kendi tarayıcında localStorage'da tutulur. Başka cihaza taşımak için: tarayıcıda F12 → Application → Local Storage → "berkay-plan-v1" anahtarındaki JSON'ı kopyala.
+</footer>
+
+</div>
+
+<div class="save-indicator" id="saveIndicator">Kaydedildi</div>
+
+<script>
+const STORAGE_KEY = 'berkay-plan-v1';
+
+function getState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function setState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  showSaveIndicator();
+}
+
+let saveTimeout;
+function showSaveIndicator() {
+  const ind = document.getElementById('saveIndicator');
+  ind.classList.add('show');
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => ind.classList.remove('show'), 1200);
+}
+
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getTodayDisplay() {
+  const d = new Date();
+  const months = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  const days = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function getWeekKey(dateStr) {
+  const d = dateStr ? new Date(dateStr) : new Date();
+  const onejan = new Date(d.getFullYear(), 0, 1);
+  const week = Math.ceil(((d - onejan) / 86400000 + onejan.getDay() + 1) / 7);
+  return `${d.getFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+
+function formatDateShort(dateStr) {
+  const d = new Date(dateStr);
+  return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initToday();
+  initEditable();
+  initWaterTracker();
+  initMealChecks();
+  initShoppingList();
+  initNotes();
+  initResetButton();
+  initWeightInput();
+  initWeightLog();
+  document.getElementById('newDate').value = getTodayKey();
+});
+
+function initToday() {
+  document.getElementById('todayDate').textContent = getTodayDisplay();
+}
+
+function initEditable() {
+  const state = getState();
+  document.querySelectorAll('[contenteditable="true"][data-key]').forEach(el => {
+    const key = el.dataset.key;
+    if (state[key] !== undefined && state[key] !== null) {
+      el.innerHTML = state[key];
+    }
+    el.addEventListener('blur', () => {
+      const s = getState();
+      s[key] = el.innerHTML;
+      setState(s);
+    });
+  });
+}
+
+function initWaterTracker() {
+  const container = document.getElementById('waterGlasses');
+  container.innerHTML = '';
+  const today = getTodayKey();
+  const state = getState();
+  const count = state.daily?.[today]?.water || 0;
+
+  for (let i = 0; i < 9; i++) {
+    const g = document.createElement('div');
+    g.className = 'glass' + (i < count ? ' filled' : '');
+    g.addEventListener('click', () => toggleWater(i));
+    container.appendChild(g);
+  }
+  document.getElementById('waterCount').textContent = count;
+}
+
+function toggleWater(index) {
+  const today = getTodayKey();
+  const state = getState();
+  state.daily = state.daily || {};
+  state.daily[today] = state.daily[today] || {};
+  let count = state.daily[today].water || 0;
+
+  if (index === count - 1) {
+    count = index;
+  } else {
+    count = index + 1;
+  }
+
+  state.daily[today].water = count;
+  setState(state);
+
+  document.querySelectorAll('.glass').forEach((g, i) => {
+    g.classList.toggle('filled', i < count);
+  });
+  document.getElementById('waterCount').textContent = count;
+}
+
+const MEALS = [
+  { time: '07:00', name: 'Kahvaltı' },
+  { time: '12:30', name: 'Öğle' },
+  { time: '15:30', name: 'Pre-WO' },
+  { time: '17:30', name: 'Antrenman' },
+  { time: '18:45', name: 'Post-WO' },
+  { time: '19:30', name: 'Akşam' },
+  { time: '20:30', name: 'Dukan' }
+];
+
+function initMealChecks() {
+  const container = document.getElementById('mealChecks');
+  container.innerHTML = '';
+  const today = getTodayKey();
+  const state = getState();
+  const done = state.daily?.[today]?.meals || {};
+
+  MEALS.forEach(meal => {
+    const div = document.createElement('div');
+    div.className = 'meal-check' + (done[meal.time] ? ' done' : '');
+    div.innerHTML = `<div class="time">${meal.time}</div><div class="name">${meal.name}</div>`;
+    div.addEventListener('click', () => toggleMeal(meal.time, div));
+    container.appendChild(div);
+  });
+}
+
+function toggleMeal(time, el) {
+  const today = getTodayKey();
+  const state = getState();
+  state.daily = state.daily || {};
+  state.daily[today] = state.daily[today] || {};
+  state.daily[today].meals = state.daily[today].meals || {};
+  state.daily[today].meals[time] = !state.daily[today].meals[time];
+  setState(state);
+  el.classList.toggle('done', state.daily[today].meals[time]);
+}
+
+function initShoppingList() {
+  const state = getState();
+  const week = getWeekKey();
+  const shopState = state.shopping?.[week] || {};
+
+  document.querySelectorAll('.shop-item').forEach(item => {
+    const id = item.dataset.id;
+    item.classList.toggle('checked', !!shopState[id]);
+    item.addEventListener('click', () => toggleShop(id, item));
+  });
+}
+
+function toggleShop(id, el) {
+  const state = getState();
+  const week = getWeekKey();
+  state.shopping = state.shopping || {};
+  state.shopping[week] = state.shopping[week] || {};
+  state.shopping[week][id] = !state.shopping[week][id];
+  setState(state);
+  el.classList.toggle('checked', state.shopping[week][id]);
+}
+
+function initNotes() {
+  const today = getTodayKey();
+  const state = getState();
+  const notes = state.daily?.[today]?.notes || '';
+  const ta = document.getElementById('dailyNotes');
+  ta.value = notes;
+  ta.addEventListener('blur', () => {
+    const s = getState();
+    s.daily = s.daily || {};
+    s.daily[today] = s.daily[today] || {};
+    s.daily[today].notes = ta.value;
+    setState(s);
+  });
+}
+
+function initResetButton() {
+  document.getElementById('resetDayBtn').addEventListener('click', () => {
+    if (!confirm('Bugünün takibini sıfırlamak istiyor musun?\n(Notlar, su sayacı, öğün işaretleri silinir. Kilo kaydı silinmez.)')) return;
+    const today = getTodayKey();
+    const state = getState();
+    if (state.daily?.[today]) {
+      const w = state.daily[today].weight;
+      state.daily[today] = w ? { weight: w } : undefined;
+      if (!state.daily[today]) delete state.daily[today];
+    }
+    setState(state);
+    location.reload();
+  });
+}
+
+function initWeightInput() {
+  const today = getTodayKey();
+  const state = getState();
+  const tw = state.daily?.[today]?.weight;
+  const input = document.getElementById('todayWeight');
+  if (tw) input.value = tw;
+
+  input.addEventListener('blur', () => {
+    const w = parseFloat(input.value);
+    if (!w || isNaN(w)) return;
+    const s = getState();
+    s.daily = s.daily || {};
+    s.daily[today] = s.daily[today] || {};
+    s.daily[today].weight = w;
+    s.weightLog = s.weightLog || [];
+    s.weightLog = s.weightLog.filter(e => e.date !== today);
+    s.weightLog.push({ date: today, weight: w });
+    setState(s);
+    initWeightLog();
+  });
+}
+
+function initWeightLog() {
+  const state = getState();
+  const log = (state.weightLog || []).slice().sort((a, b) => a.date.localeCompare(b.date));
+  const body = document.getElementById('weightLogBody');
+  body.innerHTML = '';
+
+  if (log.length === 0) {
+    body.innerHTML = '<tr><td colspan="4" class="empty-log">Henüz tartı kaydı yok. Üstten bugünün kilosunu gir.</td></tr>';
+    return;
+  }
+
+  const lastN = log.slice(-14);
+  lastN.forEach((entry, i) => {
+    const prev = i > 0 ? lastN[i - 1].weight : null;
+    let diffStr = '—';
+    let diffClass = '';
+    if (prev !== null) {
+      const d = entry.weight - prev;
+      const sign = d > 0 ? '+' : '';
+      diffStr = `${sign}${d.toFixed(1)}`;
+      diffClass = d < 0 ? 'diff-down' : 'diff-up';
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${formatDateShort(entry.date)}</td>
+      <td>${getWeekKey(entry.date).slice(-3)}</td>
+      <td class="num">${entry.weight.toFixed(1)}</td>
+      <td class="num ${diffClass}">${diffStr}</td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+function addWeightEntry() {
+  const date = document.getElementById('newDate').value;
+  const weight = parseFloat(document.getElementById('newWeight').value);
+  if (!date || !weight || isNaN(weight)) {
+    alert('Tarih ve kilo gerekli.');
+    return;
+  }
+  const state = getState();
+  state.weightLog = state.weightLog || [];
+  state.weightLog = state.weightLog.filter(e => e.date !== date);
+  state.weightLog.push({ date, weight });
+  setState(state);
+  document.getElementById('newWeight').value = '';
+  initWeightLog();
+}
+</script>
+</body>
+</html>
