@@ -393,9 +393,17 @@
           sel.initialWorkingWeight = Math.ceil((sel.initialWorkingWeight * 2) / 5) * 5;
         changed = true;
       }
-      if (sel.slotCode === 'G3_1' && sel.selectedExercise === 'Over Head Press') {
-        sel.selectedExercise = 'Shoulder Press Machine';
-        changed = true;
+    }
+
+    // G3_1 → Over Head Press migration (bir kez çalışır)
+    if (!program.setup_data.migrations?.includes('g3_overhead_press')) {
+      if (!program.setup_data.migrations) program.setup_data.migrations = [];
+      program.setup_data.migrations.push('g3_overhead_press');
+      for (const sel of selections) {
+        if (sel.slotCode === 'G3_1' && sel.selectedExercise !== 'Over Head Press') {
+          sel.selectedExercise = 'Over Head Press';
+          changed = true;
+        }
       }
     }
 
