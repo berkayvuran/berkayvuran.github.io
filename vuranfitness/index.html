@@ -186,7 +186,7 @@
   const EXERCISE_OPTIONS = {
     chest_press:    ['Bench Press', 'Dumbbell Chest Press', 'Incline Bench Press'],
     squat:          ['Squat', 'Leg Press', 'Hack Squat', 'Bridge', 'Hip Thrust'],
-    shoulder_press: ['Over Head Press', 'Dumbbell Shoulder Press', 'Smith Machine Shoulder Press', 'Shoulder Press Machine'],
+    shoulder_press: ['Shoulder Press Machine', 'Over Head Press', 'Dumbbell Shoulder Press', 'Smith Machine Shoulder Press'],
     hinge:          ['Romanian DL', 'Dumbbell Romanian Deadlift', 'Hip Thrust'],
     row:            ['Barbell Row', 'T-Bar Row', 'Machine Row'],
     vertical_pull:  ['Pull Ups', 'Negative Pull Ups', 'Lat Pulldown', 'High Row Machine', 'Single Arm Pulldown'],
@@ -395,13 +395,13 @@
       }
     }
 
-    // G3_1 → Over Head Press migration (bir kez çalışır)
-    if (!program.setup_data.migrations?.includes('g3_overhead_press')) {
+    // G3_1 → Shoulder Press Machine migration (bir kez çalışır)
+    if (!program.setup_data.migrations?.includes('g3_shoulder_press_machine')) {
       if (!program.setup_data.migrations) program.setup_data.migrations = [];
-      program.setup_data.migrations.push('g3_overhead_press');
+      program.setup_data.migrations.push('g3_shoulder_press_machine');
       for (const sel of selections) {
-        if (sel.slotCode === 'G3_1' && sel.selectedExercise !== 'Over Head Press') {
-          sel.selectedExercise = 'Over Head Press';
+        if (sel.slotCode === 'G3_1' && sel.selectedExercise === 'Over Head Press') {
+          sel.selectedExercise = 'Shoulder Press Machine';
           changed = true;
         }
       }
