@@ -84,17 +84,21 @@
       </p>
 
       <form id="loginForm" class="flex-col gap-2">
-        <div class="form-group">
+        <div class="form-group" id="tenantWrap">
           <label class="form-label" for="tenant">Hane</label>
-          <input type="text" id="tenant" class="form-input" autocapitalize="off" autocomplete="off" required/>
+          <input type="text" id="tenant" class="form-input" autocapitalize="off" autocomplete="off"/>
         </div>
         <div class="form-group">
           <label class="form-label" for="username">Kullanıcı Adı</label>
           <input type="text" id="username" class="form-input" autocapitalize="off" autocomplete="username" required/>
         </div>
         <div class="form-group">
-          <label class="form-label" for="password">Şifre</label>
+          <label class="form-label" for="password">Parola</label>
           <input type="password" id="password" class="form-input" autocomplete="current-password" required/>
+        </div>
+
+        <div id="adminHint" class="hidden mt-1" style="font-size:0.75rem;color:var(--gold);text-align:center;padding:0.4rem;background:rgba(212,160,23,0.08);border-radius:var(--radius);border:1px solid rgba(212,160,23,0.3);">
+          ⚙ Admin modu aktif — Hane gerekmiyor
         </div>
 
         <div id="errorMsg" class="error-msg hidden mt-1"></div>
@@ -113,9 +117,25 @@
   </div>
 
   <script type="module">
-    import { Auth, getSession } from './js/db.js';
+    import { Auth, Admin, getSession } from './js/db.js';
 
     if (getSession()) window.location.href = 'app.html';
+
+    const ADMIN_USER = 'gosplanadmin';
+
+    // "gosplanadmin" yazılırsa hane'yi gizle ve admin moduna geç
+    function updateMode() {
+      const u = document.getElementById('username').value.trim().toLowerCase();
+      const isAdmin = u === ADMIN_USER;
+      document.getElementById('tenantWrap').classList.toggle('hidden', isAdmin);
+      document.getElementById('adminHint').classList.toggle('hidden', !isAdmin);
+      const tenantInp = document.getElementById('tenant');
+      if (isAdmin) {
+        tenantInp.removeAttribute('required');
+        tenantInp.value = '';
+      }
+    }
+    document.getElementById('username').addEventListener('input', updateMode);
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -128,6 +148,32 @@
       errEl.classList.add('hidden');
       btn.disabled = true;
       btn.textContent = 'Doğrulanıyor...';
+
+      // Admin akışı
+      if (username.toLowerCase() === ADMIN_USER) {
+        try {
+          const ok = await Admin.verify(username, password);
+          if (!ok) throw new Error('Hatalı admin bilgileri');
+          sessionStorage.setItem('gosplan_admin_creds', btoa(JSON.stringify({u: username, p: password})));
+          btn.textContent = '✓ Admin paneli açılıyor';
+          setTimeout(() => window.location.href = 'admin.html', 300);
+        } catch (e) {
+          errEl.textContent = e.message;
+          errEl.classList.remove('hidden');
+          btn.disabled = false;
+          btn.textContent = '☭  Gir';
+        }
+        return;
+      }
+
+      // Normal kullanıcı akışı
+      if (!tenant) {
+        errEl.textContent = 'Hane adı gerekli';
+        errEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = '☭  Gir';
+        return;
+      }
 
       try {
         await Auth.login(tenant, username, password);

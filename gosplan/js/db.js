@@ -65,7 +65,7 @@ export const Auth = {
       p_password: password
     });
     if (!rows || rows.length === 0) {
-      throw new Error('Hane, kullanıcı adı veya şifre hatalı');
+      throw new Error('Hane, kullanıcı adı veya parola hatalı');
     }
     const r = rows[0];
     const session = {
@@ -156,8 +156,11 @@ export const Transactions = {
   list: (filters = {}) => {
     let q = `transactions?${T()}&order=date.desc,created_at.desc&select=*,items(name,categories(name,type,color)),app_users(display_name,username)`;
     if (filters.month && filters.year) {
-      const from = `${filters.year}-${String(filters.month).padStart(2,'0')}-01`;
-      const to   = `${filters.year}-${String(filters.month).padStart(2,'0')}-31`;
+      const mm   = String(filters.month).padStart(2,'0');
+      const from = `${filters.year}-${mm}-01`;
+      // Sonraki ayın 1'inden bir önceki gün (ay sonu doğru hesabı)
+      const last = new Date(filters.year, filters.month, 0).getDate();
+      const to   = `${filters.year}-${mm}-${String(last).padStart(2,'0')}`;
       q += `&date=gte.${from}&date=lte.${to}`;
     }
     return sbFetch(q);
