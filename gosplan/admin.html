@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gosplan — Platform Yönetimi</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/theme.css"/>
@@ -95,28 +96,28 @@
     <!-- Panel -->
     <div id="panel" class="hidden">
 
-      <!-- Create tenant -->
+      <!-- Create hane -->
       <div class="card">
-        <h3>Yeni Tenant Oluştur</h3>
+        <h3>Yeni Hane Oluştur</h3>
         <form id="createTenantForm" class="grid-2">
           <div class="form-group">
-            <label class="form-label">Tenant Adı (URL-safe)</label>
-            <input type="text" id="newTenantName" class="form-input" placeholder="vuran" autocapitalize="off" required/>
+            <label class="form-label">Hane Kodu (URL-safe, küçük harf)</label>
+            <input type="text" id="newTenantName" class="form-input" autocapitalize="off" required/>
           </div>
           <div class="form-group">
             <label class="form-label">Görünen İsim</label>
-            <input type="text" id="newTenantDisplay" class="form-input" placeholder="Vuran Hane"/>
+            <input type="text" id="newTenantDisplay" class="form-input"/>
           </div>
           <button type="submit" class="btn btn-primary" id="createBtn" style="grid-column:1/-1;">
-            + Tenant Oluştur
+            + Hane Oluştur
           </button>
         </form>
         <div id="createMsg" class="mt-2"></div>
       </div>
 
-      <!-- List tenants -->
+      <!-- List hanes -->
       <div class="card">
-        <h3>Mevcut Tenantlar</h3>
+        <h3>Mevcut Haneler</h3>
         <div id="tenantList"></div>
       </div>
 
@@ -153,7 +154,7 @@
         const list = await Admin.listTenants(c.u, c.p);
         const el = document.getElementById('tenantList');
         if (!list || list.length === 0) {
-          el.innerHTML = '<p class="text-muted" style="font-size:0.85rem;">Henüz tenant yok.</p>';
+          el.innerHTML = '<p class="text-muted" style="font-size:0.85rem;">Henüz hane yok.</p>';
           return;
         }
         el.innerHTML = list.map(t => `
@@ -174,7 +175,7 @@
     }
 
     window.deleteTenant = async (id, name) => {
-      if (!confirm(`"${name}" tenant'ı tüm kullanıcı ve verilerle birlikte silinecek. Emin misin?`)) return;
+      if (!confirm(`"${name}" hanesi tüm kullanıcı ve verilerle birlikte silinecek. Emin misin?`)) return;
       const c = getAdminCreds();
       try {
         await Admin.deleteTenant(c.u, c.p, id);
@@ -215,14 +216,14 @@
       btn.disabled = true; btn.textContent = 'Oluşturuluyor...';
       try {
         await Admin.createTenant(c.u, c.p, name, display || name);
-        msg.innerHTML = `<div class="success-msg">✓ Tenant "${name}" oluşturuldu</div>`;
+        msg.innerHTML = `<div class="success-msg">✓ Hane "${name}" oluşturuldu</div>`;
         document.getElementById('newTenantName').value = '';
         document.getElementById('newTenantDisplay').value = '';
         await loadTenants();
       } catch (e) {
         msg.innerHTML = `<div class="error-msg">${e.message}</div>`;
       } finally {
-        btn.disabled = false; btn.textContent = '+ Tenant Oluştur';
+        btn.disabled = false; btn.textContent = '+ Hane Oluştur';
       }
     });
 

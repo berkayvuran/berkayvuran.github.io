@@ -4,8 +4,19 @@ const SESSION_KEY  = 'gosplan_session';
 
 // ── Session helpers ──────────────────────────────────────
 export function getSession() {
-  const raw = sessionStorage.getItem(SESSION_KEY);
-  return raw ? JSON.parse(raw) : null;
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.tenantId || !parsed?.userId) {
+      sessionStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return parsed;
+  } catch {
+    sessionStorage.removeItem(SESSION_KEY);
+    return null;
+  }
 }
 export function setSession(data) {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
@@ -54,7 +65,7 @@ export const Auth = {
       p_password: password
     });
     if (!rows || rows.length === 0) {
-      throw new Error('Tenant, kullanıcı adı veya şifre hatalı');
+      throw new Error('Hane, kullanıcı adı veya şifre hatalı');
     }
     const r = rows[0];
     const session = {

@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gosplan — Kayıt</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/theme.css"/>
@@ -64,25 +65,25 @@
 
     <div class="card">
       <p class="hint">
-        Tenant'a katılmak için tenant adını bilmen gerekir. Kayıt olduktan sonra otomatik giriş yapılır.
+        Haneye katılmak için hane adını bilmen gerekir. Kayıt olduktan sonra otomatik giriş yapılır.
       </p>
 
       <form id="regForm" class="flex-col gap-2">
         <div class="form-group">
-          <label class="form-label" for="tenant">Tenant</label>
-          <input type="text" id="tenant" class="form-input" placeholder="Örn: vuran" autocapitalize="off" autocomplete="off" required/>
+          <label class="form-label" for="tenant">Hane</label>
+          <input type="text" id="tenant" class="form-input" autocapitalize="off" autocomplete="off" required/>
         </div>
         <div class="form-group">
           <label class="form-label" for="username">Kullanıcı Adı</label>
-          <input type="text" id="username" class="form-input" placeholder="berkay" autocapitalize="off" autocomplete="username" required/>
+          <input type="text" id="username" class="form-input" autocapitalize="off" autocomplete="username" required/>
         </div>
         <div class="form-group">
           <label class="form-label" for="displayName">Görünen İsim</label>
-          <input type="text" id="displayName" class="form-input" placeholder="Berkay" autocomplete="name"/>
+          <input type="text" id="displayName" class="form-input" autocomplete="name"/>
         </div>
         <div class="form-group">
           <label class="form-label" for="password">Şifre (min 6 karakter)</label>
-          <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="new-password" required minlength="6"/>
+          <input type="password" id="password" class="form-input" autocomplete="new-password" required minlength="6"/>
         </div>
 
         <div id="errorMsg" class="error-msg hidden mt-1"></div>
@@ -117,10 +118,10 @@
       errEl.classList.add('hidden');
       okEl.classList.add('hidden');
 
-      // Tenant kontrol
+      // Hane kontrol
       try {
         if (!(await Auth.tenantExists(tenant))) {
-          errEl.textContent = `Tenant "${tenant}" bulunamadı. Tenant adını teyit et.`;
+          errEl.textContent = `Hane bulunamadı. Adı teyit et.`;
           errEl.classList.remove('hidden');
           return;
         }

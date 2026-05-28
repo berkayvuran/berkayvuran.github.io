@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gosplan — Giriş</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/theme.css"/>
@@ -84,27 +85,27 @@
 
       <form id="loginForm" class="flex-col gap-2">
         <div class="form-group">
-          <label class="form-label" for="tenant">Tenant</label>
-          <input type="text" id="tenant" class="form-input" placeholder="vuran" autocapitalize="off" autocomplete="off" required/>
+          <label class="form-label" for="tenant">Hane</label>
+          <input type="text" id="tenant" class="form-input" autocapitalize="off" autocomplete="off" required/>
         </div>
         <div class="form-group">
           <label class="form-label" for="username">Kullanıcı Adı</label>
-          <input type="text" id="username" class="form-input" placeholder="berkay" autocapitalize="off" autocomplete="username" required/>
+          <input type="text" id="username" class="form-input" autocapitalize="off" autocomplete="username" required/>
         </div>
         <div class="form-group">
           <label class="form-label" for="password">Şifre</label>
-          <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="current-password" required/>
+          <input type="password" id="password" class="form-input" autocomplete="current-password" required/>
         </div>
 
         <div id="errorMsg" class="error-msg hidden mt-1"></div>
 
         <button type="submit" class="btn btn-primary btn-full mt-2" id="loginBtn">
-          ☭ &nbsp;Devrime Gir
+          ☭ &nbsp;Gir
         </button>
       </form>
 
       <div class="login-footer mt-3">
-        Tenant'a kayıtlı değil misin? <a href="register.html">Kayıt Ol</a>
+        Haneye kayıtlı değil misin? <a href="register.html">Kayıt Ol</a>
       </div>
     </div>
 
@@ -136,7 +137,7 @@
         errEl.textContent = e.message;
         errEl.classList.remove('hidden');
         btn.disabled = false;
-        btn.textContent = '☭  Devrime Gir';
+        btn.textContent = '☭  Gir';
       }
     });
   </script>
