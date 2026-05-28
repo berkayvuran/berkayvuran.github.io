@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GOSPLAN — Giriş</title>
+  <title>Gosplan — Giriş</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/theme.css"/>
@@ -17,188 +17,126 @@
         radial-gradient(ellipse at 20% 50%, rgba(127,29,29,0.12) 0%, transparent 60%),
         radial-gradient(ellipse at 80% 20%, rgba(185,28,28,0.08) 0%, transparent 50%),
         var(--bg);
-    }
-
-    .login-wrap {
-      width: 100%;
-      max-width: 400px;
       padding: 1rem;
     }
-
-    .login-logo {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-
+    .login-wrap { width: 100%; max-width: 420px; }
+    .login-logo { text-align: center; margin-bottom: 2rem; }
     .star-symbol {
-      font-size: 3.5rem;
-      line-height: 1;
-      display: block;
-      margin-bottom: 0.75rem;
+      font-size: 3.5rem; line-height: 1; display: block; margin-bottom: 0.6rem;
       filter: drop-shadow(0 0 12px rgba(220,38,38,0.6));
       animation: glow 3s ease-in-out infinite;
     }
-
     @keyframes glow {
       0%, 100% { filter: drop-shadow(0 0 8px rgba(220,38,38,0.5)); }
-      50%       { filter: drop-shadow(0 0 20px rgba(239,68,68,0.9)); }
+      50%      { filter: drop-shadow(0 0 20px rgba(239,68,68,0.9)); }
     }
-
     .login-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: 0.12em;
+      font-size: 2.5rem; font-weight: 800; letter-spacing: 0.04em;
       color: var(--red-400);
-      text-transform: uppercase;
     }
-
     .login-subtitle {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      margin-top: 0.4rem;
+      font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.15em;
+      text-transform: uppercase; margin-top: 0.3rem;
     }
-
     .login-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-bright);
-      border-radius: var(--radius-xl);
-      padding: 2rem;
+      background: var(--bg-card); border: 1px solid var(--border-bright);
+      border-radius: var(--radius-xl); padding: 1.75rem;
       box-shadow: var(--shadow-lg);
     }
-
     .manifesto {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-style: italic;
-      text-align: center;
-      margin-bottom: 1.75rem;
-      line-height: 1.6;
-      border-left: 2px solid var(--red-800);
-      padding-left: 0.75rem;
-      text-align: left;
+      font-size: 0.78rem; color: var(--text-muted); font-style: italic;
+      margin-bottom: 1.5rem; line-height: 1.6;
+      border-left: 2px solid var(--red-800); padding-left: 0.75rem;
     }
-
-    .password-wrap {
-      position: relative;
-    }
-
-    .password-wrap .form-input {
-      padding-right: 3rem;
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      letter-spacing: 0.15em;
-    }
-
-    .toggle-pw {
-      position: absolute;
-      right: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 0.25rem;
-    }
-    .toggle-pw:hover { color: var(--text-primary); }
-
     .error-msg {
-      color: var(--red-300);
-      font-size: 0.82rem;
-      text-align: center;
-      padding: 0.5rem;
-      background: rgba(127,29,29,0.2);
-      border-radius: var(--radius);
-      border: 1px solid var(--red-800);
+      color: var(--red-300); font-size: 0.82rem;
+      padding: 0.55rem 0.75rem; background: rgba(127,29,29,0.2);
+      border-radius: var(--radius); border: 1px solid var(--red-800);
     }
-
     .login-footer {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 0.72rem;
-      color: var(--text-muted);
+      text-align: center; margin-top: 1.75rem;
+      font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em;
+    }
+    .login-footer a {
+      color: var(--gold); text-decoration: none; font-weight: 600;
+    }
+    .login-footer a:hover { color: var(--gold-light); text-decoration: underline; }
+    .admin-link {
+      display: block; text-align: center; margin-top: 1rem;
+      font-size: 0.7rem; color: var(--text-muted); text-decoration: none;
       letter-spacing: 0.05em;
     }
-    .login-footer strong { color: var(--text-gold); }
+    .admin-link:hover { color: var(--text-secondary); }
   </style>
 </head>
 <body>
   <div class="login-wrap">
     <div class="login-logo">
       <span class="star-symbol">☭</span>
-      <div class="login-title">GOSPLAN</div>
+      <div class="login-title">Gosplan</div>
       <div class="login-subtitle">İşçinin Bütçe Defteri</div>
     </div>
 
     <div class="login-card">
       <p class="manifesto">
-        "Proleterlerin zincirlerinden başka kaybedecekleri bir şeyleri yok.<br/>
-        Ama kazanacakları bir dünya var."
+        "Proleterlerin zincirlerinden başka kaybedecekleri bir şeyleri yok. Kazanacakları bir dünya var."
       </p>
 
-      <form id="loginForm">
-        <div class="form-group mb-2">
+      <form id="loginForm" class="flex-col gap-2">
+        <div class="form-group">
+          <label class="form-label" for="tenant">Tenant</label>
+          <input type="text" id="tenant" class="form-input" placeholder="vuran" autocapitalize="off" autocomplete="off" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="username">Kullanıcı Adı</label>
+          <input type="text" id="username" class="form-input" placeholder="berkay" autocapitalize="off" autocomplete="username" required/>
+        </div>
+        <div class="form-group">
           <label class="form-label" for="password">Şifre</label>
-          <div class="password-wrap">
-            <input
-              type="password"
-              id="password"
-              class="form-input"
-              placeholder="••••••••••"
-              autocomplete="current-password"
-              autofocus
-            />
-            <button type="button" class="toggle-pw" id="togglePw" tabindex="-1">👁</button>
-          </div>
+          <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="current-password" required/>
         </div>
 
-        <div id="errorMsg" class="error-msg hidden mb-2">
-          Yanlış şifre. Burjuvaziye bilgi verilmez.
-        </div>
+        <div id="errorMsg" class="error-msg hidden mt-1"></div>
 
         <button type="submit" class="btn btn-primary btn-full mt-2" id="loginBtn">
           ☭ &nbsp;Devrime Gir
         </button>
       </form>
+
+      <div class="login-footer mt-3">
+        Tenant'a kayıtlı değil misin? <a href="register.html">Kayıt Ol</a>
+      </div>
     </div>
 
-    <div class="login-footer">
-      <strong>GOSPLAN</strong> &mdash; Devlet Planlama Komitesi, 2026
-    </div>
+    <a href="admin.html" class="admin-link">⚙ Platform Yönetimi</a>
   </div>
 
-  <script>
-    const MASTER_PASSWORD = 'Nakama123!';
-    const SESSION_KEY = 'gosplan_session';
+  <script type="module">
+    import { Auth, getSession } from './js/db.js';
 
-    if (sessionStorage.getItem(SESSION_KEY) === 'authenticated') {
-      window.location.href = 'app.html';
-    }
+    if (getSession()) window.location.href = 'app.html';
 
-    document.getElementById('togglePw').addEventListener('click', () => {
-      const inp = document.getElementById('password');
-      inp.type = inp.type === 'password' ? 'text' : 'password';
-    });
-
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const pw = document.getElementById('password').value;
-      const err = document.getElementById('errorMsg');
-      const btn = document.getElementById('loginBtn');
+      const tenant   = document.getElementById('tenant').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const errEl    = document.getElementById('errorMsg');
+      const btn      = document.getElementById('loginBtn');
 
-      if (pw === MASTER_PASSWORD) {
-        sessionStorage.setItem(SESSION_KEY, 'authenticated');
-        btn.textContent = '✓ Giriş yapılıyor...';
-        btn.disabled = true;
-        setTimeout(() => window.location.href = 'app.html', 400);
-      } else {
-        err.classList.remove('hidden');
-        document.getElementById('password').value = '';
-        document.getElementById('password').focus();
-        setTimeout(() => err.classList.add('hidden'), 3000);
+      errEl.classList.add('hidden');
+      btn.disabled = true;
+      btn.textContent = 'Doğrulanıyor...';
+
+      try {
+        await Auth.login(tenant, username, password);
+        btn.textContent = '✓ Giriş başarılı';
+        setTimeout(() => window.location.href = 'app.html', 300);
+      } catch (e) {
+        errEl.textContent = e.message;
+        errEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = '☭  Devrime Gir';
       }
     });
   </script>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gosplan — Platform Yönetimi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/theme.css"/>
+  <style>
+    body {
+      min-height: 100vh; padding: 1rem;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(127,29,29,0.15) 0%, transparent 60%),
+        var(--bg);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding-top: 2rem; }
+    .logo { text-align: center; margin-bottom: 1.75rem; }
+    .star { font-size: 2.5rem; color: var(--gold); display: block; margin-bottom: 0.4rem; }
+    .title {
+      font-size: 1.6rem; font-weight: 800; letter-spacing: 0.04em;
+      color: var(--gold);
+    }
+    .subtitle {
+      font-size: 0.7rem; color: var(--text-muted);
+      letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.3rem;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow);
+      margin-bottom: 1.25rem;
+    }
+    .error-msg {
+      color: var(--red-300); font-size: 0.82rem;
+      padding: 0.55rem 0.75rem; background: rgba(127,29,29,0.2);
+      border-radius: var(--radius); border: 1px solid var(--red-800);
+    }
+    .success-msg {
+      color: var(--green-light); font-size: 0.82rem;
+      padding: 0.55rem 0.75rem; background: rgba(22,163,74,0.15);
+      border-radius: var(--radius); border: 1px solid var(--green);
+    }
+    .tenant-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 0.5rem;
+    }
+    .tenant-name {
+      font-family: var(--font-mono); font-weight: 700; color: var(--gold);
+    }
+    .tenant-info { flex: 1; min-width: 0; }
+    .tenant-display { font-size: 0.95rem; font-weight: 600; }
+    .tenant-stats { font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .back-link {
+      display: inline-block; margin-bottom: 1.25rem;
+      color: var(--text-muted); text-decoration: none; font-size: 0.82rem;
+    }
+    .back-link:hover { color: var(--text-secondary); }
+    h3 {
+      font-size: 1rem; margin-bottom: 1rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="index.html" class="back-link">← Giriş Sayfası</a>
+
+    <div class="logo">
+      <span class="star">⚙</span>
+      <div class="title">Platform Yönetimi</div>
+      <div class="subtitle">Gosplan Admin Konseyi</div>
+    </div>
+
+    <!-- Login -->
+    <div class="card" id="loginCard">
+      <h3>Admin Girişi</h3>
+      <form id="adminLoginForm" class="flex-col gap-2">
+        <div class="form-group">
+          <label class="form-label">Admin Kullanıcı Adı</label>
+          <input type="text" id="adminUser" class="form-input" autocapitalize="off" autocomplete="username" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Admin Şifre</label>
+          <input type="password" id="adminPass" class="form-input" autocomplete="current-password" required/>
+        </div>
+        <div id="loginError" class="error-msg hidden mt-1"></div>
+        <button type="submit" class="btn btn-primary btn-full mt-2" id="loginBtn">
+          ⚙ &nbsp;Giriş
+        </button>
+      </form>
+    </div>
+
+    <!-- Panel -->
+    <div id="panel" class="hidden">
+
+      <!-- Create tenant -->
+      <div class="card">
+        <h3>Yeni Tenant Oluştur</h3>
+        <form id="createTenantForm" class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Tenant Adı (URL-safe)</label>
+            <input type="text" id="newTenantName" class="form-input" placeholder="vuran" autocapitalize="off" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Görünen İsim</label>
+            <input type="text" id="newTenantDisplay" class="form-input" placeholder="Vuran Hane"/>
+          </div>
+          <button type="submit" class="btn btn-primary" id="createBtn" style="grid-column:1/-1;">
+            + Tenant Oluştur
+          </button>
+        </form>
+        <div id="createMsg" class="mt-2"></div>
+      </div>
+
+      <!-- List tenants -->
+      <div class="card">
+        <h3>Mevcut Tenantlar</h3>
+        <div id="tenantList"></div>
+      </div>
+
+      <button class="btn btn-danger btn-full" id="adminLogoutBtn">⏻ Admin Çıkışı</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Admin } from './js/db.js';
+
+    const ADMIN_SESSION = 'gosplan_admin_creds';
+
+    function getAdminCreds() {
+      const v = sessionStorage.getItem(ADMIN_SESSION);
+      return v ? JSON.parse(atob(v)) : null;
+    }
+    function setAdminCreds(u, p) {
+      sessionStorage.setItem(ADMIN_SESSION, btoa(JSON.stringify({u,p})));
+    }
+    function clearAdminCreds() {
+      sessionStorage.removeItem(ADMIN_SESSION);
+    }
+
+    async function showPanel() {
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('panel').classList.remove('hidden');
+      await loadTenants();
+    }
+
+    async function loadTenants() {
+      const c = getAdminCreds();
+      if (!c) return;
+      try {
+        const list = await Admin.listTenants(c.u, c.p);
+        const el = document.getElementById('tenantList');
+        if (!list || list.length === 0) {
+          el.innerHTML = '<p class="text-muted" style="font-size:0.85rem;">Henüz tenant yok.</p>';
+          return;
+        }
+        el.innerHTML = list.map(t => `
+          <div class="tenant-row">
+            <div class="tenant-info">
+              <div class="tenant-display">${t.display_name || t.name}</div>
+              <div class="tenant-stats">
+                <span class="tenant-name">@${t.name}</span> ·
+                ${t.user_count} kullanıcı · ${t.tx_count} işlem
+              </div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="deleteTenant('${t.id}','${t.name}')">Sil</button>
+          </div>`).join('');
+      } catch (e) {
+        document.getElementById('tenantList').innerHTML =
+          `<div class="error-msg">${e.message}</div>`;
+      }
+    }
+
+    window.deleteTenant = async (id, name) => {
+      if (!confirm(`"${name}" tenant'ı tüm kullanıcı ve verilerle birlikte silinecek. Emin misin?`)) return;
+      const c = getAdminCreds();
+      try {
+        await Admin.deleteTenant(c.u, c.p, id);
+        await loadTenants();
+      } catch (e) {
+        alert(e.message);
+      }
+    };
+
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const u = document.getElementById('adminUser').value.trim();
+      const p = document.getElementById('adminPass').value;
+      const err = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+      err.classList.add('hidden');
+      btn.disabled = true; btn.textContent = 'Doğrulanıyor...';
+      try {
+        const ok = await Admin.verify(u, p);
+        if (!ok) throw new Error('Hatalı admin bilgileri');
+        setAdminCreds(u, p);
+        await showPanel();
+      } catch (e) {
+        err.textContent = e.message;
+        err.classList.remove('hidden');
+        btn.disabled = false; btn.textContent = '⚙  Giriş';
+      }
+    });
+
+    document.getElementById('createTenantForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const c = getAdminCreds();
+      const name = document.getElementById('newTenantName').value.trim();
+      const display = document.getElementById('newTenantDisplay').value.trim();
+      const msg = document.getElementById('createMsg');
+      const btn = document.getElementById('createBtn');
+      msg.innerHTML = '';
+      btn.disabled = true; btn.textContent = 'Oluşturuluyor...';
+      try {
+        await Admin.createTenant(c.u, c.p, name, display || name);
+        msg.innerHTML = `<div class="success-msg">✓ Tenant "${name}" oluşturuldu</div>`;
+        document.getElementById('newTenantName').value = '';
+        document.getElementById('newTenantDisplay').value = '';
+        await loadTenants();
+      } catch (e) {
+        msg.innerHTML = `<div class="error-msg">${e.message}</div>`;
+      } finally {
+        btn.disabled = false; btn.textContent = '+ Tenant Oluştur';
+      }
+    });
+
+    document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+      clearAdminCreds();
+      window.location.href = 'index.html';
+    });
+
+    // Auto-login if creds present
+    (async () => {
+      const c = getAdminCreds();
+      if (c) {
+        try {
+          const ok = await Admin.verify(c.u, c.p);
+          if (ok) { await showPanel(); return; }
+        } catch {}
+        clearAdminCreds();
+      }
+    })();
+  </script>
+</body>
+</html>

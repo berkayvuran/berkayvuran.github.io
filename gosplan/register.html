@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gosplan — Kayıt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/theme.css"/>
+  <style>
+    body {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 1rem;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(127,29,29,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(185,28,28,0.08) 0%, transparent 50%),
+        var(--bg);
+    }
+    .wrap { width: 100%; max-width: 420px; }
+    .logo { text-align: center; margin-bottom: 1.75rem; }
+    .star { font-size: 2.5rem; color: var(--red-400); display: block; margin-bottom: 0.4rem; }
+    .title {
+      font-size: 1.8rem; font-weight: 800; letter-spacing: 0.04em;
+      color: var(--red-400);
+    }
+    .subtitle {
+      font-size: 0.7rem; color: var(--text-muted);
+      letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.3rem;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border-bright);
+      border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow-lg);
+    }
+    .hint {
+      font-size: 0.78rem; color: var(--text-muted); font-style: italic;
+      border-left: 2px solid var(--red-800); padding-left: 0.75rem;
+      margin-bottom: 1.25rem; line-height: 1.6;
+    }
+    .error-msg {
+      color: var(--red-300); font-size: 0.82rem;
+      padding: 0.55rem 0.75rem; background: rgba(127,29,29,0.2);
+      border-radius: var(--radius); border: 1px solid var(--red-800);
+    }
+    .success-msg {
+      color: var(--green-light); font-size: 0.82rem;
+      padding: 0.55rem 0.75rem; background: rgba(22,163,74,0.15);
+      border-radius: var(--radius); border: 1px solid var(--green);
+    }
+    .footer {
+      text-align: center; margin-top: 1.5rem;
+      font-size: 0.75rem; color: var(--text-muted);
+    }
+    .footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="logo">
+      <span class="star">☭</span>
+      <div class="title">Kayıt</div>
+      <div class="subtitle">Yoldaş Olarak Katıl</div>
+    </div>
+
+    <div class="card">
+      <p class="hint">
+        Tenant'a katılmak için tenant adını bilmen gerekir. Kayıt olduktan sonra otomatik giriş yapılır.
+      </p>
+
+      <form id="regForm" class="flex-col gap-2">
+        <div class="form-group">
+          <label class="form-label" for="tenant">Tenant</label>
+          <input type="text" id="tenant" class="form-input" placeholder="Örn: vuran" autocapitalize="off" autocomplete="off" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="username">Kullanıcı Adı</label>
+          <input type="text" id="username" class="form-input" placeholder="berkay" autocapitalize="off" autocomplete="username" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="displayName">Görünen İsim</label>
+          <input type="text" id="displayName" class="form-input" placeholder="Berkay" autocomplete="name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Şifre (min 6 karakter)</label>
+          <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="new-password" required minlength="6"/>
+        </div>
+
+        <div id="errorMsg" class="error-msg hidden mt-1"></div>
+        <div id="successMsg" class="success-msg hidden mt-1"></div>
+
+        <button type="submit" class="btn btn-primary btn-full mt-2" id="regBtn">
+          ☭ &nbsp;Kayıt Ol
+        </button>
+      </form>
+
+      <div class="footer mt-2">
+        Zaten kayıtlı mısın? <a href="index.html">Giriş Yap</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Auth, getSession } from './js/db.js';
+
+    if (getSession()) window.location.href = 'app.html';
+
+    document.getElementById('regForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const tenant      = document.getElementById('tenant').value.trim();
+      const username    = document.getElementById('username').value.trim();
+      const displayName = document.getElementById('displayName').value.trim();
+      const password    = document.getElementById('password').value;
+      const errEl       = document.getElementById('errorMsg');
+      const okEl        = document.getElementById('successMsg');
+      const btn         = document.getElementById('regBtn');
+
+      errEl.classList.add('hidden');
+      okEl.classList.add('hidden');
+
+      // Tenant kontrol
+      try {
+        if (!(await Auth.tenantExists(tenant))) {
+          errEl.textContent = `Tenant "${tenant}" bulunamadı. Tenant adını teyit et.`;
+          errEl.classList.remove('hidden');
+          return;
+        }
+      } catch (e) {
+        errEl.textContent = e.message;
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Kayıt yapılıyor...';
+
+      try {
+        await Auth.register(tenant, username, password, displayName);
+        okEl.textContent = '✓ Kayıt başarılı, yönlendiriliyor...';
+        okEl.classList.remove('hidden');
+        setTimeout(() => window.location.href = 'app.html', 600);
+      } catch (e) {
+        errEl.textContent = e.message;
+        errEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = '☭  Kayıt Ol';
+      }
+    });
+  </script>
+</body>
+</html>

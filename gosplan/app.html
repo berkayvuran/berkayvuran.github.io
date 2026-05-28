@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <title>GOSPLAN — Devlet Planlama Komitesi</title>
+  <title>Gosplan — Devlet Planlama Komitesi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/theme.css"/>
@@ -39,11 +39,10 @@
     }
     .header-brand .symbol { font-size: 1.4rem; color: var(--red-400); }
     .header-brand .name {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 800;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.02em;
       color: var(--red-400);
-      text-transform: uppercase;
     }
     .header-brand .tagline {
       font-size: 0.65rem;
@@ -334,6 +333,109 @@
       .loan-grid .btn { grid-column: span 2; }
     }
 
+    /* ── Manifesto strip ── */
+    .manifesto-strip {
+      background: linear-gradient(135deg, rgba(127,29,29,0.25) 0%, rgba(74,14,14,0.15) 100%);
+      border-left: 3px solid var(--red-500);
+      padding: 0.85rem 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin-bottom: 1.25rem;
+      font-style: italic;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      position: relative;
+    }
+    .manifesto-strip .attr {
+      display: block;
+      font-style: normal;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Bigger stat icons ── */
+    .stat-tile .label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .stat-tile .label .icon-big {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    /* ── Income subdetail ── */
+    .income-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--border);
+    }
+    .income-breakdown .ib-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .income-breakdown .ib-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .income-breakdown .ib-value {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .income-breakdown .ib-value.labor   { color: var(--green-light); }
+    .income-breakdown .ib-value.rentier { color: var(--orange); }
+
+    /* ── Labor time gauge ── */
+    .labor-gauge {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .labor-gauge-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .labor-gauge-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.4rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .labor-gauge-spent {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--red-300);
+    }
+    .labor-gauge-total {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .labor-gauge-msg {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 400px) {
       .app-main { padding: 1rem 0.75rem; }
@@ -348,8 +450,8 @@
     <div class="header-brand">
       <span class="symbol">☭</span>
       <div>
-        <div class="name">GOSPLAN</div>
-        <div class="tagline">İşçinin Bütçe Defteri</div>
+        <div class="name">Gosplan</div>
+        <div class="tagline" id="headerTagline">İşçinin Bütçe Defteri</div>
       </div>
     </div>
     <div class="header-actions">
@@ -375,44 +477,79 @@
     <!-- ── DASHBOARD TAB ── -->
     <div class="tab-panel active" id="tab-dashboard">
 
+      <!-- Manifesto strip -->
+      <div class="manifesto-strip" id="manifestoStrip">
+        <span id="quoteText">"Sermaye ölü emektir; tıpkı vampir gibi, yalnızca canlı emeği emerek yaşar."</span>
+        <span class="attr" id="quoteAttr">— Karl Marx, Das Kapital</span>
+      </div>
+
       <div class="dashboard-stats" id="dashStats">
         <div class="stat-tile income">
-          <div class="label">☭ Toplam Gelir</div>
+          <div class="label"><span class="icon-big">☭</span> Toplam Gelir</div>
           <div class="value" id="statIncome">—</div>
           <div class="sub" id="statIncomeHours">—</div>
+          <div class="income-breakdown hidden" id="incomeBreakdown">
+            <div class="ib-cell">
+              <div class="ib-label">Emek</div>
+              <div class="ib-value labor" id="laborIncome">—</div>
+            </div>
+            <div class="ib-cell">
+              <div class="ib-label">Rantiye</div>
+              <div class="ib-value rentier" id="rentierIncome">—</div>
+            </div>
+          </div>
         </div>
         <div class="stat-tile expense">
-          <div class="label">⚑ Toplam Gider</div>
+          <div class="label"><span class="icon-big">⚑</span> Toplam Gider</div>
           <div class="value text-red" id="statExpense">—</div>
           <div class="sub" id="statExpenseHours">—</div>
         </div>
         <div class="stat-tile balance">
-          <div class="label">★ Net Bakiye</div>
+          <div class="label"><span class="icon-big">★</span> Artı Birikim</div>
           <div class="value" id="statBalance">—</div>
           <div class="sub" id="statRate">—</div>
         </div>
         <div class="stat-tile hours">
-          <div class="label">⌚ Saatlik Ücret</div>
+          <div class="label"><span class="icon-big">⌚</span> Emek-Saat Değeri</div>
           <div class="value text-gold" id="statHourly">—</div>
-          <div class="sub">220 sa / ay</div>
+          <div class="sub">Marx, Emek-Değer Teorisi</div>
         </div>
+      </div>
+
+      <!-- Labor-time gauge -->
+      <div class="labor-gauge" id="laborGauge">
+        <div class="labor-gauge-title">⌛ Yaşam Saatleri — Bu Ay</div>
+        <div class="labor-gauge-stats">
+          <span class="labor-gauge-spent" id="laborSpent">—</span>
+          <span class="labor-gauge-total" id="laborTotal">/ 220 sa emek-aylık potansiyel</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="laborProgress" style="width:0%"></div>
+        </div>
+        <div class="labor-gauge-msg" id="laborMsg">—</div>
       </div>
 
       <!-- CC utilization -->
       <div id="ccSection" class="mb-2 hidden">
-        <div class="section-title">Kredi Kartı Borçluluk Oranı</div>
+        <div class="section-title">Sermayeye Verilen Haraç — Kredi Kartı</div>
         <div class="cc-cards" id="ccList"></div>
       </div>
 
-      <!-- Category breakdown -->
+      <!-- Gider breakdown -->
       <div class="section-title">Diyalektik Analiz — Giderler</div>
       <div class="category-rows" id="catBreakdown">
-        <div class="empty-state"><div class="icon">☭</div><p>Bu ay henüz gider yok.</p></div>
+        <div class="empty-state"><div class="icon">⚑</div><p>Bu ay henüz gider yok — direniş güçlü.</p></div>
+      </div>
+
+      <!-- Gelir breakdown -->
+      <div class="section-title mt-2">Diyalektik Analiz — Gelir Kaynakları</div>
+      <div class="category-rows" id="incomeCatBreakdown">
+        <div class="empty-state"><div class="icon">☭</div><p>Bu ay gelir yok.</p></div>
       </div>
 
       <div class="section-title mt-2">Son İşlemler</div>
       <div class="tx-list" id="recentTx">
-        <div class="empty-state"><div class="icon">☰</div><p>İşlem bulunamadı.</p></div>
+        <div class="empty-state"><div class="icon">☰</div><p>Henüz hareket yok, yoldaş.</p></div>
       </div>
     </div>
 
@@ -448,15 +585,6 @@
           </select>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Ödeme Kaynağı</label>
-          <select class="form-select" id="paymentSource">
-            <option value="">— Seç —</option>
-            <option value="Nakit">Nakit</option>
-            <option value="Yemek Kartı">Yemek Kartı</option>
-          </select>
-        </div>
-
         <div class="custom-item-wrap" id="customItemWrap">
           <div class="form-group">
             <label class="form-label">Yeni Kalem Adı</label>
@@ -472,6 +600,15 @@
             <input type="checkbox" id="saveCustomItem" checked style="accent-color:var(--red-500);"/>
             Bu kalemi listeye ekle
           </label>
+        </div>
+
+        <div class="form-group" id="paymentSourceWrap">
+          <label class="form-label">Ödeme Kaynağı</label>
+          <select class="form-select" id="paymentSource">
+            <option value="">— Seç —</option>
+            <option value="Nakit">Nakit</option>
+            <option value="Yemek Kartı">Yemek Kartı</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -626,14 +763,14 @@
 
 <script type="module">
 import {
+  Auth, getSession,
   Categories, Items, Transactions, CreditCards, MonthlyConfig, Loans,
   hourlyRate, toHours, fmtTL, fmtHours
 } from './js/db.js';
 
 // ── Auth guard ──────────────────────────────────────────
-if (sessionStorage.getItem('gosplan_session') !== 'authenticated') {
-  window.location.href = 'index.html';
-}
+const session = getSession();
+if (!session) window.location.href = 'index.html';
 
 // ── State ───────────────────────────────────────────────
 const now = new Date();
@@ -648,6 +785,31 @@ let itemsTypeFilter = 'all';
 // ── Month/Year selectors ────────────────────────────────
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran',
                 'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+// ── Marx / Engels / Lenin alıntıları (günlük rotasyon) ──
+const QUOTES = [
+  { t: '"Sermaye ölü emektir; tıpkı vampir gibi, yalnızca canlı emeği emerek yaşar."', a: 'Karl Marx, Das Kapital' },
+  { t: '"Proleterlerin zincirlerinden başka kaybedecek bir şeyleri yok. Kazanacakları bir dünya var."', a: 'Marx & Engels, Komünist Manifesto' },
+  { t: '"Filozoflar şimdiye kadar dünyayı yalnızca yorumladılar; oysa sorun onu değiştirmektir."', a: 'Karl Marx, Feuerbach Üzerine Tezler' },
+  { t: '"Şimdiye kadarki bütün toplumların tarihi, sınıf savaşımları tarihidir."', a: 'Marx & Engels, Komünist Manifesto' },
+  { t: '"Herkesten yeteneğine göre, herkese ihtiyacına göre."', a: 'Karl Marx, Gotha Programının Eleştirisi' },
+  { t: '"Egemen düşünceler her çağda egemen sınıfın düşünceleridir."', a: 'Karl Marx, Alman İdeolojisi' },
+  { t: '"Bir hayalet dolaşıyor Avrupa\'da — komünizm hayaleti."', a: 'Marx & Engels, Komünist Manifesto' },
+  { t: '"Mülkiyet hırsızlıktır."', a: 'Pierre-Joseph Proudhon' },
+  { t: '"Ücret köleliği, kölelikten daha az aşağılayıcı değildir."', a: 'Friedrich Engels' },
+  { t: '"Emek, zenginliğin kaynağıdır, ama emekçi zincirler dışında bir şey kazanmaz."', a: 'Karl Marx' },
+  { t: '"İşçi sınıfının kurtuluşu, ancak işçi sınıfının kendi eseri olabilir."', a: 'Karl Marx, I. Enternasyonal Tüzüğü' },
+  { t: '"Devlet, bir sınıfın bir diğeri tarafından baskı altında tutulması için bir makinedir."', a: 'V. İ. Lenin, Devlet ve Devrim' },
+  { t: '"Tarihte hiçbir şey, devrim olmadan kazanılmamıştır."', a: 'Friedrich Engels' },
+  { t: '"Sermayenin tek vatanı vardır: kâr."', a: 'Karl Marx' },
+];
+
+function setDailyQuote() {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const q = QUOTES[dayOfYear % QUOTES.length];
+  document.getElementById('quoteText').textContent = q.t;
+  document.getElementById('quoteAttr').textContent = '— ' + q.a;
+}
 
 function buildSelectors() {
   const ms = document.getElementById('monthSelect');
@@ -696,11 +858,15 @@ document.getElementById('fabBtn').addEventListener('click', () => {
   prefillAddForm();
 });
 
+// ── Header tagline (kullanıcı + tenant) ─────────────────
+document.getElementById('headerTagline').textContent =
+  `${session.displayName} · ${session.tenantName}`;
+
 // ── Logout ──────────────────────────────────────────────
 ['logoutBtn','logoutBtn2'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('click', () => {
-    sessionStorage.removeItem('gosplan_session');
+    Auth.logout();
     window.location.href = 'index.html';
   });
 });
@@ -775,18 +941,31 @@ async function loadLoanConfig() {
 // ── Dashboard ───────────────────────────────────────────
 function renderDashboard() {
   let income = 0, expense = 0;
-  const catMap = {};
+  let laborIncome = 0, rentierIncome = 0;
+  const giderMap = {};
+  const gelirMap = {};
 
   allTransactions.forEach(tx => {
     const cat = tx.items?.categories;
     const type = cat?.type || 'gider';
     const amt = parseFloat(tx.amount);
-    if (type === 'gelir') income += amt;
-    else expense += amt;
-
     const catName = cat?.name || tx.item_name || '—';
-    if (!catMap[catName]) catMap[catName] = { amount: 0, color: cat?.color || '#666', type };
-    catMap[catName].amount += amt;
+    const color = cat?.color || '#666';
+
+    if (type === 'gelir') {
+      income += amt;
+      if (catName === 'Rantiye Kaynaklı Gelir' || catName === 'Spekülatif Sermaye Getirisi') {
+        rentierIncome += amt;
+      } else {
+        laborIncome += amt;
+      }
+      if (!gelirMap[catName]) gelirMap[catName] = { amount: 0, color, type };
+      gelirMap[catName].amount += amt;
+    } else {
+      expense += amt;
+      if (!giderMap[catName]) giderMap[catName] = { amount: 0, color, type };
+      giderMap[catName].amount += amt;
+    }
   });
 
   document.getElementById('statIncome').textContent  = fmtTL(income);
@@ -796,41 +975,87 @@ function renderDashboard() {
   balEl.textContent = fmtTL(balance);
   balEl.style.color = balance >= 0 ? 'var(--gold)' : 'var(--red-400)';
 
-  const rate = income > 0 ? ((income - expense) / income * 100).toFixed(1) : 0;
-  document.getElementById('statRate').textContent = `Birikim oranı: %${rate}`;
+  const rate = income > 0 ? ((income - expense) / income * 100).toFixed(1) : '0';
+  document.getElementById('statRate').textContent = `Sermayeye karşı %${rate}`;
+
+  // Income breakdown (emek vs rantiye)
+  const ibEl = document.getElementById('incomeBreakdown');
+  if (income > 0 && (rentierIncome > 0 || laborIncome > 0)) {
+    ibEl.classList.remove('hidden');
+    document.getElementById('laborIncome').textContent   = fmtTL(laborIncome);
+    document.getElementById('rentierIncome').textContent = fmtTL(rentierIncome);
+  } else {
+    ibEl.classList.add('hidden');
+  }
 
   if (netSalary) {
     document.getElementById('statIncomeHours').textContent  = fmtHours(toHours(income, netSalary));
     document.getElementById('statExpenseHours').textContent = fmtHours(toHours(expense, netSalary));
     document.getElementById('statHourly').textContent = fmtTL(hourlyRate(netSalary));
-  }
-
-  // Category breakdown (gider only)
-  const breakdown = document.getElementById('catBreakdown');
-  const giderCats = Object.entries(catMap)
-    .filter(([,v]) => v.type !== 'gelir')
-    .sort((a,b) => b[1].amount - a[1].amount);
-
-  if (giderCats.length === 0) {
-    breakdown.innerHTML = `<div class="empty-state"><div class="icon">☭</div><p>Bu ay henüz gider yok.</p></div>`;
   } else {
-    breakdown.innerHTML = giderCats.map(([name, v]) => `
-      <div class="category-row">
-        <div class="cat-dot" style="background:${v.color}"></div>
-        <div class="cat-name">${name}</div>
-        <div>
-          <div class="cat-amount text-red">${fmtTL(v.amount)}</div>
-          ${netSalary ? `<div class="cat-hours">${fmtHours(toHours(v.amount, netSalary))}</div>` : ''}
-        </div>
-      </div>`).join('');
+    document.getElementById('statIncomeHours').textContent  = '';
+    document.getElementById('statExpenseHours').textContent = '';
   }
+
+  // Labor-time gauge
+  renderLaborGauge(expense);
+
+  // Gider breakdown
+  renderCatBreakdown('catBreakdown', giderMap, 'gider');
+
+  // Gelir breakdown
+  renderCatBreakdown('incomeCatBreakdown', gelirMap, 'gelir');
 
   // Recent 5 transactions
   const recent = document.getElementById('recentTx');
   const last5 = [...allTransactions].slice(0,5);
   recent.innerHTML = last5.length ? last5.map(tx => txItemHTML(tx)).join('') :
-    `<div class="empty-state"><div class="icon">☰</div><p>İşlem bulunamadı.</p></div>`;
+    `<div class="empty-state"><div class="icon">☰</div><p>Henüz hareket yok, yoldaş.</p></div>`;
   attachTxClickHandlers(recent);
+}
+
+function renderCatBreakdown(elId, catMap, type) {
+  const el = document.getElementById(elId);
+  const rows = Object.entries(catMap).sort((a,b) => b[1].amount - a[1].amount);
+  if (rows.length === 0) {
+    el.innerHTML = type === 'gider'
+      ? `<div class="empty-state"><div class="icon">⚑</div><p>Bu ay henüz gider yok — direniş güçlü.</p></div>`
+      : `<div class="empty-state"><div class="icon">☭</div><p>Bu ay gelir yok.</p></div>`;
+    return;
+  }
+  const amountColor = type === 'gider' ? 'text-red' : 'text-green';
+  el.innerHTML = rows.map(([name, v]) => `
+    <div class="category-row">
+      <div class="cat-dot" style="background:${v.color}"></div>
+      <div class="cat-name">${name}</div>
+      <div>
+        <div class="cat-amount ${amountColor}">${type==='gider'?'-':'+'}${fmtTL(v.amount)}</div>
+        ${netSalary ? `<div class="cat-hours">${fmtHours(toHours(v.amount, netSalary))}</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function renderLaborGauge(expense) {
+  const gauge = document.getElementById('laborGauge');
+  if (!netSalary) { gauge.classList.add('hidden'); return; }
+  gauge.classList.remove('hidden');
+
+  const spentHours = toHours(expense, netSalary);
+  const totalHours = 220;
+  const pct = Math.min((spentHours / totalHours) * 100, 100);
+
+  document.getElementById('laborSpent').textContent = fmtHours(spentHours);
+  document.getElementById('laborTotal').textContent = `/ ${totalHours} sa emek-aylık`;
+  const fill = document.getElementById('laborProgress');
+  fill.style.width = pct + '%';
+  fill.className = 'progress-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warning' : '');
+
+  let msg;
+  if (pct >= 100) msg = '⚠ Bu ay emek gücünün tamamı sermayeye akıyor. Yeniden üretim tehlikede.';
+  else if (pct >= 80) msg = 'Emek gücünün büyük çoğunluğu yeniden üretime gidiyor.';
+  else if (pct >= 50) msg = 'Emeğinin yarısından fazlası harcandı, geri kalan birikime.';
+  else msg = 'Emek gücün hâlâ büyük ölçüde senin elinde.';
+  document.getElementById('laborMsg').textContent = msg;
 }
 
 // ── CC Dashboard ────────────────────────────────────────
@@ -867,13 +1092,14 @@ function txItemHTML(tx) {
   const color = cat?.color || '#666';
   const name = tx.items?.name || tx.item_name || '—';
   const catName = cat?.name || '—';
+  const userName = tx.app_users?.display_name || tx.app_users?.username || null;
   const d = new Date(tx.date);
   const dateStr = `${d.getDate()} ${MONTHS[d.getMonth()]}`;
   const hoursStr = netSalary ? ` · ${fmtHours(toHours(tx.amount, netSalary))}` : '';
   return `<div class="tx-item" data-id="${tx.id}">
     <div class="tx-type-dot" style="background:${color}"></div>
     <div class="tx-info">
-      <div class="tx-name">${name}</div>
+      <div class="tx-name">${name}${userName ? ` <span style="font-size:0.68rem;color:var(--text-muted);font-weight:500;">· ${userName}</span>` : ''}</div>
       <div class="tx-meta">${catName} · ${dateStr}${tx.payment_source ? ' · <span style="color:var(--gold);font-size:0.68rem;">' + tx.payment_source + '</span>' : ''}${tx.notes ? ' · ' + tx.notes : ''}</div>
     </div>
     <div class="tx-right">
@@ -1008,7 +1234,32 @@ function buildCategoryDropdown() {
 document.getElementById('itemSelect').addEventListener('change', (e) => {
   const wrap = document.getElementById('customItemWrap');
   wrap.classList.toggle('show', e.target.value === '__custom__');
+  togglePaymentSourceVisibility();
 });
+
+document.getElementById('customCategorySelect').addEventListener('change', togglePaymentSourceVisibility);
+
+// Gelir işlemlerinde ödeme kaynağı gizlensin (anlamsız)
+function togglePaymentSourceVisibility() {
+  const itemSel = document.getElementById('itemSelect').value;
+  const wrap = document.getElementById('paymentSourceWrap');
+  let type = null;
+  if (itemSel === '__custom__') {
+    const catId = document.getElementById('customCategorySelect').value;
+    const cat = allCategories.find(c => c.id === catId);
+    type = cat?.type;
+  } else if (itemSel) {
+    const item = allItems.find(i => i.id === itemSel);
+    type = item?.categories?.type;
+  }
+  // Gider veya birikim ise göster, gelir ise gizle
+  if (type === 'gelir') {
+    wrap.classList.add('hidden');
+    document.getElementById('paymentSource').value = '';
+  } else {
+    wrap.classList.remove('hidden');
+  }
+}
 
 function prefillAddForm() {
   document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
@@ -1066,6 +1317,7 @@ document.getElementById('addTxForm').addEventListener('submit', async (e) => {
     toast('İşlem kaydedildi. ☭', 'success');
     e.target.reset();
     document.getElementById('customItemWrap').classList.remove('show');
+    document.getElementById('paymentSourceWrap').classList.remove('hidden');
     prefillAddForm();
     await loadTransactions();
 
@@ -1276,6 +1528,7 @@ window.deactivateItem = async (id) => {
 };
 
 // ── Init ─────────────────────────────────────────────────
+setDailyQuote();
 buildSelectors();
 prefillAddForm();
 loadAll();
