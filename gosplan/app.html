@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>GOSPLAN — Devlet Planlama Komitesi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/theme.css"/>
+  <style>
+    /* ── Layout ── */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,5,5,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .header-brand .symbol { font-size: 1.4rem; color: var(--red-400); }
+    .header-brand .name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--red-400);
+      text-transform: uppercase;
+    }
+    .header-brand .tagline {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+
+    .month-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.3rem 0.6rem;
+    }
+    .month-selector select {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+    .month-selector select option { background: var(--bg-card); }
+
+    /* ── Nav tabs ── */
+    .app-nav {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0 1rem;
+      gap: 0;
+    }
+    .app-nav::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .nav-tab:hover { color: var(--text-secondary); }
+    .nav-tab.active {
+      color: var(--red-400);
+      border-bottom-color: var(--red-500);
+    }
+    .nav-tab .icon { font-size: 1rem; }
+
+    /* ── Main content ── */
+    .app-main {
+      flex: 1;
+      padding: 1.25rem 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Dashboard ── */
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (min-width: 600px) {
+      .dashboard-stats { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .stat-tile.income { border-color: rgba(22,163,74,0.3); }
+    .stat-tile.expense { border-color: rgba(220,38,38,0.3); }
+    .stat-tile.balance .value { color: var(--gold); }
+    .stat-tile.hours { border-color: rgba(212,160,23,0.2); }
+
+    .section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Category breakdown ── */
+    .category-rows { display: flex; flex-direction: column; gap: 0.6rem; }
+    .category-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .cat-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .cat-name { flex: 1; font-size: 0.85rem; color: var(--text-secondary); }
+    .cat-amount { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; }
+    .cat-hours { font-size: 0.72rem; color: var(--text-muted); text-align: right; }
+
+    /* ── CC utilization ── */
+    .cc-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+    .cc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+    }
+    .cc-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .cc-card-name { font-weight: 700; font-size: 0.9rem; }
+    .cc-pct { font-family: var(--font-mono); font-weight: 700; font-size: 1.1rem; }
+    .cc-pct.warning { color: var(--orange); }
+    .cc-pct.danger  { color: var(--red-400); }
+    .cc-detail { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+    /* ── Transaction list ── */
+    .tx-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .tx-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0.85rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .tx-item:hover { border-color: var(--border-bright); }
+    .tx-type-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tx-info { flex: 1; min-width: 0; }
+    .tx-name { font-size: 0.88rem; font-weight: 600; }
+    .tx-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .tx-right { text-align: right; flex-shrink: 0; }
+    .tx-amount { font-family: var(--font-mono); font-weight: 700; font-size: 0.9rem; }
+    .tx-amount.gelir { color: var(--green-light); }
+    .tx-amount.gider { color: var(--red-300); }
+    .tx-hours { font-size: 0.68rem; color: var(--text-muted); }
+
+    /* ── Add transaction form ── */
+    .add-form { display: flex; flex-direction: column; gap: 1rem; }
+
+    .custom-item-wrap { display: none; }
+    .custom-item-wrap.show { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    /* ── FAB ── */
+    .fab {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--red-600);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 20px rgba(220,38,38,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      transition: all 0.18s;
+    }
+    .fab:hover { background: var(--red-500); transform: scale(1.08); }
+    .fab:active { transform: scale(0.95); }
+
+    /* ── Config panel ── */
+    .config-section { margin-bottom: 1.75rem; }
+    .config-section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .config-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.5rem;
+    }
+    .config-row-info { flex: 1; min-width: 0; }
+    .config-row-name { font-size: 0.88rem; font-weight: 600; }
+    .config-row-sub  { font-size: 0.72rem; color: var(--text-muted); }
+    .config-row-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+
+    .salary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.5rem;
+      align-items: end;
+    }
+    @media (max-width: 480px) {
+      .salary-grid { grid-template-columns: 1fr 1fr; }
+      .salary-grid .btn { grid-column: span 2; }
+    }
+
+    /* ── Items list in config ── */
+    .items-filter {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .filter-chip {
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .filter-chip.active, .filter-chip:hover {
+      border-color: var(--red-500);
+      color: var(--red-300);
+      background: rgba(220,38,38,0.1);
+    }
+
+    /* ── Scrollable tx list wrapper ── */
+    .tx-scroll { max-height: 60vh; overflow-y: auto; padding-right: 2px; }
+
+    /* ── Delete confirm ── */
+    .confirm-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    /* ── Loans section ── */
+    .loan-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 0.5rem;
+      align-items: end;
+    }
+    @media (max-width: 520px) {
+      .loan-grid { grid-template-columns: 1fr 1fr; }
+      .loan-grid .btn { grid-column: span 2; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 400px) {
+      .app-main { padding: 1rem 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <span class="symbol">☭</span>
+      <div>
+        <div class="name">GOSPLAN</div>
+        <div class="tagline">İşçinin Bütçe Defteri</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="month-selector">
+        <select id="monthSelect"></select>
+        <select id="yearSelect"></select>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn" title="Çıkış">⏻</button>
+    </div>
+  </header>
+
+  <!-- Nav -->
+  <nav class="app-nav">
+    <button class="nav-tab active" data-tab="dashboard"><span class="icon">⚑</span> Özet</button>
+    <button class="nav-tab" data-tab="transactions"><span class="icon">☰</span> İşlemler</button>
+    <button class="nav-tab" data-tab="add"><span class="icon">＋</span> Ekle</button>
+    <button class="nav-tab" data-tab="config"><span class="icon">⚙</span> Ayarlar</button>
+  </nav>
+
+  <!-- Main -->
+  <main class="app-main">
+
+    <!-- ── DASHBOARD TAB ── -->
+    <div class="tab-panel active" id="tab-dashboard">
+
+      <div class="dashboard-stats" id="dashStats">
+        <div class="stat-tile income">
+          <div class="label">☭ Toplam Gelir</div>
+          <div class="value" id="statIncome">—</div>
+          <div class="sub" id="statIncomeHours">—</div>
+        </div>
+        <div class="stat-tile expense">
+          <div class="label">⚑ Toplam Gider</div>
+          <div class="value text-red" id="statExpense">—</div>
+          <div class="sub" id="statExpenseHours">—</div>
+        </div>
+        <div class="stat-tile balance">
+          <div class="label">★ Net Bakiye</div>
+          <div class="value" id="statBalance">—</div>
+          <div class="sub" id="statRate">—</div>
+        </div>
+        <div class="stat-tile hours">
+          <div class="label">⌚ Saatlik Ücret</div>
+          <div class="value text-gold" id="statHourly">—</div>
+          <div class="sub">220 sa / ay</div>
+        </div>
+      </div>
+
+      <!-- CC utilization -->
+      <div id="ccSection" class="mb-2 hidden">
+        <div class="section-title">Kredi Kartı Borçluluk Oranı</div>
+        <div class="cc-cards" id="ccList"></div>
+      </div>
+
+      <!-- Category breakdown -->
+      <div class="section-title">Diyalektik Analiz — Giderler</div>
+      <div class="category-rows" id="catBreakdown">
+        <div class="empty-state"><div class="icon">☭</div><p>Bu ay henüz gider yok.</p></div>
+      </div>
+
+      <div class="section-title mt-2">Son İşlemler</div>
+      <div class="tx-list" id="recentTx">
+        <div class="empty-state"><div class="icon">☰</div><p>İşlem bulunamadı.</p></div>
+      </div>
+    </div>
+
+    <!-- ── TRANSACTIONS TAB ── -->
+    <div class="tab-panel" id="tab-transactions">
+      <div class="flex items-center justify-between mb-2">
+        <h2 style="font-size:1rem;">Tüm İşlemler</h2>
+        <div class="flex gap-1">
+          <select class="form-select" id="txTypeFilter" style="width:auto;padding:0.35rem 0.6rem;font-size:0.8rem;">
+            <option value="">Tümü</option>
+            <option value="gelir">Gelir</option>
+            <option value="gider">Gider</option>
+            <option value="birikim">Birikim</option>
+          </select>
+        </div>
+      </div>
+      <div class="tx-scroll">
+        <div class="tx-list" id="allTxList">
+          <div class="empty-state"><div class="icon">☰</div><p>İşlem bulunamadı.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ADD TAB ── -->
+    <div class="tab-panel" id="tab-add">
+      <h2 style="font-size:1rem;margin-bottom:1rem;">Yeni İşlem</h2>
+      <form class="add-form" id="addTxForm">
+
+        <div class="form-group">
+          <label class="form-label">Kalem Seç</label>
+          <select class="form-select" id="itemSelect">
+            <option value="">Yükleniyor...</option>
+          </select>
+        </div>
+
+        <div class="custom-item-wrap" id="customItemWrap">
+          <div class="form-group">
+            <label class="form-label">Yeni Kalem Adı</label>
+            <input type="text" class="form-input" id="customItemName" placeholder="Kalem adı gir..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Diyalektik Kategori</label>
+            <select class="form-select" id="customCategorySelect">
+              <option value="">Kategori seç...</option>
+            </select>
+          </div>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--text-secondary);cursor:pointer;">
+            <input type="checkbox" id="saveCustomItem" checked style="accent-color:var(--red-500);"/>
+            Bu kalemi listeye ekle
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tutar (₺)</label>
+          <input type="number" class="form-input" id="txAmount" placeholder="0,00" min="0" step="0.01" inputmode="decimal"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tarih</label>
+          <input type="date" class="form-input" id="txDate"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Not (isteğe bağlı)</label>
+          <textarea class="form-textarea" id="txNotes" placeholder="Açıklama..." rows="2"></textarea>
+        </div>
+
+        <div id="addTxError" class="error-msg hidden"></div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="addTxBtn">
+          ☭ &nbsp;İşlemi Kaydet
+        </button>
+      </form>
+    </div>
+
+    <!-- ── CONFIG TAB ── -->
+    <div class="tab-panel" id="tab-config">
+
+      <!-- Maaş -->
+      <div class="config-section">
+        <div class="config-section-title">⚑ Aylık Maaş Konfigürasyonu</div>
+        <p class="text-muted mb-2" style="font-size:0.8rem;">Net maaş üzerinden saatlik ücret otomatik hesaplanır (÷ 220 saat).</p>
+        <div class="salary-grid">
+          <div class="form-group">
+            <label class="form-label">Ay</label>
+            <select class="form-select" id="cfgMonth"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Yıl</label>
+            <select class="form-select" id="cfgYear"></select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Net Maaş (₺)</label>
+            <input type="number" class="form-input" id="cfgSalary" placeholder="158466.63" min="0" step="0.01"/>
+          </div>
+          <button type="button" class="btn btn-primary" id="saveSalaryBtn" style="grid-column:1/-1;">
+            Kaydet
+          </button>
+        </div>
+        <div id="salaryList" class="mt-2"></div>
+      </div>
+
+      <!-- Kredi Kartları -->
+      <div class="config-section">
+        <div class="config-section-title">◈ Kredi Kartları</div>
+        <div class="grid-2 mb-2" id="cfgCCGrid">
+          <div class="form-group">
+            <label class="form-label">Kart Adı</label>
+            <input type="text" class="form-input" id="ccName" placeholder="Enpara KK"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Limit (₺)</label>
+            <input type="number" class="form-input" id="ccLimit" placeholder="50000" min="0"/>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" id="addCCBtn">+ Kart Ekle</button>
+        <div id="ccConfigList" class="mt-2"></div>
+      </div>
+
+      <!-- Kredi / Taksitler -->
+      <div class="config-section">
+        <div class="config-section-title">⛓ Krediler ve Taksitler</div>
+        <div class="loan-grid mb-2">
+          <div class="form-group">
+            <label class="form-label">Kredi Adı</label>
+            <input type="text" class="form-input" id="loanName" placeholder="Ev Kredisi %1,29"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Aylık Taksit (₺)</label>
+            <input type="number" class="form-input" id="loanPayment" placeholder="10814.40" min="0" step="0.01"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kalan Bakiye (₺)</label>
+            <input type="number" class="form-input" id="loanBalance" placeholder="0" min="0" step="0.01"/>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="addLoanBtn" style="grid-column:1/-1;">
+            + Kredi Ekle
+          </button>
+        </div>
+        <div id="loanConfigList"></div>
+      </div>
+
+      <!-- Kategoriler -->
+      <div class="config-section">
+        <div class="config-section-title">★ Diyalektik Kategoriler</div>
+        <div class="grid-2 mb-2">
+          <div class="form-group">
+            <label class="form-label">Kategori Adı</label>
+            <input type="text" class="form-input" id="newCatName" placeholder="Yeni kategori..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tür</label>
+            <select class="form-select" id="newCatType">
+              <option value="gider">Gider</option>
+              <option value="gelir">Gelir</option>
+              <option value="birikim">Birikim</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" id="addCatBtn">+ Kategori Ekle</button>
+        <div id="catConfigList" class="mt-2"></div>
+      </div>
+
+      <!-- Kalemler -->
+      <div class="config-section">
+        <div class="config-section-title">☰ Kalemler</div>
+        <div class="items-filter" id="itemsFilter">
+          <button class="filter-chip active" data-type="all">Tümü</button>
+          <button class="filter-chip" data-type="gelir">Gelir</button>
+          <button class="filter-chip" data-type="gider">Gider</button>
+          <button class="filter-chip" data-type="birikim">Birikim</button>
+        </div>
+        <div id="itemsConfigList"></div>
+      </div>
+
+      <!-- Logout -->
+      <div class="config-section">
+        <button class="btn btn-danger btn-full" id="logoutBtn2">⏻ Oturumu Kapat</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" title="Yeni işlem ekle">＋</button>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- TX Detail Modal -->
+<div class="modal-overlay hidden" id="txModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>İşlem Detayı</h3>
+      <button class="modal-close" id="txModalClose">✕</button>
+    </div>
+    <div id="txModalBody"></div>
+    <div class="confirm-row" id="txModalActions"></div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  Categories, Items, Transactions, CreditCards, MonthlyConfig, Loans,
+  hourlyRate, toHours, fmtTL, fmtHours
+} from './js/db.js';
+
+// ── Auth guard ──────────────────────────────────────────
+if (sessionStorage.getItem('gosplan_session') !== 'authenticated') {
+  window.location.href = 'index.html';
+}
+
+// ── State ───────────────────────────────────────────────
+const now = new Date();
+let currentMonth = now.getMonth() + 1;
+let currentYear  = now.getFullYear();
+let allItems = [];
+let allCategories = [];
+let allTransactions = [];
+let netSalary = 0;
+let itemsTypeFilter = 'all';
+
+// ── Month/Year selectors ────────────────────────────────
+const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran',
+                'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+function buildSelectors() {
+  const ms = document.getElementById('monthSelect');
+  const ys = document.getElementById('yearSelect');
+  ms.innerHTML = MONTHS.map((m,i) =>
+    `<option value="${i+1}" ${i+1===currentMonth?'selected':''}>${m}</option>`).join('');
+  for (let y = 2025; y <= 2030; y++)
+    ys.innerHTML += `<option value="${y}" ${y===currentYear?'selected':''}>${y}</option>`;
+
+  const cfgM = document.getElementById('cfgMonth');
+  const cfgY = document.getElementById('cfgYear');
+  cfgM.innerHTML = MONTHS.map((m,i) =>
+    `<option value="${i+1}" ${i+1===currentMonth?'selected':''}>${m}</option>`).join('');
+  for (let y = 2025; y <= 2030; y++)
+    cfgY.innerHTML += `<option value="${y}" ${y===currentYear?'selected':''}>${y}</option>`;
+
+  ms.addEventListener('change', () => { currentMonth = +ms.value; loadAll(); });
+  ys.addEventListener('change', () => { currentYear  = +ys.value; loadAll(); });
+}
+
+// ── Toast ───────────────────────────────────────────────
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+// ── Tab switching ───────────────────────────────────────
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+    if (btn.dataset.tab === 'add') prefillAddForm();
+  });
+});
+
+document.getElementById('fabBtn').addEventListener('click', () => {
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab="add"]').classList.add('active');
+  document.getElementById('tab-add').classList.add('active');
+  prefillAddForm();
+});
+
+// ── Logout ──────────────────────────────────────────────
+['logoutBtn','logoutBtn2'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', () => {
+    sessionStorage.removeItem('gosplan_session');
+    window.location.href = 'index.html';
+  });
+});
+
+// ── Load everything ─────────────────────────────────────
+async function loadAll() {
+  try {
+    [allCategories, allItems] = await Promise.all([
+      Categories.list(),
+      Items.list()
+    ]);
+    await loadTransactions();
+    await loadSalaryConfig();
+    await loadCCConfig();
+    await loadLoanConfig();
+    renderCatConfig();
+    renderItemsConfig();
+    buildItemDropdown();
+    buildCategoryDropdown();
+  } catch(e) {
+    toast('Veri yüklenemedi: ' + e.message, 'error');
+  }
+}
+
+async function loadTransactions() {
+  allTransactions = await Transactions.list({ month: currentMonth, year: currentYear });
+  renderDashboard();
+  renderTxList();
+}
+
+async function loadSalaryConfig() {
+  const rows = await MonthlyConfig.get(currentMonth, currentYear);
+  if (rows && rows.length > 0) {
+    netSalary = parseFloat(rows[0].net_salary);
+  } else {
+    netSalary = 0;
+  }
+  const hr = netSalary ? fmtTL(hourlyRate(netSalary)) : '—';
+  document.getElementById('statHourly').textContent = hr;
+
+  const allConf = await MonthlyConfig.list();
+  renderSalaryList(allConf);
+  if (rows && rows.length > 0) document.getElementById('cfgSalary').value = rows[0].net_salary;
+}
+
+async function loadCCConfig() {
+  const cards = await CreditCards.list();
+  renderCCConfig(cards);
+  renderCCDashboard(cards);
+}
+
+async function loadLoanConfig() {
+  const loans = await Loans.list();
+  renderLoanConfig(loans);
+}
+
+// ── Dashboard ───────────────────────────────────────────
+function renderDashboard() {
+  let income = 0, expense = 0;
+  const catMap = {};
+
+  allTransactions.forEach(tx => {
+    const cat = tx.items?.categories;
+    const type = cat?.type || 'gider';
+    const amt = parseFloat(tx.amount);
+    if (type === 'gelir') income += amt;
+    else expense += amt;
+
+    const catName = cat?.name || tx.item_name || '—';
+    if (!catMap[catName]) catMap[catName] = { amount: 0, color: cat?.color || '#666', type };
+    catMap[catName].amount += amt;
+  });
+
+  document.getElementById('statIncome').textContent  = fmtTL(income);
+  document.getElementById('statExpense').textContent = fmtTL(expense);
+  const balance = income - expense;
+  const balEl = document.getElementById('statBalance');
+  balEl.textContent = fmtTL(balance);
+  balEl.style.color = balance >= 0 ? 'var(--gold)' : 'var(--red-400)';
+
+  const rate = income > 0 ? ((income - expense) / income * 100).toFixed(1) : 0;
+  document.getElementById('statRate').textContent = `Birikim oranı: %${rate}`;
+
+  if (netSalary) {
+    document.getElementById('statIncomeHours').textContent  = fmtHours(toHours(income, netSalary));
+    document.getElementById('statExpenseHours').textContent = fmtHours(toHours(expense, netSalary));
+    document.getElementById('statHourly').textContent = fmtTL(hourlyRate(netSalary));
+  }
+
+  // Category breakdown (gider only)
+  const breakdown = document.getElementById('catBreakdown');
+  const giderCats = Object.entries(catMap)
+    .filter(([,v]) => v.type !== 'gelir')
+    .sort((a,b) => b[1].amount - a[1].amount);
+
+  if (giderCats.length === 0) {
+    breakdown.innerHTML = `<div class="empty-state"><div class="icon">☭</div><p>Bu ay henüz gider yok.</p></div>`;
+  } else {
+    breakdown.innerHTML = giderCats.map(([name, v]) => `
+      <div class="category-row">
+        <div class="cat-dot" style="background:${v.color}"></div>
+        <div class="cat-name">${name}</div>
+        <div>
+          <div class="cat-amount text-red">${fmtTL(v.amount)}</div>
+          ${netSalary ? `<div class="cat-hours">${fmtHours(toHours(v.amount, netSalary))}</div>` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  // Recent 5 transactions
+  const recent = document.getElementById('recentTx');
+  const last5 = [...allTransactions].slice(0,5);
+  recent.innerHTML = last5.length ? last5.map(tx => txItemHTML(tx)).join('') :
+    `<div class="empty-state"><div class="icon">☰</div><p>İşlem bulunamadı.</p></div>`;
+  attachTxClickHandlers(recent);
+}
+
+// ── CC Dashboard ────────────────────────────────────────
+function renderCCDashboard(cards) {
+  const section = document.getElementById('ccSection');
+  const list = document.getElementById('ccList');
+  const validCards = cards.filter(c => c.limit_amount > 0);
+  if (validCards.length === 0) { section.classList.add('hidden'); return; }
+  section.classList.remove('hidden');
+  list.innerHTML = validCards.map(c => {
+    const pct = c.limit_amount > 0 ? (c.statement_balance / c.limit_amount * 100) : 0;
+    const cls = pct >= 90 ? 'danger' : pct >= 70 ? 'warning' : '';
+    return `<div class="cc-card">
+      <div class="cc-card-header">
+        <div class="cc-card-name">${c.name}</div>
+        <div class="cc-pct ${cls}">%${pct.toFixed(1)}</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill ${cls}" style="width:${Math.min(pct,100)}%"></div></div>
+      <div class="cc-detail">
+        <span>Borç: ${fmtTL(c.statement_balance)}</span>
+        <span>Limit: ${fmtTL(c.limit_amount)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TX List ─────────────────────────────────────────────
+function txItemHTML(tx) {
+  const cat = tx.items?.categories;
+  const type = cat?.type || 'gider';
+  const color = cat?.color || '#666';
+  const name = tx.items?.name || tx.item_name || '—';
+  const catName = cat?.name || '—';
+  const d = new Date(tx.date);
+  const dateStr = `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  const hoursStr = netSalary ? ` · ${fmtHours(toHours(tx.amount, netSalary))}` : '';
+  return `<div class="tx-item" data-id="${tx.id}">
+    <div class="tx-type-dot" style="background:${color}"></div>
+    <div class="tx-info">
+      <div class="tx-name">${name}</div>
+      <div class="tx-meta">${catName} · ${dateStr}${tx.notes ? ' · ' + tx.notes : ''}</div>
+    </div>
+    <div class="tx-right">
+      <div class="tx-amount ${type}">${type === 'gelir' ? '+' : '-'}${fmtTL(tx.amount)}</div>
+      ${netSalary ? `<div class="tx-hours">${hoursStr}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderTxList() {
+  const container = document.getElementById('allTxList');
+  let txs = [...allTransactions];
+  const filter = document.getElementById('txTypeFilter').value;
+  if (filter) txs = txs.filter(tx => tx.items?.categories?.type === filter);
+
+  container.innerHTML = txs.length ? txs.map(tx => txItemHTML(tx)).join('') :
+    `<div class="empty-state"><div class="icon">☰</div><p>İşlem bulunamadı.</p></div>`;
+  attachTxClickHandlers(container);
+}
+
+document.getElementById('txTypeFilter').addEventListener('change', renderTxList);
+
+function attachTxClickHandlers(container) {
+  container.querySelectorAll('.tx-item').forEach(el => {
+    el.addEventListener('click', () => openTxModal(el.dataset.id));
+  });
+}
+
+// ── TX Modal ─────────────────────────────────────────────
+function openTxModal(id) {
+  const tx = allTransactions.find(t => t.id === id);
+  if (!tx) return;
+  const cat = tx.items?.categories;
+  const type = cat?.type || 'gider';
+  const name = tx.items?.name || tx.item_name || '—';
+  const d = new Date(tx.date);
+
+  document.getElementById('txModalBody').innerHTML = `
+    <div class="flex-col gap-2">
+      <div class="config-row">
+        <div class="config-row-info">
+          <div class="config-row-name">${name}</div>
+          <div class="config-row-sub">${cat?.name || '—'}</div>
+        </div>
+        <span class="badge badge-${type}">${type}</span>
+      </div>
+      <div class="grid-2">
+        <div class="stat-tile">
+          <div class="label">Tutar</div>
+          <div class="value" style="font-size:1.2rem;">${fmtTL(tx.amount)}</div>
+        </div>
+        ${netSalary ? `<div class="stat-tile">
+          <div class="label">Emek Saati</div>
+          <div class="value text-gold" style="font-size:1.2rem;">${fmtHours(toHours(tx.amount, netSalary))}</div>
+        </div>` : ''}
+      </div>
+      <div class="text-muted">Tarih: ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</div>
+      ${tx.notes ? `<div class="text-muted">Not: ${tx.notes}</div>` : ''}
+    </div>`;
+
+  document.getElementById('txModalActions').innerHTML = `
+    <button class="btn btn-danger btn-sm" id="deleteTxBtn">Sil</button>
+    <button class="btn btn-ghost btn-sm" id="txModalClose2">Kapat</button>`;
+
+  document.getElementById('deleteTxBtn').addEventListener('click', async () => {
+    try {
+      await Transactions.delete(id);
+      toast('İşlem silindi.', 'success');
+      closeTxModal();
+      await loadTransactions();
+    } catch(e) { toast(e.message, 'error'); }
+  });
+  document.getElementById('txModalClose2').addEventListener('click', closeTxModal);
+
+  document.getElementById('txModal').classList.remove('hidden');
+}
+document.getElementById('txModalClose').addEventListener('click', closeTxModal);
+document.getElementById('txModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('txModal')) closeTxModal();
+});
+function closeTxModal() { document.getElementById('txModal').classList.add('hidden'); }
+
+// ── Add Transaction ──────────────────────────────────────
+function buildItemDropdown() {
+  const sel = document.getElementById('itemSelect');
+  const groups = {};
+  allItems.forEach(item => {
+    const type = item.categories?.type || 'gider';
+    const catName = item.categories?.name || 'Diğer';
+    if (!groups[type]) groups[type] = {};
+    if (!groups[type][catName]) groups[type][catName] = [];
+    groups[type][catName].push(item);
+  });
+
+  const typeLabels = { gelir: '☭ GELİR', gider: '⚑ GİDER', birikim: '★ BİRİKİM' };
+  sel.innerHTML = '<option value="">— Kalem seç —</option>';
+  ['gelir','birikim','gider'].forEach(type => {
+    if (!groups[type]) return;
+    Object.entries(groups[type]).forEach(([catName, items]) => {
+      const og = document.createElement('optgroup');
+      og.label = `${typeLabels[type] || type} › ${catName}`;
+      items.forEach(item => {
+        const o = document.createElement('option');
+        o.value = item.id;
+        o.textContent = item.name;
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+  });
+  const og = document.createElement('optgroup');
+  og.label = '── Diğer';
+  const o = document.createElement('option');
+  o.value = '__custom__';
+  o.textContent = 'Diğer (yeni kalem)';
+  og.appendChild(o);
+  sel.appendChild(og);
+}
+
+function buildCategoryDropdown() {
+  const sel = document.getElementById('customCategorySelect');
+  sel.innerHTML = '<option value="">Kategori seç...</option>';
+  allCategories.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.id;
+    o.textContent = `${c.name} (${c.type})`;
+    sel.appendChild(o);
+  });
+}
+
+document.getElementById('itemSelect').addEventListener('change', (e) => {
+  const wrap = document.getElementById('customItemWrap');
+  wrap.classList.toggle('show', e.target.value === '__custom__');
+});
+
+function prefillAddForm() {
+  document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+}
+
+document.getElementById('addTxForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('addTxBtn');
+  const errEl = document.getElementById('addTxError');
+  errEl.classList.add('hidden');
+
+  const itemSel = document.getElementById('itemSelect').value;
+  const amount  = parseFloat(document.getElementById('txAmount').value);
+  const date    = document.getElementById('txDate').value;
+  const notes   = document.getElementById('txNotes').value.trim();
+
+  if (!itemSel) { showFormErr('Kalem seçiniz.'); return; }
+  if (!amount || amount <= 0) { showFormErr('Geçerli bir tutar giriniz.'); return; }
+  if (!date) { showFormErr('Tarih giriniz.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Kaydediliyor...';
+
+  try {
+    let finalItemId = itemSel;
+    let finalItemName = null;
+
+    if (itemSel === '__custom__') {
+      const customName = document.getElementById('customItemName').value.trim();
+      const customCat  = document.getElementById('customCategorySelect').value;
+      const saveItem   = document.getElementById('saveCustomItem').checked;
+      if (!customName) { showFormErr('Kalem adı giriniz.'); return; }
+
+      if (saveItem && customCat) {
+        const [newItem] = await Items.create({ name: customName, category_id: customCat, is_custom: true });
+        finalItemId   = newItem.id;
+        finalItemName = newItem.name;
+        await loadAll();
+      } else {
+        finalItemId   = null;
+        finalItemName = customName;
+      }
+    }
+
+    await Transactions.create({
+      item_id:   finalItemId,
+      item_name: finalItemName,
+      amount,
+      date,
+      notes: notes || null
+    });
+
+    toast('İşlem kaydedildi. ☭', 'success');
+    e.target.reset();
+    document.getElementById('customItemWrap').classList.remove('show');
+    prefillAddForm();
+    await loadTransactions();
+
+    // Switch to dashboard
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-tab="dashboard"]').classList.add('active');
+    document.getElementById('tab-dashboard').classList.add('active');
+  } catch(err) {
+    showFormErr(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '☭  İşlemi Kaydet';
+  }
+
+  function showFormErr(msg) {
+    errEl.textContent = msg;
+    errEl.classList.remove('hidden');
+    btn.disabled = false;
+    btn.textContent = '☭  İşlemi Kaydet';
+  }
+});
+
+// ── Config: Salary ───────────────────────────────────────
+document.getElementById('saveSalaryBtn').addEventListener('click', async () => {
+  const month  = +document.getElementById('cfgMonth').value;
+  const year   = +document.getElementById('cfgYear').value;
+  const salary = parseFloat(document.getElementById('cfgSalary').value);
+  if (!salary || salary <= 0) { toast('Geçerli maaş giriniz.', 'error'); return; }
+  try {
+    await MonthlyConfig.upsert({ month, year, net_salary: salary });
+    toast('Maaş kaydedildi.', 'success');
+    await loadSalaryConfig();
+    renderDashboard();
+  } catch(e) { toast(e.message, 'error'); }
+});
+
+function renderSalaryList(rows) {
+  const el = document.getElementById('salaryList');
+  if (!rows || rows.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = rows.slice(0,6).map(r => `
+    <div class="config-row">
+      <div class="config-row-info">
+        <div class="config-row-name">${MONTHS[r.month-1]} ${r.year}</div>
+        <div class="config-row-sub">${fmtTL(r.net_salary)} · ${fmtTL(r.net_salary/220)}/saat</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Config: Credit Cards ─────────────────────────────────
+document.getElementById('addCCBtn').addEventListener('click', async () => {
+  const name  = document.getElementById('ccName').value.trim();
+  const limit = parseFloat(document.getElementById('ccLimit').value);
+  if (!name)   { toast('Kart adı giriniz.', 'error'); return; }
+  if (!limit)  { toast('Limit giriniz.', 'error'); return; }
+  try {
+    await CreditCards.create({ name, limit_amount: limit, statement_balance: 0 });
+    document.getElementById('ccName').value = '';
+    document.getElementById('ccLimit').value = '';
+    toast('Kart eklendi.', 'success');
+    await loadCCConfig();
+  } catch(e) { toast(e.message, 'error'); }
+});
+
+function renderCCConfig(cards) {
+  const el = document.getElementById('ccConfigList');
+  if (!cards.length) { el.innerHTML = '<p class="text-muted" style="font-size:0.8rem;">Henüz kart yok.</p>'; return; }
+  el.innerHTML = cards.map(c => `
+    <div class="config-row" id="cc-${c.id}">
+      <div class="config-row-info">
+        <div class="config-row-name">${c.name}</div>
+        <div class="config-row-sub">Limit: ${fmtTL(c.limit_amount)}</div>
+      </div>
+      <div class="config-row-actions">
+        <input type="number" class="form-input" style="width:120px;padding:0.3rem 0.5rem;font-size:0.8rem;"
+          placeholder="Güncel borç" data-ccid="${c.id}" value="${c.statement_balance || ''}"
+          title="Güncel borç tutarı" />
+        <button class="btn btn-primary btn-sm" onclick="updateCCBalance('${c.id}',this)">✓</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCC('${c.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+window.updateCCBalance = async (id, btn) => {
+  const input = btn.previousElementSibling;
+  const balance = parseFloat(input.value) || 0;
+  try {
+    await CreditCards.update(id, { statement_balance: balance });
+    toast('Borç güncellendi.', 'success');
+    await loadCCConfig();
+  } catch(e) { toast(e.message, 'error'); }
+};
+window.deleteCC = async (id) => {
+  try {
+    await CreditCards.delete(id);
+    toast('Kart silindi.', 'success');
+    await loadCCConfig();
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+// ── Config: Loans ────────────────────────────────────────
+document.getElementById('addLoanBtn').addEventListener('click', async () => {
+  const name    = document.getElementById('loanName').value.trim();
+  const payment = parseFloat(document.getElementById('loanPayment').value);
+  const balance = parseFloat(document.getElementById('loanBalance').value) || 0;
+  if (!name)    { toast('Kredi adı giriniz.', 'error'); return; }
+  if (!payment) { toast('Taksit tutarı giriniz.', 'error'); return; }
+  try {
+    await Loans.create({ name, monthly_payment: payment, remaining_balance: balance });
+    document.getElementById('loanName').value = '';
+    document.getElementById('loanPayment').value = '';
+    document.getElementById('loanBalance').value = '';
+    toast('Kredi eklendi.', 'success');
+    await loadLoanConfig();
+  } catch(e) { toast(e.message, 'error'); }
+});
+
+function renderLoanConfig(loans) {
+  const el = document.getElementById('loanConfigList');
+  if (!loans.length) { el.innerHTML = '<p class="text-muted" style="font-size:0.8rem;">Henüz kredi yok.</p>'; return; }
+  el.innerHTML = loans.map(l => `
+    <div class="config-row">
+      <div class="config-row-info">
+        <div class="config-row-name">${l.name}</div>
+        <div class="config-row-sub">
+          Taksit: ${fmtTL(l.monthly_payment)}
+          ${l.remaining_balance > 0 ? ` · Kalan: ${fmtTL(l.remaining_balance)}` : ''}
+          ${netSalary ? ` · ${fmtHours(toHours(l.monthly_payment, netSalary))}` : ''}
+        </div>
+      </div>
+      <div class="config-row-actions">
+        <button class="btn btn-danger btn-sm" onclick="deleteLoan('${l.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+window.deleteLoan = async (id) => {
+  try {
+    await Loans.delete(id);
+    toast('Kredi silindi.', 'success');
+    await loadLoanConfig();
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+// ── Config: Categories ───────────────────────────────────
+document.getElementById('addCatBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newCatName').value.trim();
+  const type = document.getElementById('newCatType').value;
+  if (!name) { toast('Kategori adı giriniz.', 'error'); return; }
+  try {
+    await Categories.create({ name, type, color: '#b91c1c' });
+    document.getElementById('newCatName').value = '';
+    toast('Kategori eklendi.', 'success');
+    allCategories = await Categories.list();
+    renderCatConfig();
+    buildCategoryDropdown();
+  } catch(e) { toast(e.message, 'error'); }
+});
+
+function renderCatConfig() {
+  const el = document.getElementById('catConfigList');
+  el.innerHTML = allCategories.map(c => `
+    <div class="config-row">
+      <div class="cat-dot" style="background:${c.color}"></div>
+      <div class="config-row-info">
+        <div class="config-row-name">${c.name}</div>
+      </div>
+      <span class="badge badge-${c.type}">${c.type}</span>
+    </div>`).join('');
+}
+
+// ── Config: Items ────────────────────────────────────────
+document.getElementById('itemsFilter').addEventListener('click', (e) => {
+  if (!e.target.classList.contains('filter-chip')) return;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  e.target.classList.add('active');
+  itemsTypeFilter = e.target.dataset.type;
+  renderItemsConfig();
+});
+
+function renderItemsConfig() {
+  const el = document.getElementById('itemsConfigList');
+  let items = allItems;
+  if (itemsTypeFilter !== 'all')
+    items = items.filter(i => i.categories?.type === itemsTypeFilter);
+
+  if (!items.length) {
+    el.innerHTML = '<p class="text-muted" style="font-size:0.8rem;">Kalem bulunamadı.</p>';
+    return;
+  }
+  el.innerHTML = items.map(i => `
+    <div class="config-row">
+      <div class="cat-dot" style="background:${i.categories?.color || '#666'}"></div>
+      <div class="config-row-info">
+        <div class="config-row-name">${i.name}</div>
+        <div class="config-row-sub">${i.categories?.name || '—'}</div>
+      </div>
+      ${i.is_custom ? `<button class="btn btn-danger btn-sm" onclick="deactivateItem('${i.id}')">✕</button>` : ''}
+    </div>`).join('');
+}
+
+window.deactivateItem = async (id) => {
+  try {
+    await Items.deactivate(id);
+    toast('Kalem kaldırıldı.', 'success');
+    allItems = await Items.list();
+    renderItemsConfig();
+    buildItemDropdown();
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+// ── Init ─────────────────────────────────────────────────
+buildSelectors();
+prefillAddForm();
+loadAll();
+</script>
+</body>
+</html>
