@@ -448,6 +448,15 @@
           </select>
         </div>
 
+        <div class="form-group">
+          <label class="form-label">Ödeme Kaynağı</label>
+          <select class="form-select" id="paymentSource">
+            <option value="">— Seç —</option>
+            <option value="Nakit">Nakit</option>
+            <option value="Yemek Kartı">Yemek Kartı</option>
+          </select>
+        </div>
+
         <div class="custom-item-wrap" id="customItemWrap">
           <div class="form-group">
             <label class="form-label">Yeni Kalem Adı</label>
@@ -741,6 +750,21 @@ async function loadCCConfig() {
   const cards = await CreditCards.list();
   renderCCConfig(cards);
   renderCCDashboard(cards);
+  buildPaymentSourceDropdown(cards);
+}
+
+function buildPaymentSourceDropdown(cards) {
+  const sel = document.getElementById('paymentSource');
+  const current = sel.value;
+  // Sabit seçenekleri koru, KK'ları dinamik ekle
+  while (sel.options.length > 3) sel.remove(3);
+  cards.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.name;
+    o.textContent = c.name;
+    sel.appendChild(o);
+  });
+  if (current) sel.value = current;
 }
 
 async function loadLoanConfig() {
@@ -817,7 +841,10 @@ function renderCCDashboard(cards) {
   if (validCards.length === 0) { section.classList.add('hidden'); return; }
   section.classList.remove('hidden');
   list.innerHTML = validCards.map(c => {
-    const pct = c.limit_amount > 0 ? (c.statement_balance / c.limit_amount * 100) : 0;
+    const spent = allTransactions
+      .filter(tx => tx.payment_source === c.name)
+      .reduce((s, tx) => s + parseFloat(tx.amount), 0);
+    const pct = c.limit_amount > 0 ? (spent / c.limit_amount * 100) : 0;
     const cls = pct >= 90 ? 'danger' : pct >= 70 ? 'warning' : '';
     return `<div class="cc-card">
       <div class="cc-card-header">
@@ -826,7 +853,7 @@ function renderCCDashboard(cards) {
       </div>
       <div class="progress-bar"><div class="progress-fill ${cls}" style="width:${Math.min(pct,100)}%"></div></div>
       <div class="cc-detail">
-        <span>Borç: ${fmtTL(c.statement_balance)}</span>
+        <span>Bu ay harcama: ${fmtTL(spent)}</span>
         <span>Limit: ${fmtTL(c.limit_amount)}</span>
       </div>
     </div>`;
@@ -847,7 +874,7 @@ function txItemHTML(tx) {
     <div class="tx-type-dot" style="background:${color}"></div>
     <div class="tx-info">
       <div class="tx-name">${name}</div>
-      <div class="tx-meta">${catName} · ${dateStr}${tx.notes ? ' · ' + tx.notes : ''}</div>
+      <div class="tx-meta">${catName} · ${dateStr}${tx.payment_source ? ' · <span style="color:var(--gold);font-size:0.68rem;">' + tx.payment_source + '</span>' : ''}${tx.notes ? ' · ' + tx.notes : ''}</div>
     </div>
     <div class="tx-right">
       <div class="tx-amount ${type}">${type === 'gelir' ? '+' : '-'}${fmtTL(tx.amount)}</div>
@@ -904,6 +931,7 @@ function openTxModal(id) {
         </div>` : ''}
       </div>
       <div class="text-muted">Tarih: ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</div>
+      ${tx.payment_source ? `<div class="text-muted">Kaynak: <span style="color:var(--gold)">${tx.payment_source}</span></div>` : ''}
       ${tx.notes ? `<div class="text-muted">Not: ${tx.notes}</div>` : ''}
     </div>`;
 
@@ -992,10 +1020,11 @@ document.getElementById('addTxForm').addEventListener('submit', async (e) => {
   const errEl = document.getElementById('addTxError');
   errEl.classList.add('hidden');
 
-  const itemSel = document.getElementById('itemSelect').value;
-  const amount  = parseFloat(document.getElementById('txAmount').value);
-  const date    = document.getElementById('txDate').value;
-  const notes   = document.getElementById('txNotes').value.trim();
+  const itemSel       = document.getElementById('itemSelect').value;
+  const paymentSource = document.getElementById('paymentSource').value || null;
+  const amount        = parseFloat(document.getElementById('txAmount').value);
+  const date          = document.getElementById('txDate').value;
+  const notes         = document.getElementById('txNotes').value.trim();
 
   if (!itemSel) { showFormErr('Kalem seçiniz.'); return; }
   if (!amount || amount <= 0) { showFormErr('Geçerli bir tutar giriniz.'); return; }
@@ -1026,11 +1055,12 @@ document.getElementById('addTxForm').addEventListener('submit', async (e) => {
     }
 
     await Transactions.create({
-      item_id:   finalItemId,
-      item_name: finalItemName,
+      item_id:        finalItemId,
+      item_name:      finalItemName,
       amount,
       date,
-      notes: notes || null
+      notes:          notes || null,
+      payment_source: paymentSource
     });
 
     toast('İşlem kaydedildi. ☭', 'success');
@@ -1107,24 +1137,22 @@ function renderCCConfig(cards) {
     <div class="config-row" id="cc-${c.id}">
       <div class="config-row-info">
         <div class="config-row-name">${c.name}</div>
-        <div class="config-row-sub">Limit: ${fmtTL(c.limit_amount)}</div>
+        <div class="config-row-sub">
+          Limit: <input type="number" style="background:none;border:none;border-bottom:1px solid var(--border);color:var(--text-primary);width:100px;font-size:0.8rem;padding:0 0.2rem;" value="${c.limit_amount}" onchange="updateCCLimit('${c.id}',this.value)" />
+          ₺
+        </div>
       </div>
       <div class="config-row-actions">
-        <input type="number" class="form-input" style="width:120px;padding:0.3rem 0.5rem;font-size:0.8rem;"
-          placeholder="Güncel borç" data-ccid="${c.id}" value="${c.statement_balance || ''}"
-          title="Güncel borç tutarı" />
-        <button class="btn btn-primary btn-sm" onclick="updateCCBalance('${c.id}',this)">✓</button>
         <button class="btn btn-danger btn-sm" onclick="deleteCC('${c.id}')">✕</button>
       </div>
     </div>`).join('');
 }
 
-window.updateCCBalance = async (id, btn) => {
-  const input = btn.previousElementSibling;
-  const balance = parseFloat(input.value) || 0;
+window.updateCCLimit = async (id, val) => {
+  const limit = parseFloat(val) || 0;
   try {
-    await CreditCards.update(id, { statement_balance: balance });
-    toast('Borç güncellendi.', 'success');
+    await CreditCards.update(id, { limit_amount: limit });
+    toast('Limit güncellendi.', 'success');
     await loadCCConfig();
   } catch(e) { toast(e.message, 'error'); }
 };
