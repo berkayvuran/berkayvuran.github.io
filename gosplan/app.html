@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <title>Gosplan — Devlet Planlama Komitesi</title>
+  <title>Gosplan — Hane Planlama Komitesi</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
@@ -452,7 +452,7 @@
       <span class="symbol">☭</span>
       <div>
         <div class="name">Gosplan</div>
-        <div class="tagline" id="headerTagline">İşçinin Bütçe Defteri</div>
+        <div class="tagline" id="headerTagline">Hane Planlama Komitesi</div>
       </div>
     </div>
     <div class="header-actions">
@@ -766,7 +766,7 @@
 import {
   Auth, getSession,
   Categories, Items, Transactions, CreditCards, MonthlyConfig, Loans,
-  hourlyRate, toHours, fmtTL, fmtHours
+  hourlyRate, toHours, fmtTL, fmtHours, fmtNum
 } from './js/db.js';
 
 // ── Auth guard ──────────────────────────────────────────
@@ -976,7 +976,7 @@ function renderDashboard() {
   balEl.textContent = fmtTL(balance);
   balEl.style.color = balance >= 0 ? 'var(--gold)' : 'var(--red-400)';
 
-  const rate = income > 0 ? ((income - expense) / income * 100).toFixed(1) : '0';
+  const rate = income > 0 ? fmtNum((income - expense) / income * 100, 1) : '0';
   document.getElementById('statRate').textContent = `Sermayeye karşı %${rate}`;
 
   // Income breakdown (emek vs rantiye)
@@ -1075,7 +1075,7 @@ function renderCCDashboard(cards) {
     return `<div class="cc-card">
       <div class="cc-card-header">
         <div class="cc-card-name">${c.name}</div>
-        <div class="cc-pct ${cls}">%${pct.toFixed(1)}</div>
+        <div class="cc-pct ${cls}">%${fmtNum(pct, 1)}</div>
       </div>
       <div class="progress-bar"><div class="progress-fill ${cls}" style="width:${Math.min(pct,100)}%"></div></div>
       <div class="cc-detail">

@@ -206,6 +206,9 @@ export function toHours(amount, netSalary) {
 export function fmtTL(n) {
   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n) + ' ₺';
 }
+export function fmtNum(n, decimals = 1) {
+  return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(n);
+}
 export function fmtHours(h) {
   const hrs  = Math.floor(h);
   const mins = Math.round((h - hrs) * 60);
