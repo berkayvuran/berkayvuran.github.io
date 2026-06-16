@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Özel Eğitim Doktora | Bilim Sınavı Hazırlık</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1C3653;--navy2:#2A4F75;--teal:#2E8FAF;--teal-bg:#EAF5FA;--amber:#D4922A;--amber-bg:#FEF6E4;--bg:#F2F5F9;--white:#FFFFFF;--text:#1A2B3C;--muted:#6B8299;--border:#DCE5F0;--green:#3DA87B;--green-bg:#EAF7EF;--red:#D9534F;--red-bg:#FCEAEA;--pill-a:#2E8FAF;--pill-b:#E8A838;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden;font-size:14px}
+
+/* ─── SIDEBAR ─── */
+.sidebar{width:258px;min-width:258px;background:var(--navy);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.sb-head{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.sb-pill{width:34px;height:34px;background:var(--amber-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-title{font-family:'Crimson Pro',serif;font-size:16px;color:#fff;font-weight:700;line-height:1.25}
+.sb-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-prog-wrap{margin-top:2px}
+.sb-prog-labels{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.4);margin-bottom:5px}
+.sb-prog-bar{height:3px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
+.sb-prog-fill{height:100%;background:var(--amber);border-radius:2px;transition:width .4s ease;width:0%}
+.topic-list{flex:1;overflow-y:auto;padding:8px 0}
+.topic-list::-webkit-scrollbar{width:3px}
+.topic-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+.t-item{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.t-item:hover{background:rgba(255,255,255,.06)}
+.t-item.active{background:rgba(255,255,255,.1);border-left-color:var(--amber)}
+.t-dot{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.4);flex-shrink:0;transition:all .2s}
+.t-dot.viewed{background:rgba(232,168,56,.3);border-color:#E8A838;color:#E8A838}
+.t-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.t-label{font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.3;flex:1}
+.t-item.active .t-label{color:#fff;font-weight:500}
+.t-score{font-size:10px;font-weight:600;color:rgba(255,255,255,.35)}
+.t-item.active .t-score{color:var(--amber)}
+.sb-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1)}
+.sb-stats{display:flex;gap:20px}
+.sstat-v{font-family:'Crimson Pro',serif;font-size:22px;font-weight:700;color:var(--amber);line-height:1}
+.sstat-l{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+
+/* ─── MAIN ─── */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.m-header{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:60px;flex-shrink:0}
+.m-title{font-family:'Crimson Pro',serif;font-size:20px;font-weight:700;color:var(--text);line-height:1.2}
+.m-subtitle{font-size:11px;color:var(--muted);margin-top:1px}
+.mode-tabs{display:flex;background:var(--bg);border-radius:8px;padding:3px;gap:2px}
+.mode-tab{padding:6px 16px;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .2s;font-family:'Inter',sans-serif}
+.mode-tab.active{background:var(--white);color:var(--teal);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.m-content{flex:1;overflow-y:auto;padding:28px 32px}
+.m-content::-webkit-scrollbar{width:4px}
+.m-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ─── HAP BİLGİ ─── */
+.section-eyebrow{font-size:11px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-eyebrow::after{content:'';flex:1;height:1px;background:var(--border)}
+.hap-list{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.hap-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;transition:box-shadow .15s;position:relative;overflow:hidden}
+.hap-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--teal);border-radius:12px 0 0 12px}
+.hap-card:hover{box-shadow:0 3px 12px rgba(46,143,175,.12)}
+.hap-pill{display:inline-flex;height:26px;border-radius:100px;overflow:hidden;flex-shrink:0;margin-top:2px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.hap-pill-left{background:var(--teal);color:#fff;padding:0 9px;display:flex;align-items:center;font-size:10px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.hap-pill-right{background:var(--amber-bg);color:var(--amber);padding:0 10px;display:flex;align-items:center;font-size:10px;font-weight:600;white-space:nowrap}
+.hap-text{font-size:13.5px;line-height:1.65;color:var(--text);flex:1}
+.hap-text strong{color:var(--navy);font-weight:600}
+
+/* ─── QUIZ ─── */
+.quiz-wrap{max-width:700px}
+.q-progress-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.q-dots{display:flex;gap:5px}
+.q-dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .25s}
+.q-dot.active{width:18px;border-radius:4px;background:var(--teal)}
+.q-dot.correct{background:var(--green)}
+.q-dot.wrong{background:var(--red)}
+.q-count{font-size:11px;color:var(--muted)}
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:14px}
+.q-num{font-size:10.5px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.q-text{font-family:'Crimson Pro',serif;font-size:19px;font-weight:600;line-height:1.45;color:var(--text);margin-bottom:22px}
+.options{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:11px;padding:13px 16px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .18s;background:var(--white)}
+.opt:hover:not(.disabled){border-color:var(--teal);background:var(--teal-bg)}
+.opt.selected{border-color:var(--teal);background:var(--teal-bg)}
+.opt.correct{border-color:var(--green);background:var(--green-bg)}
+.opt.wrong{border-color:var(--red);background:var(--red-bg)}
+.opt.disabled{cursor:default}
+.opt-letter{width:22px;height:22px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;transition:all .18s}
+.opt.selected .opt-letter{background:var(--teal);border-color:var(--teal);color:#fff}
+.opt.correct .opt-letter{background:var(--green);border-color:var(--green);color:#fff}
+.opt.wrong .opt-letter{background:var(--red);border-color:var(--red);color:#fff}
+.opt-text{font-size:13.5px;line-height:1.5;color:var(--text);padding-top:1px;flex:1}
+.feedback{border-radius:9px;padding:12px 16px;margin-top:12px;font-size:13px;line-height:1.5;display:none}
+.feedback.show{display:block}
+.feedback.correct{background:var(--green-bg);border:1px solid #B2DFCA;color:#226644}
+.feedback.wrong{background:var(--red-bg);border:1px solid #F3BEBE;color:#8B3333}
+.q-actions{display:flex;gap:10px;margin-top:16px}
+.btn{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;font-family:'Inter',sans-serif}
+.btn-primary{background:var(--teal);color:#fff}
+.btn-primary:hover{background:#2580A0}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--border)}
+.btn-amber{background:var(--amber);color:#fff}
+.btn-amber:hover{background:#C07E1A}
+
+/* ─── RESULTS ─── */
+.result-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:40px;text-align:center;max-width:520px;margin:0 auto}
+.result-big{font-family:'Crimson Pro',serif;font-size:72px;font-weight:700;color:var(--navy);line-height:1}
+.result-sub{font-size:13px;color:var(--muted);margin-top:4px;margin-bottom:28px}
+.result-row{display:flex;justify-content:center;gap:36px;margin-bottom:28px}
+.rstat-v{font-family:'Crimson Pro',serif;font-size:30px;font-weight:700}
+.rstat-l{font-size:11px;color:var(--muted);margin-top:2px}
+.green-v{color:var(--green)}
+.red-v{color:var(--red)}
+.result-msg{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:28px;padding:16px 20px;background:var(--bg);border-radius:10px}
+
+/* ─── WELCOME ─── */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:48px 32px}
+.w-icon{font-size:56px;margin-bottom:20px}
+.w-title{font-family:'Crimson Pro',serif;font-size:30px;font-weight:700;color:var(--navy);margin-bottom:10px}
+.w-text{font-size:14px;color:var(--muted);max-width:440px;line-height:1.7;margin-bottom:28px}
+.w-features{display:flex;gap:20px;margin-bottom:32px;flex-wrap:wrap;justify-content:center}
+.w-feat{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:12.5px;color:var(--text);display:flex;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-head">
+    <div class="sb-brand">
+      <div class="sb-pill">💊</div>
+      <div>
+        <div class="sb-title">Özel Eğitim<br>Doktora Hazırlık</div>
+        <div class="sb-sub">Bilim Sınavı 2026</div>
+      </div>
+    </div>
+    <div class="sb-prog-wrap">
+      <div class="sb-prog-labels">
+        <span>Genel İlerleme</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="sb-prog-bar"><div class="sb-prog-fill" id="prog-fill"></div></div>
+    </div>
+  </div>
+
+  <div class="topic-list" id="topic-list"></div>
+
+  <div class="sb-foot">
+    <div class="sb-stats">
+      <div><div class="sstat-v" id="stat-studied">0</div><div class="sstat-l">Konu</div></div>
+      <div><div class="sstat-v" id="stat-correct">0</div><div class="sstat-l">Doğru</div></div>
+      <div><div class="sstat-v" id="stat-topics">0</div><div class="sstat-l">Tamamlanan</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="m-header">
+    <div>
+      <div class="m-title" id="hdr-title">Konu Seçin</div>
+      <div class="m-subtitle" id="hdr-sub">Ankara Üniversitesi &bull; Özel Eğitim Doktora</div>
+    </div>
+    <div class="mode-tabs" id="mode-tabs" style="visibility:hidden">
+      <button class="mode-tab active" id="tab-hap" onclick="setMode('hap')">💊 Hap Bilgi</button>
+      <button class="mode-tab" id="tab-quiz" onclick="setMode('quiz')">✏️ Sınav Modu</button>
+    </div>
+  </div>
+  <div class="m-content" id="content"></div>
+</div>
+
+<script>
+/* ────────────────────────────────────────────
+   DATA
+──────────────────────────────────────────── */
+const TOPICS = [
+  {
+    id: 0,
+    icon: "🏛️",
+    title: "Özel Eğitimin Temelleri",
+    haps: [
+      { badge: "Tanım", text: "<strong>Özel eğitim</strong>: bireysel farklılıkları olan bireylerin genel eğitim sisteminden maksimum düzeyde yararlanması için sağlanan, özel tasarımlı öğretim, hizmetler ve destekler bütünüdür." },
+      { badge: "Yasal Dayanak TR", text: "Türkiye'de özel eğitimin yasal çerçevesi: <strong>2916 sayılı Kanun (1983)</strong> → <strong>573 sayılı KHK (1997)</strong> → <strong>5378 sayılı Engelliler Hakkında Kanun (2005)</strong> → MEB Özel Eğitim Hizmetleri Yönetmelikleri (2018 güncellemesi)." },
+      { badge: "Normalleştirme", text: "<strong>Normalleştirme ilkesi (Nirje, 1969; Wolfensberger, 1972)</strong>: Engelli bireylerin toplumun geri kalanıyla mümkün olduğunca benzer koşullarda, ritimde ve içerikte yaşaması. Wolfensberger bunu 'sosyal rol değerlendirmesi' kavramıyla genişletti." },
+      { badge: "Modeller", text: "Üç temel model: <strong>Medikal model</strong> (yetersizlik bireyden kaynaklanır, tedavi odaklı) → <strong>Sosyal model</strong> (yetersizlik toplumun yarattığı engellerden doğar) → <strong>Biyopsikososyal model / WHO-ICF</strong> (bireyin sağlık durumu ile çevresel faktörlerin etkileşimi)." },
+      { badge: "LRE / En Az Kısıtlayıcı", text: "<strong>En Az Kısıtlayıcı Ortam (LRE)</strong>: Her bireyin, engelsiz yaşıtlarıyla mümkün olduğunca birlikte, uygun desteklerle eğitim alması hakkı. ABD'de <strong>IDEA (2004)</strong> ile yasal güvence altındadır; Türkiye'de BEP ve RAM sistemiyle operasyonelleştirilir." },
+      { badge: "Tarihsel Süreç", text: "Özel eğitimin gelişimi: <strong>İzolasyon</strong> → <strong>Kurumlaşma (18-19. yy)</strong> → <strong>Normalleştirme (1960-70'ler)</strong> → <strong>Kaynaştırma (1980'ler)</strong> → <strong>Tam Dahil Etme (Full Inclusion, 1990+)</strong>. Türkiye'de resmiyet 1950'lerin sonu–1960'larda başlar." }
+    ],
+    quiz: [
+      { q: "Normalleştirme kavramını ilk sistematik biçimde tanımlayan kişi kimdir?", opts: ["Kirk", "Wolfensberger", "Nirje", "Bronfenbrenner"], ans: 2, exp: "Nirje (1969) normalleştirme ilkesini ilk sistematize eden isimdir; Wolfensberger (1972) bu kavramı sosyal rol değerlendirmesi ile genişletmiştir." },
+      { q: "Türkiye'de özel eğitime ilişkin ilk kapsamlı yasal düzenleme hangisidir?", opts: ["5378 sayılı Engelliler Hakkında Kanun", "573 sayılı KHK", "2916 sayılı Özel Eğitim Hakkında Kanun", "MEB Özel Eğitim Yönetmeliği"], ans: 2, exp: "2916 sayılı Kanun (1983), Türkiye'deki özel eğitimin ilk kapsamlı yasal dayanağıdır; 573 sayılı KHK 1997'de bu alanı yeniden düzenlemiştir." },
+      { q: "Yetersizliği bireyden değil toplumsal engellerden kaynaklanan bir durum olarak tanımlayan model hangisidir?", opts: ["Medikal model", "Sosyal model", "Biyopsikososyal model", "Gelişimsel model"], ans: 1, exp: "Sosyal model, yetersizliği bireysel bozukluk olarak değil; toplumun fiziksel, tutumsal ve kurumsal engellerinin ürünü olarak tanımlar." },
+      { q: "IDEA kapsamında 'En Az Kısıtlayıcı Ortam' ilkesi neyi ifade eder?", opts: ["Engelli bireylerin yalnızca özel okullarda eğitim alması", "Bireylerin genel eğitim ortamından mümkün olduğunca yararlanması", "Bireysel destek olmaksızın tam dahil etme", "Tüm bireylerin aynı müfredatı izlemesi"], ans: 1, exp: "LRE ilkesi, bireyin özelliklerine göre en uygun destekle, genel eğitimden olabildiğince fazla yararlanmasını esas alır; tam dahil etmeyi zorunlu kılmaz." }
+    ]
+  },
+  {
+    id: 1,
+    icon: "🧩",
+    title: "Otizm Spektrum Bozukluğu",
+    haps: [
+      { badge: "DSM-5 Tanı", text: "<strong>DSM-5 OSB tanı kriterleri</strong>: (A) Sosyal iletişim ve sosyal etkileşimde kalıcı yetersizlikler; (B) Kısıtlı, tekrarlayıcı davranış, ilgi veya aktivite örüntüleri. Her iki eksen de erken gelişimsel dönemde başlamalı; işlev bozukluğu yaratmalıdır." },
+      { badge: "DSM-IV → DSM-5", text: "DSM-IV'te ayrı kategoriler (Otistik Bozukluk, Asperger Sendromu, PDD-NOS, Rett) varken, <strong>DSM-5 bunları tek 'Otizm Spektrum Bozukluğu' şemsiyesinde</strong> birleştirdi. Artık <strong>şiddet düzeyi</strong> (Düzey 1–2–3) ile gereken destek miktarı belirtilir." },
+      { badge: "Prevalans", text: "<strong>Prevalans</strong>: CDC (2023) verisiyle ABD'de yaklaşık her 36 çocuktan 1'i OSB tanısı alıyor (~%2.8). Artışın başlıca nedenleri: tanı kriterlerinin genişlemesi, farkındalık artışı ve tarama uygulamalarının yaygınlaşması." },
+      { badge: "Erken Belirtiler", text: "Erken uyarı işaretleri: <strong>12. ay</strong> → isme dönmeme, göz temasının sınırlı olması, işaret etmeme (proto-deklaratif); <strong>18. ay</strong> → işlevsel oyun yokluğu, taklit yetersizliği; <strong>24. ay</strong> → iki kelimeli spontane ifade yokluğu." },
+      { badge: "Kanıta Dayalı Müdahale", text: "OSB'de kanıta dayalı birincil müdahaleler: <strong>ABA/EIBI</strong> (Erken Yoğun Davranışsal Müdahale), <strong>ESDM – Denver Modeli</strong>, <strong>PECS</strong> (Picture Exchange Communication System), <strong>Sosyal Öyküler</strong> (Gray), <strong>DIR/Floortime</strong>. OSB için onaylı bir farmakolojik tedavi yoktur; ilaç ancak ikincil belirtilere yönelik kullanılır." },
+      { badge: "İkincil Özellikler", text: "OSB'ye sıklıkla eşlik eden özellikler: <strong>duyusal işlemleme farklılıkları</strong> (hipo/hipersensitivite), uyku bozuklukları, GIS sorunları, anksiyete, DEHB. Entelektüel yetersizliğin eşlik oranı DSM-5 çerçevesinde önemli ölçüde değişkendir." }
+    ],
+    quiz: [
+      { q: "DSM-5'e göre OSB tanısı için kaç temel kriter alanı zorunludur?", opts: ["Üç alan (sosyal, dil, davranış)", "İki alan (sosyal iletişim + kısıtlı/tekrarlayıcı davranış)", "Dört alan", "Tek alan (sosyal iletişim)"], ans: 1, exp: "DSM-5, DSM-IV'ün üç eksenini iki eksene indirdi: (A) sosyal iletişim/etkileşim ve (B) kısıtlı, tekrarlayıcı davranış örüntüleri." },
+      { q: "DSM-5'te OSB şiddet düzeyi nasıl belirlenir?", opts: ["IQ puan aralığına göre", "Gereken destek düzeyine göre (Düzey 1–2–3)", "Başlangıç yaşına göre", "Sözel/sözel olmayan alt türlerine göre"], ans: 1, exp: "DSM-5, IQ yerine sosyal iletişim ve kısıtlı davranış alanlarında gereken destek düzeyini (Düzey 1: destek gerektirir; Düzey 3: çok önemli destek gerektirir) esas alır." },
+      { q: "Aşağıdakilerden hangisi OSB'de birincil kanıta dayalı müdahale DEĞİLDİR?", opts: ["EIBI / ABA", "ESDM (Denver Modeli)", "PECS", "Farmakoterapi (birincil tedavi olarak)"], ans: 3, exp: "Farmakoterapi OSB'nin birincil tedavisi değildir; yalnızca eşlik eden belirtilere (irritabilite, hiperaktivite vb.) yönelik destekleyici biçimde kullanılır." },
+      { q: "'Proto-deklaratif işaret etme' eksikliği ne anlama gelir?", opts: ["Fiziksel nesneleri kavrayamamak", "İlgi paylaşımı amacıyla parmakla gösterme yetersizliği", "Taklit becerisinde yetersizlik", "Sayısal nesne kavramı zayıflığı"], ans: 1, exp: "Proto-deklaratif işaret etme, çocuğun birini ilgi çekici bir şeye dikkat çekmek için parmakla göstermesidir; OSB'de bu ortak dikkat davranışı erken dönemde gelişmeyebilir." },
+      { q: "DSM-IV'teki Asperger Sendromu, DSM-5'te nasıl sınıflandırılır?", opts: ["Ayrı tanı kategorisi olarak korundu", "OSB Düzey 1 kapsamında değerlendirilir", "ICD-11'e aktarıldı, DSM'den kaldırıldı", "PDD-NOS olarak yeniden adlandırıldı"], ans: 1, exp: "DSM-5, Asperger Sendromunu ayrı bir tanı olarak kaldırarak OSB çatısı altında birleştirdi; klinik özellikler Düzey 1 OSB ile örtüşmektedir." }
+    ]
+  },
+  {
+    id: 2,
+    icon: "🧠",
+    title: "Zihinsel Yetersizlik",
+    haps: [
+      { badge: "DSM-5 Tanım", text: "<strong>DSM-5 zihinsel yetersizlik (ZY)</strong>: Entelektüel işlevlerde (IQ yaklaşık 70 altı, yaklaşık 2 SD altı) VE uyumsal davranışın kavramsal, sosyal ve pratik alanlarında önemli kısıtlılık; gelişimsel dönemde başlar." },
+      { badge: "Sınıflandırma", text: "DSM-5'te sınıflandırma <strong>artık yalnızca IQ'ya değil</strong>; üç uyumsal davranış alanında (kavramsal, sosyal, pratik) gereken destek düzeyine göre yapılır: Hafif – Orta – Ağır – Çok Ağır." },
+      { badge: "AAIDD Yaklaşımı", text: "<strong>AAIDD</strong> tanımı: Zekâ işlevi + uyumsal davranış + çevresel bağlam üçgenini vurgular. 'Destek ihtiyaçları' perspektifini benimser; yetersizlik bireysel bir özellik değil, kişi ile çevre arasındaki uyumsuzluktur." },
+      { badge: "Yaygın Nedenler", text: "En bilinen nedenler: <strong>Down Sendromu</strong> (trizomi 21) — en sık kromozom kökenli neden; <strong>Frajil X Sendromu</strong> — en sık kalıtsal neden; perinatal hipoksi, fetal alkol sendromu, PKU (fenilketonüri), iyot eksikliği." },
+      { badge: "Eğitim Yaklaşımı", text: "ZY'de eğitim: Bireyselleştirilmiş hedefler, <strong>somutlaştırılmış öğretim</strong> (manipülatifler, görseller), yaşam becerilerine dayalı fonksiyonel müfredat, toplumda genelleme (community-based instruction). Bütünleştirilmiş istihdam ve geçiş planlaması kritik." }
+    ],
+    quiz: [
+      { q: "DSM-5'te zihinsel yetersizlik şiddet sınıflandırması neye göre yapılır?", opts: ["Yalnızca IQ puan aralıkları", "Uyumsal davranış ve gereken destek düzeyi", "Nörogörüntüleme bulgularına", "Başlangıç yaşına göre"], ans: 1, exp: "DSM-5, sadece IQ kesim puanına dayanan eski sınıflandırmayı terk ederek kavramsal, sosyal ve pratik uyumsal beceriler alanındaki destek ihtiyacını esas alır." },
+      { q: "Frajil X Sendromu hakkında doğru ifade hangisidir?", opts: ["Trizomi 21 kaynaklıdır", "En sık kalıtsal zihinsel yetersizlik nedenidir", "Yalnızca kız çocuklarını etkiler", "Otozomal resesif kalıtılır"], ans: 1, exp: "Frajil X, X'e bağlı geçiş gösteren en sık kalıtsal zihinsel yetersizlik nedenidir. FMR1 geni mutasyonu söz konusudur; erkekleri daha ağır etkiler." },
+      { q: "AAIDD tanımında üç temel bileşen nedir?", opts: ["IQ, dil ve motor beceriler", "Zekâ işlevi, uyumsal davranış ve çevresel bağlam", "Genetik yapı, çevre ve bakım kalitesi", "Eğitim durumu, sağlık ve sosyal destek"], ans: 1, exp: "AAIDD tanımı zihinsel yetersizliği statik bir özellik olarak değil; zekâ, uyumsal davranış ve çevresel bağlamın etkileşim ürünü olarak ele alır." }
+    ]
+  },
+  {
+    id: 3,
+    icon: "📖",
+    title: "Öğrenme Güçlükleri & DEHB",
+    haps: [
+      { badge: "ÖÖB Tanımı", text: "<strong>Özgül Öğrenme Bozukluğu (ÖÖB / DSM-5)</strong>: Uygun öğretime karşın en az 6 ay süren, okuma (disleksi), yazılı anlatım ya da matematik (diskalkuli) alanında işlevsel güçlük. IQ ile fırsat yetersizliği dışlanmalıdır; okul öncesinde belirtiler hafif olabilir." },
+      { badge: "Disleksi", text: "<strong>Disleksinin temel mekanizması: fonolojik işlemleme yetersizliği</strong>. Sesbirim farkındalığı, hızlı isimlendirme (RAN) ve fonolojik bellek güçlükleri söz konusudur. Okuma hızı, doğruluk ve akıcılık etkilenir; genel zekâ ile ilişkili değildir." },
+      { badge: "DEHB DSM-5", text: "<strong>DEHB (DSM-5)</strong>: Dikkatsizlik ve/veya hiperaktivite-dürtüsellik örüntüsü; en az <strong>12 yaşından önce</strong> başlar, iki veya daha fazla ortamda gözlenir (okul, ev vb.). Alt sunumlar: Baskın Dikkatsiz, Baskın Hiperaktif-Dürtüsel, <strong>Bileşik Sunum</strong>." },
+      { badge: "Yönetici İşlevler", text: "DEHB'de temel bilişsel güçlükler: <strong>yönetici işlev yetersizlikleri</strong> — çalışma belleği zayıflığı, inhibisyon güçlüğü, bilişsel esneklik sorunu, planlama/organizasyon zorluğu. Barkley'nin modeline göre DEHB özünde bir inhibisyon bozukluğudur." },
+      { badge: "Birlikte Görülme", text: "DEHB okul çağında prevalansı ~%5-8; ÖÖB ile birlikte görülme oranı yüksek (~%25-50). Eşlik eden psikiyatrik bozukluklar: anksiyete bozuklukları, ODB, davranış bozukluğu, depresyon." }
+    ],
+    quiz: [
+      { q: "Disleksinin temel bilişsel mekanizması nedir?", opts: ["Görsel-uzamsal işlemleme yetersizliği", "Kısa süreli bellek zayıflığı", "Fonolojik işlemleme yetersizliği", "Dikkati sürdürme güçlüğü"], ans: 2, exp: "Dislekside temel zorluk sesbirim farkındalığı, hızlı isimlendirme ve fonolojik bellekten oluşan fonolojik sistemdedir; görsel sorun birincil neden değildir." },
+      { q: "DSM-5'e göre DEHB tanısı için belirtiler kaç yaşından önce başlamış olmalıdır?", opts: ["7 yaş", "10 yaş", "12 yaş", "16 yaş"], ans: 2, exp: "DSM-5, başlangıç yaşı ölçütünü DSM-IV'teki 7'den 12'ye yükseltti; bu değişiklik özellikle geç tanı alan dikkatsiz tip vakalarını kapsam içine aldı." },
+      { q: "Aşağıdakilerden hangisi DSM-5'te DEHB alt sunumlarından biri DEĞİLDİR?", opts: ["Baskın Dikkatsiz Sunum", "Baskın Hiperaktif-Dürtüsel Sunum", "Bileşik Sunum", "Baskın Sözel-İşitsel Sunum"], ans: 3, exp: "DSM-5 üç alt sunum tanımlar: Baskın Dikkatsiz, Baskın Hiperaktif-Dürtüsel ve Bileşik. 'Sözel-İşitsel Sunum' DSM sınıflandırmasında yer almaz." }
+    ]
+  },
+  {
+    id: 4,
+    icon: "📋",
+    title: "Bireyselleştirilmiş Eğitim Programı",
+    haps: [
+      { badge: "BEP Nedir?", text: "<strong>BEP (Bireyselleştirilmiş Eğitim Programı)</strong> / IEP: Her özel eğitim öğrencisi için hazırlanan, mevcut performans düzeyi, ölçülebilir yıllık amaçlar, kısa dönemli hedefler, hizmetler, katılım derecesi ve değerlendirme yöntemlerini içeren yazılı plan." },
+      { badge: "BEP Ekibi", text: "BEP ekibinin <strong>zorunlu üyeleri</strong>: Okul yöneticisi (veya temsilcisi), özel eğitim öğretmeni, genel eğitim öğretmeni, gerektiğinde uzmanlar (psikolog, konuşma-dil terapisti vb.), <strong>aile</strong> ve mümkün olduğunda öğrencinin kendisi." },
+      { badge: "Zorunlu Bileşenler", text: "IDEA çerçevesinde BEP'in <strong>zorunlu bileşenleri</strong>: (1) Mevcut performans düzeyi, (2) Ölçülebilir yıllık hedefler, (3) Özel eğitim ve ilgili hizmetler, (4) Genel eğitime katılım derecesi, (5) Değerlendirme düzenlemeleri, (6) Geçiş planlaması (≥16 yaş)." },
+      { badge: "Türkiye'de BEP", text: "Türkiye'de BEP: <strong>MEB Özel Eğitim Hizmetleri Yönetmeliği</strong> kapsamında her öğrenci için hazırlanması zorunludur. RAM (Rehberlik Araştırma Merkezi) değerlendirmesine dayanır; yılda en az bir kez güncellenir; aile onayı esastır." },
+      { badge: "Geçiş Planlaması", text: "<strong>Geçiş planlaması</strong>: Okuldan iş hayatı / toplumsal yaşama geçişi destekleyen, istihdam, yaşam becerileri ve sosyal katılımı içeren yapılandırılmış plan. IDEA'ya göre <strong>16 yaşında</strong> BEP'e dahil edilmesi zorunlu; Türkiye'de uygulama çeşitlilik gösterir." }
+    ],
+    quiz: [
+      { q: "BEP'in zorunlu bileşenleri arasında yer ALMAYAN hangisidir?", opts: ["Mevcut performans düzeyi", "Ölçülebilir yıllık hedefler", "Ebeveynlerin eğitim geçmişi", "Değerlendirme düzenlemeleri"], ans: 2, exp: "BEP içeriği öğrencinin eğitim planıyla ilgilidir. Ebeveynlerin kişisel eğitim geçmişi BEP'in yasal zorunlu bileşenleri arasında yer almaz." },
+      { q: "BEP ekibinin zorunlu üyeleri kimlerdir?", opts: ["Yalnızca özel eğitim öğretmeni ve aile", "Okul yöneticisi, özel ve genel eğitim öğretmeni ile aile", "Yalnızca psikolog ve öğretmen", "BEP ekibi yalnızca uzmanlardan oluşur"], ans: 1, exp: "IDEA, BEP ekibini genişçe tanımlar: yönetici temsilcisi, özel eğitim öğretmeni, genel eğitim öğretmeni, aile ve mümkünse öğrenci zorunlu üyelerdir." },
+      { q: "IDEA'ya göre geçiş planlaması BEP'e kaç yaşında dahil edilmelidir?", opts: ["12 yaş", "14 yaş", "16 yaş", "18 yaş"], ans: 2, exp: "IDEA 2004, BEP'e geçiş planlamasının en geç 16 yaşında eklenmesini zorunlu kılmaktadır; bazı eyaletler bunu 14 yaşa çekmiştir." }
+    ]
+  },
+  {
+    id: 5,
+    icon: "🤝",
+    title: "Kaynaştırma Eğitimi",
+    haps: [
+      { badge: "Tanım ve Türler", text: "<strong>Kaynaştırma (Integration/Inclusion)</strong>: Engelli bireylerin destek hizmetleriyle genel eğitim ortamında yaşıtlarıyla eğitim alması. Türleri: <strong>Tam zamanlı kaynaştırma</strong>, <strong>Yarı zamanlı (çekme odası modeli)</strong>, <strong>Ters kaynaştırma</strong> (engelsiz öğrenciler özel eğitim ortamına gelir)." },
+      { badge: "Full Inclusion", text: "<strong>Tam Dahil Etme (Full Inclusion)</strong>: Tüm öğrencilerin, destek ihtiyacından bağımsız olarak tam zamanlı genel eğitim sınıfında eğitim almasını savunan yaklaşım. LRE ilkesinden daha radikal; yasal zorunluluk değil, felsefik tutum." },
+      { badge: "Araştırma Bulguları", text: "Nitelikli destekle uygulanan kaynaştırmanın hem engelli hem engelsiz öğrenciler için <strong>akademik ve sosyal çıktılar açısından olumlu</strong> sonuçlar ürettiğini gösteren kanıtlar güçlüdür. Desteksiz kaynaştırma ise her iki grup için olumsuz sonuçlar doğurabilir." },
+      { badge: "Başarı Faktörleri", text: "Kaynaştırmada başarıyı belirleyen etkenler: <strong>Yeterli destek kaynakları ve personel</strong>, öğretmenlerin hazırlığı ve tutumu, BEP'in niteliği, <strong>aile katılımı</strong>, okul kültürü, akran desteği, fiziksel erişilebilirlik." },
+      { badge: "Türkiye Uygulaması", text: "Türkiye'de kaynaştırma: <strong>Sınıf mevcudunun %10'u kadar kaynaştırma öğrencisi</strong> kuralı, <strong>Destek Eğitim Odası</strong> uygulaması (BEP hedeflerine yönelik bireysel/küçük grup çalışması), gezici özel eğitim öğretmeni modeli." }
+    ],
+    quiz: [
+      { q: "'Ters kaynaştırma' uygulaması neyi ifade eder?", opts: ["Öğrencinin genel sınıfa geçici olarak katılması", "Genel eğitim öğrencilerinin özel eğitim ortamına katılması", "Tüm bireylerin tam zamanlı dahil edilmesi", "Çekme odası modeliyle destek verilmesi"], ans: 1, exp: "Ters kaynaştırmada engelsiz akranlar özel eğitim ortamına gelir; bu yöntem özellikle şiddetli yetersizliği olan öğrenciler için sosyal fırsatlar sunar." },
+      { q: "Kaynaştırmanın başarısı için en kritik faktörler arasında hangisi YOKTUR?", opts: ["Yeterli destek kaynakları", "Öğretmenin hazırlığı ve tutumu", "Öğretmenin özel eğitim lisans derecesi", "BEP'in niteliği"], ans: 2, exp: "Lisans derecesi tek başına yeterli değildir; öğretmenin tutumu, hazırlık düzeyi ve destek sistemi çok daha belirleyicidir. Özel eğitim lisansı olmayan genel eğitim öğretmenleri de nitelikli destek ile kaynaştırma sürecine katkı sağlayabilir." },
+      { q: "Türkiye'de sınıfa alınabilecek kaynaştırma öğrencisi sayısının üst sınırı nasıl belirlenir?", opts: ["Sınıf mevcudundan bağımsız, maksimum 2 öğrenci", "Sınıf mevcudunun %10'u", "Okul müdürünün takdirine bırakılmıştır", "RAM kararıyla belirlenir, sabit oran yoktur"], ans: 1, exp: "MEB Özel Eğitim Yönetmeliği, bir sınıftaki kaynaştırma öğrencisi sayısını sınıf mevcudunun %10'u ile sınırlamaktadır." }
+    ]
+  },
+  {
+    id: 6,
+    icon: "⚙️",
+    title: "Uygulamalı Davranış Analizi",
+    haps: [
+      { badge: "ABA Nedir?", text: "<strong>ABA (Uygulamalı Davranış Analizi)</strong>: Davranışı çevre-davranış ilişkileri çerçevesinde analiz edip değiştirmeyi amaçlayan bilim dalı ve uygulama. Temel dayanak: Skinner'ın operant koşullanma teorisi; insan davranışını anlayıp geliştirmeye yönelik sistematik veri toplama." },
+      { badge: "ABC Analizi", text: "<strong>ABC Analizi</strong>: <strong>A</strong>ntecedent (Öncül uyaran) → <strong>B</strong>ehavior (Davranış) → <strong>C</strong>onsequence (Sonuç). Her davranışın işlevi bu üçlü bağlamda incelenir; müdahale de bu noktalardan birine ya da birkaçına yönelik planlanır." },
+      { badge: "Pekiştirme", text: "<strong>Pozitif pekiştirme</strong>: Davranış sonrası istenen uyaran eklenir → davranış artar. <strong>Negatif pekiştirme</strong>: Davranış sonrası istenmeyen uyaran ortadan kalkar → davranış artar. Her ikisi de davranışı güçlendirir (ceza ile karıştırılmamalıdır)." },
+      { badge: "FDD / FBA", text: "<strong>Fonksiyonel Davranış Değerlendirmesi (FDD/FBA)</strong>: Problem davranışın <strong>işlevini</strong> belirleyen sistematik değerlendirme. Başlıca işlevler: <strong>dikkat alma</strong>, <strong>kaçınma/ertelenme</strong>, <strong>duyusal stimülasyon</strong>, <strong>somut ödüle ulaşma (tangible)</strong>. Müdahale bu işleve göre planlanır." },
+      { badge: "DTT", text: "<strong>Ayrık Denemeli Öğretim (DTT)</strong>: Beceriyi küçük ayrık adımlara bölerek, her denemeyi (uyaran → yanıt → sonuç) yüksek yapılandırılmış biçimde tekrarlayan ABA tekniği. OSB ve ZY'de beceri öğretiminde yaygın kullanılır; EIBI'nin temel bileşenlerinden biridir." },
+      { badge: "Genelleme ve İdame", text: "ABA'nın iki temel çıktı hedefi: <strong>Genelleme</strong> — kazanılan becerinin farklı ortam, kişi ve materyallere transfer edilmesi; <strong>İdame</strong> — öğrenilen becerinin öğretim sona erdikten sonra zaman içinde korunması. Planlı genelleme eğitimi kritiktir." }
+    ],
+    quiz: [
+      { q: "ABC analizi bağlamında 'A' neyi temsil eder?", opts: ["Alternatif davranış", "Öncül uyaran (Antecedent)", "Analitik ilke", "Uygulamalı (Applied) bileşen"], ans: 1, exp: "ABC modelinde A = Antecedent (öncül uyaran), B = Behavior (davranış), C = Consequence (sonuç)dur. Müdahale bu üç noktanın herhangi birine yönelik olabilir." },
+      { q: "Negatif pekiştirme hakkında doğru ifade hangisidir?", opts: ["Davranışı azaltır; bir tür cezadır", "Davranış sonrası istenmeyen uyaran çıkarılarak davranış artar", "Ödülün verilmemesiyle gerçekleşir", "Yalnızca hayvan deneylerinde geçerlidir"], ans: 1, exp: "Negatif pekiştirmede 'negatif' kelimesi cezayı değil, uyaran çıkarılmasını ifade eder. Sonuç olarak davranış artar. Örnek: baş ağrısı için aspirin almak (ağrının gitmesi davranışı pekiştirir)." },
+      { q: "Fonksiyonel Davranış Değerlendirmesinin (FDD) temel amacı nedir?", opts: ["Davranışın şiddetini puanlamak", "Problem davranışın işlevini belirlemek", "Uygun ceza prosedürü seçmek", "Çocuğun zekâ düzeyini değerlendirmek"], ans: 1, exp: "FDD, problemi ortadan kaldırmayı değil; davranışın 'neden' gerçekleştiğini (dikkat, kaçınma, duyusal, tangible) anlamayı hedefler. İşleve dayalı müdahale çok daha etkilidir." },
+      { q: "Pekiştirme takvimleri arasında en yavaş sönmeye dirençli olan hangisidir?", opts: ["Sabit oran takvimi", "Sabit aralık takvimi", "Değişken oran takvimi", "Sürekli pekiştirme"], ans: 2, exp: "Değişken oran takvimi (örn. slot makinesi) en güçlü ve en sönmeye dirençli takvimdir; yanıt sayısı öngörülemeyen biçimde değiştiğinden kazanım hızla gelişir ve sürdürülür." }
+    ]
+  },
+  {
+    id: 7,
+    icon: "🌱",
+    title: "Erken Müdahale ve Tanılama",
+    haps: [
+      { badge: "Erken Müdahale", text: "<strong>Erken müdahale</strong>: 0-6 yaş döneminde tanımlanan gelişimsel risk veya yetersizliği olan çocuklara ve ailelerine sunulan disiplinlerarası hizmetler bütünü. Nörobilimsel dayanak: Bu dönemdeki <strong>nöroplastisite</strong> yetişkinliğe kıyasla olağanüstü yüksektir." },
+      { badge: "Türkiye'de Erken Müdahale", text: "Türkiye'de erken tanılama ve yönlendirme <strong>RAM (Rehberlik ve Araştırma Merkezi)</strong> üzerinden yürütülür. Erken çocukluk özel eğitimi (0-6 yaş) MEB mevzuatında yasal zorunluluk olarak yer alır; Özel Eğitim Uygulama Okulları bu hizmeti sunar." },
+      { badge: "AGTE", text: "<strong>AGTE (Ankara Gelişim Tarama Envanteri)</strong>: <strong>0-6 yaş</strong> için geliştirilmiş Türk normlu değerlendirme aracı. Dört alan: ince motor, kaba motor, dil/konuşma-bilişsel, sosyal beceriler. Anne-baba/bakıcı bildirimine dayalı, pratik tarama aracıdır." },
+      { badge: "Bayley-IV", text: "<strong>Bayley Bebek ve Erken Çocukluk Gelişim Ölçeği–IV (Bayley-4)</strong>: 16 gün–42 ay. Alanlar: bilişsel, dil (alıcı+ifade edici), motor (ince+kaba), sosyal-duygusal ve uyumsal davranış. Altın standart performans değerlendirmesidir." },
+      { badge: "Aile Merkezli Yaklaşım", text: "<strong>Aile merkezli erken müdahale</strong>: Odak yalnızca çocuk değil, aile sistemidir. Temel ilkeler: <strong>aile güçlendirme (empowerment)</strong>, doğal öğrenme ortamlarında müdahale (ev, oyun alanı), ailenin güçlü yanlarına dayalı planlama, kültürel duyarlılık." }
+    ],
+    quiz: [
+      { q: "AGTE (Ankara Gelişim Tarama Envanteri) hangi yaş aralığını kapsar?", opts: ["0-3 yaş", "0-6 yaş", "2-8 yaş", "0-12 yaş"], ans: 1, exp: "AGTE, 0-6 yaş grubuna yönelik Türk normlu bir gelişimsel tarama aracıdır; dört gelişim alanını (kaba motor, ince motor, dil/bilişsel, sosyal) değerlendirir." },
+      { q: "Erken müdahalenin nörobilimsel dayanağı nedir?", opts: ["Myelinizasyonun 0-6 yaşta tamamlanması", "Kritik dönemde yüksek nöroplastisite", "Limbik sistemin 2 yaşta olgunlaşması", "Korteks yoğunluğunun azalması"], ans: 1, exp: "Erken yaşlarda beyin plastisitesi son derece yüksektir; sinaptik bağlantılar hızla gelişir ve çevresel girdiye yanıt verir. Bu pencerede yapılan müdahalelerin uzun vadeli etkileri daha kalıcıdır." },
+      { q: "Aile merkezli erken müdahale yaklaşımında temel odak nedir?", opts: ["Yalnızca çocuğun klinik süreci", "Uzman liderliğinde protokol uygulamaları", "Aile güçlendirme ve doğal öğrenme ortamları", "Kurumsal bakım ve rehabilitasyon hizmetleri"], ans: 2, exp: "Aile merkezli yaklaşımda müdahale uzman-çocuk ikilisinin ötesine geçer; ailenin kapasitesi ve ekolojik bağlamı ön plana çıkar. Doğal ortamlarda aile aracılığıyla gerçekleştirilen müdahale en etkili biçim olarak kabul görmektedir." }
+    ]
+  }
+];
+
+/* ────────────────────────────────────────────
+   STATE
+──────────────────────────────────────────── */
+let currentTopic = -1;
+let currentMode = 'hap';
+let topicStates = TOPICS.map(() => ({
+  hapViewed: false,
+  quizAnswers: [],       // {sel, correct} per answered question
+  currentQ: 0,
+  selectedOpt: null,
+  feedbackShown: false,
+  complete: false
+}));
+
+/* ────────────────────────────────────────────
+   SIDEBAR
+──────────────────────────────────────────── */
+function buildSidebar() {
+  const list = document.getElementById('topic-list');
+  list.innerHTML = TOPICS.map((t, i) => {
+    const ts = topicStates[i];
+    const score = ts.complete ? Math.round(ts.quizAnswers.filter(a=>a.correct).length/TOPICS[i].quiz.length*100) : null;
+    const dotClass = ts.complete ? 'done' : ts.hapViewed ? 'viewed' : '';
+    const dotIcon = ts.complete ? '✓' : ts.hapViewed ? '●' : (i+1);
+    return `<div class="t-item ${i===currentTopic?'active':''}" onclick="selectTopic(${i})">
+      <div class="t-dot ${dotClass}">${dotIcon}</div>
+      <div class="t-label">${t.icon} ${t.title}</div>
+      ${score!==null ? `<div class="t-score">${score}%</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const viewed = topicStates.filter(ts=>ts.hapViewed).length;
+  const done = topicStates.filter(ts=>ts.complete).length;
+  const totalCorrect = topicStates.reduce((acc,ts)=>acc+ts.quizAnswers.filter(a=>a.correct).length,0);
+  const totalQ = TOPICS.reduce((acc,t)=>acc+t.quiz.length,0);
+  const pct = Math.round(done/TOPICS.length*100);
+
+  document.getElementById('stat-studied').textContent = viewed;
+  document.getElementById('stat-correct').textContent = totalCorrect;
+  document.getElementById('stat-topics').textContent = done;
+  document.getElementById('prog-pct').textContent = pct+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
+}
+
+/* ────────────────────────────────────────────
+   NAVIGATION
+──────────────────────────────────────────── */
+function selectTopic(i) {
+  currentTopic = i;
+  currentMode = 'hap';
+  topicStates[i].hapViewed = true;
+  renderAll();
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('tab-hap').classList.toggle('active', mode==='hap');
+  document.getElementById('tab-quiz').classList.toggle('active', mode==='quiz');
+  renderContent();
+}
+
+/* ────────────────────────────────────────────
+   RENDER
+──────────────────────────────────────────── */
+function renderAll() {
+  buildSidebar();
+  updateStats();
+  if(currentTopic < 0) {
+    renderWelcome();
+    document.getElementById('mode-tabs').style.visibility = 'hidden';
+    return;
+  }
+  const t = TOPICS[currentTopic];
+  document.getElementById('hdr-title').textContent = t.icon + ' ' + t.title;
+  document.getElementById('mode-tabs').style.visibility = 'visible';
+  document.getElementById('tab-hap').classList.toggle('active', currentMode==='hap');
+  document.getElementById('tab-quiz').classList.toggle('active', currentMode==='quiz');
+  renderContent();
+}
+
+function renderWelcome() {
+  document.getElementById('hdr-title').textContent = 'Konu Seçin';
+  document.getElementById('content').innerHTML = `
+    <div class="welcome">
+      <div class="w-icon">💊</div>
+      <div class="w-title">Bilim Sınavı Hazırlık</div>
+      <div class="w-text">Ankara Üniversitesi Özel Eğitim Doktora programına hazırlık için tasarlandı. Sol menüden bir konu seçerek hap bilgilerle çalışmaya başla, ardından quiz moduyla kendini test et.</div>
+      <div class="w-features">
+        <div class="w-feat">💊 <span><strong>${TOPICS.reduce((a,t)=>a+t.haps.length,0)}</strong> Hap Bilgi</span></div>
+        <div class="w-feat">✏️ <span><strong>${TOPICS.reduce((a,t)=>a+t.quiz.length,0)}</strong> Soru</span></div>
+        <div class="w-feat">📚 <span><strong>${TOPICS.length}</strong> Konu</span></div>
+      </div>
+    </div>`;
+}
+
+function renderContent() {
+  if(currentMode==='hap') renderHap();
+  else renderQuiz();
+}
+
+function renderHap() {
+  const t = TOPICS[currentTopic];
+  const hapsHTML = t.haps.map((h,i) => `
+    <div class="hap-card">
+      <div class="hap-pill">
+        <div class="hap-pill-left">HAP ${String(i+1).padStart(2,'0')}</div>
+        <div class="hap-pill-right">${h.badge}</div>
+      </div>
+      <div class="hap-text">${h.text}</div>
+    </div>`).join('');
+
+  document.getElementById('content').innerHTML = `
+    <div class="section-eyebrow">Hap Bilgi — ${t.haps.length} madde</div>
+    <div class="hap-list">${hapsHTML}</div>
+    <div style="padding: 8px 0 32px;">
+      <button class="btn btn-primary" onclick="goToQuiz()">Bilgini Test Et →</button>
+    </div>`;
+}
+
+function goToQuiz() {
+  currentMode = 'quiz';
+  document.getElementById('tab-hap').classList.remove('active');
+  document.getElementById('tab-quiz').classList.add('active');
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const ts = topicStates[currentTopic];
+  const t = TOPICS[currentTopic];
+  if(ts.complete) { renderResults(); return; }
+
+  const qi = ts.currentQ;
+  const q = t.quiz[qi];
+  const totalQ = t.quiz.length;
+
+  const dotsHTML = t.quiz.map((_,i) => {
+    let cls = '';
+    if(i < qi && ts.quizAnswers[i]) cls = ts.quizAnswers[i].correct ? 'correct' : 'wrong';
+    else if(i === qi) cls = 'active';
+    return `<div class="q-dot ${cls}"></div>`;
+  }).join('');
+
+  const optsHTML = q.opts.map((o,oi) => {
+    let cls = '';
+    if(ts.feedbackShown) {
+      if(oi === q.ans) cls = 'correct';
+      else if(oi === ts.selectedOpt && oi !== q.ans) cls = 'wrong';
+      else cls = 'disabled';
+    } else {
+      if(oi === ts.selectedOpt) cls = 'selected';
+    }
+    return `<div class="opt ${cls} ${ts.feedbackShown?'disabled':''}" onclick="selectOpt(${oi})">
+      <div class="opt-letter">${String.fromCharCode(65+oi)}</div>
+      <div class="opt-text">${o}</div>
+    </div>`;
+  }).join('');
+
+  const isCorrect = ts.feedbackShown && ts.selectedOpt === q.ans;
+  const feedbackCls = ts.feedbackShown ? (isCorrect ? 'correct' : 'wrong') + ' show' : '';
+  const feedbackText = ts.feedbackShown
+    ? (isCorrect
+        ? `✅ <strong>Doğru!</strong> ${q.exp}`
+        : `❌ <strong>Yanlış.</strong> Doğru cevap: <strong>${String.fromCharCode(65+q.ans)}) ${q.opts[q.ans]}</strong>. ${q.exp}`)
+    : '';
+
+  const checkBtn = !ts.feedbackShown
+    ? `<button class="btn btn-primary" ${ts.selectedOpt===null?'disabled':''} onclick="checkAnswer()">Kontrol Et</button>`
+    : qi < totalQ-1
+      ? `<button class="btn btn-primary" onclick="nextQuestion()">Sonraki Soru →</button>`
+      : `<button class="btn btn-amber" onclick="finishQuiz()">Sonuçları Gör 🏁</button>`;
+
+  document.getElementById('content').innerHTML = `
+    <div class="quiz-wrap">
+      <div class="q-progress-row">
+        <div class="q-dots">${dotsHTML}</div>
+        <div class="q-count">Soru ${qi+1} / ${totalQ}</div>
+      </div>
+      <div class="q-card">
+        <div class="q-num">Soru ${qi+1}</div>
+        <div class="q-text">${q.q}</div>
+        <div class="options">${optsHTML}</div>
+        <div class="feedback ${feedbackCls}">${feedbackText}</div>
+      </div>
+      <div class="q-actions">
+        ${checkBtn}
+        <button class="btn btn-ghost" onclick="setMode('hap')">← Hap Bilgiye Dön</button>
+      </div>
+    </div>`;
+}
+
+function renderResults() {
+  const ts = topicStates[currentTopic];
+  const t = TOPICS[currentTopic];
+  const correct = ts.quizAnswers.filter(a=>a.correct).length;
+  const total = t.quiz.length;
+  const pct = Math.round(correct/total*100);
+  const msg = pct===100
+    ? 'Mükemmel! Tüm soruları doğru yanıtladın. Bu konuyu çok iyi özümsemişsin. 🎉'
+    : pct>=75
+    ? 'Harika! Konuya hâkimiyetin güçlü. Gözden geçirmek istediğin soruları tekrar bakabilirsin.'
+    : pct>=50
+    ? 'İyi bir başlangıç. Hap bilgilere tekrar göz at ve sınavı yeniden dene.'
+    : 'Bu konuyu biraz daha çalışmak faydalı olabilir. Hap bilgilerden başlayarak tekrar dene.';
+
+  document.getElementById('content').innerHTML = `
+    <div class="result-card">
+      <div class="result-big">${pct}%</div>
+      <div class="result-sub">${correct} / ${total} doğru yanıt</div>
+      <div class="result-row">
+        <div class="rstat-v green-v">${correct}</div><div class="rstat-l">Doğru</div>
+        <div style="width:1px;background:var(--border)"></div>
+        <div class="rstat-v red-v">${total-correct}</div><div class="rstat-l">Yanlış</div>
+      </div>
+      <div class="result-msg">${msg}</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="retakeQuiz()">Sınavı Tekrarla</button>
+        <button class="btn btn-ghost" onclick="setMode('hap')">Hap Bilgilere Dön</button>
+        <button class="btn btn-ghost" onclick="nextTopicAuto()">Sonraki Konu →</button>
+      </div>
+    </div>`;
+}
+
+/* ────────────────────────────────────────────
+   QUIZ ACTIONS
+──────────────────────────────────────────── */
+function selectOpt(oi) {
+  const ts = topicStates[currentTopic];
+  if(ts.feedbackShown) return;
+  ts.selectedOpt = oi;
+  renderQuiz();
+}
+
+function checkAnswer() {
+  const ts = topicStates[currentTopic];
+  const q = TOPICS[currentTopic].quiz[ts.currentQ];
+  if(ts.selectedOpt === null) return;
+  ts.feedbackShown = true;
+  ts.quizAnswers[ts.currentQ] = { sel: ts.selectedOpt, correct: ts.selectedOpt === q.ans };
+  renderQuiz();
+  buildSidebar();
+  updateStats();
+}
+
+function nextQuestion() {
+  const ts = topicStates[currentTopic];
+  ts.currentQ++;
+  ts.selectedOpt = null;
+  ts.feedbackShown = false;
+  renderQuiz();
+}
+
+function finishQuiz() {
+  const ts = topicStates[currentTopic];
+  ts.complete = true;
+  buildSidebar();
+  updateStats();
+  renderResults();
+}
+
+function retakeQuiz() {
+  const ts = topicStates[currentTopic];
+  ts.quizAnswers = [];
+  ts.currentQ = 0;
+  ts.selectedOpt = null;
+  ts.feedbackShown = false;
+  ts.complete = false;
+  renderQuiz();
+  buildSidebar();
+  updateStats();
+}
+
+function nextTopicAuto() {
+  const next = currentTopic + 1;
+  if(next < TOPICS.length) {
+    selectTopic(next);
+  }
+}
+
+/* ────────────────────────────────────────────
+   INIT
+──────────────────────────────────────────── */
+renderAll();
+</script>
+</body>
+</html>
