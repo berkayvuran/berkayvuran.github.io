@@ -1,191 +1,133 @@
-\documentclass[12pt,a4paper,sans]{moderncv}
+\documentclass[10pt,letterpaper]{article}
 
-\moderncvstyle{banking}
-\moderncvcolor{blue}
+% ============================================================
+%  Berkay Vuran — Özgeçmiş (tek sayfa, ATS uyumlu)
+%  Tek sütun, tablo/görsel yok, ayrıştırılabilir metin, pdfLaTeX.
+% ============================================================
 
-\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{carlito}
-\renewcommand{\familydefault}{\sfdefault}
+\usepackage[utf8]{inputenc}
+\usepackage[default]{sourcesanspro}
+\usepackage[top=0.42in,bottom=0.42in,left=0.55in,right=0.55in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{hyperref}
 \usepackage{microtype}
-\usepackage[scale=0.85]{geometry}
 
-% Personal data
-\name{Berkay}{Vuran}
-\title{Conversational Analytics Ürün Analizi Takım Lideri}
-\address{Ankara, Türkiye}{}{}
-\phone[mobile]{+90 542 423 99 30}
-\email{berkaypsy@gmail.com}
-\homepage{berkayvuran.com}
-\social[linkedin]{berkay-vuran}
+\definecolor{accent}{HTML}{1B4965}
+\definecolor{body}{HTML}{333333}
+
+\hypersetup{colorlinks=true, urlcolor=accent, linkcolor=accent,
+  pdftitle={Berkay Vuran - Özgeçmiş}, pdfauthor={Berkay Vuran}}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\linespread{0.97}
+\color{body}
+
+% ATS: heceleme kapalı — satır sonu tireleri metin çıkarımında anahtar kelimeleri böler
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\tolerance=2000
+\emergencystretch=2em
+
+% Bölüm: büyük harf vurgu renkli başlık, ince çizgi, minimum boşluk
+\titleformat{\section}{\normalsize\bfseries\color{accent}}{}{0em}{}
+  [\vspace{-3pt}{\color{accent}\titlerule[0.8pt]}\vspace{1pt}]
+\titlespacing{\section}{0pt}{5pt}{3pt}
+
+% Sıkı madde işaretleri
+\setlist[itemize]{leftmargin=1.1em, itemsep=0.5pt, topsep=1pt, parsep=0pt, partopsep=0pt}
+\renewcommand{\labelitemi}{\textcolor{accent}{\textbullet}}
+
+% Şirket satırı: ad solda, konum sağda
+\newcommand{\company}[3]{\vspace{1pt}{\bfseries\color{accent}#1}\ {\small #2}\hfill{\small #3}\par}
+% Şirket altındaki rol satırı
+\newcommand{\rolel}[2]{\vspace{1pt}{\bfseries #1}\hfill{\small #2}\par}
 
 \begin{document}
 
-\makecvtitle
+% ---------------------------- BAŞLIK ----------------------------
+\begin{center}
+  {\fontsize{21}{23}\selectfont\bfseries\color{accent}BERKAY VURAN}\\[2pt]
+  Ürün Lideri \textbar\ Ürün Yönetimi, Strateji ve Analitik\\[2pt]
+  {\small Ankara, Türkiye \,\textbullet\,
+  \href{tel:+905424239930}{+90 542 423 99 30} \,\textbullet\,
+  \href{mailto:berkaypsy@gmail.com}{berkaypsy@gmail.com} \,\textbullet\,
+  \href{https://berkayvuran.com}{berkayvuran.com} \,\textbullet\,
+  \href{https://www.linkedin.com/in/berkayvuran}{linkedin.com/in/berkayvuran} \,\textbullet\,
+  \href{https://github.com/berkayvuran}{github.com/berkayvuran}}
+\end{center}
 
-% Professional Summary
-\section{Özet}
-\cvitem{}{7+ yıllık deneyime sahip ürün profesyoneli. AI, PropTech, telekomünikasyon, lojistik ve kurumsal yazılım sektörlerinde çalıştı. Ürün stratejisi, kullanıcı deneyimi tasarımı ve veri odaklı karar alma konularında uzman. Fonksiyonlar arası ekip liderliği, dijital dönüşüm girişimlerini yönetme ve ML/AI teknolojilerini uygulama alanlarında kanıtlanmış başarılar. Operasyonları 230 ülkeye genişletme, 6+ milyon kullanıcıya hizmet eden platformları yönetme ve gelir artışı (\%150+) ile müşteri memnuniyeti gibi kilit metrikleri iyileştirme konusunda güçlü geçmiş. PMP, Professional Scrum sertifikalarına (PSPO, PSM, PSU, PSD, PSFS, PSK) ve Professional Agile Leadership kredilerine sahip. Psikoloji ve örgütsel davranış alanındaki güçlü altyapı sayesinde teknik uzmanlığı kullanıcı ihtiyaçları ve ekip dinamikleri anlayışıyla birleştirme yeteneği.}
+\vspace{-3pt}
 
-% Experience
-\section{Deneyim}
+% ----------------------------- ÖZET -----------------------------
+\section{ÖZET}
+Yapay zeka, PropTech, telekom ve lojistik alanlarında 7+ yıllık deneyime sahip ürün lideri: platformları 6M+ kullanıcıya ölçekledim, 3 kıtada 230 ülkeye operasyonel genişlemeyi destekledim ve \%150 gelir artışı sağladım. Halen konuşma tabanlı yapay zeka ürünlerinde Ürün Analizi ekibine liderlik ediyor; LLM tabanlı ve agentic ürün deneyimlerine odaklanıyorum. Psikoloji ve Örgütsel Davranış (Yüksek Lisans) altyapısı; PMP ve Scrum.org sertifikalı.
 
-\cventry{12.2025--Günümüz}{Conversational Analytics Ürün Analizi Takım Lideri}{SESTEK}{Ankara (Hibrit)}{}{
+% ---------------------------- DENEYİM ---------------------------
+\section{DENEYİM}
+
+\company{\href{https://www.sestek.com}{SESTEK}}{}{Ankara, Türkiye}
+\rolel{Conversational Intelligence Ürün Analizi Takım Lideri}{12/2025 -- Günümüz}
 \begin{itemize}
-\item Conversational Analytics Ürün Analizi ekibinin stratejik yönünü belirledim, analiz standartlarını oluşturdum
-\item Ekibin performansını uçtan uca yönettim; hedef belirleme, koçluk, performans değerlendirme süreçlerini yürüttüm
-\item Gereksinimler, kabul kriterleri ve dokümantasyon dahil tüm analiz çıktılarının kalite standardını belirledim
-\item Analiz süreçlerini ölçeklenebilir hale getirdim; gereksinim çıkarımı ve UX iş akışı tasarımı için standartlar oluşturdum
-\item Ürün Sahipleri ve teknik liderlerle koordinasyon sağlayarak gereksinimlerin net ve uygulanabilir olmasını sağladım
-\item Ürün performansını veri odaklı değerlendirdim; UX darboğazları ve iyileştirme fırsatları tanımladım
-\item SESTEK'i sektör etkinliklerinde ve C-seviye sunumlarında temsil ettim
-\end{itemize}}
-
-\medskip
-
-\cventry{09.2024--12.2025}{Lider Ürün Analisti}{SESTEK}{Ankara (Hibrit)}{}{
+  \item Terfi ederek, 16 ülkede 200+ kurumsal müşteriye hizmet veren konuşma tabanlı yapay zeka portföyünde Ürün Analizi ekibine liderlik ediyorum; analitik standartları ve ekip OKR'larını tanımlıyorum.
+  \item SESTEK'in konuşma tabanlı yapay zeka platformu için whitelabeling stratejisini tanımladım; C-level onayı alarak iş ortağı odaklı yeni bir go-to-market kanalı açtım.
+  \item Ürün Sahipleri ve mühendislik liderleriyle çalışarak analist ekibini koçluk ve yetkinlik gelişimiyle büyütüyor; ürün organizasyonunu müşteri ve üst yönetim görüşmelerinde temsil ediyorum.
+\end{itemize}
+\rolel{Lider Ürün Analisti}{09/2024 -- 12/2025}
 \begin{itemize}
-\item Rakip araştırması ve literatür taraması dahil kapsamlı ürün ve pazar analizleri gerçekleştirdim
-\item Gereksinim tanımlayan mockup'lar ve diyagramlar oluşturarak yeni modüller için arayüzler tasarladım
-\item Tasarım verimliliğini değerlendirerek ürün performansını ve UX'i optimize ettim, vizyon uyumu sağladım
-\item Geliştirme ekipleri ile Ürün Sahipleri arasında bağlantı görevi yaparak iletişimi kolaylaştırdım
-\item Ürün dokümantasyonunu yöneterek detayların yakalanması ve şeffaflık için korunmasını sağladım
-\item C-seviye sunumlar gerçekleştirdim ve SESTEK'i sektör etkinliklerinde temsil ettim
-\item Sürdürülebilir ürün yol haritaları oluştururken ekip verimliliğini analiz ederek iş akışlarını optimize ettim
-\item Tasarım standardizasyonunu yöneterek uyumlu dil oluşturdum, birden fazla ekip için konu uzmanı oldum
-\item Eğitim oturumları sağladım ve yüksek öncelikli taleplerin çözümüne destek verdim
-\end{itemize}}
+  \item Birden fazla geliştirme ekibi için tasarım Konu Uzmanı (SME) olarak tasarım pratiklerini standartlaştırdım; Agentic CX dashboard'unda Progressive Disclosure desenleriyle veri karmaşıklığını çözdüm.
+  \item Ürün vizyonunu şekillendiren ürün, pazar ve rakip analizleri yürüttüm; yeni modüller için gereksinimleri ve kabul kriterlerini tanımlayan arayüzler ve iş akışları tasarladım.
+  \item C-level yöneticilere ürün sunumları gerçekleştirdim ve SESTEK'i sektör etkinliklerinde temsil ettim.
+\end{itemize}
 
-\newpage
-
-\cventry{11.2022--09.2024}{Kıdemli Ürün Yöneticisi \& Scrum Master}{Emlakjet}{İstanbul (Uzaktan)}{}{
+\company{\href{https://www.emlakjet.com}{Emlakjet}}{}{İstanbul, Türkiye}
+\rolel{Kıdemli Ürün Yöneticisi ve Scrum Master}{10/2022 -- 09/2024}
 \begin{itemize}
-\item Organizasyonun Agile dönüşümünü katalize ederek Scrum Master olarak sürekli iyileştirme ve işbirliği kültürünü geliştirdim
-\item ML, NLP ve generatif AI teknolojilerini PropTech alanında uygulayarak ürün inovasyonunu yönettim
-\item CRO, ASO ve SEO optimizasyonlarına katkı sağladım ve veri odaklı ürün geliştirme süreçlerini yönettim
-\item Jettaşın (taşınma dijitalleştirme platformu) ürün geliştirme sürecini koordine ettim
-\item Potansiyel müşteri yönetimi ve transfer süreçlerinin otomasyonunu sağlayarak operasyonel verimliliği artırdım
-\item Platform güvenliği için kötüye kullanım ve dolandırıcılıkla mücadele çözümleri geliştirdim
-\end{itemize}}
+  \item Türkiye'nin lider proptech platformunun Agile dönüşümüne Scrum Master olarak liderlik ettim.
+  \item Proptech alanında ML, NLP ve üretken yapay zeka girişimlerine öncülük ettim; B2B ve B2C kullanıcılar için güvenliği artıran kötüye kullanım ve dolandırıcılık önleme çözümlerini yönettim.
+  \item Dönüşüm (CRO), uygulama mağazası (ASO) ve arama motoru (SEO) performansını optimize ettim; Ar-Ge süreçlerini ve taşınmayı uçtan uca dijitalleştiren Jettaşın (Octovan) ürün geliştirmesini yönettim.
+\end{itemize}
 
-\medskip
+{\bfseries\color{accent} Önceki Deneyimler}\par
+\rolel{Ürün Sahibi,\hspace{0.35em}\href{https://navlungo.com}{Navlungo}}{01/2022 -- 10/2022}
+Platformu 230 ülkede 70.000+ kullanıcı ve 1.000.000+ işleme ölçekleyerek \%150 satış artışı sağladım; deliver.ist'i 3 ayda konseptten canlıya taşıdım.\par
+\rolel{Kıdemli Uzman (İş Analizi),\hspace{0.35em}\href{https://www.etiya.com}{Etiya}}{11/2021 -- 01/2022}
+MENA bölgesinin en büyük telekom şirketi Ooredoo'nun CRM dönüşümünde kilit rol üstlendim.\par
+\rolel{İş Analisti ve Ürün Sahibi,\hspace{0.35em}\href{https://www.saglik.gov.tr}{T.C. Sağlık Bakanlığı}}{02/2019 -- 11/2021}
+Yılda 6.000.000+ kullanıcıya hizmet veren ALO184 SABİM çağrı merkezi altyapısını tasarladım; kullanıcı memnuniyetini \%30 artırdım.
 
-\cventry{01.2022--11.2022}{Ürün Sahibi}{Navlungo}{İstanbul (Uzaktan)}{}{
-\begin{itemize}
-\item Dört kritik iş alanını (navlun, ödeme, hukuk ve veri) yöneterek müşteri tabanını 70.000+ kullanıcıya genişlettim ve 1.000.000+ işlemi kolaylaştırdım
-\item Satışlarda \%150 artış sağladım ve operasyonları 3 kıtada 230 ülkeye genişlettim
-\item Global ship \& shop hizmeti olan deliver.ist'in konseptten lansmanına kadar gelişimini 3 ayda tamamladım
-\end{itemize}}
+% ----------------------------- EĞİTİM ---------------------------
+\section{EĞİTİM}
+\textbf{\href{https://www.hacettepe.edu.tr}{Hacettepe Üniversitesi}} --- Yüksek Lisans, Yönetim ve Örgütsel Davranış \hfill {\small Not Ort.: 3.86/4.00 (Yüksek Onur) \textbar\ \href{https://berkayvuran.com/assets/appendices/org.pdf}{Transkript} \textbar\ 2019 -- 2024}\par
+\vspace{1pt}
+\textbf{\href{https://www.hacettepe.edu.tr}{Hacettepe Üniversitesi}} --- Lisans, Psikoloji \hfill {\small Not Ort.: 3.55/4.00 (Yüksek Onur) \textbar\ \href{https://berkayvuran.com/assets/appendices/psy.pdf}{Transkript} \textbar\ 2013 -- 2017}
 
-\medskip
+% -------------------------- SERTİFİKALAR ------------------------
+\section{SERTİFİKALAR}
+\textbf{PMI:} \href{https://www.credly.com/badges/57c77063-0cef-4b7a-9dde-b9907b5479f8/public_url}{Project Management Professional (PMP)} \ \textbar\ \href{https://www.credly.com/badges/47d5fa0a-0374-4b0c-9532-802cbb0ec95e/public_url}{Agile Metrics for Success} \ \textbar\ \href{https://www.credly.com/badges/f86005f2-783c-48a1-94f6-801e37a1ce60/public_url}{Disciplined Agile Essentials} \ \textbar\ \href{https://www.credly.com/badges/829a1e46-0be7-42aa-a3c9-f036f5e6713f/public_url}{Value Stream Management}\par
+\vspace{1pt}
+\textbf{PMI GenAI:} \href{https://www.credly.com/badges/6753b402-a2eb-4240-8eae-220987d95a69/public_url}{Practical Application of Gen AI} \ \textbar\ \href{https://www.credly.com/badges/ba2e0800-a7a1-4d25-a135-5cd0107056bc/public_url}{Prompt Engineering for Project Managers} \ \textbar\ \href{https://www.credly.com/badges/d33adc1f-876f-4e54-b12f-80bba9fba461/public_url}{Data Landscape of GenAI}\par
+\vspace{1pt}
+\textbf{Scrum.org:} \href{https://www.credly.com/badges/d21135e4-80ee-4c03-be13-6611aff304b3/public_url}{PSM I} \ \textbar\ \href{https://www.credly.com/badges/b05ea15d-927c-4c55-a15c-d5eb6f04784f/public_url}{PSPO I} \ \textbar\ \href{https://www.credly.com/badges/3ea72efd-f83b-4dad-8e09-31ec845e9473/public_url}{PSD} \ \textbar\ \href{https://www.credly.com/badges/62e831e2-2006-430f-a6d8-d365347bf71a/public_url}{PSU} \ \textbar\ \href{https://www.credly.com/badges/3706166e-aa69-4c0a-9e7e-8d84a6d2a81d/public_url}{PAL} \ \textbar\ \href{https://www.credly.com/badges/8542a9ff-cb8c-4d37-89bb-cadf8455ab17/public_url}{PSFS}\par
+\vspace{1pt}
+\textbf{Ürün:} \href{https://www.credly.com/badges/47d24682-6229-4e2f-aeeb-d5d517604f71/public_url}{AI for Product Management} \ \textbar\ \href{https://www.credly.com/badges/b31053b5-2114-41e6-a76c-b3acbdd12e3c/public_url}{Product Analytics} \ \textbar\ \href{https://www.credly.com/badges/1f2a65a5-caa9-4576-8ce1-76b6d3cb8f24/public_url}{Product-led} \ \textbar\ \href{https://berkayvuran.com/assets/appendices/prc.pdf}{Product Roadmapping (PRC)} \ \textbar\ \href{https://berkayvuran.com/assets/appendices/psc.pdf}{Product Strategy (PSC)} \ \textbar\ \href{https://berkayvuran.com/assets/appendices/plgc.pdf}{Product-led Growth (PLGC)}
 
-\cventry{11.2021--01.2022}{Kıdemli İş Analisti}{Etiya}{Ankara (Hibrit)}{}{
-\begin{itemize}
-\item Telekom dünyasının en büyük 5 dijital dönüşüm projesinden birinde, MENA bölgesinin en büyük telekomünikasyon şirketi Ooredoo için CRM dönüşüm projesinde kilit rol oynadım
-\item Jira ve Confluence kullanarak teknik ve teknik olmayan kapsamlı HLD ve LLD analizleri gerçekleştirerek ekipler arası net dokümantasyon ve sorunsuz iletişim sağladım
-\item Detaylı UAT senaryoları geliştirip uygulayarak sistem işlevselliğini doğruladım ve iş gereksinimleri ile uyumu sağladım
-\item UX araştırma ve tasarım çabalarını yöneterek kullanıcı deneyiminin sezgisel olmasını ve müşteri ihtiyaçları ile uyumlu olmasını sağladım
-\end{itemize}}
+% --------------------------- YETKİNLİKLER -----------------------
+\section{YETKİNLİKLER}
+\textbf{Ürün ve Strateji:} Ürün Yönetimi, Ürün Stratejisi, Yol Haritası (Roadmapping), Agile/Scrum, UX Araştırması, Gereksinim Analizi, Paydaş Yönetimi\par
+\vspace{1pt}
+\textbf{Yapay Zeka ve Veri:} LLM ve Üretken Yapay Zeka (agentic sistemler, prompt engineering), Conversational AI, ML ve NLP Uygulamaları, İş Zekası, SQL (MSSQL, PostgreSQL, PL/SQL), Power BI, AWS QuickSight\par
+\vspace{1pt}
+\textbf{Araçlar:} Jira, Confluence, TFS, Figma, Balsamiq, UML
 
-\medskip
-
-\cventry{02.2019--11.2021}{Ürün Sahibi \& İş Analisti}{T.C. Sağlık Bakanlığı}{Ankara}{}{
-\begin{itemize}
-\item Balsamiq ve Figma kullanarak UX araştırması ve arayüz tasarımı yaptım, kullanıcı memnuniyetini \%30 artırdım
-\item Yıllık 6.000.000+ kullanıcıya hizmet eden ALO184 SABİM platformunun mimarisini tasarladım ve gelişimini yönettim
-\item Yıllık 100.000 kullanıcıyı destekleyen Buluşma Noktası Web Uygulaması için kullanıcı senaryoları geliştirdim, iç iletişimi \%25 iyileştirdim
-\item Jira, TFS ve Confluence kullanarak 5+ ulusal sağlık programında teknik ve iş analizleri yönettim, proje verimliliğini \%30 artırdım
-\item 50.000'den fazla sağlık profesyoneli ve hastadan kullanıcı gereksinimlerini topladım ve sentezledim
-\end{itemize}}
-
-% Key Achievements
-\section{Önemli Başarılar}
-
-\cvitem{Gelir Artışı}{Navlungo'da ürün analitiği ve stratejik girişimleri yöneterek \%150 satış büyümesine katkı sağladım ve operasyonları 3 kıtada 230 ülkeye genişlettim. Dört kritik iş alanını (navlun, ödeme, hukuk, veri) yöneterek 1.000.000+ işlem ve 70.000+ aktif kullanıcı sağladım.}
-
-\medskip
-
-\cvitem{Büyük Ölçekli Platform}{T.C. Sağlık Bakanlığı'nda yıllık 6.000.000+ kullanıcıya hizmet eden ALO184 SABİM platformunun mimarisini tasarladım ve gelişimini yönettim. UX araştırması yöneterek kullanıcı memnuniyetini \%30 ve proje verimliliğini \%30 artırdım.}
-
-\medskip
-
-\cvitem{Ekip Liderliği}{SESTEK'te ölçeklenebilir ürün analizi çerçevesi ve ekip liderlik modeli oluşturdum. Ürün Analizi ekibinin stratejik yönünü belirledim, analiz standartlarını oluşturdum, performans değerlendirmeleri yaptım ve teslimat kalitesini iyileştirdim.}
-
-\medskip
-
-\cvitem{AI/ML Entegrasyonu}{Emlakjet'te PropTech alanında NLP tabanlı emlak eşleştirme, generatif AI ve makine öğrenmesi gibi ML/AI teknolojilerini başarıyla entegre ettim, veri odaklı ürün geliştirme ile ürün inovasyonunu yönettim ve dönüşüm oranlarını iyileştirdim.}
-
-\medskip
-
-\cvitem{Hızlı Yürütme}{Navlungo'da global ship \& shop hizmeti olan deliver.ist'in konseptten lansmanına kadar gelişimini sadece 3 ayda tamamladım. Jettaşın (taşınma dijitalleştirme platformu) ürün geliştirme sürecini koordine ederek sorunsuz kullanıcı deneyimleri sundum.}
-
-\medskip
-
-\cvitem{Dijital Dönüşüm}{Etiya'da telekom dünyasının en büyük 5 dijital dönüşüm projesinden birinde kilit rol oynadım. MENA bölgesinin en büyük telekomünikasyon şirketi Ooredoo için CRM dönüşümünü yöneterek sorunsuz proje lansmanı ve yüksek benimseme oranları sağladım.}
-
-\medskip
-
-\cvitem{Çevik Liderlik}{Emlakjet'te organizasyonun Agile dönüşümünü katalize ettim, Scrum Master olarak sürekli iyileştirme kültürünü geliştirdim. SDLC'nin tüm aşamalarını yöneterek yüksek kaliteli ürünlerin zamanında teslimatını sağladım.}
-
-% Education
-\section{Eğitim}
-\cventry{2019--2024}{Yüksek Lisans, Örgütsel Davranış}{Hacettepe Üniversitesi}{}{3.86/4.00}{}
-
-\medskip
-
-\cventry{2020--2022}{Ön Lisans, Web Tasarımı \& Geliştirme}{Anadolu Üniversitesi}{}{3.08/4.00}{}
-
-\medskip
-
-\cventry{2013--2017}{Lisans, Psikoloji}{Hacettepe Üniversitesi}{}{3.55/4.00}{}
-
-% Skills
-\section{Yetkinlikler}
-\cvitem{Ürün}{Ürün Stratejisi, Yol Haritası, Önceliklendirme, A/B Testi, Müşteri Geliştirme}
-\cvitem{Analitik}{AWS QuickSight, Google Analytics, SQL, Tableau, Power BI, Mixpanel, Amplitude}
-\cvitem{Araçlar}{Jira, Confluence, Figma, Miro, Azure DevOps, Notion, Productboard}
-\cvitem{Metodoloji}{Agile, Scrum, Kanban, OKR, Tasarım Düşüncesi, Lean Startup}
-\cvitem{Teknoloji}{API Entegrasyonu, AWS, Makine Öğrenmesi, NLP}
-
-% References
-\section{Referanslar}
-
-\cventry{}{Erçin Altundağ}{Satış Öncesi Yöneticisi, SESTEK}{}{}{}
-\cvitem{}{``Berkay ile Satış Öncesi Yöneticisi olarak çalışırken çalışma fırsatım oldu. Berkay'de en çok öne çıkan özelliklerden biri, hem ekip içinde hem de departmanlar arasında mükemmel iletişim tarzıydı. Her etkileşime sürekli olarak empati ve açık fikirlilikle yaklaştı ve her zaman kişiyi ve altta yatan ihtiyacı önyargısız bir şekilde anlamaya çalıştı. Satış öncesi görüşmeler sırasında potansiyel müşterilerden sık sık geri bildirim ve ihtiyaç topladım. Bu içgörülerimi Berkay ile paylaştığımda, sadece anlayışlı olmakla kalmayıp aynı zamanda girdileri analiz etme ve uygulanabilir çözümler bulma konusunda proaktifti. Güçlü empati duygusu, iş ihtiyaçlarını anlama ve analiz etme becerisiyle birleşince, onu hem ekibimiz hem de dolaylı olarak müşterilerimiz için değerli bir ortak haline getirdi. Berkay'ı, ürün yönetimi veya işlevler arası iş birliği, analitik düşünme ve kullanıcı ihtiyaçlarını derinlemesine anlama gerektiren benzer işlevlerdeki tüm roller için şiddetle tavsiye ederim.''}
-
-\medskip
-
-\cventry{}{Özge Seçkin}{Takım Lideri, Emlakjet}{}{}{}
-\cvitem{}{``Son 2 yıldır Berkay ile ekip lideri olarak çalışmaktan mutluluk duydum. Berkay, aynı anda birden fazla projeyi yönetmede mükemmeldir ve görevlerin titiz denetimini sürdürür. Güçlü analitik zihniyeti, süreçleri kapsamlı bir şekilde değerlendirmesini ve optimize etmesini sağlar. Son derece sorumluluk sahibi bir ekip üyesi olarak, bilgisiyle ekibi desteklemeye ve yönlendirmeye isteklidir ve gerektiğinde inisiyatif alır. Ayrıntılara gösterdiği dikkat, merak ve kişisel gelişime olan coşkusuyla ekipte öne çıkar. Konuşmaktan ve yapıcı geri bildirim sağlamaktan korkmaz, her zaman gelişmeyi hedefler. Berkay, netliğin, istikrarın ve yapının hakim olduğu iyi tanımlanmış, sistematik ortamlarda gelişir ve bu da onu son derece verimli ve memnun bir katılımcı yapar.''}
-
-\medskip
-
-\cventry{}{Özge Işık}{Ürün Tasarımcısı, Emlakjet}{}{}{}
-\cvitem{}{``Berkay'la Emlakjet'te iş arkadaşıydık. Berkay, üzerinde çalıştığımız projenin her noktasına dokunabilen, her fikre saygı duyan, her türlü soruna hızlı bir şekilde çözüm üretebilme yeteneğine sahip bir kişidir. Onunla çalışmanın en iyi yönlerinden biri fikirlerine kolayca güvenebilmekti. Anlayışlı olmak, empati duygusunun yüksek olması ve her zaman gelişime açık olmak işimizi kolaylaştıran faktörlerden bazılarıydı. Umarım yollarımız tekrar kesişir, seninle çalışmak çok keyifliydi.''}
-
-\medskip
-
-\cventry{}{Hakan Erdoğan}{CEO, Craftgate}{}{}{}
-\cvitem{}{``Navlungo \& Craftgate ödeme ağ geçidi entegrasyon sürecinde Berkay ile çalıştık. Berkay çok yetenekli ve proaktif bir ürün adamı. Ödeme gibi dikkat ve titizlik gerektiren konularda kendisi ile büyük bir keyifle çalıştık. Mümkün olursa kendisiyle tekrar çalışmak isterim.''}
-
-\medskip
-
-\cventry{}{Zikriye Ürkmez}{Yazılım Yöneticisi, Navlungo}{}{}{}
-\cvitem{}{``Berkay etkili iletişim becerileriyle her zaman beni etkiledi. Problemlere yaklaşımı ve analiz tarzı her zaman yol gösterici oldu. Her zaman inisiyatif alarak ekibini destekleyen bir ürün sahibi. Her zaman gülümseyen ve nazik bir ekip arkadaşıydı. Onunla çalışmak büyük bir keyif.''}
-
-\medskip
-
-\cventry{}{Tamay Önal}{Takım Lideri, Etiya}{}{}{}
-\cvitem{}{``Berkay keskin bir yenilikçi, ayrıca harika bir arkadaş, takım oyuncusu ve motivatör. Telekom dünyasındaki en büyük beş dijital dönüşüm projesinden birinde birlikte hizmet verdik ve zor, zorlu koşullar altında sonuç elde ettiğini gözlemledim. Berkay'ın kapsamına yönelik yürekten, yenilikçi yaklaşımı beni etkiledi. Her zaman (çoğunlukla iyi bir başarı ile) işleri yapmanın yeni yollarını denedi, kutuların dışında düşündü ve işi yaparken aynı derecede yaratıcı bir şekilde uygulama yaptı. Yollarımız tekrar kesişirse, gelecekte olası yeni fırsatlarda tereddüt etmeden onunla çalışırdım.''}
-
-\medskip
-
-\cventry{}{Uğur Açıkgöz}{Mühendislik Direktörü, MindBehind}{}{}{}
-\cvitem{}{``Berkay ile çalışmak keyifli ve çok verimliydi. İş değerini belirlemeye, iş işlemeye ve projelendirmeye yönelik teknik yaklaşımı sayesinde COVID-19 pandemi kapanması sırasında üzerinde çalıştığımız T.C. Sağlık Bakanlığı WhatsApp Yardım Hattı projesini hızla ilerletip sonuç aldık.''}
-
-\medskip
-
-\cventry{}{Doğa Bekaroğlu}{Takım Lideri, T.C. Sağlık Bakanlığı}{}{}{}
-\cvitem{}{``Sağlığın Geliştirilmesi Genel Müdürlüğüne geliştirdiğimiz projede kendisiyle ürün sorumlusu olarak çalışma fırsatını yakaladığım süre zarfında; projeye ve bileşenlerine hakimiyeti, ayrıntılarına verdiği önem ve ürünün ilerlemesinde vermiş olduğu katkılardan dolayı çalışılabilecek en uygun adaylardan biridir. Bunların yanında lisans eğitiminin psikoloji üzerine olması sebebiyle insanlar ile iletişimi, yazılım ve kodlama üzerinde kendini geliştirmiş olduğu konular ile teknik bilgi ve donanımı, bu bileşenlerin sentezi ile analiz ve ürün geliştiriminde olaylara iki taraflı bakabilme yeteneği bu gibi konularda öne çıkıyor.''}
+% ----------------------------- YAYINLAR -------------------------
+\section{YAYINLAR}
+\href{https://jag.journalagent.com/turkhijyen/pdfs/THDBD_78_3_235_248.pdf}{\textit{COVID-19 Pandemisinin Toplumsal Etkileri}}, Araştırma Makalesi, 2021\par
+\vspace{1pt}
+\href{https://sporbilimleri.com.tr/yayin/psikolojik-acidan-denizcilik-ve-yelkencilik-sporlari}{\textit{Psikolojik Açıdan Denizcilik ve Yelkencilik Sporları}}, Derleme Makalesi, 2016
 
 \end{document}
