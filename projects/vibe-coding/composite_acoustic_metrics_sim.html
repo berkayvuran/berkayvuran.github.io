@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Composite Acoustic Metrics — Simulation</title>
+<style>
+  :root{
+    --bg:#0b0f10;
+    --panel:#12181a;
+    --panel-2:#161e20;
+    --line:#233033;
+    --text:#dce6e6;
+    --dim:#7d9294;
+    --accent:#3ddc97;   /* healthy signal green */
+    --warn:#e8b34a;     /* caution amber */
+    --bad:#e0533d;      /* alert red */
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Segoe UI', system-ui, sans-serif;
+    padding:32px 40px 80px;
+  }
+  h1{
+    font-family:var(--mono); font-size:20px; font-weight:600;
+    letter-spacing:0.5px; margin:0 0 4px;
+  }
+  .sub{ color:var(--dim); font-size:13px; margin-bottom:28px; font-family:var(--mono);}
+  .note{
+    font-size:12px; color:var(--dim); background:var(--panel-2);
+    border-left:2px solid var(--warn); padding:10px 14px; margin-bottom:28px;
+    font-family:var(--mono); line-height:1.6;
+  }
+  .layout{ display:grid; grid-template-columns: 340px 1fr; gap:24px; align-items:start;}
+  @media(max-width:900px){ .layout{grid-template-columns:1fr;} }
+
+  .controls{
+    background:var(--panel); border:1px solid var(--line); border-radius:6px;
+    padding:20px;
+  }
+  .controls h2{ font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin:0 0 14px;}
+  .ctrl-group{ margin-bottom:16px; }
+  .ctrl-group label{
+    display:flex; justify-content:space-between; font-size:12px; color:var(--text);
+    margin-bottom:4px; font-family:var(--mono);
+  }
+  .ctrl-group label span.val{ color:var(--accent); }
+  input[type=range]{
+    width:100%; accent-color:var(--accent); height:4px;
+  }
+  .btn-row{ display:flex; gap:8px; margin-top:18px; }
+  button{
+    flex:1; background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+    padding:10px; border-radius:4px; font-family:var(--mono); font-size:12px; cursor:pointer;
+  }
+  button:hover{ border-color:var(--accent); color:var(--accent); }
+  button.primary{ background:var(--accent); color:#04231a; border-color:var(--accent); font-weight:600;}
+  button.primary:hover{ opacity:0.9; color:#04231a; }
+
+  .divider{ height:1px; background:var(--line); margin:18px 0; }
+
+  .scenario-list{ font-size:12px; }
+  .scenario-list button{ width:100%; text-align:left; margin-bottom:6px; padding:8px 10px;}
+
+  .main{ display:flex; flex-direction:column; gap:20px; }
+
+  .card-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+  }
+  @media(max-width:1200px){ .card-grid{grid-template-columns:repeat(2,1fr);} }
+
+  .metric-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:6px;
+    padding:18px; position:relative; overflow:hidden;
+  }
+  .metric-card .eyebrow{
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:1px;
+    color:var(--dim); margin-bottom:8px;
+  }
+  .metric-card .score{
+    font-family:var(--mono); font-size:34px; font-weight:600; line-height:1;
+  }
+  .metric-card .formula-tag{
+    font-family:var(--mono); font-size:10px; color:var(--dim); margin-top:10px;
+    border-top:1px solid var(--line); padding-top:8px;
+  }
+  .status-bar{
+    height:4px; width:100%; background:var(--line); border-radius:2px; margin-top:12px; overflow:hidden;
+  }
+  .status-fill{ height:100%; border-radius:2px; transition:width 0.3s; }
+  .status-label{ font-family:var(--mono); font-size:11px; margin-top:6px; }
+
+  .ok   { color:var(--accent); }
+  .warn { color:var(--warn); }
+  .bad  { color:var(--bad); }
+  .fill-ok  { background:var(--accent); }
+  .fill-warn{ background:var(--warn); }
+  .fill-bad { background:var(--bad); }
+
+  .panel-title{
+    font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:1px;
+    color:var(--dim); margin:6px 0 0px;
+  }
+
+  .call-table{
+    background:var(--panel); border:1px solid var(--line); border-radius:6px; overflow:hidden;
+  }
+  table{ width:100%; border-collapse:collapse; font-size:12px; font-family:var(--mono); }
+  th{
+    text-align:left; padding:10px 12px; color:var(--dim); font-weight:500;
+    border-bottom:1px solid var(--line); background:var(--panel-2);
+    cursor:pointer; user-select:none; white-space:nowrap;
+  }
+  th:hover{ color:var(--accent); }
+  td{ padding:9px 12px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  tr:last-child td{ border-bottom:none; }
+  tr:hover td{ background:#141c1e; }
+  .pill{
+    display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px;
+  }
+  .pill-ok{ background:rgba(61,220,151,0.12); color:var(--accent); }
+  .pill-warn{ background:rgba(232,179,74,0.14); color:var(--warn); }
+  .pill-bad{ background:rgba(224,83,61,0.14); color:var(--bad); }
+
+  .use-cases{
+    background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:20px;
+    font-size:13px; line-height:1.7; color:var(--text);
+  }
+  .use-cases h2{ font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin:0 0 12px;}
+  .use-cases ul{ margin:0; padding-left:18px; }
+  .use-cases li{ margin-bottom:8px; }
+  .use-cases b{ color:var(--accent); }
+
+  .assumptions{
+    font-family:var(--mono); font-size:11px; color:var(--dim); line-height:1.8;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:6px; padding:16px;
+  }
+  .assumptions b{ color:var(--text); }
+
+  /* --- Listenable calls --- */
+  .listen-section{
+    background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:20px;
+  }
+  .listen-section h2{ font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin:0 0 4px;}
+  .listen-note{ font-size:11px; color:var(--dim); font-family:var(--mono); margin-bottom:16px; line-height:1.6;}
+  .listen-tabs{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .listen-tab{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--dim);
+    padding:8px 14px; border-radius:4px; font-family:var(--mono); font-size:11px; cursor:pointer;
+  }
+  .listen-tab.active{ border-color:var(--accent); color:var(--accent); }
+  .listen-tab:hover{ color:var(--text); }
+
+  .transcript{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:6px; padding:16px;
+    max-height:340px; overflow-y:auto; margin-bottom:14px;
+  }
+  .line{
+    display:flex; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; line-height:1.5;
+  }
+  .line:last-child{ border-bottom:none; }
+  .line.active{ background:rgba(61,220,151,0.06); border-radius:4px; padding-left:6px; }
+  .speaker-tag{
+    font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:0.5px;
+    padding:2px 8px; border-radius:10px; height:fit-content; white-space:nowrap; margin-top:1px;
+  }
+  .speaker-bot{ background:rgba(61,220,151,0.12); color:var(--accent); }
+  .speaker-cust{ background:rgba(224,83,61,0.12); color:var(--bad); }
+  .line-text{ flex:1; }
+  .line-annot{ display:block; font-size:10px; color:var(--dim); font-family:var(--mono); margin-top:3px; }
+
+  .play-controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .play-controls button{ flex:none; padding:10px 16px; }
+  .voice-select{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+    font-family:var(--mono); font-size:11px; padding:8px 10px; border-radius:4px;
+  }
+  .play-status{ font-family:var(--mono); font-size:11px; color:var(--dim); margin-left:auto; }
+</style>
+</head>
+<body>
+
+<h1>Composite Acoustic Metrics — Simulation</h1>
+<div class="sub">Behavioral pattern detection in AI-to-human call acoustics · live computation on sample/randomized data</div>
+
+<div class="note">
+  ⚠ This is a simulation. Scores are computed from randomly generated dual-channel metrics, not production data.
+  Normalization constants (MaxOverlapDuration, threshold bands) are assumptions — see the "Assumptions" section below.
+</div>
+
+<div class="layout">
+
+  <!-- LEFT: CONTROLS -->
+  <div class="controls">
+    <h2>Active Call — Manual Control</h2>
+
+    <div class="ctrl-group">
+      <label>CustomerTensionRatio <span class="val" id="v-tension">55</span>%</label>
+      <input type="range" id="tension" min="0" max="100" value="55">
+    </div>
+    <div class="ctrl-group">
+      <label>AverageCustomerSentimentScore <span class="val" id="v-custsent">-20</span></label>
+      <input type="range" id="custsent" min="-100" max="100" value="-20">
+    </div>
+    <div class="ctrl-group">
+      <label>AverageAgentSentimentScore <span class="val" id="v-agentsent">40</span></label>
+      <input type="range" id="agentsent" min="-100" max="100" value="40">
+    </div>
+    <div class="ctrl-group">
+      <label>AgentMonotonicityRatio <span class="val" id="v-mono">65</span>%</label>
+      <input type="range" id="mono" min="0" max="100" value="65">
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="ctrl-group">
+      <label>CustomerInterruptionCount/dk <span class="val" id="v-interrupt">3.2</span></label>
+      <input type="range" id="interrupt" min="0" max="10" step="0.1" value="3.2">
+    </div>
+    <div class="ctrl-group">
+      <label>OverlapDuration (sn) <span class="val" id="v-overlap">1.4</span></label>
+      <input type="range" id="overlap" min="0" max="5" step="0.1" value="1.4">
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="ctrl-group">
+      <label>SilenceDurationBeginning (sn) <span class="val" id="v-silbegin">2.1</span></label>
+      <input type="range" id="silbegin" min="0" max="8" step="0.1" value="2.1">
+    </div>
+    <div class="ctrl-group">
+      <label>SilenceRatio <span class="val" id="v-silratio">30</span>%</label>
+      <input type="range" id="silratio" min="0" max="100" value="30">
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="ctrl-group">
+      <label>CustomerHesitationCount/dk <span class="val" id="v-hesitation">4</span></label>
+      <input type="range" id="hesitation" min="0" max="15" value="4">
+    </div>
+    <div class="ctrl-group">
+      <label>CustomerSpeed (kelime/dk) <span class="val" id="v-speed">130</span></label>
+      <input type="range" id="speed" min="60" max="220" value="130">
+    </div>
+
+    <div class="btn-row">
+      <button id="randomize">🎲 Randomize Call</button>
+      <button id="addcall" class="primary">+ Add to List</button>
+    </div>
+
+    <div class="divider"></div>
+    <h2>Preset Scenarios</h2>
+    <div class="scenario-list">
+      <button data-scenario="calm">✅ Calm / Healthy Flow</button>
+      <button data-scenario="empathy_gap">⚠ Empathy Gap (angry customer + flat bot)</button>
+      <button data-scenario="friction">⚠ High Barge-in Friction</button>
+      <button data-scenario="cognitive">⚠ High Cognitive Load (confusing IVR)</button>
+      <button data-scenario="botspeak">⚠ Bot-Speak / Over-Articulation</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: MAIN -->
+  <div class="main">
+
+    <div class="card-grid" id="cards"></div>
+
+    <div class="call-table">
+      <div style="padding:14px 16px 0;" class="panel-title">Call List (added)</div>
+      <table id="callTable">
+        <thead>
+          <tr>
+            <th data-key="id">#</th>
+            <th data-key="empathyGap">Empathy Gap</th>
+            <th data-key="frictionIndex">Friction Index</th>
+            <th data-key="cognitiveLoad">Cognitive Load</th>
+            <th data-key="botSpeak">Bot-Speak</th>
+            <th data-key="flag">Status</th>
+          </tr>
+        </thead>
+        <tbody id="callTableBody">
+          <tr><td colspan="6" style="color:var(--dim); text-align:center; padding:24px;">No calls added yet. Pick a scenario on the left or click "Add to List".</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="use-cases">
+      <h2>Sample Use Cases</h2>
+      <ul>
+        <li><b>Conversation Designer</b> — filters calls by a high "Empathy Gap" score and realizes the bot's TTS needs a calmer, more empathetic tone during complaint flows.</li>
+        <li><b>QA Team</b> — tracks high "Cognitive Load" scores (extended initial silences) to identify and rewrite confusing IVR prompts before they cause call drops.</li>
+        <li><b>Product Team</b> — monitors "Barge-in Friction" to identify which agent blocks are too long and causing customer impatience.</li>
+      </ul>
+    </div>
+
+    <div class="assumptions">
+      <b>Assumptions / notes:</b><br>
+      · MaxOverlapDuration = 5.0 sec (assumed industry-typical upper bound; real value should come from production config) — used to normalize FrictionIndex.<br>
+      · Sentiment scores are assumed to be in the -100..+100 range.<br>
+      · BotSpeakSeverity = (Hesitation/min ÷ Speed) × (Tension/100) produces very small values due to unit mismatch; scaled ×1000 for readability (noted on the card).<br>
+      · Threshold bands (green/amber/red) are chosen arbitrarily based on the observed simulation distribution, not calibrated production thresholds.
+    </div>
+
+    <div class="listen-section">
+      <h2>Listen to Example Calls</h2>
+      <div class="listen-note">
+        ⚠ Not real recordings. These are scripted transcripts read aloud by your browser's built-in text-to-speech
+        (Web Speech API), using two different voices/pitches to distinguish Bot vs. Customer. Timing, pauses, and
+        overlap are approximated — this is for illustration, not acoustic ground truth.
+      </div>
+      <div class="listen-tabs" id="listenTabs"></div>
+      <div class="transcript" id="transcriptBox"></div>
+      <div class="play-controls">
+        <button id="playBtn" class="primary">▶ Play Call</button>
+        <button id="stopBtn">■ Stop</button>
+        <span class="play-status" id="playStatus">Ready</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const ids = ["tension","custsent","agentsent","mono","interrupt","overlap","silbegin","silratio","hesitation","speed"];
+const MAX_OVERLAP = 5.0;
+
+function getInputs(){
+  const v = {};
+  ids.forEach(id=>{
+    v[id] = parseFloat(document.getElementById(id).value);
+  });
+  return v;
+}
+
+function updateLabels(v){
+  document.getElementById("v-tension").textContent = v.tension;
+  document.getElementById("v-custsent").textContent = v.custsent;
+  document.getElementById("v-agentsent").textContent = v.agentsent;
+  document.getElementById("v-mono").textContent = v.mono;
+  document.getElementById("v-interrupt").textContent = v.interrupt.toFixed(1);
+  document.getElementById("v-overlap").textContent = v.overlap.toFixed(1);
+  document.getElementById("v-silbegin").textContent = v.silbegin.toFixed(1);
+  document.getElementById("v-silratio").textContent = v.silratio;
+  document.getElementById("v-hesitation").textContent = v.hesitation;
+  document.getElementById("v-speed").textContent = v.speed;
+}
+
+function computeMetrics(v){
+  const empathyGap = (v.tension/100) * Math.abs(v.custsent - v.agentsent) * (v.mono/100);
+  const frictionIndex = v.interrupt * (v.overlap/MAX_OVERLAP) * (v.tension/100);
+  const cognitiveLoad = v.silbegin * (v.silratio/100);
+  const botSpeakRaw = (v.hesitation / v.speed) * (v.tension/100);
+  const botSpeak = botSpeakRaw * 1000; // scaled for readability
+
+  return { empathyGap, frictionIndex, cognitiveLoad, botSpeak };
+}
+
+// thresholds: [good_max, warn_max] -> above warn_max = bad
+const THRESH = {
+  empathyGap:   {good:15, warn:35, maxRef:60},
+  frictionIndex:{good:0.8, warn:2.0, maxRef:4},
+  cognitiveLoad:{good:1.0, warn:2.5, maxRef:5},
+  botSpeak:     {good:15, warn:35, maxRef:60}
+};
+
+function statusOf(key, val){
+  const t = THRESH[key];
+  if(val <= t.good) return "ok";
+  if(val <= t.warn) return "warn";
+  return "bad";
+}
+
+function pct(key,val){
+  const t = THRESH[key];
+  return Math.min(100, (val/t.maxRef)*100);
+}
+
+const cardDefs = [
+  {key:"empathyGap", label:"Acoustic Empathy Gap", formula:"Tension × |CustSent − AgentSent| × Monotonicity", unit:""},
+  {key:"frictionIndex", label:"Barge-in Friction Index", formula:"Interruptions/dk × (Overlap/MaxOverlap) × Tension", unit:""},
+  {key:"cognitiveLoad", label:"Cognitive Load Score", formula:"SilenceBeginning × SilenceRatio", unit:"sn"},
+  {key:"botSpeak", label:"Bot-Speak Severity", formula:"(Hesitation/dk ÷ Speed) × Tension  ·×1000", unit:""}
+];
+
+function renderCards(m){
+  const grid = document.getElementById("cards");
+  grid.innerHTML = "";
+  cardDefs.forEach(def=>{
+    const val = m[def.key];
+    const status = statusOf(def.key, val);
+    const label = status==="ok" ? "Healthy" : status==="warn" ? "Caution" : "Critical";
+    const card = document.createElement("div");
+    card.className = "metric-card";
+    card.innerHTML = `
+      <div class="eyebrow">${def.label}</div>
+      <div class="score ${status}">${val.toFixed(2)}${def.unit}</div>
+      <div class="status-bar"><div class="status-fill fill-${status==='ok'?'ok':status==='warn'?'warn':'bad'}" style="width:${pct(def.key,val)}%"></div></div>
+      <div class="status-label ${status}">● ${label}</div>
+      <div class="formula-tag">${def.formula}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+let calls = [];
+let callCounter = 0;
+
+function overallFlag(m){
+  const statuses = cardDefs.map(d=>statusOf(d.key, m[d.key]));
+  if(statuses.includes("bad")) return "bad";
+  if(statuses.includes("warn")) return "warn";
+  return "ok";
+}
+
+function addCallToList(v, m){
+  callCounter++;
+  calls.push({
+    id: callCounter,
+    empathyGap: m.empathyGap,
+    frictionIndex: m.frictionIndex,
+    cognitiveLoad: m.cognitiveLoad,
+    botSpeak: m.botSpeak,
+    flag: overallFlag(m)
+  });
+  renderTable();
+}
+
+let sortKey = null, sortAsc = true;
+
+function renderTable(){
+  const body = document.getElementById("callTableBody");
+  if(calls.length===0){
+    body.innerHTML = `<tr><td colspan="6" style="color:var(--dim); text-align:center; padding:24px;">No calls added yet. Pick a scenario on the left or click "Add to List".</td></tr>`;
+    return;
+  }
+  let rows = [...calls];
+  if(sortKey){
+    rows.sort((a,b)=> sortAsc ? a[sortKey]-b[sortKey] : b[sortKey]-a[sortKey]);
+  }
+  body.innerHTML = rows.map(c=>{
+    const pillClass = c.flag==="ok"?"pill-ok":c.flag==="warn"?"pill-warn":"pill-bad";
+    const pillText = c.flag==="ok"?"Healthy":c.flag==="warn"?"Caution":"Critical";
+    return `<tr>
+      <td>#${c.id}</td>
+      <td>${c.empathyGap.toFixed(2)}</td>
+      <td>${c.frictionIndex.toFixed(2)}</td>
+      <td>${c.cognitiveLoad.toFixed(2)}</td>
+      <td>${c.botSpeak.toFixed(2)}</td>
+      <td><span class="pill ${pillClass}">${pillText}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+document.querySelectorAll("#callTable th[data-key]").forEach(th=>{
+  th.addEventListener("click", ()=>{
+    const key = th.getAttribute("data-key");
+    if(key==="id"||key==="flag") return;
+    if(sortKey===key) sortAsc = !sortAsc; else { sortKey=key; sortAsc=false; }
+    renderTable();
+  });
+});
+
+function refresh(){
+  const v = getInputs();
+  updateLabels(v);
+  const m = computeMetrics(v);
+  renderCards(m);
+  return {v,m};
+}
+
+ids.forEach(id=>{
+  document.getElementById(id).addEventListener("input", refresh);
+});
+
+document.getElementById("addcall").addEventListener("click", ()=>{
+  const {v,m} = refresh();
+  addCallToList(v,m);
+});
+
+function setInputs(vals){
+  Object.keys(vals).forEach(k=>{
+    if(document.getElementById(k)) document.getElementById(k).value = vals[k];
+  });
+  refresh();
+}
+
+document.getElementById("randomize").addEventListener("click", ()=>{
+  setInputs({
+    tension: Math.round(Math.random()*100),
+    custsent: Math.round(Math.random()*200-100),
+    agentsent: Math.round(Math.random()*200-100),
+    mono: Math.round(Math.random()*100),
+    interrupt: +(Math.random()*8).toFixed(1),
+    overlap: +(Math.random()*4).toFixed(1),
+    silbegin: +(Math.random()*6).toFixed(1),
+    silratio: Math.round(Math.random()*100),
+    hesitation: Math.round(Math.random()*12),
+    speed: Math.round(80+Math.random()*140)
+  });
+});
+
+const scenarios = {
+  calm: {tension:15, custsent:40, agentsent:45, mono:20, interrupt:0.5, overlap:0.3, silbegin:0.5, silratio:8, hesitation:1, speed:150},
+  empathy_gap: {tension:90, custsent:-70, agentsent:60, mono:85, interrupt:1.5, overlap:0.5, silbegin:1, silratio:15, hesitation:3, speed:140},
+  friction: {tension:75, custsent:-30, agentsent:20, mono:40, interrupt:8, overlap:4, silbegin:0.8, silratio:10, hesitation:2, speed:150},
+  cognitive: {tension:50, custsent:-10, agentsent:30, mono:50, interrupt:1, overlap:0.5, silbegin:6.5, silratio:75, hesitation:3, speed:130},
+  botspeak: {tension:70, custsent:-20, agentsent:35, mono:45, interrupt:1.2, overlap:0.4, silbegin:1.5, silratio:20, hesitation:12, speed:75}
+};
+
+document.querySelectorAll(".scenario-list button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    setInputs(scenarios[btn.getAttribute("data-scenario")]);
+  });
+});
+
+// Seed 4 example calls, each engineered to be problematic on exactly one metric
+[scenarios.empathy_gap, scenarios.friction, scenarios.cognitive, scenarios.botspeak].forEach(s=>{
+  addCallToList(s, computeMetrics(s));
+});
+
+refresh();
+
+/* ============================================================
+   LISTENABLE CALL TRANSCRIPTS — scripted, TTS-read illustrations
+   ============================================================ */
+
+const transcripts = {
+  empathy_gap: {
+    label: "Empathy Gap",
+    desc: "Customer is escalating in frustration; bot stays flat and upbeat throughout — no tonal adjustment.",
+    lines: [
+      {speaker:"bot",  text:"Thanks for calling support, how can I help you today?", pause:300},
+      {speaker:"cust", text:"This is the third time I'm calling about the same billing error. Nobody has fixed it.", pause:400},
+      {speaker:"bot",  text:"Great, I'd be happy to help you look into that!", pause:300},
+      {speaker:"cust", text:"It's not great. I've been charged twice for the same month and I want it reversed now.", pause:500},
+      {speaker:"bot",  text:"I understand. Let me pull up your account, this will just take a moment.", pause:600, annot:"flat delivery — no acknowledgment of repeated escalation"},
+      {speaker:"cust", text:"I don't have time for another 'moment.' I've already spent two hours on this.", pause:400},
+      {speaker:"bot",  text:"No problem at all! I see the duplicate charge here.", pause:300, annot:"unnaturally positive tone against high customer tension"},
+      {speaker:"cust", text:"Then why hasn't anyone fixed it yet?", pause:400}
+    ]
+  },
+  friction: {
+    label: "Barge-in Friction",
+    desc: "Bot delivers a long menu; customer repeatedly interrupts mid-sentence out of impatience.",
+    lines: [
+      {speaker:"bot",  text:"For billing, press or say one. For technical support, press or say two. For account changes including address updates, password resets, or plan modifications, press or say—", pause:100},
+      {speaker:"cust", text:"Technical support!", pause:200, annot:"interrupt — bot cut off mid-menu"},
+      {speaker:"bot",  text:"Sure, connecting you to technical support. While we do that, let me confirm a few things about your account including your registered email and—", pause:100},
+      {speaker:"cust", text:"I already gave you my email, just transfer me.", pause:200, annot:"interrupt — second overlap"},
+      {speaker:"bot",  text:"Understood, one moment while I verify your identity using the information on file which typically takes about—", pause:100},
+      {speaker:"cust", text:"Forget it, transfer me to a human.", pause:300, annot:"third interrupt — high frustration"}
+    ]
+  },
+  cognitive: {
+    label: "Cognitive Load",
+    desc: "Bot's prompt is ambiguous; customer hesitates with a long silence before responding, unsure how to proceed.",
+    lines: [
+      {speaker:"bot",  text:"To continue, please state your seven-digit account number, or say 'I don't have it' to verify using your phone number instead.", pause:2600, annot:"long initial silence follows — customer is confused"},
+      {speaker:"cust", text:"Um... which number do you mean, the one on my bill or my customer ID?", pause:400},
+      {speaker:"bot",  text:"Please state your seven-digit account number.", pause:2400, annot:"prompt repeated without clarifying — silence recurs"},
+      {speaker:"cust", text:"I... I'm not sure where to find that.", pause:500}
+    ]
+  },
+  botspeak: {
+    label: "Bot-Speak Severity",
+    desc: "Customer over-articulates and hesitates frequently, speaking slowly out of fear of not being understood by the bot.",
+    lines: [
+      {speaker:"bot",  text:"Please tell me what you'd like help with today.", pause:400},
+      {speaker:"cust", text:"I... would like to... check... the status... of my... order.", pause:600, annot:"slow, over-enunciated speech; frequent hesitation"},
+      {speaker:"bot",  text:"Sure, can you provide your order number?", pause:400},
+      {speaker:"cust", text:"Yes. It is... one... two... three... four... five.", pause:500, annot:"digit-by-digit over-articulation — low trust in bot comprehension"},
+      {speaker:"bot",  text:"Thanks, one moment while I look that up.", pause:300}
+    ]
+  }
+};
+
+let currentScenarioKey = "empathy_gap";
+let isPlaying = false;
+let utteranceQueue = [];
+let availableVoices = [];
+
+function loadVoices(){
+  availableVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+}
+if(window.speechSynthesis){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function pickVoice(speaker){
+  if(!availableVoices || availableVoices.length===0) return null;
+  // crude heuristic: try to grab two distinct voices for bot vs customer
+  const enVoices = availableVoices.filter(v=>v.lang && v.lang.toLowerCase().startsWith("en"));
+  const pool = enVoices.length>0 ? enVoices : availableVoices;
+  if(speaker==="bot"){
+    return pool.find(v=>/female|Samantha|Zira|Google US English/i.test(v.name)) || pool[0];
+  } else {
+    return pool.find(v=>/male|David|Daniel|Google UK English Male/i.test(v.name)) || pool[Math.min(1,pool.length-1)];
+  }
+}
+
+function renderTabs(){
+  const tabsEl = document.getElementById("listenTabs");
+  tabsEl.innerHTML = "";
+  Object.keys(transcripts).forEach(key=>{
+    const t = transcripts[key];
+    const btn = document.createElement("button");
+    btn.className = "listen-tab" + (key===currentScenarioKey ? " active" : "");
+    btn.textContent = t.label;
+    btn.addEventListener("click", ()=>{
+      stopPlayback();
+      currentScenarioKey = key;
+      renderTabs();
+      renderTranscript();
+    });
+    tabsEl.appendChild(btn);
+  });
+}
+
+function renderTranscript(){
+  const t = transcripts[currentScenarioKey];
+  const box = document.getElementById("transcriptBox");
+  box.innerHTML = `<div style="font-family:var(--mono); font-size:11px; color:var(--dim); margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);">${t.desc}</div>` +
+    t.lines.map((l,i)=>`
+      <div class="line" data-idx="${i}">
+        <span class="speaker-tag ${l.speaker==='bot'?'speaker-bot':'speaker-cust'}">${l.speaker==='bot'?'Bot':'Customer'}</span>
+        <div class="line-text">${l.text}${l.annot?`<span class="line-annot">→ ${l.annot}</span>`:''}</div>
+      </div>
+    `).join("");
+}
+
+function setStatus(msg){
+  document.getElementById("playStatus").textContent = msg;
+}
+
+function stopPlayback(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  isPlaying = false;
+  document.querySelectorAll(".transcript .line").forEach(el=>el.classList.remove("active"));
+  setStatus("Ready");
+}
+
+function playCall(){
+  if(!window.speechSynthesis){
+    setStatus("Speech synthesis not supported in this browser");
+    return;
+  }
+  stopPlayback();
+  isPlaying = true;
+  const t = transcripts[currentScenarioKey];
+  const lineEls = document.querySelectorAll(".transcript .line");
+  let i = 0;
+
+  function speakNext(){
+    if(!isPlaying || i>=t.lines.length){
+      setStatus(isPlaying ? "Done" : "Stopped");
+      isPlaying = false;
+      lineEls.forEach(el=>el.classList.remove("active"));
+      return;
+    }
+    const line = t.lines[i];
+    lineEls.forEach(el=>el.classList.remove("active"));
+    if(lineEls[i]){
+      lineEls[i].classList.add("active");
+      lineEls[i].scrollIntoView({block:"nearest", behavior:"smooth"});
+    }
+    setStatus(`Playing ${i+1}/${t.lines.length} — ${line.speaker==='bot'?'Bot':'Customer'}`);
+
+    const utter = new SpeechSynthesisUtterance(line.text);
+    const voice = pickVoice(line.speaker);
+    if(voice) utter.voice = voice;
+    utter.pitch = line.speaker==="bot" ? 1.0 : 1.15;
+    utter.rate = line.speaker==="bot" ? 1.0 : 0.95;
+
+    utter.onend = ()=>{
+      i++;
+      setTimeout(speakNext, line.pause || 300);
+    };
+    utter.onerror = ()=>{
+      i++;
+      setTimeout(speakNext, 200);
+    };
+    window.speechSynthesis.speak(utter);
+  }
+  speakNext();
+}
+
+document.getElementById("playBtn").addEventListener("click", playCall);
+document.getElementById("stopBtn").addEventListener("click", stopPlayback);
+
+renderTabs();
+renderTranscript();
+</script>
+</body>
+</html>
