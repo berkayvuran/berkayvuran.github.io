@@ -802,32 +802,30 @@ class TypewriterEffect {
     this.isDeleting = false;
     this.timeoutId = null;
     this.titlesEn = [
-      'Product Leader', 
-      'AI Product Enthusiast', 
-      'Conversational AI Specialist',
-      'Agile Coach',
-      'UX Strategist', 
-      'Data-Driven PM',
-      'Scrum Master',
-      'PropTech Innovator',
-      'Team Builder',
-      'Digital Transformer',
-      'Growth Hacker',
-      'Psychology + Tech'
+      'Product Leader',
+      'Builder of Things That Scale',
+      'Conversational AI Strategist',
+      'Cross-Functional Aligner',
+      'Data Over Opinions',
+      '0-to-1 Launcher',
+      'Human-Centered PM',
+      'PMP® & Scrum Certified',
+      'Autonomy for Teams',
+      'AI + ML + Data, Real Workflows',
+      'Psychology + Product'
     ];
     this.titlesTr = [
-      'Ürün Lideri', 
-      'AI Ürün Tutkunu', 
-      'Konuşma AI Uzmanı',
-      'Çevik Koç',
-      'UX Stratejisti', 
-      'Veri Odaklı ÜY',
-      'Scrum Master',
-      'PropTech Yenilikçisi',
-      'Takım Kurucusu',
-      'Dijital Dönüştürücü',
-      'Büyüme Hackeri',
-      'Psikoloji + Teknoloji'
+      'Ürün Lideri',
+      'Ölçeklenen Şeyler İnşa Ederim',
+      'Konuşma AI Stratejisti',
+      'Ekipleri Ortak Hedefte Buluşturan',
+      'Fikir Değil, Veri',
+      'Sıfırdan Bire Lansman',
+      'İnsan Odaklı Ürün Yöneticisi',
+      'PMP® & Scrum Sertifikalı',
+      'Ekiplere Otonomi',
+      'Yapay Zeka + ML + Veri, Gerçek İş Akışları',
+      'Psikoloji + Ürün'
     ];
     this.init();
   }
