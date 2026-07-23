@@ -84,6 +84,7 @@
     display:flex; align-items:center; justify-content:space-between; font-weight:700; font-size:.95rem;
     flex-shrink:0;
   }
+  .header-actions{ display:flex; align-items:center; gap:10px; }
   .panel-close{ background:none; border:none; color:var(--text-dim); font-size:1.1rem; cursor:pointer; line-height:1; }
   .panel-close:hover{ color:var(--text); }
 
@@ -115,6 +116,21 @@
     padding:0 20px; font-weight:700; cursor:pointer; font-size:.9rem; flex-shrink:0;
   }
   .input-row button:hover{ filter:brightness(1.08); }
+  .mic-btn{
+    background:var(--card) !important; border:1px solid var(--border) !important; color:var(--text) !important;
+    width:44px; padding:0 !important; font-size:1.05rem; display:flex; align-items:center; justify-content:center;
+  }
+  .mic-btn.listening{ background:var(--accent) !important; border-color:var(--accent) !important; color:#fff !important; animation:mic-pulse 1.2s infinite; }
+  .mic-btn:disabled{ opacity:.35; cursor:not-allowed; }
+  @keyframes mic-pulse{
+    0%{ box-shadow:0 0 0 0 rgba(224,72,61,.5); }
+    70%{ box-shadow:0 0 0 10px rgba(224,72,61,0); }
+    100%{ box-shadow:0 0 0 0 rgba(224,72,61,0); }
+  }
+  .speaker-toggle{
+    background:none; border:none; color:var(--text-dim); font-size:1rem; cursor:pointer; padding:2px;
+  }
+  .speaker-toggle.muted{ opacity:.45; }
 
   ::-webkit-scrollbar{ width:8px; }
   ::-webkit-scrollbar-thumb{ background:var(--border); border-radius:8px; }
@@ -150,12 +166,17 @@
 <div class="chat-panel" id="chatPanel">
   <div class="panel-header">
     <span id="panelTitle"></span>
-    <button class="panel-close" id="panelClose" aria-label="Close">✕</button>
+    <span class="header-actions">
+      <button class="speaker-toggle" id="rateBtn" aria-label="Speed" title="Okuma hızı">1x</button>
+      <button class="speaker-toggle" id="speakerToggle" aria-label="Sound">🔊</button>
+      <button class="panel-close" id="panelClose" aria-label="Close">✕</button>
+    </span>
   </div>
   <div class="messages" id="messages"></div>
   <div class="suggestions" id="suggestions"></div>
   <div class="input-row">
     <input type="text" id="queryInput" autocomplete="off">
+    <button class="mic-btn" id="micBtn" type="button" aria-label="Voice input">🎙️</button>
     <button id="sendBtn"></button>
   </div>
 </div>
@@ -312,8 +333,81 @@
   var panelClose = document.getElementById('panelClose');
   var themeToggle = document.getElementById('themeToggle');
   var langSwitch = document.getElementById('langSwitch');
+  var micBtn = document.getElementById('micBtn');
+  var speakerToggle = document.getElementById('speakerToggle');
+  var rateBtn = document.getElementById('rateBtn');
 
-  var state = { lang: 'tr', greeted: false };
+  var LANG_CODES = { tr: 'tr-TR', en: 'en-US', ar: 'ar-SA' };
+
+  var state = { lang: 'tr', greeted: false, muted: false, listening: false };
+
+  var SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognition = null;
+  if (SpeechRecognitionCtor){
+    recognition = new SpeechRecognitionCtor();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = function(e){
+      var transcript = e.results[0][0].transcript;
+      inputEl.value = transcript;
+      handleSend(true);
+    };
+    recognition.onerror = function(){ stopListening(); };
+    recognition.onend = function(){ stopListening(); };
+  } else if (micBtn){
+    micBtn.disabled = true;
+    micBtn.title = 'Bu tarayıcıda ses tanıma desteklenmiyor';
+  }
+
+  function startListening(){
+    if (!recognition || state.listening) return;
+    try {
+      recognition.lang = LANG_CODES[state.lang];
+      recognition.start();
+      state.listening = true;
+      micBtn.classList.add('listening');
+    } catch(err){ stopListening(); }
+  }
+  function stopListening(){
+    state.listening = false;
+    if (micBtn) micBtn.classList.remove('listening');
+    if (recognition){ try { recognition.stop(); } catch(err){} }
+  }
+
+  if (micBtn){
+    micBtn.addEventListener('click', function(){
+      state.listening ? stopListening() : startListening();
+    });
+  }
+
+  var RATES = [1, 1.25, 1.5, 1.75, 2, 0.75];
+  state.rateIdx = 0;
+
+  function speak(text){
+    if (state.muted || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = LANG_CODES[state.lang];
+    utter.rate = RATES[state.rateIdx];
+    window.speechSynthesis.speak(utter);
+  }
+
+  if (speakerToggle){
+    speakerToggle.addEventListener('click', function(){
+      state.muted = !state.muted;
+      speakerToggle.textContent = state.muted ? '🔇' : '🔊';
+      speakerToggle.classList.toggle('muted', state.muted);
+      if (state.muted && window.speechSynthesis) window.speechSynthesis.cancel();
+    });
+  }
+
+  if (rateBtn){
+    rateBtn.addEventListener('click', function(){
+      state.rateIdx = (state.rateIdx + 1) % RATES.length;
+      rateBtn.textContent = RATES[state.rateIdx] + 'x';
+    });
+  }
 
   function addMessage(role, html){
     var div = document.createElement('div');
@@ -323,12 +417,13 @@
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
-  function respond(query){
+  function respond(query, isVoice){
     var S = STRINGS[state.lang];
     var chunks = CHUNKS[state.lang];
     var results = search(state.lang, query, 3);
     if (results.length === 0){
       addMessage('bot', S.notFound);
+      if (isVoice) speak(S.notFound);
       return;
     }
     var best = results[0];
@@ -336,6 +431,7 @@
     var html = '<span class="src-title">' + escapeHtml(chunk.title) + '</span>' + escapeHtml(chunk.text);
     html += '<span class="score">' + S.similarity + ': %' + Math.round(best.score * 100) + '</span>';
     addMessage('bot', html);
+    if (isVoice) speak(chunk.text);
     if (results.length > 1){
       var others = results.slice(1).map(function(r){
         var c = chunks[r.idx];
@@ -345,12 +441,12 @@
     }
   }
 
-  function handleSend(){
+  function handleSend(isVoice){
     var q = inputEl.value.trim();
     if (!q) return;
     addMessage('user', escapeHtml(q));
     inputEl.value = '';
-    setTimeout(function(){ respond(q); }, 150);
+    setTimeout(function(){ respond(q, !!isVoice); }, 150);
   }
 
   sendBtn.addEventListener('click', handleSend);
@@ -368,6 +464,8 @@
   }
 
   function applyLanguage(lang){
+    stopListening();
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
     state.lang = lang;
     state.greeted = false;
     var S = STRINGS[lang];
@@ -413,7 +511,11 @@
     }
     inputEl.focus();
   }
-  function closePanel(){ chatPanel.classList.remove('open'); }
+  function closePanel(){
+    chatPanel.classList.remove('open');
+    stopListening();
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  }
 
   fabBtn.addEventListener('click', function(){
     chatPanel.classList.contains('open') ? closePanel() : openPanel();
