@@ -65,3 +65,6 @@ Pazar Lideri Konuşma Tanıma Teknolojisi __ SESTEK_files/vendor.min.js
 Pazar Lideri Konuşma Tanıma Teknolojisi __ SESTEK_files/virtual-agent-thumb.jpg
 Pazar Lideri Konuşma Tanıma Teknolojisi __ SESTEK_files/wave-pattern-2.png
 Pazar Lideri Konuşma Tanıma Teknolojisi __ SESTEK_files/youtube.svg
+
+# site generator
+_build/node_modules/
