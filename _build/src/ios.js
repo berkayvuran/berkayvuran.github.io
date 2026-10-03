@@ -63,6 +63,15 @@
       }
       sliderRow('sun', '#FF9F0A', u.ccBright, 40, 100, 1, P.bright, P.setBright);
       var vs = sliderRow('sound', '#FF375F', u.ccSound, 0, 100, 5, P.vol, P.setVol); vs.addEventListener('change', P.blip);
+      /* music */
+      var M = P.music, ml = group(M.label), musicBtns = [];
+      M.tracks.concat([M.off]).forEach(function (n, i) {
+        var idx = i < M.tracks.length ? i : -1;
+        var b = row(ml, null, '', n, el('span', 'st-ck', '✓'), function () { M.set(idx); });
+        b.setAttribute('data-m', idx); musicBtns.push(b);
+      });
+      function paintMusic() { musicBtns.forEach(function (b) { b.setAttribute('aria-checked', +b.getAttribute('data-m') === M.cur() ? 'true' : 'false'); }); }
+      document.addEventListener('desk:music', paintMusic); paintMusic();
       /* general */
       var g = group(SET.gen);
       var la = el('a', 'st-r st-link'); la.href = D.langHref(); la.appendChild(ico('globe', '#0A84FF')); la.appendChild(el('span', 'st-l', u.ccLang)); la.appendChild(el('span', 'st-v', u.otherShort)); la.appendChild(el('span', 'st-chev', '›'));

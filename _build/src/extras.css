@@ -379,3 +379,23 @@ button.st-r:active,a.st-r:active{background:var(--accent-soft)}
 @media (hover:hover){.widget{backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}.window,.spot-panel{backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5)}}
 .w-certs,.w-quote,.w-weather{content-visibility:auto;contain-intrinsic-size:auto 200px}
 .widgets{will-change:scroll-position}
+
+/* ---------- menubar weather + music ---------- */
+.mb-wx,.mb-music{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 7px;border:0;border-radius:6px;background:none;color:var(--onwall);font:inherit;font-size:13px;cursor:default}
+.mb-wx[hidden],.mb-music[hidden]{display:none}
+.mb-wx:hover,.mb-music:hover,.mb-wx[aria-expanded="true"],.mb-music[aria-expanded="true"]{background:var(--hover)}
+.mb-music svg{width:16px;height:16px}
+.mb-music.on svg{color:#30d158}
+.mb-wx .wx-e{font-size:14px;line-height:1}
+.mb-wx b{font-weight:500}
+.mp{width:250px;padding:10px}
+.mp .cc-h{margin-bottom:6px}
+.mp-row{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;border-radius:10px;background:none;color:var(--text);font:inherit;font-size:13.5px;text-align:left;cursor:pointer}
+.mp-row:hover{background:var(--hover)}
+.mp-row .ck{margin-left:auto;color:#30d158;opacity:0}
+.mp-row[aria-pressed="true"] .ck{opacity:1}
+.mp-wx{display:flex;align-items:center;gap:12px;padding:4px 4px 8px}
+.mp-wx .wx-e{font-size:34px;line-height:1}
+.mp-wx b{display:block;font-size:22px;font-weight:600;line-height:1.1}
+.mp-wx small{color:var(--muted);font-size:12px}
+@media (min-width:1100px) and (hover:hover){.w-weather{display:none!important}}
