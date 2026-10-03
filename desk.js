@@ -123,7 +123,11 @@
     return s === '' ? '' : (SECTIONS.indexOf(s) > -1 ? s : null);
   }
   function urlOf(slug) { return home + (slug ? slug + '/' : ''); }
-  function labelOf(slug) { var n = document.querySelector('.mb-menu a[data-app="' + slug + '"]'); return n ? n.textContent : slug; }
+  function isVirtual(slug) { return !!(slug && wins[slug] && wins[slug].hasAttribute('data-virtual')); }
+  function labelOf(slug) {
+    if (isVirtual(slug)) { var h = wins[slug].querySelector('h1'); return h ? h.textContent : slug; }
+    var n = document.querySelector('.mb-menu a[data-app="' + slug + '"]'); return n ? n.textContent : slug;
+  }
 
   function setFilter(win, id) {
     win.querySelectorAll('.side-item').forEach(function (a) {
@@ -131,6 +135,8 @@
     });
     win.querySelectorAll('[data-cat]').forEach(function (n) { n.hidden = !(id === 'all' || n.getAttribute('data-cat') === id); });
     win.querySelectorAll('[data-group]').forEach(function (n) { n.hidden = !(id === 'all' || n.getAttribute('data-group') === id); });
+    win.querySelectorAll('.side-sub2').forEach(function (u) { u.hidden = u.getAttribute('data-for') !== id; });
+    win.querySelectorAll('.side-leaf[aria-current]').forEach(function (l) { l.removeAttribute('aria-current'); });
     var main = win.querySelector('.win-main'); if (main) main.scrollTop = 0;
   }
 
@@ -147,8 +153,8 @@
     body.classList.add('page-' + (active || 'home'));
     var app = document.getElementById('mb-app'); if (app) app.textContent = active ? labelOf(active) : 'Berkay Vuran';
     document.querySelectorAll('.mb-menu a').forEach(function (a) { if (a.getAttribute('data-app') === active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-    document.querySelectorAll('.icons a[data-app], .dock a[data-app]').forEach(function (a) {
-      var s = a.getAttribute('data-app');
+    document.querySelectorAll('.icons a[data-app], .dock a[data-app], .icons a[data-vapp], .dock a[data-vapp]').forEach(function (a) {
+      var s = a.getAttribute('data-app') || a.getAttribute('data-vapp');
       a.classList.toggle('is-open', !!wins[s]);
       if (s === active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
@@ -166,8 +172,9 @@
     if (other && ml) { try { ml.setAttribute('href', new URL(other.getAttribute('href')).pathname); } catch (e) {} }
   }
   function setUrl(slug, push) {
+    if (isVirtual(slug)) return;
     var href = urlOf(slug);
-    if (location.pathname !== href) { try { history[push === false ? 'replaceState' : 'pushState']({ w: 1 }, '', href); } catch (e) {} }
+    if (location.pathname !== href) { try { history[push === false ? 'replaceState' : 'pushState']({ w: 1 }, '', href); if (push !== false) document.dispatchEvent(new CustomEvent('desk:nav', { detail: { path: href } })); } catch (e) {} }
     fetchDoc(href).then(syncHead).catch(function () {});
   }
 
@@ -182,7 +189,7 @@
     if (next) { active = next; wins[next].style.zIndex = ++zTop; chrome(); setUrl(next, push); }
     else { active = null; chrome(); setUrl('', push); }
   }
-  function closeWin(slug) { if (!wins[slug]) return; wins[slug].remove(); delete wins[slug]; if (active === slug) afterLeave(false); else chrome(); }
+  function closeWin(slug) { if (!wins[slug]) return; document.dispatchEvent(new CustomEvent('desk:close', { detail: { slug: slug } })); wins[slug].remove(); delete wins[slug]; if (active === slug) afterLeave(false); else chrome(); }
   function minimizeWin(slug) { var w = wins[slug]; if (!w) return; w.classList.add('is-min'); if (active === slug) afterLeave(false); else chrome(); }
   function showDesktop(push) { Object.keys(wins).forEach(function (k) { wins[k].classList.add('is-min'); }); active = null; chrome(); setUrl('', push); }
 
@@ -190,6 +197,21 @@
     var side = win.querySelector('.win-side');
     if (side) {
       side.addEventListener('click', function (e) {
+        var leaf = e.target.closest('.side-leaf');
+        if (leaf) {
+          e.preventDefault();
+          var cur = side.querySelector('.side-item[aria-current]');
+          if (!cur || cur.getAttribute('data-filter') !== leaf.getAttribute('data-parent')) setFilter(win, leaf.getAttribute('data-parent'));
+          var t = win.querySelector('[id="' + leaf.getAttribute('data-target') + '"]');
+          side.querySelectorAll('.side-leaf[aria-current]').forEach(function (l) { l.removeAttribute('aria-current'); });
+          leaf.setAttribute('aria-current', 'true');
+          if (t) {
+            var d = t.tagName === 'DETAILS' ? t : t.querySelector('details'); if (d) d.open = true;
+            t.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+            t.classList.remove('flash'); void t.offsetWidth; t.classList.add('flash');
+          }
+          return;
+        }
         var a = e.target.closest('.side-item'); if (!a) return;
         e.preventDefault(); setFilter(win, a.getAttribute('data-filter'));
       });
@@ -237,23 +259,49 @@
   }
   function register(slug, w) { wins[slug] = w; initWindow(w, slug); }
 
+  function mount(w, slug, push) {
+    if (wide.matches && Object.keys(wins).length) { var off = (opened % 6 + 1) * 28; w.style.setProperty('--ox', off + 'px'); w.style.setProperty('--oy', off + 'px'); }
+    opened++;
+    document.getElementById('main').appendChild(w);
+    register(slug, w); focusWin(slug, push);
+    document.dispatchEvent(new CustomEvent('desk:open', { detail: { slug: slug } }));
+  }
+  /* virtual apps (Terminal, Notes, Photos, Mail) live in extras.js: windows without their own URL */
+  var Desk = window.Desk = { apps: {}, go: null, closeWin: closeWin, wide: wide };
+  function openVirtual(slug) {
+    var def = Desk.apps[slug];
+    if (!def) return Promise.reject(new Error('no app'));
+    if (wins[slug]) { focusWin(slug, false); return Promise.resolve(); }
+    return Promise.resolve(Desk.data()).then(function (data) {
+      var ui = data.ui, w = document.createElement('section');
+      w.className = 'window no-side win-virt win-' + slug; w.setAttribute('data-slug', slug); w.setAttribute('data-virtual', '1'); w.setAttribute('aria-labelledby', 'win-title-' + slug);
+      w.innerHTML = '<header class="titlebar"><a class="back" href="' + home + '"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg><span>' + ui.back + '</span></a><div class="dots"><a class="dot r" href="' + home + '" aria-label="' + ui.close + '"></a><button class="dot y" type="button" aria-label="' + ui.min + '"></button><button class="dot g" type="button" aria-label="' + ui.zoom + '"></button></div><h1 id="win-title-' + slug + '"></h1></header><div class="win-body"><div class="win-main"></div></div>';
+      w.querySelector('h1').textContent = ui.names[slug];
+      if (!wide.matches) Object.keys(wins).forEach(function (k) { wins[k].remove(); delete wins[k]; });
+      def.build(w.querySelector('.win-main'), data, w);
+      mount(w, slug, false);
+      if (def.focus) def.focus(w);
+    });
+  }
+  Desk.openVirtual = openVirtual;
   function openApp(slug, push) {
     if (wins[slug]) { focusWin(slug, push); return Promise.resolve(); }
     return fetchDoc(urlOf(slug)).then(function (doc) {
       var src = doc.querySelector('.window'); if (!src) throw new Error('no window');
       if (!wide.matches) Object.keys(wins).forEach(function (k) { wins[k].remove(); delete wins[k]; });
       var w = document.importNode(src, true);
-      if (wide.matches && Object.keys(wins).length) { var off = (opened % 6 + 1) * 28; w.style.setProperty('--ox', off + 'px'); w.style.setProperty('--oy', off + 'px'); }
-      opened++;
-      document.getElementById('main').appendChild(w);
-      register(slug, w); focusWin(slug, push);
+      mount(w, slug, push);
     }).catch(function () { location.href = urlOf(slug); });
   }
   function go(href, push) {
+    if (/^#/.test(href)) { openVirtual(href.slice(1)).catch(function () {}); return; }
     var s = slugOf(href);
     if (s === null) { location.href = href; return; }
     if (s === '') showDesktop(push); else openApp(s, push);
   }
+
+  Desk.go = go; Desk.setTheme = function (id) { paintTheme(id); try { localStorage.setItem('theme', id); } catch (er) {} };
+  Desk.slugOf = slugOf; Desk.active = function () { return active; };
 
   /* ---------- typewriter title ---------- */
   var twTimer = null;
@@ -356,7 +404,8 @@
   function choose(i) {
     var e = spot.items[i]; if (!e) return;
     closeSpot();
-    if (e.e) window.open(e.u, '_blank', 'noopener');
+    if (e.v) openVirtual(e.v).catch(function () { location.href = '/'; });
+    else if (e.e) window.open(e.u, '_blank', 'noopener');
     else if (e.u.indexOf('/projects/') > -1) location.href = e.u;
     else go(e.u);
   }
@@ -408,6 +457,8 @@
 
   /* ---------- global wiring ---------- */
   document.addEventListener('click', function (e) {
+    var v = e.target.closest('a[data-vapp]');
+    if (v && !e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && Desk.apps[v.getAttribute('data-vapp')]) { e.preventDefault(); openVirtual(v.getAttribute('data-vapp')).catch(function () { location.href = v.href; }); return; }
     var a = e.target.closest('a[data-app]');
     if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault(); go(a.getAttribute('href'));
@@ -422,7 +473,7 @@
     if (s === '') showDesktop(false); else openApp(s, false);
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && wide.matches && active && !(spot.el && !spot.el.hidden) && !(themeMenu && !themeMenu.hidden)) closeWin(active);
+    if (e.key === 'Escape' && wide.matches && active && !(e.target.matches && e.target.matches('input,textarea,select')) && !document.querySelector('.ql:not([hidden]),.lock:not([hidden]),.cc:not([hidden]),.ctx:not([hidden])') && !(spot.el && !spot.el.hidden) && !(themeMenu && !themeMenu.hidden)) closeWin(active);
   });
 
   document.querySelectorAll('.window[data-slug]').forEach(function (w) { register(w.getAttribute('data-slug'), w); active = w.getAttribute('data-slug'); w.style.zIndex = ++zTop; });
