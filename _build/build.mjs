@@ -288,7 +288,7 @@ function sidebar(lang, entries, defaultId) {
   return `<aside class="win-side" aria-label="${esc(UI[lang].folders)}">
     <p class="side-h">${esc(UI[lang].folders)}</p>
     <ul class="side-list" role="list">${entries.map((e, i) => `<li${entries[0].id === 'all' && i > 0 ? ' class="side-sub"' : ''}><a class="side-item" href="#${esc(e.id)}" data-filter="${esc(e.id)}"${e.id === defaultId ? ' data-default aria-current="true"' : ''}>${svg('folder', 'si')}<span class="sl">${esc(e.label)}</span><span class="sc">${e.count}</span></a>${e.children && e.children.length ? `<ul class="side-sub2" role="list" data-for="${esc(e.id)}">${e.children.map(c => `<li><a class="side-leaf" href="#${esc(c.id)}" data-target="${esc(c.id)}" data-parent="${esc(e.id)}" title="${esc(c.label)}">${esc(c.label)}</a></li>`).join('')}</ul>` : ''}</li>`).join('')}</ul>
-  </aside>`;
+  </div></aside>`;
 }
 
 
@@ -447,11 +447,12 @@ function homeWidgets(lang, blog, builder) {
   const sc = parseShowcase(lang);
   const certItems = sc.items.filter(i => i.cat === 'certifications');
   const src = x => fixUrls(`src="${x}"`).slice(5, -1);
-  return `<aside class="widgets" aria-label="Highlights">
+  return `<aside class="widgets" aria-label="Highlights"><div class="wcol">
       <section class="widget w-contact"><h2>${esc(u.contact)}</h2>${contactCard(lang)}</section>
       <a class="widget w-builder" href="${url(lang, 'builder')}" data-app="builder"><span class="w-badge">Product Builder</span><b>${builder.cards.length} ${esc(u.liveProducts)} →</b><span>${esc(u.productsSub)}</span></a>
       <a class="widget w-now" href="${url(lang, 'cv')}" data-app="cv"><h2>${esc(u.now)}</h2><b>${esc(cv.role)}</b><span>${esc(cv.org)}${cv.date ? ' · ' + esc(cv.date) : ''}</span><em>${esc(u.viewCv)} →</em></a>
       <section class="widget w-posts"><h2>${esc(u.latest)}</h2><ul role="list">${blog.slice(0, 3).map(p => `<li><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.title)}</b><time datetime="${esc(p.date)}">${esc(fmtDate(p.date, lang))}</time></a></li>`).join('')}</ul></section>
+</div><div class="wcol">
       <div class="widget w-stats"><h2>${esc(u.glance)}</h2><ul role="list">
         <li><a href="${url(lang, 'builder')}" data-app="builder"><b>${builder.cards.length}</b><span>${esc(u.products)}</span></a></li>
         <li><a href="${url(lang, 'blog')}" data-app="blog"><b>${blog.length}</b><span>${esc(u.articles)}</span></a></li>
@@ -460,7 +461,6 @@ function homeWidgets(lang, blog, builder) {
       <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase" data-certs="${esc(JSON.stringify(certItems.map(c => ({ t: c.title, i: src(c.img.replace('/portfolio/', '/portfolio/t/')) }))))}"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 6).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
       <a class="widget w-quote w-extra" href="${url(lang, 'references')}" data-app="references" data-quotes="${esc(JSON.stringify(quotes))}"><h2>${esc(u.says)}</h2><blockquote>“${esc(cut(pick.plain, 190))}”</blockquote><span class="w-by"><span class="w-av">${avatarHtml(pick.name, pick.avatar, 34)}</span><span><b>${esc(pick.name)}</b><i>${esc(pick.role)}</i></span></span></a>
       <section class="widget w-weather w-extra" data-weather hidden aria-label="Weather"><span class="wx-e" aria-hidden="true"></span><span class="wx-t"><b></b><small></small></span></section>
-      <section class="widget w-sticky w-extra"><h2>${esc(u.sticky)}</h2><textarea rows="5" maxlength="1200" aria-label="${esc(u.sticky)}" placeholder="${esc(u.stickyPh)}"></textarea></section>
   </aside>`;
 }
 

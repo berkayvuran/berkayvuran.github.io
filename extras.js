@@ -668,11 +668,15 @@
     reset(); D.screensaver = show;
   })();
 
-  /* ---------- sticky note (kept in this browser) ---------- */
-  (function sticky() {
-    var ta = document.querySelector('.w-sticky textarea'); if (!ta) return;
-    ta.value = store.get('sticky') || ''; var t = 0;
-    ta.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { store.set('sticky', ta.value); }, 300); });
+  /* ---------- wheel anywhere on the home desktop scrolls the widget column ---------- */
+  (function homeScroll() {
+    var desk = document.querySelector('.desktop'); if (!desk) return;
+    desk.addEventListener('wheel', function (e) {
+      if (!D.wide.matches || e.ctrlKey || e.defaultPrevented) return;
+      var w = document.querySelector('.widgets'); if (!w || w.scrollHeight <= w.clientHeight + 1) return;
+      if (e.target.closest('.window, .widgets, .dock, .cal, .cc, .ctx, .spot, .mc')) return;
+      w.scrollTop += e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY; e.preventDefault();
+    }, { passive: false });
   })();
 
   /* ---------- weather widget (Open-Meteo, no key). Istanbul by default; "use my location" asks the browser ---------- */
