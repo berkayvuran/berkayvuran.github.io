@@ -57,8 +57,8 @@ const text = ($, el, lang) => L($, el, lang).text().replace(/\s+/g, ' ').trim();
 const inner = ($, el, lang) => fixUrls((L($, el, lang).html() || '').trim());
 
 const UI = {
-  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Theme', glass: 'Glass effect', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV', contact: 'Contact', calendar: 'Calendar', today: 'Today', callMe: 'Call me', mailMe: 'Email me', search: 'Search', searchPh: 'Search sections, writing, projects, CV…', searchEmpty: 'No results', searchSections: 'Sections', searchHint: 'to open', goTo: 'Go to' },
-  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Tema', glass: 'Cam efekti', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç', contact: 'İletişim', calendar: 'Takvim', today: 'Bugün', callMe: 'Beni ara', mailMe: 'E-posta gönder', search: 'Ara', searchPh: 'Bölümlerde, yazılarda, projelerde, CV’de ara…', searchEmpty: 'Sonuç yok', searchSections: 'Bölümler', searchHint: 'açmak için', goTo: 'Git' }
+  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Theme', glass: 'Glass effect', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV', contact: 'Contact', calendar: 'Calendar', today: 'Today', addContact: 'Add to Contacts', sticky: 'Sticky note', stickyPh: 'Jot something down. It stays in this browser.', callMe: 'Call me', mailMe: 'Email me', search: 'Search', searchPh: 'Search sections, writing, projects, CV…', searchEmpty: 'No results', searchSections: 'Sections', searchHint: 'to open', goTo: 'Go to' },
+  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Tema', glass: 'Cam efekti', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç', contact: 'İletişim', calendar: 'Takvim', today: 'Bugün', addContact: 'Rehbere ekle', sticky: 'Yapışkan not', stickyPh: 'Bir şey not al. Bu tarayıcıda kalır.', callMe: 'Beni ara', mailMe: 'E-posta gönder', search: 'Ara', searchPh: 'Bölümlerde, yazılarda, projelerde, CV’de ara…', searchEmpty: 'Sonuç yok', searchSections: 'Bölümler', searchHint: 'açmak için', goTo: 'Git' }
 };
 const NAV = {
   en: { about: 'About', cv: 'CV', references: 'References', showcase: 'Showcase', blog: 'Blog', builder: 'Builder' },
@@ -80,6 +80,7 @@ const ICONS = {
   back: '<path d="M15 5l-7 7 7 7"/>',
   arrow: '<path d="M7 17L17 7M17 7H8M17 7v9"/>',
   search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/>',
+  addc: '<circle cx="10" cy="8" r="3.6"/><path d="M3.5 20c0-3.6 2.9-6 6.5-6 1.4 0 2.6.3 3.6 1M18 14v6M15 17h6"/>',
   cc: '<rect x="3" y="4" width="18" height="7" rx="3.5"/><circle cx="16.5" cy="7.5" r="1.3" fill="currentColor"/><rect x="3" y="13" width="18" height="7" rx="3.5"/><circle cx="7.5" cy="16.5" r="1.3" fill="currentColor"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
 };
@@ -98,6 +99,8 @@ const TILE = {
   linkedin: '<path d="M4.6 9.4h3v10.2h-3zM6.1 4.4a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6zM10.4 9.4h2.9v1.4c.5-.9 1.7-1.6 3.2-1.6 3.1 0 3.6 2 3.6 4.7v5.7h-3v-5.1c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5.2h-3z"/>'
 };
 TILE.terminal = '<path d="M4.4 5.6 6.2 3.9 14.2 12 6.2 20.1 4.4 18.4 10.6 12z"/><rect x="14.6" y="17.4" width="5.8" height="2.3" rx="1.15"/>';
+TILE.finder = '<path d="M3 7.2A2.7 2.7 0 0 1 5.7 4.5h3.4c.5 0 1 .2 1.3.6l1 1.1c.2.2.5.3.8.3h6.1A2.7 2.7 0 0 1 21 9.2v8.1a2.7 2.7 0 0 1-2.7 2.7H5.7A2.7 2.7 0 0 1 3 17.3z"/>';
+TILE.ask = '<path fill-rule="evenodd" d="M12 3C6.9 3 2.8 6.4 2.8 10.7c0 2.3 1.2 4.3 3.1 5.7-.1 1.3-.7 2.5-1.7 3.5-.3.3-.1.8.4.8 2.2 0 3.9-.9 5.2-1.9.7.1 1.4.2 2.2.2 5.1 0 9.2-3.4 9.2-8.3S17.1 3 12 3zM7.3 10.7a1.15 1.15 0 1 0 2.3 0 1.15 1.15 0 1 0-2.3 0zm3.55 0a1.15 1.15 0 1 0 2.3 0 1.15 1.15 0 1 0-2.3 0zm3.55 0a1.15 1.15 0 1 0 2.3 0 1.15 1.15 0 1 0-2.3 0z"/>';
 TILE.notes = '<path fill-rule="evenodd" d="M6.5 3.5h11A2.5 2.5 0 0 1 20 6v12a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18V6a2.5 2.5 0 0 1 2.5-2.5zM7.6 8v1.5h8.8V8zm0 3.6v1.5h8.8v-1.5zm0 3.6v1.5h5.2v-1.5z"/>';
 const PETALS = ['#FF9500', '#FFCC00', '#34C759', '#5AC8FA', '#007AFF', '#AF52DE', '#FF2D55', '#FF3B30'];
 const PHOTOS_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" stroke="none">${PETALS.map((c, i) => `<ellipse cx="12" cy="7.3" rx="2.5" ry="4.4" fill="${c}" opacity=".88" transform="rotate(${i * 45} 12 12)" style="mix-blend-mode:multiply"/>`).join('')}</svg>`;
@@ -113,9 +116,13 @@ const LINKS = [
 /* ------------------------------------------------------------------ virtual apps (Terminal, Notes, Photos, Mail) + Control Center strings */
 const APP = {
   en: {
-    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail' },
-    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message' },
+    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail', finder: 'Finder', ask: 'Ask' },
+    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message', finder: 'Resume, contact card and pictures to download', ask: 'Ask questions about Berkay and get answers from this site' },
     apps: 'Apps',
+    finder: { fav: 'Favorites', all: 'All Files', open: 'Open', download: 'Download', items: 'items', folders: { documents: 'Documents', pictures: 'Pictures', certificates: 'Certificates' }, empty: 'Nothing here' },
+    ask: { ph: 'Ask about Berkay…', hello: 'Hi! I am a small assistant that only knows this site. Ask me about Berkay’s work, projects, writing or how to reach him.', chips: ['Who is Berkay?', 'What does he do now?', 'Show his projects', 'How can I contact him?', 'Where did he work?'], fallback: 'I do not know that one yet. I can only answer from what is on this site. The best way to ask Berkay directly is to write to him.', send: 'Send', mailCta: 'Write to Berkay', you: 'You' },
+    mc: { title: 'Mission Control', desktop: 'Desktop', none: 'No open windows. Open an app from the dock.', hint: 'Esc to close', close: 'Close window' },
+    ccMC: 'Mission Control',
     cc: 'Control Center', ccTheme: 'Theme', ccGlass: 'Glass', ccLang: 'Language', ccSound: 'Sound', ccWall: 'Wallpaper', ccBright: 'Display', ccLock: 'Lock Screen', ccOn: 'On', ccOff: 'Off',
     walls: { default: 'Default', aurora: 'Aurora', sunset: 'Sunset', ocean: 'Ocean' },
     lock: { hint: 'Click or press any key to enter', hintTouch: 'Tap to enter' },
@@ -126,16 +133,20 @@ const APP = {
     photos: { all: 'All', open: 'Open' },
     term: {
       welcome: 'Berkay Vuran, version 1.0. Type "help" to see what you can do.', prompt: 'guest@berkayvuran', unknown: 'command not found:', tryHelp: 'Type "help" for the list of commands.',
-      help: [['help', 'show this list'], ['about', 'who I am'], ['experience', 'where I have worked'], ['education', 'where I studied'], ['projects', 'AI-built products you can open'], ['blog', 'latest writing'], ['skills', 'what I do'], ['contact', 'phone, email and links'], ['open <name>', 'open a window: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <name>', 'dark, light, matrix or zap'], ['wallpaper <name>', 'default, aurora, sunset or ocean'], ['lang <en|tr>', 'switch language'], ['lock', 'show the lock screen'], ['ls / cat <file>', 'look around'], ['neofetch', 'system info'], ['date, echo, history, clear, exit', 'the usual']],
+      help: [['help', 'show this list'], ['about', 'who I am'], ['experience', 'where I have worked'], ['education', 'where I studied'], ['projects', 'AI-built products you can open'], ['blog', 'latest writing'], ['skills', 'what I do'], ['contact', 'phone, email and links'], ['open <name>', 'open a window: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <name>', 'dark, light, matrix or zap'], ['wallpaper <name>', 'default, aurora, sunset or ocean'], ['lang <en|tr>', 'switch language'], ['lock', 'show the lock screen'], ['ls / cat <file>', 'look around'], ['neofetch', 'system info'], ['snake', 'a tiny game'], ['cowsay <text>', 'a talking cow'], ['matrix', 'follow the white rabbit'], ['date, echo, history, clear, exit', 'the usual']],
       files: ['about.txt', 'contact.txt', 'cv.txt', 'projects/', 'blog/'], noFile: 'No such file:', usage: 'usage:', opened: 'opening', themeSet: 'theme set to', wallSet: 'wallpaper set to', langSwitch: 'switching language…', badTheme: 'unknown theme. Try: dark, light, matrix, zap', badWall: 'unknown wallpaper. Try: default, aurora, sunset, ocean', badOpen: 'unknown window. Try: about, cv, references, showcase, blog, builder, notes, photos, mail',
-      sudo: ['[sudo] password for guest: ********', 'Access granted. Hiring pipeline unlocked.', 'Opening the mail app, say hi at berkaypsy@gmail.com.'], root: 'Nice try. This is a very polite machine, but it is not that polite.', hello: 'Hello! Great to see you here.', exit: 'Closing the terminal…',
+      sudo: ['[sudo] password for guest: ********', 'Access granted. Hiring pipeline unlocked.', 'Opening the mail app, say hi at berkaypsy@gmail.com.'], root: 'Nice try. This is a very polite machine, but it is not that polite.', hello: 'Hello! Great to see you here.', matrixMsg: 'Wake up, Neo…', snakeHint: 'Arrow keys or WASD to move, q to quit. Swipe on touch.', exit: 'Closing the terminal…',
       neofetch: ['Berkay Vuran', 'OS', 'Product Leader 1.0', 'Role', 'Product leader and builder', 'Focus', 'AI, ML, data and real workflows', 'Shell', 'berkayvuran.com', 'Theme']
     }
   },
   tr: {
-    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta' },
-    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder' },
+    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta', finder: 'Finder', ask: 'Sor' },
+    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder', finder: 'CV, kartvizit ve indirilebilir resimler', ask: 'Berkay hakkında sor, cevabı bu siteden al' },
     apps: 'Uygulamalar',
+    finder: { fav: 'Sık Kullanılanlar', all: 'Tüm Dosyalar', open: 'Aç', download: 'İndir', items: 'öğe', folders: { documents: 'Belgeler', pictures: 'Resimler', certificates: 'Sertifikalar' }, empty: 'Burada bir şey yok' },
+    ask: { ph: 'Berkay hakkında sor…', hello: 'Merhaba! Ben yalnızca bu siteyi bilen küçük bir asistanım. Berkay’ın işini, projelerini, yazılarını ya da ona nasıl ulaşacağını sorabilirsin.', chips: ['Berkay kim?', 'Şu an ne yapıyor?', 'Projelerini göster', 'Ona nasıl ulaşırım?', 'Nerelerde çalıştı?'], fallback: 'Bunu henüz bilmiyorum. Yalnızca bu sitedeki bilgilerden cevap verebilirim. Berkay’a doğrudan sormanın en iyi yolu ona yazmak.', send: 'Gönder', mailCta: 'Berkay’a yaz', you: 'Sen' },
+    mc: { title: 'Mission Control', desktop: 'Masaüstü', none: 'Açık pencere yok. Dock’tan bir uygulama aç.', hint: 'Kapatmak için Esc', close: 'Pencereyi kapat' },
+    ccMC: 'Mission Control',
     cc: 'Denetim Merkezi', ccTheme: 'Tema', ccGlass: 'Cam', ccLang: 'Dil', ccSound: 'Ses', ccWall: 'Duvar kâğıdı', ccBright: 'Ekran', ccLock: 'Ekranı Kilitle', ccOn: 'Açık', ccOff: 'Kapalı',
     walls: { default: 'Varsayılan', aurora: 'Aurora', sunset: 'Gün batımı', ocean: 'Okyanus' },
     lock: { hint: 'Girmek için tıkla veya bir tuşa bas', hintTouch: 'Girmek için dokun' },
@@ -146,15 +157,15 @@ const APP = {
     photos: { all: 'Tümü', open: 'Aç' },
     term: {
       welcome: 'Berkay Vuran, sürüm 1.0. Neler yapabileceğini görmek için "help" yaz.', prompt: 'misafir@berkayvuran', unknown: 'komut bulunamadı:', tryHelp: 'Komut listesi için "help" yaz.',
-      help: [['help', 'bu listeyi göster'], ['about', 'ben kimim'], ['experience', 'nerelerde çalıştım'], ['education', 'nerede okudum'], ['projects', 'açabileceğin AI ürünleri'], ['blog', 'son yazılar'], ['skills', 'ne yaparım'], ['contact', 'telefon, e-posta ve bağlantılar'], ['open <ad>', 'pencere aç: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <ad>', 'dark, light, matrix veya zap'], ['wallpaper <ad>', 'default, aurora, sunset veya ocean'], ['lang <en|tr>', 'dili değiştir'], ['lock', 'kilit ekranını göster'], ['ls / cat <dosya>', 'etrafa bak'], ['neofetch', 'sistem bilgisi'], ['date, echo, history, clear, exit', 'bildiklerin']],
+      help: [['help', 'bu listeyi göster'], ['about', 'ben kimim'], ['experience', 'nerelerde çalıştım'], ['education', 'nerede okudum'], ['projects', 'açabileceğin AI ürünleri'], ['blog', 'son yazılar'], ['skills', 'ne yaparım'], ['contact', 'telefon, e-posta ve bağlantılar'], ['open <ad>', 'pencere aç: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <ad>', 'dark, light, matrix veya zap'], ['wallpaper <ad>', 'default, aurora, sunset veya ocean'], ['lang <en|tr>', 'dili değiştir'], ['lock', 'kilit ekranını göster'], ['ls / cat <dosya>', 'etrafa bak'], ['neofetch', 'sistem bilgisi'], ['snake', 'küçük bir oyun'], ['cowsay <metin>', 'konuşan inek'], ['matrix', 'beyaz tavşanı takip et'], ['date, echo, history, clear, exit', 'bildiklerin']],
       files: ['about.txt', 'contact.txt', 'cv.txt', 'projects/', 'blog/'], noFile: 'Böyle bir dosya yok:', usage: 'kullanım:', opened: 'açılıyor', themeSet: 'tema ayarlandı:', wallSet: 'duvar kâğıdı ayarlandı:', langSwitch: 'dil değiştiriliyor…', badTheme: 'bilinmeyen tema. Dene: dark, light, matrix, zap', badWall: 'bilinmeyen duvar kâğıdı. Dene: default, aurora, sunset, ocean', badOpen: 'bilinmeyen pencere. Dene: about, cv, references, showcase, blog, builder, notes, photos, mail',
-      sudo: ['[sudo] misafir için parola: ********', 'Erişim verildi. İşe alım hattı açıldı.', 'Posta uygulaması açılıyor, merhaba de: berkaypsy@gmail.com.'], root: 'Güzel deneme. Bu makine çok kibar ama o kadar da değil.', hello: 'Merhaba! Burada olman çok güzel.', exit: 'Terminal kapatılıyor…',
+      sudo: ['[sudo] misafir için parola: ********', 'Erişim verildi. İşe alım hattı açıldı.', 'Posta uygulaması açılıyor, merhaba de: berkaypsy@gmail.com.'], root: 'Güzel deneme. Bu makine çok kibar ama o kadar da değil.', hello: 'Merhaba! Burada olman çok güzel.', matrixMsg: 'Uyan, Neo…', snakeHint: 'Hareket için ok tuşları ya da WASD, çıkmak için q. Dokunmatikte kaydır.', exit: 'Terminal kapatılıyor…',
       neofetch: ['Berkay Vuran', 'İS', 'Ürün Lideri 1.0', 'Rol', 'Ürün lideri ve üretici', 'Odak', 'AI, ML, veri ve gerçek iş akışları', 'Kabuk', 'berkayvuran.com', 'Tema']
     }
   }
 };
-const VAPPS = ['terminal', 'notes', 'photos'];
-const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : 'mailto:berkaypsy@gmail.com';
+const VAPPS = ['terminal', 'notes', 'photos', 'finder', 'ask'];
+const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : id === 'finder' ? (lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf') : id === 'ask' ? url(lang, 'about') : 'mailto:berkaypsy@gmail.com';
 const vIcon = (id, lang, cls = 'icon') => `<a class="${cls} c-${id}" href="${esc(vFallback(id, lang))}" data-vapp="${id}"><span class="tile">${tile(id)}</span><span class="lbl">${esc(APP[lang].names[id])}</span></a>`;
 
 /* ------------------------------------------------------------------ parsers */
@@ -282,7 +293,11 @@ function sidebar(lang, entries, defaultId) {
 
 
 const PHONE = { tel: '+905424239930', show: '+90 542 423 99 30' };
-const contactCard = (lang, cls = '') => { const u = UI[lang]; return `<div class="contact ${cls}"><a class="call-btn" href="tel:${PHONE.tel}"><span class="cb-ic">${tile('phone')}</span><span class="cb-t"><small>${esc(u.callMe)}</small><b>${PHONE.show}</b></span></a><a class="mail-btn" href="mailto:berkaypsy@gmail.com"><span class="cb-ic">${tile('mail')}</span><span class="cb-t"><small>${esc(u.mailMe)}</small><b>berkaypsy@gmail.com</b></span></a></div>`; };
+const VCARD = (() => {
+  const photo = fs.readFileSync(new URL('./src/vcard-photo.jpg', import.meta.url)).toString('base64').match(/.{1,74}/g).map((l, i) => (i ? ' ' : '') + l).join('\r\n');
+  return ['BEGIN:VCARD', 'VERSION:3.0', 'N:Vuran;Berkay;;;', 'FN:Berkay Vuran', 'TITLE:Product Leader & Builder', `TEL;TYPE=CELL,VOICE:${PHONE.tel}`, 'EMAIL;TYPE=INTERNET,PREF:berkaypsy@gmail.com', `URL:${ORIGIN}`, 'URL:https://www.linkedin.com/in/berkayvuran', 'URL:https://github.com/berkayvuran', 'PHOTO;ENCODING=b;TYPE=JPEG:' + photo, 'END:VCARD', ''].join('\r\n');
+})();
+const contactCard = (lang, cls = '') => { const u = UI[lang]; return `<div class="contact ${cls}"><a class="call-btn" href="tel:${PHONE.tel}"><span class="cb-ic">${tile('phone')}</span><span class="cb-t"><small>${esc(u.callMe)}</small><b>${PHONE.show}</b></span></a><a class="mail-btn" href="mailto:berkaypsy@gmail.com"><span class="cb-ic">${tile('mail')}</span><span class="cb-t"><small>${esc(u.mailMe)}</small><b>berkaypsy@gmail.com</b></span></a><a class="vc-btn" href="${BASE}/berkay-vuran.vcf" download="berkay-vuran.vcf">${svg('addc')}<span>${esc(u.addContact)}</span></a></div>`; };
 
 function winAbout(lang) {
   const d = parseAbout(lang);
@@ -444,6 +459,8 @@ function homeWidgets(lang, blog, builder) {
         <li><a href="${url(lang, 'showcase')}" data-app="showcase"><b>${sc.items.length}</b><span>${esc(NAV[lang].showcase)}</span></a></li></ul></div>
       <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase" data-certs="${esc(JSON.stringify(certItems.map(c => ({ t: c.title, i: src(c.img.replace('/portfolio/', '/portfolio/t/')) }))))}"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 6).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
       <a class="widget w-quote w-extra" href="${url(lang, 'references')}" data-app="references" data-quotes="${esc(JSON.stringify(quotes))}"><h2>${esc(u.says)}</h2><blockquote>“${esc(cut(pick.plain, 190))}”</blockquote><span class="w-by"><span class="w-av">${avatarHtml(pick.name, pick.avatar, 34)}</span><span><b>${esc(pick.name)}</b><i>${esc(pick.role)}</i></span></span></a>
+      <section class="widget w-weather w-extra" data-weather hidden aria-label="Weather"><span class="wx-e" aria-hidden="true"></span><span class="wx-t"><b></b><small></small></span></section>
+      <section class="widget w-sticky w-extra"><h2>${esc(u.sticky)}</h2><textarea rows="5" maxlength="1200" aria-label="${esc(u.sticky)}" placeholder="${esc(u.stickyPh)}"></textarea></section>
   </aside>`;
 }
 
@@ -528,11 +545,50 @@ function page(lang, slug) {
 /* ------------------------------------------------------------------ write */
 function write(rel, content) { const f = path.join(OUT, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, content); }
 
+
+const fileSize = rel => { try { const b = fs.statSync(path.join(ROOT, rel)).size; return b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; } catch { return ''; } };
+function finderFiles(lang) {
+  const tr = lang === 'tr';
+  const f = (n, rel, k, folder, dl) => ({ n, u: '/' + rel, k, f: folder, sz: fileSize(rel), dl: dl ? 1 : 0 });
+  return [
+    f(tr ? 'Özgeçmiş (TR).pdf' : 'Resume (EN).pdf', tr ? 'assets/appendices/berkay-vuran-ozgecmis.pdf' : 'assets/appendices/berkay-vuran-resume.pdf', 'pdf', 'documents'),
+    f(tr ? 'Resume (EN).pdf' : 'Özgeçmiş (TR).pdf', tr ? 'assets/appendices/berkay-vuran-resume.pdf' : 'assets/appendices/berkay-vuran-ozgecmis.pdf', 'pdf', 'documents'),
+    { n: 'Berkay Vuran.vcf', u: BASE + '/berkay-vuran.vcf', k: 'vcf', f: 'documents', sz: '13 KB', dl: 1 },
+    f('PMP.pdf', 'assets/appendices/pmp.pdf', 'pdf', 'certificates'),
+    f(tr ? 'PMI Üyelik.pdf' : 'PMI Membership.pdf', 'assets/appendices/pmi-member-certificate.pdf', 'pdf', 'certificates'),
+    f(tr ? 'Profil fotoğrafı.webp' : 'Profile photo.webp', 'assets/images/avatars/my-avatar-336.webp', 'img', 'pictures', 1),
+    { n: tr ? 'Sosyal önizleme.png' : 'Social preview.png', u: BASE + '/og-image.png', k: 'img', f: 'pictures', sz: fileSize('_build/src/og-image.png'), dl: 1 }
+  ];
+}
+/* Ask: answers come only from data already on the site (no model, no network) */
+function kbData(lang) {
+  const tr = lang === 'tr', cv = parseCv(lang), exp = cv[0].items, edu = (cv[1] || { items: [] }).items, blog = parseBlog(lang), b = parseBuilder(lang), sc = parseShowcase(lang), refs = parseRefs(lang);
+  const certs = sc.items.filter(i => i.cat === 'certifications'), refTotal = refs.reduce((n, g) => n + g.items.length, 0), now = exp[0];
+  const L = (t, u, ext) => ({ t, u, e: ext ? 1 : 0 });
+  const win = id => L(NAV[lang][id], url(lang, id));
+  const line = i => `${i.date}: ${i.role}${i.org ? ' @ ' + i.org : ''}`;
+  return [
+    { k: 'who about berkay introduce tell me kim kimdir hakkinda tanit anlat', a: seo(lang, '', {}).description, l: [win('about')] },
+    { k: 'now current currently role job position doing today su an simdi gorev pozisyon calisiyor ne yapiyor', a: `${now.role}${now.org ? ' @ ' + now.org : ''}${now.date ? ' (' + now.date + ')' : ''}.`, l: [win('cv')] },
+    { k: 'experience work worked companies career history employer deneyim calis sirket kariyer nerelerde isyeri', a: exp.slice(0, 6).map(line).join('\n'), l: [win('cv')] },
+    { k: 'education school university degree studied study okul universite egitim mezun okudu', a: edu.length ? edu.map(line).join('\n') : (tr ? 'Eğitim bilgileri CV penceresinde.' : 'Education details are in the CV window.'), l: [win('cv')] },
+    { k: 'contact phone call number email mail reach message iletisim telefon numara ara eposta ulas yaz', a: `${PHONE.show}\nberkaypsy@gmail.com`, l: [L(tr ? 'Ara' : 'Call', 'tel:' + PHONE.tel), { t: tr ? 'Mesaj yaz' : 'Write a message', u: '#mail', e: 0 }] },
+    { k: 'linkedin github social profile sosyal profil', a: 'LinkedIn: linkedin.com/in/berkayvuran\nGitHub: github.com/berkayvuran', l: [L('LinkedIn', LINKS[0].href, 1), L('GitHub', LINKS[1].href, 1)] },
+    { k: 'projects products builder apps built made tools games urun proje uygulama yaptigi insa arac oyun', a: (tr ? `${b.cards.length} canlı ürün: ` : `${b.cards.length} live products: `) + b.cards.slice(0, 5).map(c => c.name).join(', ') + '…', l: [win('builder')] },
+    { k: 'blog writing articles posts write read yazi makale yazdi yazar okumak', a: blog.slice(0, 3).map(p => `${fmtDate(p.date, lang)}: ${p.title}`).join('\n'), l: [win('blog')] },
+    { k: 'certificates certification certified pmp scrum sertifika belge sertifikali', a: (tr ? `${certs.length} sertifika, ör. ` : `${certs.length} certificates, e.g. `) + certs.slice(0, 4).map(c => c.title).join(', ') + '.', l: [win('showcase')] },
+    { k: 'references testimonials recommend feedback colleagues referans tavsiye yorum meslektas', a: tr ? `${refs.length} kurumdan ${refTotal} referans.` : `${refTotal} references from ${refs.length} organizations.`, l: [win('references')] },
+    { k: 'hire available availability freelance collaborate consult consulting work with ise al musait calisma isbirligi danismanlik teklif', a: tr ? 'En hızlısı doğrudan yazmak ya da aramak.' : 'The quickest way is to write or call directly.', l: [{ t: tr ? 'Mesaj yaz' : 'Write a message', u: '#mail', e: 0 }, L(tr ? 'Ara' : 'Call', 'tel:' + PHONE.tel)] },
+    { k: 'cv resume pdf download ozgecmis indir', a: tr ? 'CV hem pencerede hem PDF olarak.' : 'The CV is in a window and as a PDF.', l: [win('cv'), L('PDF', tr ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf', 1)] },
+    { k: 'site website how built technology made this nasil yapildi teknoloji bu site', a: tr ? 'Bu site Node ile üretilen statik sayfalardan oluşuyor; çerçeve yok, sade JavaScript ve CSS kullanıyor.' : 'This site is static pages generated with Node, with plain JavaScript and CSS and no framework.', l: [] },
+    { k: 'hi hello hey merhaba selam naber', a: tr ? 'Merhaba! Berkay hakkında ne öğrenmek istersin?' : 'Hello! What would you like to know about Berkay?', l: [] }
+  ];
+}
 function appsData(lang) {
   const a = APP[lang], cv = parseCv(lang), blog = parseBlog(lang), b = parseBuilder(lang), sc = parseShowcase(lang);
   const im = x => fixUrls(`src="${x}"`).slice(5, -1);
   return {
-    ui: { ...a, back: UI[lang].back, close: UI[lang].close, min: UI[lang].min, zoom: UI[lang].zoom, home: url(lang, ''), other: url(lang === 'en' ? 'tr' : 'en', ''), otherShort: UI[lang].langShort, lang },
+    ui: { ...a, addContact: UI[lang].addContact, back: UI[lang].back, close: UI[lang].close, min: UI[lang].min, zoom: UI[lang].zoom, home: url(lang, ''), other: url(lang === 'en' ? 'tr' : 'en', ''), otherShort: UI[lang].langShort, lang },
     form: FORM_URL,
     contact: { tel: PHONE.tel, show: PHONE.show, mail: 'berkaypsy@gmail.com', linkedin: LINKS[0].href, github: LINKS[1].href, site: ORIGIN },
     about: seo(lang, '', {}).description,
@@ -541,7 +597,9 @@ function appsData(lang) {
     projects: b.cards.map(c => ({ n: c.name, d: c.desc, u: c.href })),
     posts: blog.map(p => ({ t: p.title, c: p.cat, d: fmtDate(p.date, lang), e: p.excerpt, u: p.href, i: im(p.img) })),
     photos: { cats: sc.cats.map(c => ({ id: c.id, l: c.label })), items: sc.items.map(it => ({ t: it.title, c: it.cat.replace(/\s+/g, '-'), cl: it.catLabel, u: it.href, i: im(it.img) })) },
-    sections: SLUGS.map(id => ({ id, n: NAV[lang][id], u: url(lang, id) }))
+    sections: SLUGS.map(id => ({ id, n: NAV[lang][id], u: url(lang, id) })),
+    files: finderFiles(lang),
+    kb: kbData(lang)
   };
 }
 const written = [];
@@ -573,6 +631,7 @@ for (const f of ['icon-192.png', 'icon-512.png', 'apple-touch-icon.png']) { fs.m
 if (fs.existsSync(new URL('./src/og-image.png', import.meta.url))) fs.copyFileSync(new URL('./src/og-image.png', import.meta.url), path.join(OUT, 'og-image.png'));
 fs.copyFileSync(new URL('./src/desk.css', import.meta.url), path.join(OUT, 'desk.css'));
 fs.copyFileSync(new URL('./src/desk.js', import.meta.url), path.join(OUT, 'desk.js'));
+write('berkay-vuran.vcf', VCARD);
 fs.copyFileSync(new URL('./src/extras.css', import.meta.url), path.join(OUT, 'extras.css'));
 fs.copyFileSync(new URL('./src/extras.js', import.meta.url), path.join(OUT, 'extras.js'));
 if (BASE === '') write('sw.js', fs.readFileSync(new URL('./src/sw.js', import.meta.url), 'utf8').replace('__VER__', VER));
@@ -585,4 +644,23 @@ ${written.map(([lang, slug]) => `  <url><loc>${abs(lang, slug)}</loc><lastmod>${
 `;
 write('sitemap.xml', sitemap);
 if (BASE === '') write('robots.txt', `User-agent: *\nDisallow: /dashboard-parameters/\n\nSitemap: ${ORIGIN}/sitemap.xml\n`);
+
+/* 404 page (GitHub Pages serves /404.html for unknown URLs): a desktop-style "file not found" */
+if (BASE === '') {
+  const nf = l => {
+    const tr = l === 'tr', u = UI[l];
+    const t = tr ? { title: 'Dosya bulunamadı', cmd: 'cat', err: 'Böyle bir dosya ya da klasör yok.', hint: 'Adres yanlış yazılmış ya da bu sayfa taşınmış olabilir. Şunlardan birine gidebilirsin:', home: 'Ana ekran' } : { title: 'File not found', cmd: 'cat', err: 'No such file or directory.', hint: 'The address may be mistyped or the page may have moved. Try one of these:', home: 'Home' };
+    return `<div class="nf-l" lang="${l}"${tr ? ' hidden' : ''}><h1>${t.title}</h1><p class="nf-cmd"><span class="tm-p">guest@berkayvuran ~ %</span> ${t.cmd} <b class="nf-path"></b></p><p class="nf-err">cat: <span class="nf-path"></span>: ${t.err}</p><p>${t.hint}</p><div class="nf-links"><a class="btn" href="${tr ? '/tr/' : '/'}">${t.home}</a>${['about', 'cv', 'showcase', 'blog', 'builder'].map(id => `<a class="nf-a" href="${url(l, id)}">${esc(NAV[l][id])}</a>`).join('')}</div></div>`;
+  };
+  write('404.html', `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>404 | Berkay Vuran</title><meta name="robots" content="noindex, nofollow"><meta name="theme-color" content="#0b0f17"><link rel="icon" href="/assets/images/favicon.ico">
+<script>try{var T=['dark','light','matrix','high-contrast'],t=localStorage.getItem('theme');if(T.indexOf(t)<0)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var w=localStorage.getItem('wp');if(/^(aurora|sunset|ocean)$/.test(w))document.documentElement.setAttribute('data-wp',w)}catch(e){}</script>
+<link rel="stylesheet" href="/desk.css?v=${VER}"><link rel="stylesheet" href="/extras.css?v=${VER}"></head>
+<body class="desk page-404"><div class="wallpaper" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="none"><path d="M0 520C300 440 520 640 820 640S1280 440 1440 500"/><path d="M0 640C320 560 560 780 860 780S1300 580 1440 620"/></svg></div>
+<header class="menubar"><div class="mb-left"><a class="mb-logo" href="/" aria-label="Home">BV</a><strong class="mb-app">Terminal</strong></div><div class="mb-right"><time class="mb-clock" id="clock"></time></div></header>
+<main class="desktop nf"><section class="window nf-win" aria-labelledby="nf-h"><header class="titlebar" style="cursor:default"><div class="dots"><a class="dot r" href="/" aria-label="Home"></a><span class="dot y"></span><span class="dot g"></span></div><span class="nf-title" id="nf-h">Terminal</span></header><div class="nf-body">${nf('en')}${nf('tr')}</div></section></main>
+<script>(function(){var p=location.pathname,tr=p.indexOf('/tr/')===0||p==='/tr';document.querySelectorAll('.nf-l').forEach(function(n){n.hidden=(n.lang==='tr')!==tr});document.documentElement.lang=tr?'tr':'en';document.querySelectorAll('.nf-path').forEach(function(n){n.textContent=p});function t(){var e=document.getElementById('clock');if(e)e.textContent=new Date().toLocaleTimeString(tr?'tr-TR':'en-GB',{hour:'2-digit',minute:'2-digit'})}t();setInterval(t,20000)})();</script>
+</body></html>
+`);
+}
 console.log(`built ${written.length} pages -> ${OUT} (base="${BASE}", ${INDEXABLE ? 'indexable' : 'noindex'})`);

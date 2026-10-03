@@ -247,14 +247,25 @@
         bar.addEventListener('pointermove', mv); bar.addEventListener('pointerup', up); bar.addEventListener('pointercancel', up);
       });
     }
-    var rz = document.createElement('div'); rz.className = 'rz'; rz.setAttribute('aria-hidden', 'true'); win.appendChild(rz);
-    rz.addEventListener('pointerdown', function (e) {
-      if (!wide.matches || e.button !== 0 || win.classList.contains('is-max')) return;
-      e.preventDefault(); var rc = pin(), sx = e.clientX, sy = e.clientY;
-      rz.setPointerCapture(e.pointerId);
-      function mv(ev) { win.style.width = Math.max(380, rc.width + ev.clientX - sx) + 'px'; win.style.height = Math.max(280, rc.height + ev.clientY - sy) + 'px'; }
-      function up(ev) { try { rz.releasePointerCapture(ev.pointerId); } catch (er) {} rz.removeEventListener('pointermove', mv); rz.removeEventListener('pointerup', up); rz.removeEventListener('pointercancel', up); }
-      rz.addEventListener('pointermove', mv); rz.addEventListener('pointerup', up); rz.addEventListener('pointercancel', up);
+    /* resize from every edge and corner (desktop); the SE corner also draws the grip */
+    ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].forEach(function (dir) {
+      var h = document.createElement('div'); h.className = 'rz rz-' + dir; h.setAttribute('aria-hidden', 'true'); win.appendChild(h);
+      h.addEventListener('pointerdown', function (e) {
+        if (!wide.matches || e.button !== 0 || win.classList.contains('is-max')) return;
+        e.preventDefault(); e.stopPropagation();
+        var rc = pin(), sx = e.clientX, sy = e.clientY, minW = 380, minH = 280, top0 = Math.max(rc.top, 32);
+        h.setPointerCapture(e.pointerId);
+        function mv(ev) {
+          var dx = ev.clientX - sx, dy = ev.clientY - sy, l = rc.left, t = rc.top, w = rc.width, hh = rc.height;
+          if (dir.indexOf('e') > -1) w = Math.max(minW, rc.width + dx);
+          if (dir.indexOf('s') > -1) hh = Math.max(minH, rc.height + dy);
+          if (dir.indexOf('w') > -1) { w = Math.max(minW, rc.width - dx); l = rc.left + rc.width - w; }
+          if (dir.indexOf('n') > -1) { hh = Math.max(minH, rc.height - dy); t = rc.top + rc.height - hh; if (t < 32) { hh -= 32 - t; t = 32; } }
+          win.style.left = l + 'px'; win.style.top = t + 'px'; win.style.width = w + 'px'; win.style.height = hh + 'px';
+        }
+        function up(ev) { try { h.releasePointerCapture(ev.pointerId); } catch (er) {} h.removeEventListener('pointermove', mv); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up); }
+        h.addEventListener('pointermove', mv); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+      });
     });
   }
   function register(slug, w) { wins[slug] = w; initWindow(w, slug); }
@@ -300,6 +311,9 @@
     if (s === '') showDesktop(push); else openApp(s, push);
   }
 
+  Desk.list = function () { return Object.keys(wins).map(function (k) { return { slug: k, title: labelOf(k), z: parseInt(wins[k].style.zIndex || 0, 10), min: wins[k].classList.contains('is-min'), active: k === active }; }); };
+  Desk.focus = function (slug) { focusWin(slug, true); };
+  Desk.minimize = minimizeWin; Desk.showDesktop = function () { showDesktop(true); };
   Desk.go = go; Desk.setTheme = function (id) { paintTheme(id); try { localStorage.setItem('theme', id); } catch (er) {} };
   Desk.slugOf = slugOf; Desk.active = function () { return active; };
 
