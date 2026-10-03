@@ -204,7 +204,7 @@ function sidebar(lang, entries, defaultId) {
   // entries: [{id,label,count}]
   return `<aside class="win-side" aria-label="${esc(UI[lang].folders)}">
     <p class="side-h">${esc(UI[lang].folders)}</p>
-    <ul class="side-list" role="list">${entries.map(e => `<li><a class="side-item" href="#${esc(e.id)}" data-filter="${esc(e.id)}"${e.id === defaultId ? ' data-default aria-current="true"' : ''}>${svg('folder', 'si')}<span class="sl">${esc(e.label)}</span><span class="sc">${e.count}</span></a></li>`).join('')}</ul>
+    <ul class="side-list" role="list">${entries.map((e, i) => `<li${entries[0].id === 'all' && i > 0 ? ' class="side-sub"' : ''}><a class="side-item" href="#${esc(e.id)}" data-filter="${esc(e.id)}"${e.id === defaultId ? ' data-default aria-current="true"' : ''}>${svg('folder', 'si')}<span class="sl">${esc(e.label)}</span><span class="sc">${e.count}</span></a></li>`).join('')}</ul>
   </aside>`;
 }
 
@@ -334,11 +334,11 @@ function extLink(l, lang) {
 
 function windowHtml(lang, slug, w) {
   const u = UI[lang];
-  return `<section class="window${w.side ? '' : ' no-side'}" id="win" data-slug="${slug}" aria-labelledby="win-title">
+  return `<section class="window${w.side ? '' : ' no-side'}" data-slug="${slug}" aria-labelledby="win-title-${slug}">
   <header class="titlebar">
     <a class="back" href="${url(lang, '')}" data-app="home">${svg('back')}<span>${esc(u.back)}</span></a>
     <div class="dots"><a class="dot r" href="${url(lang, '')}" data-app="home" aria-label="${esc(u.close)}"></a><button class="dot y" type="button" aria-label="${esc(u.min)}"></button><button class="dot g" type="button" aria-label="${esc(u.zoom)}"></button></div>
-    <h1 id="win-title">${esc(NAV[lang][slug])}</h1>
+    <h1 id="win-title-${slug}">${esc(NAV[lang][slug])}</h1>
   </header>
   <div class="win-body">${w.side}<div class="win-main">${w.body}</div></div>
 </section>`;
