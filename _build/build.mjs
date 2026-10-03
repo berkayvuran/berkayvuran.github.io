@@ -434,7 +434,7 @@ function page(lang, slug) {
     <img src="/assets/images/avatars/my-avatar-160.webp" srcset="/assets/images/avatars/my-avatar-160.webp 160w, /assets/images/avatars/my-avatar-336.webp 336w" sizes="(min-width:1100px) 168px, 96px" alt="Berkay Vuran" width="168" height="168" fetchpriority="high">
     ${slug ? '<p class="hello-name">Berkay Vuran</p>' : '<h1 class="hello-name">Berkay Vuran</h1>'}
     <p class="hello-sub" data-titles="${esc(JSON.stringify(TITLES[lang]))}"><span class="sr-only">${esc(u.tagline)}</span><span class="tw" aria-hidden="true">${esc(u.tagline)}</span><span class="cursor" aria-hidden="true">|</span></p>
-    ${slug ? '' : `<p class="hello-bio">${esc(seo(lang, '', {}).description)}</p>`}
+    ${false ? '' : `<p class="hello-bio">${esc(seo(lang, '', {}).description)}</p>`}
   </div>
   ${homeWidgets(lang, blog, builder)}
   <nav class="icons" aria-label="${esc(u.menuLabel)}">${SLUGS.map(id => iconLink(id, lang)).join('')}</nav>
