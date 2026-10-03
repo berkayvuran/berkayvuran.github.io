@@ -55,8 +55,8 @@ const text = ($, el, lang) => L($, el, lang).text().replace(/\s+/g, ' ').trim();
 const inner = ($, el, lang) => fixUrls((L($, el, lang).html() || '').trim());
 
 const UI = {
-  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Theme', glass: 'Glass effect', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV', search: 'Search', searchPh: 'Search sections, writing, projects, CV…', searchEmpty: 'No results', searchSections: 'Sections', searchHint: 'to open', goTo: 'Go to' },
-  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Tema', glass: 'Cam efekti', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç', search: 'Ara', searchPh: 'Bölümlerde, yazılarda, projelerde, CV’de ara…', searchEmpty: 'Sonuç yok', searchSections: 'Bölümler', searchHint: 'açmak için', goTo: 'Git' }
+  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Theme', glass: 'Glass effect', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV', contact: 'Contact', calendar: 'Calendar', today: 'Today', callMe: 'Call me', mailMe: 'Email me', search: 'Search', searchPh: 'Search sections, writing, projects, CV…', searchEmpty: 'No results', searchSections: 'Sections', searchHint: 'to open', goTo: 'Go to' },
+  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Tema', glass: 'Cam efekti', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç', contact: 'İletişim', calendar: 'Takvim', today: 'Bugün', callMe: 'Beni ara', mailMe: 'E-posta gönder', search: 'Ara', searchPh: 'Bölümlerde, yazılarda, projelerde, CV’de ara…', searchEmpty: 'Sonuç yok', searchSections: 'Bölümler', searchHint: 'açmak için', goTo: 'Git' }
 };
 const NAV = {
   en: { about: 'About', cv: 'CV', references: 'References', showcase: 'Showcase', blog: 'Blog', builder: 'Builder' },
@@ -81,9 +81,24 @@ const ICONS = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
 };
 const svg = (n, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[n]}</svg>`;
+
+/* Filled, SF Symbols-style glyphs for the app tiles (Apple's own symbols cannot be redistributed on the web) */
+const TILE = {
+  about: '<circle cx="12" cy="7.4" r="4.3"/><path d="M3.7 20.3c0-4.4 3.7-7.1 8.3-7.1s8.3 2.7 8.3 7.1c0 .9-.6 1.5-1.5 1.5H5.2c-.9 0-1.5-.6-1.5-1.5z"/>',
+  cv: '<path fill-rule="evenodd" d="M7 2.5h6.9l5.6 5.6V19a2.5 2.5 0 0 1-2.5 2.5H7A2.5 2.5 0 0 1 4.5 19V5A2.5 2.5 0 0 1 7 2.5zM7.8 12.2v1.6h8.4v-1.6zm0 3.5v1.6h8.4v-1.6zm0-7v1.6h4.4V8.7z"/>',
+  references: '<path fill-rule="evenodd" d="M12 3C6.8 3 2.8 6.5 2.8 10.9c0 2.3 1.1 4.3 2.9 5.7-.1 1.2-.6 2.4-1.6 3.4-.3.3-.1.9.4.9 2 0 3.7-.8 5-1.8.8.2 1.6.3 2.5.3 5.2 0 9.2-3.5 9.2-8.5S17.2 3 12 3zM8.3 9.1h2.7v2.7c0 1.4-.9 2.2-2.4 2.4l-.3-.9c.8-.2 1-.6 1-1.1H8.3zm4.6 0h2.7v2.7c0 1.4-.9 2.2-2.4 2.4l-.3-.9c.8-.2 1-.6 1-1.1h-1z"/>',
+  showcase: '<rect x="3.5" y="3.5" width="7.4" height="7.4" rx="2.2"/><rect x="13.1" y="3.5" width="7.4" height="7.4" rx="2.2"/><rect x="3.5" y="13.1" width="7.4" height="7.4" rx="2.2"/><rect x="13.1" y="13.1" width="7.4" height="7.4" rx="2.2"/>',
+  blog: '<path d="M16.6 3.1l4.3 4.3-1.9 1.9-4.3-4.3z"/><path d="M13.3 6.4l4.3 4.3-7.9 7.9-5.2.9.9-5.2z"/><path d="M14 20.2h6.4a1.1 1.1 0 0 0 0-2.2H14a1.1 1.1 0 0 0 0 2.2z"/>',
+  builder: '<path d="M9.6 3l2 5.4L17 10.4l-5.4 2L9.6 18 7.6 12.4 2.2 10.4l5.4-2z"/><path d="M18 2.5l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/><path d="M18 15.2l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z"/>',
+  phone: '<path d="M6.5 2.9c.6-.6 1.5-.5 2 .1l2 2.6c.4.5.4 1.2 0 1.7l-1.2 1.5c1 2 2.6 3.6 4.6 4.7l1.6-1.1c.6-.4 1.3-.3 1.8.1l2.5 2.1c.6.5.7 1.4.1 2-1.4 1.6-3.5 2.3-5.5 1.7-5-1.5-8.9-5.4-10.3-10.4-.5-2 .1-4 1.5-5.3z"/>',
+  mail: '<path fill-rule="evenodd" d="M5.2 4.5h13.6a2.7 2.7 0 0 1 2.7 2.7v9.6a2.7 2.7 0 0 1-2.7 2.7H5.2a2.7 2.7 0 0 1-2.7-2.7V7.2a2.7 2.7 0 0 1 2.7-2.7zM4.6 7.4l7.4 5.6 7.4-5.6v1.9L12 15 4.6 9.3z"/>',
+  linkedin: '<path d="M4.6 9.4h3v10.2h-3zM6.1 4.4a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6zM10.4 9.4h2.9v1.4c.5-.9 1.7-1.6 3.2-1.6 3.1 0 3.6 2 3.6 4.7v5.7h-3v-5.1c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5.2h-3z"/>'
+};
+const tile = n => TILE[n] ? `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#fff" stroke="none">${TILE[n]}</svg>` : svg(n);
 const LINKS = [
   { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/berkayvuran' },
   { id: 'github', label: 'GitHub', href: 'https://github.com/berkayvuran' },
+  { id: 'phone', label: { en: 'Call', tr: 'Ara' }, href: 'tel:+905424239930' },
   { id: 'mail', label: { en: 'Email', tr: 'E-posta' }, href: 'mailto:berkaypsy@gmail.com' }
 ];
 
@@ -210,11 +225,16 @@ function sidebar(lang, entries, defaultId) {
   </aside>`;
 }
 
+
+const PHONE = { tel: '+905424239930', show: '+90 542 423 99 30' };
+const contactCard = (lang, cls = '') => { const u = UI[lang]; return `<div class="contact ${cls}"><a class="call-btn" href="tel:${PHONE.tel}"><span class="cb-ic">${tile('phone')}</span><span class="cb-t"><small>${esc(u.callMe)}</small><b>${PHONE.show}</b></span></a><a class="mail-btn" href="mailto:berkaypsy@gmail.com"><span class="cb-ic">${tile('mail')}</span><span class="cb-t"><small>${esc(u.mailMe)}</small><b>berkaypsy@gmail.com</b></span></a></div>`; };
+
 function winAbout(lang) {
   const d = parseAbout(lang);
   return {
     side: '',
     body: `<article class="doc">
+      ${contactCard(lang, 'in-win')}
       <div class="prose">${d.body}</div>
       <h2 class="doc-h">${esc(d.heading)}</h2>
       <ul class="cards3" role="list">${d.services.map(s => `<li class="card"><img src="${esc(fixUrls('src="' + s.icon + '"').slice(5, -1))}" alt="" width="40" height="40" loading="lazy"><h3>${esc(s.title)}</h3><p>${esc(s.text)}</p></li>`).join('')}</ul>
@@ -314,7 +334,7 @@ function seo(lang, slug, data = {}) {
 }
 
 function jsonLd(lang, slug, data, s) {
-  const person = { '@type': 'Person', '@id': ORIGIN + '/#person', name: 'Berkay Vuran', url: ORIGIN + '/', image: ORIGIN + '/assets/images/avatars/my-avatar-160.webp', jobTitle: 'Conversational Intelligence PA Team Leader', worksFor: { '@type': 'Organization', name: 'SESTEK' }, address: { '@type': 'PostalAddress', addressLocality: 'Ankara', addressCountry: 'TR' }, sameAs: ['https://www.linkedin.com/in/berkayvuran', 'https://github.com/berkayvuran', 'https://twitter.com/vuranberkay', 'https://www.instagram.com/vuran.berkay/', 'https://www.facebook.com/vuranberkay', 'https://berkayvuran.medium.com/'] };
+  const person = { '@type': 'Person', '@id': ORIGIN + '/#person', name: 'Berkay Vuran', url: ORIGIN + '/', image: ORIGIN + '/assets/images/avatars/my-avatar-160.webp', telephone: '+90 542 423 99 30', jobTitle: 'Conversational Intelligence PA Team Leader', worksFor: { '@type': 'Organization', name: 'SESTEK' }, address: { '@type': 'PostalAddress', addressLocality: 'Ankara', addressCountry: 'TR' }, sameAs: ['https://www.linkedin.com/in/berkayvuran', 'https://github.com/berkayvuran', 'https://twitter.com/vuranberkay', 'https://www.instagram.com/vuran.berkay/', 'https://www.facebook.com/vuranberkay', 'https://berkayvuran.medium.com/'] };
   const crumbs = { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: UI[lang].home, item: abs(lang, '') }].concat(slug ? [{ '@type': 'ListItem', position: 2, name: NAV[lang][slug], item: abs(lang, slug) }] : []) };
   const page = { '@type': slug === 'cv' || slug === 'about' ? 'ProfilePage' : slug === 'blog' ? 'Blog' : 'CollectionPage', '@id': abs(lang, slug) + '#page', url: abs(lang, slug), name: s.title, description: s.description, inLanguage: lang, isPartOf: { '@id': ORIGIN + '/#website' }, mainEntity: { '@id': ORIGIN + '/#person' } };
   const graph = [person, { '@type': 'WebSite', '@id': ORIGIN + '/#website', url: ORIGIN + '/', name: 'Berkay Vuran', inLanguage: LANGS, publisher: { '@id': ORIGIN + '/#person' } }, page, crumbs];
@@ -326,12 +346,12 @@ function jsonLd(lang, slug, data, s) {
 
 /* ------------------------------------------------------------------ shell */
 function iconLink(id, lang, cls = 'icon') {
-  return `<a class="${cls} c-${id}" href="${url(lang, id)}" data-app="${id}"><span class="tile">${svg(id)}</span><span class="lbl">${esc(NAV[lang][id])}</span></a>`;
+  return `<a class="${cls} c-${id}" href="${url(lang, id)}" data-app="${id}"><span class="tile">${tile(id)}</span><span class="lbl">${esc(NAV[lang][id])}</span></a>`;
 }
 function extLink(l, lang) {
   const label = typeof l.label === 'string' ? l.label : l.label[lang];
   const ext = l.href.startsWith('http');
-  return `<a class="icon c-${l.id}" href="${esc(l.href)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''} aria-label="${esc(label)}${ext ? ' (' + UI[lang].external + ')' : ''}"><span class="tile">${svg(l.id)}</span><span class="lbl">${esc(label)}</span></a>`;
+  return `<a class="icon c-${l.id}" href="${esc(l.href)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''} aria-label="${esc(label)}${ext ? ' (' + UI[lang].external + ')' : ''}"><span class="tile">${tile(l.id)}</span><span class="lbl">${esc(label)}</span></a>`;
 }
 
 function windowHtml(lang, slug, w) {
@@ -358,6 +378,7 @@ function homeWidgets(lang, blog, builder) {
   const certItems = sc.items.filter(i => i.cat === 'certifications');
   const src = x => fixUrls(`src="${x}"`).slice(5, -1);
   return `<aside class="widgets" aria-label="Highlights">
+      <section class="widget w-contact"><h2>${esc(u.contact)}</h2>${contactCard(lang)}</section>
       <a class="widget w-builder" href="${url(lang, 'builder')}" data-app="builder"><span class="w-badge">Product Builder</span><b>${builder.cards.length} ${esc(u.liveProducts)} →</b><span>${esc(u.productsSub)}</span></a>
       <a class="widget w-now" href="${url(lang, 'cv')}" data-app="cv"><h2>${esc(u.now)}</h2><b>${esc(cv.role)}</b><span>${esc(cv.org)}${cv.date ? ' · ' + esc(cv.date) : ''}</span><em>${esc(u.viewCv)} →</em></a>
       <section class="widget w-posts"><h2>${esc(u.latest)}</h2><ul role="list">${blog.slice(0, 3).map(p => `<li><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.title)}</b><time datetime="${esc(p.date)}">${esc(fmtDate(p.date, lang))}</time></a></li>`).join('')}</ul></section>
@@ -427,7 +448,7 @@ function page(lang, slug) {
 <div class="wallpaper" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="none"><path d="M0 520C300 440 520 640 820 640S1280 440 1440 500"/><path d="M0 640C320 560 560 780 860 780S1300 580 1440 620"/><path d="M0 760C340 700 600 860 900 860S1320 720 1440 750"/></svg></div>
 <header class="menubar">
   <div class="mb-left"><a class="mb-logo" href="${url(lang, '')}" data-app="home" aria-label="${esc(u.home)}">BV</a><strong class="mb-app" id="mb-app">${esc(slug ? NAV[lang][slug] : 'Berkay Vuran')}</strong><nav class="mb-menu" aria-label="${esc(u.menuLabel)}">${menu}</nav></div>
-  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><div class="mb-themewrap"><button class="mb-theme" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(u.theme)}"><span class="th-e" aria-hidden="true">🌙</span><span class="th-n">${esc(THEMES[0][lang])}</span></button><ul class="theme-menu" role="menu" aria-label="${esc(u.theme)}" hidden>${THEMES.map(t => `<li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="${t.id}" data-emoji="${t.e}" data-name="${esc(t[lang])}"><span class="te" aria-hidden="true">${t.e}</span><span>${esc(t[lang])}</span><span class="tc" aria-hidden="true">✓</span></button></li>`).join('')}<li role="separator" class="tm-sep"></li><li role="none"><button type="button" role="menuitemcheckbox" aria-checked="true" data-glass-toggle><span class="te" aria-hidden="true">🪟</span><span>${esc(u.glass)}</span><span class="sw" aria-hidden="true"></span></button></li></ul></div><time class="mb-clock" id="clock"></time></div>
+  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><div class="mb-themewrap"><button class="mb-theme" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(u.theme)}"><span class="th-e" aria-hidden="true">🌙</span><span class="th-n">${esc(THEMES[0][lang])}</span></button><ul class="theme-menu" role="menu" aria-label="${esc(u.theme)}" hidden>${THEMES.map(t => `<li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="${t.id}" data-emoji="${t.e}" data-name="${esc(t[lang])}"><span class="te" aria-hidden="true">${t.e}</span><span>${esc(t[lang])}</span><span class="tc" aria-hidden="true">✓</span></button></li>`).join('')}<li role="separator" class="tm-sep"></li><li role="none"><button type="button" role="menuitemcheckbox" aria-checked="true" data-glass-toggle><span class="te" aria-hidden="true">🪟</span><span>${esc(u.glass)}</span><span class="sw" aria-hidden="true"></span></button></li></ul></div><button class="mb-clock-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="${esc(u.calendar)}" data-today="${esc(u.today)}"><time class="mb-clock" id="clock"></time></button></div>
 </header>
 <main class="desktop" id="main">
   <div class="hello">
