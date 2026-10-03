@@ -6,7 +6,7 @@
 .c-photos .tile{background:linear-gradient(160deg,#fff,#e6e8ee)}
 .c-photos .tile svg{width:68%;height:68%;fill:none;stroke:none;filter:none}
 .icon-x{display:none}
-@media (max-width:1099px){.icons .icon-x{display:block}.dock .dk-x{display:none}}
+@media (max-width:1099px),(min-width:1100px) and (hover:none){.icons .icon-x{display:block}.dock .dk-x{display:none}}
 
 /* ---------- menu bar button ---------- */
 .mb-cc{display:grid;place-items:center;width:30px;height:24px;border:0;border-radius:6px;background:none;color:var(--onwall);cursor:default}
@@ -176,13 +176,13 @@
 @media (max-width:699px){.ml-f{padding:4px 16px calc(24px + env(safe-area-inset-bottom))}.ml-to span,.ml-f label>span{width:84px}.ml-f input,.ml-f textarea{font-size:16px}}
 
 /* a window on tablet/phone is a full sheet: do not let the home icons show through the glass */
-@media (max-width:1099px){body.has-win .icons{visibility:hidden}}
+@media (max-width:1099px),(min-width:1100px) and (hover:none){body.has-win .icons{visibility:hidden}}
 
 /* third level in window sidebars: Folders > folder > item */
 .side-sub2{list-style:none;display:flex;flex-direction:column;gap:1px;margin:2px 0 6px 22px;padding-left:8px;border-left:1px solid var(--line)}
 .side-leaf{display:block;padding:4px 8px;border-radius:6px;font-size:12px;line-height:1.35;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .side-leaf::before{content:'';display:inline-block;width:5px;height:5px;margin-right:8px;vertical-align:middle;border-radius:50%;background:currentColor;opacity:.55}
-@media (min-width:1100px){.win-body{grid-template-columns:252px minmax(0,1fr)}}
+@media (min-width:1100px) and (hover:hover){.win-body{grid-template-columns:252px minmax(0,1fr)}}
 .side-leaf:hover{background:var(--accent-soft);color:var(--text)}
 .side-leaf[aria-current]{background:var(--accent-soft);color:var(--accent);font-weight:600}
 @keyframes flash{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 3px transparent}}
@@ -325,11 +325,57 @@
 
 /* ---------- home widgets: two balanced columns, scrolling inside their own area ---------- */
 .wcol{display:contents}
-@media (min-width:1100px){
+@media (min-width:1100px) and (hover:hover){
   .widgets{display:flex;flex-direction:column;gap:14px;grid-template-columns:none;left:12px;top:10px;bottom:calc(var(--dock-h) + 4px);width:314px;padding:8px 8px 34px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 30px),transparent)}
   .widgets::-webkit-scrollbar{display:none}
 }
-@media (min-width:1360px){
+@media (min-width:1360px) and (hover:hover){
   .widgets{flex-direction:row;align-items:flex-start;width:642px}
   .wcol{display:flex;flex-direction:column;gap:14px;width:304px;flex:none}
 }
+
+/* ---------- macOS traffic lights: glyphs on hover + Move & Resize popover ---------- */
+.dots .dot{position:relative;display:grid;place-items:center;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.28)}
+.dots .dot::before{content:'';width:8px;height:8px;opacity:0;background:center/contain no-repeat;transition:opacity .08s}
+.dots:hover .dot::before,.dots:focus-within .dot::before{opacity:1}
+.dot.r::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.2 1.2l5.6 5.6M6.8 1.2L1.2 6.8' stroke='%234d0000' stroke-width='1.35' stroke-linecap='round' fill='none'/%3E%3C/svg%3E")}
+.dot.y::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1 4h6' stroke='%235a3a00' stroke-width='1.4' stroke-linecap='round' fill='none'/%3E%3C/svg%3E")}
+.dot.g::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1 1h3.9L1 4.9zM7 7H3.1L7 3.1z' fill='%230b4d12'/%3E%3C/svg%3E")}
+.window.is-max .dot.g::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M4.9 1v3.9H1zM3.1 7V3.1H7z' fill='%230b4d12'/%3E%3C/svg%3E")}
+.dots .dot:active{filter:brightness(.8)}
+@media (max-width:1099px),(min-width:1100px) and (hover:none){.zm{display:none!important}}
+.zm{position:fixed;z-index:9650;min-width:178px;padding:6px;border-radius:12px;background:color-mix(in srgb,var(--bg0) 90%,transparent);color:var(--text);border:1px solid var(--glass-line);box-shadow:var(--shadow);backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6);animation:pop .1s ease-out}
+.zm::before{content:'';position:absolute;top:-6px;left:var(--cx,24px);width:12px;height:12px;margin-left:-6px;background:inherit;border-left:1px solid var(--glass-line);border-top:1px solid var(--glass-line);transform:rotate(45deg);border-radius:3px 0 0 0}
+.zm-h{padding:5px 10px 4px;font-size:11px;font-weight:600;letter-spacing:.3px;color:var(--muted)}
+.zm button{display:flex;align-items:center;gap:9px;width:100%;padding:6px 10px;border:0;border-radius:7px;background:none;color:inherit;font:inherit;font-size:13.5px;text-align:left;cursor:default}
+.zm button:hover,.zm button:focus-visible{background:var(--accent);color:var(--on-accent);outline:0}
+.zm svg{width:15px;height:15px;flex:none}
+
+/* ---------- Settings app (iOS grouped lists; the one place for appearance on touch devices) ---------- */
+.win-main.st{padding:6px 16px calc(32px + env(safe-area-inset-bottom));overflow:auto;background:var(--ios-bg,var(--win))}
+.st-g{margin:0 0 22px}
+.st-g h3{margin:0 0 7px 16px;font-size:13px;font-weight:400;text-transform:uppercase;letter-spacing:-.1px;color:var(--ios-l2,var(--muted))}
+.st-g ul{list-style:none;border-radius:12px;overflow:hidden;background:var(--ios-card,var(--win2))}
+.st-g li+li{border-top:.5px solid var(--ios-sep,var(--line))}
+.st-r{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:7px 16px;border:0;background:none;color:inherit;font:inherit;font-size:17px;text-align:left;text-decoration:none;cursor:default}
+button.st-r:active,a.st-r:active{background:var(--accent-soft)}
+.st-ic{display:grid;place-items:center;width:30px;height:30px;border-radius:7px;flex:none;color:#fff}
+.st-ic svg{width:18px;height:18px;stroke:#fff;fill:none}
+.st-sw{width:30px;height:30px;border-radius:8px;flex:none;border:.5px solid rgba(255,255,255,.2)}
+.st-l{flex:1;min-width:0}
+.st-v{color:var(--ios-l2,var(--muted));font-size:16px}
+.st-chev{color:var(--ios-l2,var(--muted));font-size:22px;line-height:1;margin-left:2px}
+.st-ck{margin-left:auto;color:var(--accent);font-size:19px;font-weight:600;opacity:0}
+[aria-checked="true"]>.st-ck{opacity:1}
+.st-switch{position:relative;flex:none;width:51px;height:31px;border:0;border-radius:99px;background:rgba(120,120,128,.4);transition:background .2s;cursor:pointer}
+.st-switch i{position:absolute;left:2px;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.3);transition:transform .2s}
+.st-switch[aria-checked="true"]{background:#34C759}
+.st-switch[aria-checked="true"] i{transform:translateX(20px)}
+.st-sl{padding-bottom:12px}
+.st-sl input{display:block;width:calc(100% - 32px);margin:2px 16px 0;accent-color:var(--accent)}
+.st-foot{text-align:center;font-size:13px;color:var(--ios-l2,var(--muted));margin-top:8px}
+
+/* lighter blur on desktop widgets and windows (many stacked backdrop filters are the main paint cost) */
+@media (hover:hover){.widget{backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}.window,.spot-panel{backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5)}}
+.w-certs,.w-quote,.w-weather{content-visibility:auto;contain-intrinsic-size:auto 200px}
+.widgets{will-change:scroll-position}
