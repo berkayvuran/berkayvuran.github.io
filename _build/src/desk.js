@@ -38,7 +38,17 @@
       themeMenu.hidden = !open; themeBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
       if (open) { var cur = themeMenu.querySelector('[aria-checked="true"]'); if (cur) cur.focus(); }
     });
+    var glassBtn = themeMenu.querySelector('[data-glass-toggle]');
+    function paintGlass() { if (glassBtn) glassBtn.setAttribute('aria-checked', document.documentElement.getAttribute('data-glass') === 'off' ? 'false' : 'true'); }
+    paintGlass();
     themeMenu.addEventListener('click', function (e) {
+      var g = e.target.closest('[data-glass-toggle]');
+      if (g) {
+        var off = document.documentElement.getAttribute('data-glass') !== 'off';
+        if (off) document.documentElement.setAttribute('data-glass', 'off'); else document.documentElement.removeAttribute('data-glass');
+        try { localStorage.setItem('glass', off ? 'off' : 'on'); } catch (er) {}
+        paintGlass(); return;
+      }
       var b = e.target.closest('[data-theme-set]'); if (!b) return;
       var id = b.getAttribute('data-theme-set');
       paintTheme(id); try { localStorage.setItem('theme', id); } catch (er) {}
