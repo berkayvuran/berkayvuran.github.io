@@ -288,7 +288,7 @@ function sidebar(lang, entries, defaultId) {
   return `<aside class="win-side" aria-label="${esc(UI[lang].folders)}">
     <p class="side-h">${esc(UI[lang].folders)}</p>
     <ul class="side-list" role="list">${entries.map((e, i) => `<li${entries[0].id === 'all' && i > 0 ? ' class="side-sub"' : ''}><a class="side-item" href="#${esc(e.id)}" data-filter="${esc(e.id)}"${e.id === defaultId ? ' data-default aria-current="true"' : ''}>${svg('folder', 'si')}<span class="sl">${esc(e.label)}</span><span class="sc">${e.count}</span></a>${e.children && e.children.length ? `<ul class="side-sub2" role="list" data-for="${esc(e.id)}">${e.children.map(c => `<li><a class="side-leaf" href="#${esc(c.id)}" data-target="${esc(c.id)}" data-parent="${esc(e.id)}" title="${esc(c.label)}">${esc(c.label)}</a></li>`).join('')}</ul>` : ''}</li>`).join('')}</ul>
-  </div></aside>`;
+  </aside>`;
 }
 
 
@@ -461,7 +461,7 @@ function homeWidgets(lang, blog, builder) {
       <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase" data-certs="${esc(JSON.stringify(certItems.map(c => ({ t: c.title, i: src(c.img.replace('/portfolio/', '/portfolio/t/')) }))))}"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 6).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
       <a class="widget w-quote w-extra" href="${url(lang, 'references')}" data-app="references" data-quotes="${esc(JSON.stringify(quotes))}"><h2>${esc(u.says)}</h2><blockquote>“${esc(cut(pick.plain, 190))}”</blockquote><span class="w-by"><span class="w-av">${avatarHtml(pick.name, pick.avatar, 34)}</span><span><b>${esc(pick.name)}</b><i>${esc(pick.role)}</i></span></span></a>
       <section class="widget w-weather w-extra" data-weather hidden aria-label="Weather"><span class="wx-e" aria-hidden="true"></span><span class="wx-t"><b></b><small></small></span></section>
-  </aside>`;
+  </div></aside>`;
 }
 
 function page(lang, slug) {
