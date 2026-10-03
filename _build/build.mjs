@@ -3,11 +3,12 @@
 //   preview : node build.mjs                      -> ../next, noindex
 //   go live : node build.mjs --base= --out=.. --index=true
 import * as cheerio from 'cheerio';
+import * as esbuild from 'esbuild';
 import fs from 'fs';
 import path from 'path';
 
 import { createHash } from 'node:crypto';
-const VER = createHash('md5').update(['desk.css', 'desk.js', 'extras.css', 'extras.js'].map(f => fs.readFileSync(new URL('./src/' + f, import.meta.url))).join('')).digest('hex').slice(0, 8);
+const VER = createHash('md5').update(['desk.css', 'desk.js', 'extras.css', 'extras.js', 'ios.css', 'ios.js'].map(f => fs.readFileSync(new URL('./src/' + f, import.meta.url))).join('')).digest('hex').slice(0, 8);
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, ...v] = a.replace(/^--/, '').split('='); return [k, v.join('=')]; }));
 const BASE = args.base ?? '/next';
 const OUT = path.resolve(args.out ?? '../next');
@@ -101,6 +102,7 @@ const TILE = {
 TILE.terminal = '<path d="M4.4 5.6 6.2 3.9 14.2 12 6.2 20.1 4.4 18.4 10.6 12z"/><rect x="14.6" y="17.4" width="5.8" height="2.3" rx="1.15"/>';
 TILE.finder = '<path d="M3 7.2A2.7 2.7 0 0 1 5.7 4.5h3.4c.5 0 1 .2 1.3.6l1 1.1c.2.2.5.3.8.3h6.1A2.7 2.7 0 0 1 21 9.2v8.1a2.7 2.7 0 0 1-2.7 2.7H5.7A2.7 2.7 0 0 1 3 17.3z"/>';
 TILE.ask = '<path fill-rule="evenodd" d="M12 3C6.9 3 2.8 6.4 2.8 10.7c0 2.3 1.2 4.3 3.1 5.7-.1 1.3-.7 2.5-1.7 3.5-.3.3-.1.8.4.8 2.2 0 3.9-.9 5.2-1.9.7.1 1.4.2 2.2.2 5.1 0 9.2-3.4 9.2-8.3S17.1 3 12 3zM7.3 10.7a1.15 1.15 0 1 0 2.3 0 1.15 1.15 0 1 0-2.3 0zm3.55 0a1.15 1.15 0 1 0 2.3 0 1.15 1.15 0 1 0-2.3 0zm3.55 0a1.15 1.15 0 1 0 2.3 0 1.15 1.15 0 1 0-2.3 0z"/>';
+TILE.settings = '<path fill-rule="evenodd" d="M10.4 2.6h3.2l.6 2.4c.5.2 1 .5 1.5.8l2.3-.8 1.6 2.8-1.8 1.6c.1.6.1 1.1 0 1.7l1.8 1.6-1.6 2.8-2.3-.8c-.5.3-1 .6-1.5.8l-.6 2.4h-3.2l-.6-2.4c-.5-.2-1-.5-1.5-.8l-2.3.8-1.6-2.8 1.8-1.6a5 5 0 0 1 0-1.7L4.4 7.8 6 5l2.3.8c.5-.3 1-.6 1.5-.8zM12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"/>';
 TILE.notes = '<path fill-rule="evenodd" d="M6.5 3.5h11A2.5 2.5 0 0 1 20 6v12a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18V6a2.5 2.5 0 0 1 2.5-2.5zM7.6 8v1.5h8.8V8zm0 3.6v1.5h8.8v-1.5zm0 3.6v1.5h5.2v-1.5z"/>';
 const PETALS = ['#FF9500', '#FFCC00', '#34C759', '#5AC8FA', '#007AFF', '#AF52DE', '#FF2D55', '#FF3B30'];
 const PHOTOS_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" stroke="none">${PETALS.map((c, i) => `<ellipse cx="12" cy="7.3" rx="2.5" ry="4.4" fill="${c}" opacity=".88" transform="rotate(${i * 45} 12 12)" style="mix-blend-mode:multiply"/>`).join('')}</svg>`;
@@ -116,8 +118,8 @@ const LINKS = [
 /* ------------------------------------------------------------------ virtual apps (Terminal, Notes, Photos, Mail) + Control Center strings */
 const APP = {
   en: {
-    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail', finder: 'Finder', ask: 'Ask' },
-    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message', finder: 'Resume, contact card and pictures to download', ask: 'Ask questions about Berkay and get answers from this site' },
+    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail', finder: 'Finder', ask: 'Ask', settings: 'Settings' },
+    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message', finder: 'Resume, contact card and pictures to download', ask: 'Ask questions about Berkay and get answers from this site', settings: 'Theme, wallpaper, language, display and sound' },
     apps: 'Apps',
     finder: { fav: 'Favorites', all: 'All Files', open: 'Open', download: 'Download', items: 'items', folders: { documents: 'Documents', pictures: 'Pictures', certificates: 'Certificates' }, empty: 'Nothing here' },
     ask: { ph: 'Ask about Berkay…', hello: 'Hi! I am a small assistant that only knows this site. Ask me about Berkay’s work, projects, writing or how to reach him.', chips: ['Who is Berkay?', 'What does he do now?', 'Show his projects', 'How can I contact him?', 'Where did he work?'], fallback: 'I do not know that one yet. I can only answer from what is on this site. The best way to ask Berkay directly is to write to him.', send: 'Send', mailCta: 'Write to Berkay', you: 'You' },
@@ -140,8 +142,8 @@ const APP = {
     }
   },
   tr: {
-    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta', finder: 'Finder', ask: 'Sor' },
-    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder', finder: 'CV, kartvizit ve indirilebilir resimler', ask: 'Berkay hakkında sor, cevabı bu siteden al' },
+    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta', finder: 'Finder', ask: 'Sor', settings: 'Ayarlar' },
+    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder', finder: 'CV, kartvizit ve indirilebilir resimler', ask: 'Berkay hakkında sor, cevabı bu siteden al', settings: 'Tema, duvar kâğıdı, dil, ekran ve ses' },
     apps: 'Uygulamalar',
     finder: { fav: 'Sık Kullanılanlar', all: 'Tüm Dosyalar', open: 'Aç', download: 'İndir', items: 'öğe', folders: { documents: 'Belgeler', pictures: 'Resimler', certificates: 'Sertifikalar' }, empty: 'Burada bir şey yok' },
     ask: { ph: 'Berkay hakkında sor…', hello: 'Merhaba! Ben yalnızca bu siteyi bilen küçük bir asistanım. Berkay’ın işini, projelerini, yazılarını ya da ona nasıl ulaşacağını sorabilirsin.', chips: ['Berkay kim?', 'Şu an ne yapıyor?', 'Projelerini göster', 'Ona nasıl ulaşırım?', 'Nerelerde çalıştı?'], fallback: 'Bunu henüz bilmiyorum. Yalnızca bu sitedeki bilgilerden cevap verebilirim. Berkay’a doğrudan sormanın en iyi yolu ona yazmak.', send: 'Gönder', mailCta: 'Berkay’a yaz', you: 'Sen' },
@@ -164,8 +166,8 @@ const APP = {
     }
   }
 };
-const VAPPS = ['terminal', 'notes', 'photos', 'finder', 'ask'];
-const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : id === 'finder' ? (lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf') : id === 'ask' ? url(lang, 'about') : 'mailto:berkaypsy@gmail.com';
+const VAPPS = ['terminal', 'notes', 'photos', 'finder', 'ask', 'settings'];
+const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : id === 'finder' ? (lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf') : id === 'ask' || id === 'settings' ? url(lang, 'about') : 'mailto:berkaypsy@gmail.com';
 const vIcon = (id, lang, cls = 'icon') => `<a class="${cls} c-${id}" href="${esc(vFallback(id, lang))}" data-vapp="${id}"><span class="tile">${tile(id)}</span><span class="lbl">${esc(APP[lang].names[id])}</span></a>`;
 
 /* ------------------------------------------------------------------ parsers */
@@ -432,7 +434,7 @@ function windowHtml(lang, slug, w) {
     <div class="dots"><a class="dot r" href="${url(lang, '')}" data-app="home" aria-label="${esc(u.close)}"></a><button class="dot y" type="button" aria-label="${esc(u.min)}"></button><button class="dot g" type="button" aria-label="${esc(u.zoom)}"></button></div>
     <h1 id="win-title-${slug}">${esc(NAV[lang][slug])}</h1>
   </header>
-  <div class="win-body">${w.side}<div class="win-main">${w.body}</div></div>
+  <div class="win-body">${w.side}<div class="win-main"><h2 class="lt" aria-hidden="true">${esc(NAV[lang][slug])}</h2>${w.body}</div></div>
 </section>`;
 }
 
@@ -508,11 +510,11 @@ function page(lang, slug) {
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Berkay Vuran">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="preload" href="/assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${BASE}/desk.css?v=${VER}" as="style">
 <script>try{var T=['dark','light','matrix','high-contrast'],t=localStorage.getItem('theme');if(T.indexOf(t)<0)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var g=localStorage.getItem('glass');if(g==='off'||(g===null&&window.matchMedia('(prefers-reduced-transparency: reduce)').matches))document.documentElement.setAttribute('data-glass','off');var w=localStorage.getItem('wp');if(/^(aurora|sunset|ocean)$/.test(w))document.documentElement.setAttribute('data-wp',w)}catch(e){}</script>
 <link rel="stylesheet" href="${BASE}/desk.css?v=${VER}">
-<link rel="stylesheet" href="${BASE}/extras.css?v=${VER}">${GOATCOUNTER ? `
+<link rel="stylesheet" href="${BASE}/extras.css?v=${VER}">
+<link rel="stylesheet" href="${BASE}/ios.css?v=${VER}" media="(max-width:1099px),(min-width:1100px) and (hover:none)">${GOATCOUNTER ? `
 <script data-goatcounter="https://${esc(GOATCOUNTER)}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>` : ''}
 <script type="application/ld+json">${jsonLd(lang, slug, data, s)}</script>
 </head>`;
@@ -522,9 +524,10 @@ function page(lang, slug) {
 <div class="wallpaper" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="none"><path d="M0 520C300 440 520 640 820 640S1280 440 1440 500"/><path d="M0 640C320 560 560 780 860 780S1300 580 1440 620"/><path d="M0 760C340 700 600 860 900 860S1320 720 1440 750"/></svg></div>
 <header class="menubar">
   <div class="mb-left"><a class="mb-logo" href="${url(lang, '')}" data-app="home" aria-label="${esc(u.home)}">BV</a><strong class="mb-app" id="mb-app">${esc(slug ? NAV[lang][slug] : 'Berkay Vuran')}</strong><nav class="mb-menu" aria-label="${esc(u.menuLabel)}">${menu}</nav></div>
-  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><div class="mb-themewrap"><button class="mb-theme" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(u.theme)}"><span class="th-e" aria-hidden="true">🌙</span><span class="th-n">${esc(THEMES[0][lang])}</span></button><ul class="theme-menu" role="menu" aria-label="${esc(u.theme)}" hidden>${THEMES.map(t => `<li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="${t.id}" data-emoji="${t.e}" data-name="${esc(t[lang])}"><span class="te" aria-hidden="true">${t.e}</span><span>${esc(t[lang])}</span><span class="tc" aria-hidden="true">✓</span></button></li>`).join('')}<li role="separator" class="tm-sep"></li><li role="none"><button type="button" role="menuitemcheckbox" aria-checked="true" data-glass-toggle><span class="te" aria-hidden="true">🪟</span><span>${esc(u.glass)}</span><span class="sw" aria-hidden="true"></span></button></li></ul></div><button class="mb-cc" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="${esc(APP[lang].cc)}">${svg('cc')}</button><button class="mb-clock-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="${esc(u.calendar)}" data-today="${esc(u.today)}"><time class="mb-clock" id="clock"></time></button></div>
+  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><button class="mb-cc" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="${esc(APP[lang].cc)}">${svg('cc')}</button><button class="mb-clock-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="${esc(u.calendar)}" data-today="${esc(u.today)}"><time class="mb-clock" id="clock"></time></button></div>
 </header>
 <main class="desktop" id="main">
+  <div class="pager"><div class="pg pg-today">
   <div class="hello">
     <img src="/assets/images/avatars/my-avatar-160.webp" srcset="/assets/images/avatars/my-avatar-160.webp 160w, /assets/images/avatars/my-avatar-336.webp 336w" sizes="(min-width:1100px) 168px, 96px" alt="Berkay Vuran" width="168" height="168" fetchpriority="high">
     ${slug ? '<p class="hello-name">Berkay Vuran</p>' : '<h1 class="hello-name">Berkay Vuran</h1>'}
@@ -532,12 +535,15 @@ function page(lang, slug) {
     ${false ? '' : `<p class="hello-bio">${esc(seo(lang, '', {}).description)}</p>`}
   </div>
   ${homeWidgets(lang, blog, builder)}
+  </div><div class="pg pg-home">
   <nav class="icons" aria-label="${esc(u.menuLabel)}">${SLUGS.map(id => iconLink(id, lang)).join('')}${VAPPS.map(id => vIcon(id, lang, 'icon icon-x')).join('')}</nav>
+  </div></div>
   ${slug ? windowHtml(lang, slug, w) : ''}
 </main>
-<nav class="dock" aria-label="Dock">${['about', 'showcase', 'builder', 'blog'].map(id => iconLink(id, lang)).join('')}${VAPPS.map(id => vIcon(id, lang, 'icon dk-x')).join('')}<span class="dock-sep" aria-hidden="true"></span>${LINKS.map(l => extLink(l, lang)).join('')}</nav>
+<nav class="dock" aria-label="Dock">${['about', 'showcase', 'builder', 'blog'].map(id => iconLink(id, lang)).join('')}${VAPPS.filter(id => id !== 'settings').map(id => vIcon(id, lang, 'icon dk-x')).join('')}<span class="dock-sep" aria-hidden="true"></span>${LINKS.map(l => extLink(l, lang)).join('')}</nav>
 <script src="${BASE}/desk.js?v=${VER}" defer></script>
 <script src="${BASE}/extras.js?v=${VER}" defer></script>
+<script src="${BASE}/ios.js?v=${VER}" defer></script>
 </body>`;
   return `<!DOCTYPE html>\n<html lang="${lang}">\n${head}\n${body}\n</html>\n`;
 }
@@ -597,11 +603,13 @@ function appsData(lang) {
     projects: b.cards.map(c => ({ n: c.name, d: c.desc, u: c.href })),
     posts: blog.map(p => ({ t: p.title, c: p.cat, d: fmtDate(p.date, lang), e: p.excerpt, u: p.href, i: im(p.img) })),
     photos: { cats: sc.cats.map(c => ({ id: c.id, l: c.label })), items: sc.items.map(it => ({ t: it.title, c: it.cat.replace(/\s+/g, '-'), cl: it.catLabel, u: it.href, i: im(it.img) })) },
+    themes: THEMES.map(t => ({ id: t.id, e: t.e, n: t[lang] })),
     sections: SLUGS.map(id => ({ id, n: NAV[lang][id], u: url(lang, id) })),
     files: finderFiles(lang),
     kb: kbData(lang)
   };
 }
+const minify = f => esbuild.transformSync(fs.readFileSync(new URL('./src/' + f, import.meta.url), 'utf8'), { loader: f.endsWith('.css') ? 'css' : 'js', minify: true, target: f.endsWith('.css') ? 'safari14' : 'es2019', legalComments: 'none' }).code;
 const written = [];
 for (const lang of LANGS) {
   for (const slug of ['', ...SLUGS]) {
@@ -629,11 +637,13 @@ write('manifest.webmanifest', JSON.stringify({
 }, null, 2));
 for (const f of ['icon-192.png', 'icon-512.png', 'apple-touch-icon.png']) { fs.mkdirSync(path.join(OUT, 'icons'), { recursive: true }); fs.copyFileSync(new URL('./src/icons/' + f, import.meta.url), path.join(OUT, 'icons', f)); }
 if (fs.existsSync(new URL('./src/og-image.png', import.meta.url))) fs.copyFileSync(new URL('./src/og-image.png', import.meta.url), path.join(OUT, 'og-image.png'));
-fs.copyFileSync(new URL('./src/desk.css', import.meta.url), path.join(OUT, 'desk.css'));
-fs.copyFileSync(new URL('./src/desk.js', import.meta.url), path.join(OUT, 'desk.js'));
+write('desk.css', minify('desk.css'));
+write('desk.js', minify('desk.js'));
 write('berkay-vuran.vcf', VCARD);
-fs.copyFileSync(new URL('./src/extras.css', import.meta.url), path.join(OUT, 'extras.css'));
-fs.copyFileSync(new URL('./src/extras.js', import.meta.url), path.join(OUT, 'extras.js'));
+write('extras.css', minify('extras.css'));
+write('extras.js', minify('extras.js'));
+write('ios.css', minify('ios.css'));
+write('ios.js', minify('ios.js'));
 if (BASE === '') write('sw.js', fs.readFileSync(new URL('./src/sw.js', import.meta.url), 'utf8').replace('__VER__', VER));
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

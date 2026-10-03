@@ -144,7 +144,7 @@ a{color:inherit;text-decoration:none}
 .w-foot{display:block;margin-top:10px;font-size:12.5px;color:var(--onwall-muted)}
 .w-foot b{font-size:18px;color:var(--onwall);margin-right:4px}
 .widget:is(a):hover{border-color:var(--accent)}
-@media (max-width:1099px){body:not(.page-home) .hello,body:not(.page-home) .widgets{visibility:hidden}}
+@media (max-width:1099px),(min-width:1100px) and (hover:none){body:not(.page-home) .hello,body:not(.page-home) .widgets{visibility:hidden}}
 
 /* dock */
 .dock{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:8000;display:flex;align-items:flex-end;gap:10px;padding:8px 12px;border-radius:22px;background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-line)}
@@ -275,7 +275,7 @@ a{color:inherit;text-decoration:none}
 .app-tags span{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent2)}
 
 /* ===== desktop (>=1100) ===== */
-@media (min-width:1100px){
+@media (min-width:1100px) and (hover:hover){
   .hello{left:calc(50% + 160px);top:40%}
   .hello img{width:168px;height:168px;border-width:3px}
   .hello-name{font-size:34px;margin-top:18px}
@@ -285,13 +285,13 @@ a{color:inherit;text-decoration:none}
   .window.is-moved{margin:0;max-width:none}
 }
 
-@media (min-width:1360px){
+@media (min-width:1360px) and (hover:hover){
   .hello{left:calc(50% + 250px)}
   .w-extra{display:block}
   .widgets{grid-template-columns:repeat(2,290px)}
 }
 /* ===== tablet (700-1099): iPad home screen + large sheets ===== */
-@media (max-width:1099px){
+@media (max-width:1099px),(min-width:1100px) and (hover:none){
   :root{--dock-h:104px}
   .mb-menu{display:none}
   .hello{position:static;transform:none;margin:0 auto;padding-top:34px}
@@ -383,7 +383,7 @@ a{color:inherit;text-decoration:none}
 .mb-search{display:inline-flex;align-items:center;gap:7px;height:24px;padding:0 8px;border:0;border-radius:6px;background:none;color:var(--onwall);font:inherit;cursor:pointer}
 .mb-search svg{width:16px;height:16px}
 .mb-kbd{font:inherit;font-size:11.5px;opacity:.7;display:none}
-@media (min-width:1100px){.mb-kbd{display:inline}}
+@media (min-width:1100px) and (hover:hover){.mb-kbd{display:inline}}
 .spot{position:fixed;inset:0;z-index:9500;background:var(--scrim);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;justify-content:center;align-items:flex-start;padding:12vh 12px 0}
 .spot-panel{width:min(640px,100%);background:var(--win);color:var(--text);border:1px solid var(--glass-line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;animation:pop .14s ease-out}
 .spot-bar{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
@@ -407,7 +407,7 @@ a{color:inherit;text-decoration:none}
 .mb-theme{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border:0;border-radius:6px;background:none;color:var(--onwall);font:inherit;cursor:pointer}
 .mb-theme .th-e{font-size:14px;line-height:1}
 .mb-theme .th-n{display:none;font-size:12.5px}
-@media (min-width:1100px){.mb-theme .th-n{display:inline}}
+@media (min-width:1100px) and (hover:hover){.mb-theme .th-n{display:inline}}
 .mb-themewrap{position:relative}
 .theme-menu{position:absolute;top:calc(100% + 6px);right:0;min-width:210px;padding:6px;list-style:none;background:var(--win);color:var(--text);border:1px solid var(--glass-line);border-radius:12px;box-shadow:var(--shadow);z-index:9600;animation:pop .12s ease-out}
 .theme-menu button{display:flex;width:100%;align-items:center;gap:10px;padding:8px 10px;border:0;border-radius:8px;background:none;color:inherit;font:inherit;font-size:13.5px;text-align:left;cursor:pointer}
@@ -484,7 +484,7 @@ a{color:inherit;text-decoration:none}
 .rz{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;z-index:3}
 .window:not(.active){box-shadow:0 8px 24px rgba(0,0,0,.28)}
 .window.is-min{display:none}
-@media (max-width:1099px){.rz{display:none}.side-list .side-sub{margin-left:0;padding-left:0;border-left:0}}
+@media (max-width:1099px),(min-width:1100px) and (hover:none){.rz{display:none}.side-list .side-sub{margin-left:0;padding-left:0;border-left:0}}
 
 /* native macOS cursors: arrow everywhere, pointing hand only on real links, like a Mac app */
 .side-item,summary,.dot,.titlebar,[role="option"],.btn{cursor:default}

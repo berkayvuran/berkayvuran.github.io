@@ -4,7 +4,7 @@
   var body = document.body;
   var lang = body.getAttribute('data-lang') || 'en';
   var cache = new Map();
-  var wide = window.matchMedia('(min-width:1100px)');
+  var wide = window.matchMedia('(min-width:1100px) and (hover:hover)');
 
   /* ---------- clock ---------- */
   function tick() {
@@ -52,53 +52,21 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { setOpen(false); btn.focus(); e.stopPropagation(); } }, true);
   })();
 
-  /* ---------- theme switcher (dark, light, matrix, high-contrast) ---------- */
+  /* ---------- theme + glass (UI lives in Control Center on desktop and in Settings on touch devices) ---------- */
   var THEME_IDS = ['dark', 'light', 'matrix', 'high-contrast'];
-  var themeBtn = document.querySelector('.mb-theme'), themeMenu = document.querySelector('.theme-menu');
   function paintTheme(id) {
     var root = document.documentElement;
     root.setAttribute('data-theme', id);
-    if (themeMenu) themeMenu.querySelectorAll('[data-theme-set]').forEach(function (b) {
-      var on = b.getAttribute('data-theme-set') === id;
-      b.setAttribute('aria-checked', on ? 'true' : 'false');
-      if (on && themeBtn) { themeBtn.querySelector('.th-e').textContent = b.getAttribute('data-emoji'); themeBtn.querySelector('.th-n').textContent = b.getAttribute('data-name'); }
-    });
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--meta').trim() || '#0b0f17');
   }
-  function closeThemeMenu() { if (themeMenu && !themeMenu.hidden) { themeMenu.hidden = true; themeBtn.setAttribute('aria-expanded', 'false'); } }
-  if (themeBtn && themeMenu) {
-    paintTheme(THEME_IDS.indexOf(document.documentElement.getAttribute('data-theme')) > -1 ? document.documentElement.getAttribute('data-theme') : 'dark');
-    themeBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var open = themeMenu.hidden;
-      themeMenu.hidden = !open; themeBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) { var cur = themeMenu.querySelector('[aria-checked="true"]'); if (cur) cur.focus(); }
-    });
-    var glassBtn = themeMenu.querySelector('[data-glass-toggle]');
-    function paintGlass() { if (glassBtn) glassBtn.setAttribute('aria-checked', document.documentElement.getAttribute('data-glass') === 'off' ? 'false' : 'true'); }
-    paintGlass();
-    themeMenu.addEventListener('click', function (e) {
-      var g = e.target.closest('[data-glass-toggle]');
-      if (g) {
-        var off = document.documentElement.getAttribute('data-glass') !== 'off';
-        if (off) document.documentElement.setAttribute('data-glass', 'off'); else document.documentElement.removeAttribute('data-glass');
-        try { localStorage.setItem('glass', off ? 'off' : 'on'); } catch (er) {}
-        paintGlass(); return;
-      }
-      var b = e.target.closest('[data-theme-set]'); if (!b) return;
-      var id = b.getAttribute('data-theme-set');
-      paintTheme(id); try { localStorage.setItem('theme', id); } catch (er) {}
-      closeThemeMenu(); themeBtn.focus();
-    });
-    themeMenu.addEventListener('keydown', function (e) {
-      var items = Array.prototype.slice.call(themeMenu.querySelectorAll('button')), i = items.indexOf(document.activeElement);
-      if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
-      else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeThemeMenu(); themeBtn.focus(); }
-    });
-    document.addEventListener('click', function (e) { if (!e.target.closest('.mb-themewrap')) closeThemeMenu(); });
+  function setGlass(on) {
+    var root = document.documentElement;
+    if (on) root.removeAttribute('data-glass'); else root.setAttribute('data-glass', 'off');
+    try { localStorage.setItem('glass', on ? 'on' : 'off'); } catch (er) {}
   }
+  var curTheme = document.documentElement.getAttribute('data-theme');
+  if (THEME_IDS.indexOf(curTheme) > -1) paintTheme(curTheme);
 
   function fetchDoc(href) {
     if (cache.has(href)) return cache.get(href);
@@ -168,8 +136,6 @@
       document.head.querySelectorAll(sel).forEach(function (n) { n.remove(); });
       doc.head.querySelectorAll(sel).forEach(function (n) { document.head.appendChild(document.importNode(n, true)); });
     });
-    var other = document.head.querySelector('link[rel="alternate"][hreflang]:not([hreflang="' + lang + '"]):not([hreflang="x-default"])'), ml = document.querySelector('.mb-lang');
-    if (other && ml) { try { ml.setAttribute('href', new URL(other.getAttribute('href')).pathname); } catch (e) {} }
   }
   function setUrl(slug, push) {
     if (isVirtual(slug)) return;
@@ -189,7 +155,14 @@
     if (next) { active = next; wins[next].style.zIndex = ++zTop; chrome(); setUrl(next, push); }
     else { active = null; chrome(); setUrl('', push); }
   }
-  function closeWin(slug) { if (!wins[slug]) return; document.dispatchEvent(new CustomEvent('desk:close', { detail: { slug: slug } })); wins[slug].remove(); delete wins[slug]; if (active === slug) afterLeave(false); else chrome(); }
+  function closeWin(slug) {
+    if (!wins[slug]) return;
+    var w = wins[slug];
+    document.dispatchEvent(new CustomEvent('desk:close', { detail: { slug: slug } }));
+    delete wins[slug];
+    if (Desk.exit) Desk.exit(w, slug, function () { w.remove(); }); else w.remove();
+    if (active === slug) afterLeave(false); else chrome();
+  }
   function minimizeWin(slug) { var w = wins[slug]; if (!w) return; w.classList.add('is-min'); if (active === slug) afterLeave(false); else chrome(); }
   function showDesktop(push) { Object.keys(wins).forEach(function (k) { wins[k].classList.add('is-min'); }); active = null; chrome(); setUrl('', push); }
 
@@ -315,6 +288,8 @@
   Desk.focus = function (slug) { focusWin(slug, true); };
   Desk.minimize = minimizeWin; Desk.showDesktop = function () { showDesktop(true); };
   Desk.go = go; Desk.setTheme = function (id) { paintTheme(id); try { localStorage.setItem('theme', id); } catch (er) {} };
+  Desk.setGlass = setGlass; Desk.glassOn = function () { return document.documentElement.getAttribute('data-glass') !== 'off'; };
+  Desk.langHref = function () { var s = active && !isVirtual(active) ? active : ''; return (body.getAttribute('data-base') || '') + (lang === 'tr' ? '/' : '/tr/') + (s ? s + '/' : ''); };
   Desk.slugOf = slugOf; Desk.active = function () { return active; };
 
   /* ---------- typewriter title ---------- */
@@ -487,7 +462,7 @@
     if (s === '') showDesktop(false); else openApp(s, false);
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && wide.matches && active && !(e.target.matches && e.target.matches('input,textarea,select')) && !document.querySelector('.ql:not([hidden]),.lock:not([hidden]),.cc:not([hidden]),.ctx:not([hidden])') && !(spot.el && !spot.el.hidden) && !(themeMenu && !themeMenu.hidden)) closeWin(active);
+    if (e.key === 'Escape' && wide.matches && active && !(e.target.matches && e.target.matches('input,textarea,select')) && !document.querySelector('.ql:not([hidden]),.lock:not([hidden]),.cc:not([hidden]),.ctx:not([hidden])') && !(spot.el && !spot.el.hidden)) closeWin(active);
   });
 
   document.querySelectorAll('.window[data-slug]').forEach(function (w) { register(w.getAttribute('data-slug'), w); active = w.getAttribute('data-slug'); w.style.zIndex = ++zTop; });

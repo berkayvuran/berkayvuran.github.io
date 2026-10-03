@@ -1,1 +1,1 @@
-{ "name": "site-build", "private": true, "type": "module", "dependencies": { "cheerio": "^1.0.0" } }
+{"name":"site-build","private":true,"type":"module","dependencies":{"cheerio":"^1.0.0"},"devDependencies":{"esbuild":"^0.28.2"}}
