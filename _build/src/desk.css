@@ -309,7 +309,7 @@ a{color:inherit;text-decoration:none}
 
 /* ===== mobile (<700): iPhone-style home + full-screen apps ===== */
 @media (max-width:699px){
-  :root{--dock-h:88px}
+  :root{--dock-h:104px}
   .mb-clock{display:none}
   .desktop{padding:0 16px calc(var(--dock-h) + 16px)}
   .hello{padding-top:22px}
@@ -325,6 +325,15 @@ a{color:inherit;text-decoration:none}
   .dock{padding:8px 10px;gap:12px;bottom:max(10px,env(safe-area-inset-bottom))}
   .dock .tile{width:50px;height:50px}
   .dock .c-linkedin,.dock .c-github,.dock-sep{display:none}
+  /* no hover on touch: name every dock button so it is clear where it leads */
+  .dock{align-items:flex-start;gap:8px;padding:8px 8px 6px}
+  .dock .icon{display:flex;flex-direction:column;align-items:center;gap:4px;width:62px}
+  .dock .lbl{display:block;font-size:11px;line-height:1.1;color:var(--onwall);text-align:center;max-width:62px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dock .icon.is-open::after,.dock .icon[aria-current="page"]::after{display:none}
+  .dock .icon.c-linkedin,.dock .icon.c-github,.dock .dock-sep{display:none}
+  .dock{width:max-content;max-width:calc(100vw - 16px)}
+  .dock{background:color-mix(in srgb,var(--bg0) 92%,transparent)}
+  .dock .lbl{color:var(--text)}
   /* apps are full screen */
   .window{inset:var(--bar) 0 0 0;border-radius:0;border:0;animation:slide .22s ease-out}
   @keyframes slide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
