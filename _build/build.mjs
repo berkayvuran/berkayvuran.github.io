@@ -24,6 +24,10 @@ const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 const fixUrls = h => h.replace(/(src|href)=(["'])\s*(?:\.\.?\/)*(assets|projects|pages)\//g, '$1=$2/$3/');
 const load = f => cheerio.load(fs.readFileSync(new URL('../pages/' + f + '.html', import.meta.url), 'utf8'), null, false);
 const url = (lang, slug = '') => `${BASE}/${lang === 'tr' ? 'tr/' : ''}${slug ? slug + '/' : ''}`;
+const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
+const isBlank = src => { try { return fs.statSync(path.join(ROOT, src.replace(/^\//, ''))).size < 3000; } catch { return false; } };
+const initials = n => n.split(/\s+/).filter(Boolean).map((w, i, a) => (i === 0 || i === a.length - 1) ? w[0] : '').join('').toUpperCase();
+const avatarHtml = (name, src, size, cls = '') => (src && !isBlank(src)) ? `<img class="${cls}" src="${esc(src)}" alt="${esc(name)}" width="${size}" height="${size}" loading="lazy">` : `<span class="av-init ${cls}" style="width:${size}px;height:${size}px" role="img" aria-label="${esc(name)}">${esc(initials(name))}</span>`;
 const abs = (lang, slug) => ORIGIN + url(lang, slug);
 
 /** Clone `el` keeping only the requested language; falls back to the other language when empty. */
@@ -43,8 +47,8 @@ const text = ($, el, lang) => L($, el, lang).text().replace(/\s+/g, ' ').trim();
 const inner = ($, el, lang) => fixUrls((L($, el, lang).html() || '').trim());
 
 const UI = {
-  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Toggle theme', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV' },
-  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Temayı değiştir', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç' }
+  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Toggle theme', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV', search: 'Search', searchPh: 'Search sections, writing, projects, CV…', searchEmpty: 'No results', searchSections: 'Sections', searchHint: 'to open', goTo: 'Go to' },
+  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Temayı değiştir', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç', search: 'Ara', searchPh: 'Bölümlerde, yazılarda, projelerde, CV’de ara…', searchEmpty: 'Sonuç yok', searchSections: 'Bölümler', searchHint: 'açmak için', goTo: 'Git' }
 };
 const NAV = {
   en: { about: 'About', cv: 'CV', references: 'References', showcase: 'Showcase', blog: 'Blog', builder: 'Builder' },
@@ -65,6 +69,7 @@ const ICONS = {
   download: '<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
   back: '<path d="M15 5l-7 7 7 7"/>',
   arrow: '<path d="M7 17L17 7M17 7H8M17 7v9"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
 };
 const svg = (n, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[n]}</svg>`;
@@ -229,7 +234,7 @@ function winRefs(lang) {
   const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: total }, ...groups.map(g => ({ id: g.id, label: g.label, count: g.items.length }))], 'all');
   const cards = groups.flatMap(g => g.items.map(it => ({ ...it, g })));
   const body = `<ul class="people" role="list">${cards.map(it => `<li class="person" data-cat="${it.g.id}"><details>
-      <summary><img src="${esc(it.avatar)}" alt="${esc(it.name)}" width="56" height="56" loading="lazy"><span class="pn"><b>${esc(it.name)}</b><span>${esc(it.role)}</span><em>${esc(it.g.label)}</em></span></summary>
+      <summary>${avatarHtml(it.name, it.avatar, 56)}<span class="pn"><b>${esc(it.name)}</b><span>${esc(it.role)}</span><em>${esc(it.g.label)}</em></span></summary>
       <div class="quote">${it.html}</div></details></li>`).join('')}</ul>`;
   return { side, body, meta: { total, groups } };
 }
@@ -340,25 +345,21 @@ function homeWidgets(lang, blog, builder) {
   const refTotal = refs.reduce((n, g) => n + g.items.length, 0);
   const pick = refs.flatMap(g => g.items.map(i => ({ ...i, org: g.label }))).find(i => i.plain.length > 160) || refs[0].items[0];
   const cut = (t, n) => { if (t.length <= n) return t; const c = t.slice(0, n); return c.slice(0, c.lastIndexOf(' ')) + '…'; };
-  const quotes = refs.flatMap(g => g.items).filter(i => i.plain.length > 60).map(i => ({ t: cut(i.plain, 190), n: i.name, r: i.role, a: i.avatar }));
+  const quotes = refs.flatMap(g => g.items).filter(i => i.plain.length > 60).map(i => ({ t: cut(i.plain, 190), n: i.name, r: i.role, a: isBlank(i.avatar) ? '' : i.avatar, i: initials(i.name) }));
   const sc = parseShowcase(lang);
   const certItems = sc.items.filter(i => i.cat === 'certifications');
   const src = x => fixUrls(`src="${x}"`).slice(5, -1);
   return `<aside class="widgets" aria-label="Highlights">
-    <div class="wcol">
       <a class="widget w-builder" href="${url(lang, 'builder')}" data-app="builder"><span class="w-badge">Product Builder</span><b>${builder.cards.length} ${esc(u.liveProducts)} →</b><span>${esc(u.productsSub)}</span></a>
-      <section class="widget w-posts"><h2>${esc(u.latest)}</h2><ul role="list">${blog.slice(0, 3).map(p => `<li><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.title)}</b><time datetime="${esc(p.date)}">${esc(fmtDate(p.date, lang))}</time></a></li>`).join('')}</ul></section>
-      <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 3).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
-    </div>
-    <div class="wcol">
       <a class="widget w-now" href="${url(lang, 'cv')}" data-app="cv"><h2>${esc(u.now)}</h2><b>${esc(cv.role)}</b><span>${esc(cv.org)}${cv.date ? ' · ' + esc(cv.date) : ''}</span><em>${esc(u.viewCv)} →</em></a>
+      <section class="widget w-posts"><h2>${esc(u.latest)}</h2><ul role="list">${blog.slice(0, 3).map(p => `<li><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.title)}</b><time datetime="${esc(p.date)}">${esc(fmtDate(p.date, lang))}</time></a></li>`).join('')}</ul></section>
       <div class="widget w-stats"><h2>${esc(u.glance)}</h2><ul role="list">
         <li><a href="${url(lang, 'builder')}" data-app="builder"><b>${builder.cards.length}</b><span>${esc(u.products)}</span></a></li>
         <li><a href="${url(lang, 'blog')}" data-app="blog"><b>${blog.length}</b><span>${esc(u.articles)}</span></a></li>
         <li><a href="${url(lang, 'references')}" data-app="references"><b>${refTotal}</b><span>${esc(u.refs)}</span></a></li>
         <li><a href="${url(lang, 'showcase')}" data-app="showcase"><b>${sc.items.length}</b><span>${esc(NAV[lang].showcase)}</span></a></li></ul></div>
-      <a class="widget w-quote w-extra" href="${url(lang, 'references')}" data-app="references" data-quotes="${esc(JSON.stringify(quotes))}"><h2>${esc(u.says)}</h2><blockquote>“${esc(cut(pick.plain, 190))}”</blockquote><span class="w-by"><img src="${esc(pick.avatar)}" alt="" width="34" height="34" loading="lazy"><span><b>${esc(pick.name)}</b><i>${esc(pick.role)}</i></span></span></a>
-    </div>
+      <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 3).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
+      <a class="widget w-quote w-extra" href="${url(lang, 'references')}" data-app="references" data-quotes="${esc(JSON.stringify(quotes))}"><h2>${esc(u.says)}</h2><blockquote>“${esc(cut(pick.plain, 190))}”</blockquote><span class="w-by"><span class="w-av">${avatarHtml(pick.name, pick.avatar, 34)}</span><span><b>${esc(pick.name)}</b><i>${esc(pick.role)}</i></span></span></a>
   </aside>`;
 }
 
@@ -370,7 +371,7 @@ function page(lang, slug) {
   const other = lang === 'en' ? 'tr' : 'en';
   const blog = parseBlog(lang), builder = parseBuilder(lang);
   const robots = INDEXABLE ? 'index, follow, max-image-preview:large' : 'noindex, nofollow';
-  const ogImage = ORIGIN + '/assets/images/avatars/my-avatar-160.webp';
+  const ogImage = ORIGIN + BASE + '/og-image.png';
   const canonical = abs(lang, slug);
   const head = `<head>
 <meta charset="utf-8">
@@ -392,14 +393,23 @@ function page(lang, slug) {
 <meta property="og:locale" content="${lang === 'tr' ? 'tr_TR' : 'en_US'}">
 <meta property="og:locale:alternate" content="${other === 'tr' ? 'tr_TR' : 'en_US'}">
 <meta property="og:image" content="${ogImage}">
-<meta name="twitter:card" content="summary">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Berkay Vuran's portfolio as a desktop with windows and widgets">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(s.title)}">
 <meta name="twitter:description" content="${esc(s.description)}">
 <meta name="twitter:image" content="${ogImage}">
 <link rel="icon" href="/assets/images/favicon.ico">
+<link rel="apple-touch-icon" href="${BASE}/icons/apple-touch-icon.png">
+<link rel="manifest" href="${BASE}/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Berkay Vuran">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preload" href="/assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${BASE}/desk.css" as="style">
-<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>try{var t=localStorage.getItem('theme');if(!t&&window.matchMedia('(prefers-color-scheme: light)').matches)t='light';if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <link rel="stylesheet" href="${BASE}/desk.css">
 <script type="application/ld+json">${jsonLd(lang, slug, data, s)}</script>
 </head>`;
@@ -409,7 +419,7 @@ function page(lang, slug) {
 <div class="wallpaper" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="none"><path d="M0 520C300 440 520 640 820 640S1280 440 1440 500"/><path d="M0 640C320 560 560 780 860 780S1300 580 1440 620"/><path d="M0 760C340 700 600 860 900 860S1320 720 1440 750"/></svg></div>
 <header class="menubar">
   <div class="mb-left"><a class="mb-logo" href="${url(lang, '')}" data-app="home" aria-label="${esc(u.home)}">BV</a><strong class="mb-app" id="mb-app">${esc(slug ? NAV[lang][slug] : 'Berkay Vuran')}</strong><nav class="mb-menu" aria-label="${esc(u.menuLabel)}">${menu}</nav></div>
-  <div class="mb-right"><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><button class="mb-theme" type="button" aria-label="${esc(u.theme)}">${svg('sun')}</button><time class="mb-clock" id="clock"></time></div>
+  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><button class="mb-theme" type="button" aria-label="${esc(u.theme)}">${svg('sun')}</button><time class="mb-clock" id="clock"></time></div>
 </header>
 <main class="desktop" id="main">
   <div class="hello">
@@ -437,6 +447,24 @@ for (const lang of LANGS) {
     written.push([lang, slug]);
   }
 }
+function searchIndex(lang) {
+  const u = UI[lang], out = [];
+  SLUGS.forEach(id => out.push({ t: NAV[lang][id], d: seo(lang, id, WIN[id](lang).meta).description, s: u.goTo, u: url(lang, id), k: 1 }));
+  parseCv(lang).forEach(g => g.items.forEach(it => out.push({ t: it.role + (it.org ? ' @ ' + it.org : ''), d: `${g.title} · ${it.date}`, s: NAV[lang].cv, u: url(lang, 'cv') })));
+  parseBlog(lang).forEach(p => out.push({ t: p.title, d: `${p.cat} · ${fmtDate(p.date, lang)}`, s: NAV[lang].blog, u: p.href, e: 1 }));
+  parseShowcase(lang).items.forEach(p => out.push({ t: p.title, d: p.catLabel, s: NAV[lang].showcase, u: p.href, e: 1 }));
+  parseBuilder(lang).cards.forEach(c => out.push({ t: c.name, d: c.desc, s: NAV[lang].builder, u: c.href }));
+  parseRefs(lang).forEach(g => g.items.forEach(i => out.push({ t: i.name, d: `${i.role}, ${g.label}`, s: NAV[lang].references, u: url(lang, 'references') })));
+  return out;
+}
+for (const lang of LANGS) write(`search-${lang}.json`, JSON.stringify(searchIndex(lang)));
+write('manifest.webmanifest', JSON.stringify({
+  name: 'Berkay Vuran', short_name: 'Berkay Vuran', description: 'Product leader and builder. CV, showcase, writing and live products.',
+  start_url: url('en', ''), scope: url('en', ''), display: 'standalone', background_color: '#14123a', theme_color: '#14123a',
+  icons: [{ src: `${BASE}/icons/icon-192.png`, sizes: '192x192', type: 'image/png' }, { src: `${BASE}/icons/icon-512.png`, sizes: '512x512', type: 'image/png', purpose: 'any' }]
+}, null, 2));
+for (const f of ['icon-192.png', 'icon-512.png', 'apple-touch-icon.png']) { fs.mkdirSync(path.join(OUT, 'icons'), { recursive: true }); fs.copyFileSync(new URL('./src/icons/' + f, import.meta.url), path.join(OUT, 'icons', f)); }
+if (fs.existsSync(new URL('./src/og-image.png', import.meta.url))) fs.copyFileSync(new URL('./src/og-image.png', import.meta.url), path.join(OUT, 'og-image.png'));
 fs.copyFileSync(new URL('./src/desk.css', import.meta.url), path.join(OUT, 'desk.css'));
 fs.copyFileSync(new URL('./src/desk.js', import.meta.url), path.join(OUT, 'desk.js'));
 
