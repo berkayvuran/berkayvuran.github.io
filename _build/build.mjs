@@ -7,11 +7,13 @@ import fs from 'fs';
 import path from 'path';
 
 import { createHash } from 'node:crypto';
-const VER = createHash('md5').update(fs.readFileSync(new URL('./src/desk.css', import.meta.url))).update(fs.readFileSync(new URL('./src/desk.js', import.meta.url))).digest('hex').slice(0, 8);
+const VER = createHash('md5').update(['desk.css', 'desk.js', 'extras.css', 'extras.js'].map(f => fs.readFileSync(new URL('./src/' + f, import.meta.url))).join('')).digest('hex').slice(0, 8);
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, ...v] = a.replace(/^--/, '').split('='); return [k, v.join('=')]; }));
 const BASE = args.base ?? '/next';
 const OUT = path.resolve(args.out ?? '../next');
 const INDEXABLE = args.index === 'true';
+const GOATCOUNTER = args.goatcounter || '';   // cookieless analytics: --goatcounter=<code> (https://<code>.goatcounter.com)
+const FORM_URL = args.form || '';              // optional form endpoint for the Mail app (e.g. https://formspree.io/f/xxxx); empty = opens the visitor's mail app
 const ORIGIN = 'https://berkayvuran.com';
 const TODAY = new Date().toISOString().slice(0, 10);
 const LANGS = ['en', 'tr'];
@@ -78,6 +80,7 @@ const ICONS = {
   back: '<path d="M15 5l-7 7 7 7"/>',
   arrow: '<path d="M7 17L17 7M17 7H8M17 7v9"/>',
   search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/>',
+  cc: '<rect x="3" y="4" width="18" height="7" rx="3.5"/><circle cx="16.5" cy="7.5" r="1.3" fill="currentColor"/><rect x="3" y="13" width="18" height="7" rx="3.5"/><circle cx="7.5" cy="16.5" r="1.3" fill="currentColor"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
 };
 const svg = (n, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[n]}</svg>`;
@@ -94,13 +97,65 @@ const TILE = {
   mail: '<path fill-rule="evenodd" d="M5.2 4.5h13.6a2.7 2.7 0 0 1 2.7 2.7v9.6a2.7 2.7 0 0 1-2.7 2.7H5.2a2.7 2.7 0 0 1-2.7-2.7V7.2a2.7 2.7 0 0 1 2.7-2.7zM4.6 7.4l7.4 5.6 7.4-5.6v1.9L12 15 4.6 9.3z"/>',
   linkedin: '<path d="M4.6 9.4h3v10.2h-3zM6.1 4.4a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6zM10.4 9.4h2.9v1.4c.5-.9 1.7-1.6 3.2-1.6 3.1 0 3.6 2 3.6 4.7v5.7h-3v-5.1c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5.2h-3z"/>'
 };
-const tile = n => TILE[n] ? `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#fff" stroke="none">${TILE[n]}</svg>` : svg(n);
+TILE.terminal = '<path d="M4.4 5.6 6.2 3.9 14.2 12 6.2 20.1 4.4 18.4 10.6 12z"/><rect x="14.6" y="17.4" width="5.8" height="2.3" rx="1.15"/>';
+TILE.notes = '<path fill-rule="evenodd" d="M6.5 3.5h11A2.5 2.5 0 0 1 20 6v12a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18V6a2.5 2.5 0 0 1 2.5-2.5zM7.6 8v1.5h8.8V8zm0 3.6v1.5h8.8v-1.5zm0 3.6v1.5h5.2v-1.5z"/>';
+const PETALS = ['#FF9500', '#FFCC00', '#34C759', '#5AC8FA', '#007AFF', '#AF52DE', '#FF2D55', '#FF3B30'];
+const PHOTOS_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" stroke="none">${PETALS.map((c, i) => `<ellipse cx="12" cy="7.3" rx="2.5" ry="4.4" fill="${c}" opacity=".88" transform="rotate(${i * 45} 12 12)" style="mix-blend-mode:multiply"/>`).join('')}</svg>`;
+const tile = n => n === 'photos' ? PHOTOS_SVG : TILE[n] ? `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#fff" stroke="none">${TILE[n]}</svg>` : svg(n);
 const LINKS = [
   { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/berkayvuran' },
   { id: 'github', label: 'GitHub', href: 'https://github.com/berkayvuran' },
   { id: 'phone', label: { en: 'Call', tr: 'Ara' }, href: 'tel:+905424239930' },
-  { id: 'mail', label: { en: 'Email', tr: 'E-posta' }, href: 'mailto:berkaypsy@gmail.com' }
+  { id: 'mail', app: 'mail', label: { en: 'Mail', tr: 'Posta' }, href: 'mailto:berkaypsy@gmail.com' }
 ];
+
+
+/* ------------------------------------------------------------------ virtual apps (Terminal, Notes, Photos, Mail) + Control Center strings */
+const APP = {
+  en: {
+    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail' },
+    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message' },
+    apps: 'Apps',
+    cc: 'Control Center', ccTheme: 'Theme', ccGlass: 'Glass', ccLang: 'Language', ccSound: 'Sound', ccWall: 'Wallpaper', ccBright: 'Display', ccLock: 'Lock Screen', ccOn: 'On', ccOff: 'Off',
+    walls: { default: 'Default', aurora: 'Aurora', sunset: 'Sunset', ocean: 'Ocean' },
+    lock: { hint: 'Click or press any key to enter', hintTouch: 'Tap to enter' },
+    ql: { open: 'Open', close: 'Close', prev: 'Previous', next: 'Next', hint: 'Space to close' },
+    ctx: { terminal: 'Open Terminal', search: 'Search…', wallpaper: 'Wallpaper', theme: 'Theme', lock: 'Lock Screen', cc: 'Control Center', about: 'About this site' },
+    mail: { newMsg: 'New Message', to: 'To', name: 'Your name', email: 'Your email', subject: 'Subject', message: 'Message', send: 'Send', sending: 'Sending…', sent: 'Thank you! Your message is on its way.', opening: 'Your mail app should open now. If not, write to', copy: 'Copy address', copied: 'Copied', required: 'Please add your email and a message.', failed: 'Could not send. Please email directly:', subjectDefault: 'Hello from berkayvuran.com', or: 'Or reach me directly', again: 'Write another' },
+    notes: { all: 'All Notes', read: 'Read the full article', back: 'Notes', pick: 'Pick a note on the left' },
+    photos: { all: 'All', open: 'Open' },
+    term: {
+      welcome: 'Berkay Vuran, version 1.0. Type "help" to see what you can do.', prompt: 'guest@berkayvuran', unknown: 'command not found:', tryHelp: 'Type "help" for the list of commands.',
+      help: [['help', 'show this list'], ['about', 'who I am'], ['experience', 'where I have worked'], ['education', 'where I studied'], ['projects', 'AI-built products you can open'], ['blog', 'latest writing'], ['skills', 'what I do'], ['contact', 'phone, email and links'], ['open <name>', 'open a window: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <name>', 'dark, light, matrix or zap'], ['wallpaper <name>', 'default, aurora, sunset or ocean'], ['lang <en|tr>', 'switch language'], ['lock', 'show the lock screen'], ['ls / cat <file>', 'look around'], ['neofetch', 'system info'], ['date, echo, history, clear, exit', 'the usual']],
+      files: ['about.txt', 'contact.txt', 'cv.txt', 'projects/', 'blog/'], noFile: 'No such file:', usage: 'usage:', opened: 'opening', themeSet: 'theme set to', wallSet: 'wallpaper set to', langSwitch: 'switching language…', badTheme: 'unknown theme. Try: dark, light, matrix, zap', badWall: 'unknown wallpaper. Try: default, aurora, sunset, ocean', badOpen: 'unknown window. Try: about, cv, references, showcase, blog, builder, notes, photos, mail',
+      sudo: ['[sudo] password for guest: ********', 'Access granted. Hiring pipeline unlocked.', 'Opening the mail app, say hi at berkaypsy@gmail.com.'], root: 'Nice try. This is a very polite machine, but it is not that polite.', hello: 'Hello! Great to see you here.', exit: 'Closing the terminal…',
+      neofetch: ['Berkay Vuran', 'OS', 'Product Leader 1.0', 'Role', 'Product leader and builder', 'Focus', 'AI, ML, data and real workflows', 'Shell', 'berkayvuran.com', 'Theme']
+    }
+  },
+  tr: {
+    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta' },
+    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder' },
+    apps: 'Uygulamalar',
+    cc: 'Denetim Merkezi', ccTheme: 'Tema', ccGlass: 'Cam', ccLang: 'Dil', ccSound: 'Ses', ccWall: 'Duvar kâğıdı', ccBright: 'Ekran', ccLock: 'Ekranı Kilitle', ccOn: 'Açık', ccOff: 'Kapalı',
+    walls: { default: 'Varsayılan', aurora: 'Aurora', sunset: 'Gün batımı', ocean: 'Okyanus' },
+    lock: { hint: 'Girmek için tıkla veya bir tuşa bas', hintTouch: 'Girmek için dokun' },
+    ql: { open: 'Aç', close: 'Kapat', prev: 'Önceki', next: 'Sonraki', hint: 'Kapatmak için Boşluk' },
+    ctx: { terminal: 'Terminal’i aç', search: 'Ara…', wallpaper: 'Duvar kâğıdı', theme: 'Tema', lock: 'Ekranı Kilitle', cc: 'Denetim Merkezi', about: 'Bu site hakkında' },
+    mail: { newMsg: 'Yeni İleti', to: 'Kime', name: 'Adın', email: 'E-posta adresin', subject: 'Konu', message: 'Mesaj', send: 'Gönder', sending: 'Gönderiliyor…', sent: 'Teşekkürler! Mesajın yolda.', opening: 'E-posta uygulaman şimdi açılmalı. Açılmazsa şuraya yaz:', copy: 'Adresi kopyala', copied: 'Kopyalandı', required: 'Lütfen e-posta adresini ve mesajını ekle.', failed: 'Gönderilemedi. Doğrudan e-posta at:', subjectDefault: 'berkayvuran.com’dan merhaba', or: 'Ya da doğrudan ulaş', again: 'Bir tane daha yaz' },
+    notes: { all: 'Tüm Notlar', read: 'Yazının tamamını oku', back: 'Notlar', pick: 'Soldan bir not seç' },
+    photos: { all: 'Tümü', open: 'Aç' },
+    term: {
+      welcome: 'Berkay Vuran, sürüm 1.0. Neler yapabileceğini görmek için "help" yaz.', prompt: 'misafir@berkayvuran', unknown: 'komut bulunamadı:', tryHelp: 'Komut listesi için "help" yaz.',
+      help: [['help', 'bu listeyi göster'], ['about', 'ben kimim'], ['experience', 'nerelerde çalıştım'], ['education', 'nerede okudum'], ['projects', 'açabileceğin AI ürünleri'], ['blog', 'son yazılar'], ['skills', 'ne yaparım'], ['contact', 'telefon, e-posta ve bağlantılar'], ['open <ad>', 'pencere aç: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <ad>', 'dark, light, matrix veya zap'], ['wallpaper <ad>', 'default, aurora, sunset veya ocean'], ['lang <en|tr>', 'dili değiştir'], ['lock', 'kilit ekranını göster'], ['ls / cat <dosya>', 'etrafa bak'], ['neofetch', 'sistem bilgisi'], ['date, echo, history, clear, exit', 'bildiklerin']],
+      files: ['about.txt', 'contact.txt', 'cv.txt', 'projects/', 'blog/'], noFile: 'Böyle bir dosya yok:', usage: 'kullanım:', opened: 'açılıyor', themeSet: 'tema ayarlandı:', wallSet: 'duvar kâğıdı ayarlandı:', langSwitch: 'dil değiştiriliyor…', badTheme: 'bilinmeyen tema. Dene: dark, light, matrix, zap', badWall: 'bilinmeyen duvar kâğıdı. Dene: default, aurora, sunset, ocean', badOpen: 'bilinmeyen pencere. Dene: about, cv, references, showcase, blog, builder, notes, photos, mail',
+      sudo: ['[sudo] misafir için parola: ********', 'Erişim verildi. İşe alım hattı açıldı.', 'Posta uygulaması açılıyor, merhaba de: berkaypsy@gmail.com.'], root: 'Güzel deneme. Bu makine çok kibar ama o kadar da değil.', hello: 'Merhaba! Burada olman çok güzel.', exit: 'Terminal kapatılıyor…',
+      neofetch: ['Berkay Vuran', 'İS', 'Ürün Lideri 1.0', 'Rol', 'Ürün lideri ve üretici', 'Odak', 'AI, ML, veri ve gerçek iş akışları', 'Kabuk', 'berkayvuran.com', 'Tema']
+    }
+  }
+};
+const VAPPS = ['terminal', 'notes', 'photos'];
+const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : 'mailto:berkaypsy@gmail.com';
+const vIcon = (id, lang, cls = 'icon') => `<a class="${cls} c-${id}" href="${esc(vFallback(id, lang))}" data-vapp="${id}"><span class="tile">${tile(id)}</span><span class="lbl">${esc(APP[lang].names[id])}</span></a>`;
 
 /* ------------------------------------------------------------------ parsers */
 function parseAbout(lang) {
@@ -221,7 +276,7 @@ function sidebar(lang, entries, defaultId) {
   // entries: [{id,label,count}]
   return `<aside class="win-side" aria-label="${esc(UI[lang].folders)}">
     <p class="side-h">${esc(UI[lang].folders)}</p>
-    <ul class="side-list" role="list">${entries.map((e, i) => `<li${entries[0].id === 'all' && i > 0 ? ' class="side-sub"' : ''}><a class="side-item" href="#${esc(e.id)}" data-filter="${esc(e.id)}"${e.id === defaultId ? ' data-default aria-current="true"' : ''}>${svg('folder', 'si')}<span class="sl">${esc(e.label)}</span><span class="sc">${e.count}</span></a></li>`).join('')}</ul>
+    <ul class="side-list" role="list">${entries.map((e, i) => `<li${entries[0].id === 'all' && i > 0 ? ' class="side-sub"' : ''}><a class="side-item" href="#${esc(e.id)}" data-filter="${esc(e.id)}"${e.id === defaultId ? ' data-default aria-current="true"' : ''}>${svg('folder', 'si')}<span class="sl">${esc(e.label)}</span><span class="sc">${e.count}</span></a>${e.children && e.children.length ? `<ul class="side-sub2" role="list" data-for="${esc(e.id)}">${e.children.map(c => `<li><a class="side-leaf" href="#${esc(c.id)}" data-target="${esc(c.id)}" data-parent="${esc(e.id)}" title="${esc(c.label)}">${esc(c.label)}</a></li>`).join('')}</ul>` : ''}</li>`).join('')}</ul>
   </aside>`;
 }
 
@@ -246,11 +301,11 @@ function winAbout(lang) {
 function winCv(lang) {
   const g = parseCv(lang);
   const pdf = lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf';
-  const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: g.reduce((n, x) => n + x.items.length, 0) }, ...g.map(x => ({ id: x.id, label: x.title, count: x.items.length }))], 'experience');
+  const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: g.reduce((n, x) => n + x.items.length, 0) }, ...g.map(x => ({ id: x.id, label: x.title, count: x.items.length, children: x.items.map((it, i) => ({ id: `cv-${x.id}-${i}`, label: it.role + (it.org ? ' · ' + it.org : '') })) }))], 'experience');
   const body = `<div class="toolbar"><a class="btn" href="${pdf}" target="_blank" rel="noopener noreferrer">${svg('download')}<span>${esc(UI[lang].download)}</span></a></div>` +
     g.map(grp => `<section class="group" id="${grp.id}" data-group="${grp.id}" aria-labelledby="${grp.id}-h">
       <h2 class="group-h" id="${grp.id}-h">${esc(grp.title)} <span class="muted">${grp.items.length} ${esc(UI[lang].items)}</span></h2>
-      <div class="rows">${grp.items.map((it, i) => `<details class="row"${grp.id === 'experience' && i === 0 ? ' open' : ''}>
+      <div class="rows">${grp.items.map((it, i) => `<details class="row" id="cv-${grp.id}-${i}"${grp.id === 'experience' && i === 0 ? ' open' : ''}>
         <summary>${svg(grp.id === 'experience' ? 'file' : 'file', 'ri')}<span class="rt"><b>${esc(it.role)}</b>${it.org ? `<span class="org">${esc(it.org)}</span>` : ''}</span><span class="rd">${esc(it.date)}</span></summary>
         <div class="row-body">${it.body}</div></details>`).join('')}</div></section>`).join('');
   return { side, body, meta: { groups: g } };
@@ -259,9 +314,9 @@ function winCv(lang) {
 function winRefs(lang) {
   const groups = parseRefs(lang);
   const total = groups.reduce((n, g) => n + g.items.length, 0);
-  const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: total }, ...groups.map(g => ({ id: g.id, label: g.label, count: g.items.length }))], 'all');
-  const cards = groups.flatMap(g => g.items.map(it => ({ ...it, g })));
-  const body = `<ul class="people" role="list">${cards.map(it => `<li class="person" data-cat="${it.g.id}"><details>
+  const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: total }, ...groups.map(g => ({ id: g.id, label: g.label, count: g.items.length, children: g.items.map((it, i) => ({ id: `ref-${g.id}-${i}`, label: it.name })) }))], 'all');
+  const cards = groups.flatMap(g => g.items.map((it, i) => ({ ...it, g, n: i })));
+  const body = `<ul class="people" role="list">${cards.map(it => `<li class="person" id="ref-${it.g.id}-${it.n}" data-cat="${it.g.id}"><details>
       <summary>${avatarHtml(it.name, it.avatar, 56)}<span class="pn"><b>${esc(it.name)}</b><span>${esc(it.role)}</span><em>${esc(it.g.label)}</em></span></summary>
       <div class="quote">${it.html}</div></details></li>`).join('')}</ul>`;
   return { side, body, meta: { total, groups } };
@@ -270,8 +325,8 @@ function winRefs(lang) {
 function winShowcase(lang) {
   const { cats, items } = parseShowcase(lang);
   const counts = k => k === 'all' ? items.length : items.filter(i => i.cat === k).length;
-  const side = sidebar(lang, cats.map(c => ({ id: c.id, label: c.label, count: counts(c.key) })), 'all');
-  const body = `<ul class="grid" role="list">${items.map(it => `<li class="tile-card" data-cat="${esc(it.cat.replace(/\s+/g, '-'))}">
+  const side = sidebar(lang, cats.map(c => ({ id: c.id, label: c.label, count: counts(c.key), children: c.key === 'all' ? [] : items.map((it, i) => ({ it, i })).filter(x => x.it.cat === c.key).map(x => ({ id: `sc-${x.i}`, label: x.it.title })) })), 'all');
+  const body = `<ul class="grid" role="list">${items.map((it, i) => `<li class="tile-card" id="sc-${i}" data-cat="${esc(it.cat.replace(/\s+/g, '-'))}">
     <a href="${esc(it.href)}" target="_blank" rel="noopener noreferrer">
       <img src="${esc(fixUrls('src="' + it.img + '"').slice(5, -1))}" alt="${esc(it.alt || it.title)}" width="${esc(it.w || 600)}" height="${esc(it.h || 270)}" loading="lazy" decoding="async">
       <span class="tc-t">${esc(it.title)}</span><span class="tc-c">${esc(it.catLabel)}</span></a></li>`).join('')}</ul>`;
@@ -282,9 +337,9 @@ function winBlog(lang) {
   const posts = parseBlog(lang);
   const catCount = {};
   posts.forEach(p => { catCount[p.cat] = (catCount[p.cat] || 0) + 1; });
-  const cats = Object.entries(catCount).sort((a, b) => b[1] - a[1]).map(([c, n]) => ({ id: slugify(c), label: c, count: n }));
+  const cats = Object.entries(catCount).sort((a, b) => b[1] - a[1]).map(([c, n]) => ({ id: slugify(c), label: c, count: n, children: posts.map((p, i) => ({ p, i })).filter(x => x.p.cat === c).map(x => ({ id: `bl-${x.i}`, label: x.p.title })) }));
   const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: posts.length }, ...cats], 'all');
-  const body = `<ol class="posts" reversed>${posts.map((p, i) => `<li class="post" data-cat="${slugify(p.cat)}"><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer">
+  const body = `<ol class="posts" reversed>${posts.map((p, i) => `<li class="post" id="bl-${i}" data-cat="${slugify(p.cat)}"><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer">
     <img src="${esc(fixUrls('src="' + p.img + '"').slice(5, -1))}" alt="" width="120" height="60" loading="${i < 4 ? 'eager' : 'lazy'}" decoding="async">
     <span class="pt"><b>${esc(p.title)}</b><span class="pe">${esc(p.excerpt)}</span></span>
     <span class="pm"><span class="pc">${esc(p.cat)}</span><time datetime="${esc(p.date)}">${esc(fmtDate(p.date, lang))}</time></span></a></li>`).join('')}</ol>`;
@@ -351,7 +406,7 @@ function iconLink(id, lang, cls = 'icon') {
 function extLink(l, lang) {
   const label = typeof l.label === 'string' ? l.label : l.label[lang];
   const ext = l.href.startsWith('http');
-  return `<a class="icon c-${l.id}" href="${esc(l.href)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''} aria-label="${esc(label)}${ext ? ' (' + UI[lang].external + ')' : ''}"><span class="tile">${tile(l.id)}</span><span class="lbl">${esc(label)}</span></a>`;
+  return `<a class="icon c-${l.id}" href="${esc(l.href)}"${l.app ? ` data-vapp="${l.app}"` : ''}${ext ? ' target="_blank" rel="noopener noreferrer"' : ''} aria-label="${esc(label)}${ext ? ' (' + UI[lang].external + ')' : ''}"><span class="tile">${tile(l.id)}</span><span class="lbl">${esc(label)}</span></a>`;
 }
 
 function windowHtml(lang, slug, w) {
@@ -438,8 +493,10 @@ function page(lang, slug) {
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preload" href="/assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${BASE}/desk.css?v=${VER}" as="style">
-<script>try{var T=['dark','light','matrix','high-contrast'],t=localStorage.getItem('theme');if(T.indexOf(t)<0)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var g=localStorage.getItem('glass');if(g==='off'||(g===null&&window.matchMedia('(prefers-reduced-transparency: reduce)').matches))document.documentElement.setAttribute('data-glass','off')}catch(e){}</script>
+<script>try{var T=['dark','light','matrix','high-contrast'],t=localStorage.getItem('theme');if(T.indexOf(t)<0)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var g=localStorage.getItem('glass');if(g==='off'||(g===null&&window.matchMedia('(prefers-reduced-transparency: reduce)').matches))document.documentElement.setAttribute('data-glass','off');var w=localStorage.getItem('wp');if(/^(aurora|sunset|ocean)$/.test(w))document.documentElement.setAttribute('data-wp',w)}catch(e){}</script>
 <link rel="stylesheet" href="${BASE}/desk.css?v=${VER}">
+<link rel="stylesheet" href="${BASE}/extras.css?v=${VER}">${GOATCOUNTER ? `
+<script data-goatcounter="https://${esc(GOATCOUNTER)}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>` : ''}
 <script type="application/ld+json">${jsonLd(lang, slug, data, s)}</script>
 </head>`;
   const menu = SLUGS.map(id => `<a href="${url(lang, id)}" data-app="${id}"${id === slug ? ' aria-current="page"' : ''}>${esc(NAV[lang][id])}</a>`).join('');
@@ -448,7 +505,7 @@ function page(lang, slug) {
 <div class="wallpaper" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="none"><path d="M0 520C300 440 520 640 820 640S1280 440 1440 500"/><path d="M0 640C320 560 560 780 860 780S1300 580 1440 620"/><path d="M0 760C340 700 600 860 900 860S1320 720 1440 750"/></svg></div>
 <header class="menubar">
   <div class="mb-left"><a class="mb-logo" href="${url(lang, '')}" data-app="home" aria-label="${esc(u.home)}">BV</a><strong class="mb-app" id="mb-app">${esc(slug ? NAV[lang][slug] : 'Berkay Vuran')}</strong><nav class="mb-menu" aria-label="${esc(u.menuLabel)}">${menu}</nav></div>
-  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><div class="mb-themewrap"><button class="mb-theme" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(u.theme)}"><span class="th-e" aria-hidden="true">🌙</span><span class="th-n">${esc(THEMES[0][lang])}</span></button><ul class="theme-menu" role="menu" aria-label="${esc(u.theme)}" hidden>${THEMES.map(t => `<li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="${t.id}" data-emoji="${t.e}" data-name="${esc(t[lang])}"><span class="te" aria-hidden="true">${t.e}</span><span>${esc(t[lang])}</span><span class="tc" aria-hidden="true">✓</span></button></li>`).join('')}<li role="separator" class="tm-sep"></li><li role="none"><button type="button" role="menuitemcheckbox" aria-checked="true" data-glass-toggle><span class="te" aria-hidden="true">🪟</span><span>${esc(u.glass)}</span><span class="sw" aria-hidden="true"></span></button></li></ul></div><button class="mb-clock-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="${esc(u.calendar)}" data-today="${esc(u.today)}"><time class="mb-clock" id="clock"></time></button></div>
+  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><div class="mb-themewrap"><button class="mb-theme" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(u.theme)}"><span class="th-e" aria-hidden="true">🌙</span><span class="th-n">${esc(THEMES[0][lang])}</span></button><ul class="theme-menu" role="menu" aria-label="${esc(u.theme)}" hidden>${THEMES.map(t => `<li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="${t.id}" data-emoji="${t.e}" data-name="${esc(t[lang])}"><span class="te" aria-hidden="true">${t.e}</span><span>${esc(t[lang])}</span><span class="tc" aria-hidden="true">✓</span></button></li>`).join('')}<li role="separator" class="tm-sep"></li><li role="none"><button type="button" role="menuitemcheckbox" aria-checked="true" data-glass-toggle><span class="te" aria-hidden="true">🪟</span><span>${esc(u.glass)}</span><span class="sw" aria-hidden="true"></span></button></li></ul></div><button class="mb-cc" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="${esc(APP[lang].cc)}">${svg('cc')}</button><button class="mb-clock-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="${esc(u.calendar)}" data-today="${esc(u.today)}"><time class="mb-clock" id="clock"></time></button></div>
 </header>
 <main class="desktop" id="main">
   <div class="hello">
@@ -458,17 +515,35 @@ function page(lang, slug) {
     ${false ? '' : `<p class="hello-bio">${esc(seo(lang, '', {}).description)}</p>`}
   </div>
   ${homeWidgets(lang, blog, builder)}
-  <nav class="icons" aria-label="${esc(u.menuLabel)}">${SLUGS.map(id => iconLink(id, lang)).join('')}</nav>
+  <nav class="icons" aria-label="${esc(u.menuLabel)}">${SLUGS.map(id => iconLink(id, lang)).join('')}${VAPPS.map(id => vIcon(id, lang, 'icon icon-x')).join('')}</nav>
   ${slug ? windowHtml(lang, slug, w) : ''}
 </main>
-<nav class="dock" aria-label="Dock">${['about', 'showcase', 'builder', 'blog'].map(id => iconLink(id, lang)).join('')}<span class="dock-sep" aria-hidden="true"></span>${LINKS.map(l => extLink(l, lang)).join('')}</nav>
+<nav class="dock" aria-label="Dock">${['about', 'showcase', 'builder', 'blog'].map(id => iconLink(id, lang)).join('')}${VAPPS.map(id => vIcon(id, lang, 'icon dk-x')).join('')}<span class="dock-sep" aria-hidden="true"></span>${LINKS.map(l => extLink(l, lang)).join('')}</nav>
 <script src="${BASE}/desk.js?v=${VER}" defer></script>
+<script src="${BASE}/extras.js?v=${VER}" defer></script>
 </body>`;
   return `<!DOCTYPE html>\n<html lang="${lang}">\n${head}\n${body}\n</html>\n`;
 }
 
 /* ------------------------------------------------------------------ write */
 function write(rel, content) { const f = path.join(OUT, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, content); }
+
+function appsData(lang) {
+  const a = APP[lang], cv = parseCv(lang), blog = parseBlog(lang), b = parseBuilder(lang), sc = parseShowcase(lang);
+  const im = x => fixUrls(`src="${x}"`).slice(5, -1);
+  return {
+    ui: { ...a, back: UI[lang].back, close: UI[lang].close, min: UI[lang].min, zoom: UI[lang].zoom, home: url(lang, ''), other: url(lang === 'en' ? 'tr' : 'en', ''), otherShort: UI[lang].langShort, lang },
+    form: FORM_URL,
+    contact: { tel: PHONE.tel, show: PHONE.show, mail: 'berkaypsy@gmail.com', linkedin: LINKS[0].href, github: LINKS[1].href, site: ORIGIN },
+    about: seo(lang, '', {}).description,
+    focus: TITLES[lang],
+    cv: { experience: cv[0].items.map(i => ({ r: i.role, o: i.org, d: i.date })), education: (cv[1] || { items: [] }).items.map(i => ({ r: i.role, o: i.org, d: i.date })) },
+    projects: b.cards.map(c => ({ n: c.name, d: c.desc, u: c.href })),
+    posts: blog.map(p => ({ t: p.title, c: p.cat, d: fmtDate(p.date, lang), e: p.excerpt, u: p.href, i: im(p.img) })),
+    photos: { cats: sc.cats.map(c => ({ id: c.id, l: c.label })), items: sc.items.map(it => ({ t: it.title, c: it.cat.replace(/\s+/g, '-'), cl: it.catLabel, u: it.href, i: im(it.img) })) },
+    sections: SLUGS.map(id => ({ id, n: NAV[lang][id], u: url(lang, id) }))
+  };
+}
 const written = [];
 for (const lang of LANGS) {
   for (const slug of ['', ...SLUGS]) {
@@ -479,6 +554,7 @@ for (const lang of LANGS) {
 function searchIndex(lang) {
   const u = UI[lang], out = [];
   SLUGS.forEach(id => out.push({ t: NAV[lang][id], d: seo(lang, id, WIN[id](lang).meta).description, s: u.goTo, u: url(lang, id), k: 1 }));
+  [...VAPPS, 'mail'].forEach(id => out.push({ t: APP[lang].names[id], d: APP[lang].descs[id], s: APP[lang].apps, u: '#' + id, v: id, k: 1 }));
   parseCv(lang).forEach(g => g.items.forEach(it => out.push({ t: it.role + (it.org ? ' @ ' + it.org : ''), d: `${g.title} · ${it.date}`, s: NAV[lang].cv, u: url(lang, 'cv') })));
   parseBlog(lang).forEach(p => out.push({ t: p.title, d: `${p.cat} · ${fmtDate(p.date, lang)}`, s: NAV[lang].blog, u: p.href, e: 1 }));
   parseShowcase(lang).items.forEach(p => out.push({ t: p.title, d: p.catLabel, s: NAV[lang].showcase, u: p.href, e: 1 }));
@@ -487,6 +563,7 @@ function searchIndex(lang) {
   return out;
 }
 for (const lang of LANGS) write(`search-${lang}.json`, JSON.stringify(searchIndex(lang)));
+for (const lang of LANGS) write(`apps-${lang}.json`, JSON.stringify(appsData(lang)));
 write('manifest.webmanifest', JSON.stringify({
   name: 'Berkay Vuran', short_name: 'Berkay Vuran', description: 'Product leader and builder. CV, showcase, writing and live products.',
   start_url: url('en', ''), scope: url('en', ''), display: 'standalone', background_color: '#14123a', theme_color: '#14123a',
@@ -496,6 +573,9 @@ for (const f of ['icon-192.png', 'icon-512.png', 'apple-touch-icon.png']) { fs.m
 if (fs.existsSync(new URL('./src/og-image.png', import.meta.url))) fs.copyFileSync(new URL('./src/og-image.png', import.meta.url), path.join(OUT, 'og-image.png'));
 fs.copyFileSync(new URL('./src/desk.css', import.meta.url), path.join(OUT, 'desk.css'));
 fs.copyFileSync(new URL('./src/desk.js', import.meta.url), path.join(OUT, 'desk.js'));
+fs.copyFileSync(new URL('./src/extras.css', import.meta.url), path.join(OUT, 'extras.css'));
+fs.copyFileSync(new URL('./src/extras.js', import.meta.url), path.join(OUT, 'extras.js'));
+if (BASE === '') write('sw.js', fs.readFileSync(new URL('./src/sw.js', import.meta.url), 'utf8').replace('__VER__', VER));
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
