@@ -17,6 +17,12 @@ const TITLES = {
   en: ['Product Leader', 'Builder of Things That Scale', 'Conversational AI Strategist', 'Cross-Functional Aligner', 'Data Over Opinions', '0-to-1 Launcher', 'Human-Centered PM', 'PMP® & Scrum Certified', 'Autonomy for Teams', 'AI + ML + Data, Real Workflows', 'Psychology + Product'],
   tr: ['Ürün Lideri', 'Ölçeklenen Şeyler İnşa Ederim', 'Konuşma AI Stratejisti', 'Ekipleri Ortak Hedefte Buluşturan', 'Fikir Değil, Veri', 'Sıfırdan Bire Lansman', 'İnsan Odaklı Ürün Yöneticisi', 'PMP® & Scrum Sertifikalı', 'Ekiplere Otonomi', 'Yapay Zeka + ML + Veri, Gerçek İş Akışları', 'Psikoloji + Ürün']
 };
+const THEMES = [
+  { id: 'dark', e: '🌙', en: 'Night Owl', tr: 'Gece Baykuşu' },
+  { id: 'light', e: '☀️', en: 'Sunshine Mode', tr: 'Güneş Modu' },
+  { id: 'matrix', e: '💚', en: 'Matrix Vibes', tr: 'Matrix Ruhu' },
+  { id: 'high-contrast', e: '⚡', en: 'Zap Mode', tr: 'Şimşek Modu' }
+];
 const SLUGS = ['about', 'cv', 'references', 'showcase', 'blog', 'builder'];
 
 /* ------------------------------------------------------------------ helpers */
@@ -47,8 +53,8 @@ const text = ($, el, lang) => L($, el, lang).text().replace(/\s+/g, ' ').trim();
 const inner = ($, el, lang) => fixUrls((L($, el, lang).html() || '').trim());
 
 const UI = {
-  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Toggle theme', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV', search: 'Search', searchPh: 'Search sections, writing, projects, CV…', searchEmpty: 'No results', searchSections: 'Sections', searchHint: 'to open', goTo: 'Go to' },
-  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Temayı değiştir', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç', search: 'Ara', searchPh: 'Bölümlerde, yazılarda, projelerde, CV’de ara…', searchEmpty: 'Sonuç yok', searchSections: 'Bölümler', searchHint: 'açmak için', goTo: 'Git' }
+  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Theme', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV', search: 'Search', searchPh: 'Search sections, writing, projects, CV…', searchEmpty: 'No results', searchSections: 'Sections', searchHint: 'to open', goTo: 'Go to' },
+  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Tema', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç', search: 'Ara', searchPh: 'Bölümlerde, yazılarda, projelerde, CV’de ara…', searchEmpty: 'Sonuç yok', searchSections: 'Bölümler', searchHint: 'açmak için', goTo: 'Git' }
 };
 const NAV = {
   en: { about: 'About', cv: 'CV', references: 'References', showcase: 'Showcase', blog: 'Blog', builder: 'Builder' },
@@ -358,7 +364,7 @@ function homeWidgets(lang, blog, builder) {
         <li><a href="${url(lang, 'blog')}" data-app="blog"><b>${blog.length}</b><span>${esc(u.articles)}</span></a></li>
         <li><a href="${url(lang, 'references')}" data-app="references"><b>${refTotal}</b><span>${esc(u.refs)}</span></a></li>
         <li><a href="${url(lang, 'showcase')}" data-app="showcase"><b>${sc.items.length}</b><span>${esc(NAV[lang].showcase)}</span></a></li></ul></div>
-      <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 3).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
+      <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase" data-certs="${esc(JSON.stringify(certItems.map(c => ({ t: c.title, i: src(c.img) }))))}"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 6).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
       <a class="widget w-quote w-extra" href="${url(lang, 'references')}" data-app="references" data-quotes="${esc(JSON.stringify(quotes))}"><h2>${esc(u.says)}</h2><blockquote>“${esc(cut(pick.plain, 190))}”</blockquote><span class="w-by"><span class="w-av">${avatarHtml(pick.name, pick.avatar, 34)}</span><span><b>${esc(pick.name)}</b><i>${esc(pick.role)}</i></span></span></a>
   </aside>`;
 }
@@ -380,7 +386,7 @@ function page(lang, slug) {
 <meta name="description" content="${esc(s.description)}">
 <meta name="robots" content="${robots}">
 <meta name="author" content="Berkay Vuran">
-<meta name="theme-color" content="#14123a">
+<meta name="theme-color" content="#0b0f17">
 <link rel="canonical" href="${canonical}">
 <link rel="alternate" hreflang="en" href="${abs('en', slug)}">
 <link rel="alternate" hreflang="tr" href="${abs('tr', slug)}">
@@ -409,7 +415,7 @@ function page(lang, slug) {
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preload" href="/assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${BASE}/desk.css" as="style">
-<script>try{var t=localStorage.getItem('theme');if(!t&&window.matchMedia('(prefers-color-scheme: light)').matches)t='light';if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>try{var T=['dark','light','matrix','high-contrast'],t=localStorage.getItem('theme');if(T.indexOf(t)<0)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <link rel="stylesheet" href="${BASE}/desk.css">
 <script type="application/ld+json">${jsonLd(lang, slug, data, s)}</script>
 </head>`;
@@ -419,11 +425,11 @@ function page(lang, slug) {
 <div class="wallpaper" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="none"><path d="M0 520C300 440 520 640 820 640S1280 440 1440 500"/><path d="M0 640C320 560 560 780 860 780S1300 580 1440 620"/><path d="M0 760C340 700 600 860 900 860S1320 720 1440 750"/></svg></div>
 <header class="menubar">
   <div class="mb-left"><a class="mb-logo" href="${url(lang, '')}" data-app="home" aria-label="${esc(u.home)}">BV</a><strong class="mb-app" id="mb-app">${esc(slug ? NAV[lang][slug] : 'Berkay Vuran')}</strong><nav class="mb-menu" aria-label="${esc(u.menuLabel)}">${menu}</nav></div>
-  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><button class="mb-theme" type="button" aria-label="${esc(u.theme)}">${svg('sun')}</button><time class="mb-clock" id="clock"></time></div>
+  <div class="mb-right"><button class="mb-search" type="button" aria-label="${esc(u.search)}" aria-haspopup="dialog" data-ph="${esc(u.searchPh)}" data-empty="${esc(u.searchEmpty)}" data-sections="${esc(u.searchSections)}" data-hint="${esc(u.searchHint)}">${svg('search')}<kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="${url(other, slug)}" hreflang="${other}" lang="${other}" aria-label="${esc(u.langLabel)}">${u.langShort}</a><div class="mb-themewrap"><button class="mb-theme" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(u.theme)}"><span class="th-e" aria-hidden="true">🌙</span><span class="th-n">${esc(THEMES[0][lang])}</span></button><ul class="theme-menu" role="menu" aria-label="${esc(u.theme)}" hidden>${THEMES.map(t => `<li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="${t.id}" data-emoji="${t.e}" data-name="${esc(t[lang])}"><span class="te" aria-hidden="true">${t.e}</span><span>${esc(t[lang])}</span><span class="tc" aria-hidden="true">✓</span></button></li>`).join('')}</ul></div><time class="mb-clock" id="clock"></time></div>
 </header>
 <main class="desktop" id="main">
   <div class="hello">
-    <img src="/assets/images/avatars/my-avatar-160.webp" alt="Berkay Vuran" width="96" height="96" fetchpriority="high">
+    <img src="/assets/images/avatars/my-avatar-160.webp" srcset="/assets/images/avatars/my-avatar-160.webp 160w, /assets/images/avatars/my-avatar.png 540w" sizes="(min-width:1100px) 168px, 96px" alt="Berkay Vuran" width="168" height="168" fetchpriority="high">
     ${slug ? '<p class="hello-name">Berkay Vuran</p>' : '<h1 class="hello-name">Berkay Vuran</h1>'}
     <p class="hello-sub" data-titles="${esc(JSON.stringify(TITLES[lang]))}"><span class="sr-only">${esc(u.tagline)}</span><span class="tw" aria-hidden="true">${esc(u.tagline)}</span><span class="cursor" aria-hidden="true">|</span></p>
     ${slug ? '' : `<p class="hello-bio">${esc(seo(lang, '', {}).description)}</p>`}
