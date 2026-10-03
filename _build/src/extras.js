@@ -37,6 +37,62 @@
   document.addEventListener('desk:open', function () { blip(520, 820, 0.14); });
   document.addEventListener('desk:close', function () { blip(640, 360, 0.12); });
 
+  /* ---------- music (generative, synthesized in WebAudio: no audio files) ---------- */
+  var tr0 = lang === 'tr';
+  var TRACKS = [
+    { n: tr0 ? 'Lo-fi Yağmur' : 'Lo-fi Rain', bpm: 70, w: 'triangle', lp: 1100, arp: 2, ch: [[57, 60, 64, 67], [53, 57, 60, 64], [48, 52, 55, 59], [55, 59, 62, 64]] },
+    { n: tr0 ? 'Gece Sürüşü' : 'Midnight Drive', bpm: 98, w: 'sawtooth', lp: 1700, arp: 2, ch: [[50, 53, 57, 62], [46, 50, 53, 58], [53, 57, 60, 65], [48, 52, 55, 60]] },
+    { n: tr0 ? 'Pazar Piyanosu' : 'Sunday Piano', bpm: 60, w: 'sine', lp: 2600, arp: 1, ch: [[48, 52, 55, 64], [45, 52, 57, 64], [53, 57, 60, 65], [55, 59, 62, 67]] },
+    { n: tr0 ? 'Derin Uzay' : 'Deep Space', bpm: 44, w: 'triangle', lp: 700, arp: 0, ch: [[50, 57, 62, 64], [45, 52, 57, 59], [43, 50, 55, 62], [48, 55, 60, 62]] }
+  ];
+  var music = { cur: -1, g: null, timer: null };
+  var mcur = store.get('music'); mcur = mcur === 'off' ? -1 : (parseInt(mcur || '0', 10) || 0); if (mcur >= TRACKS.length) mcur = 0;
+  function ctx() { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); return actx; }
+  function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+  function note(c, dst, type, f, t, dur, gain, att) {
+    var o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(gain, t + att); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(dst); o.start(t); o.stop(t + dur + 0.05);
+  }
+  function stopMusic() {
+    if (music.timer) { clearInterval(music.timer); music.timer = null; }
+    if (music.g) {
+      var g = music.g, c = actx; music.g = null;
+      try { g.gain.cancelScheduledValues(c.currentTime); g.gain.setValueAtTime(g.gain.value, c.currentTime); g.gain.linearRampToValueAtTime(0, c.currentTime + 0.5); setTimeout(function () { try { g.disconnect(); } catch (e) {} }, 700); } catch (e) {}
+    }
+    music.cur = -1;
+  }
+  function startMusic(i) {
+    stopMusic();
+    var T = TRACKS[i]; if (!T) return;
+    try {
+      var c = ctx(); if (c.state === 'suspended') c.resume();
+      var m = c.createGain(), f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = T.lp;
+      m.gain.setValueAtTime(0, c.currentTime); m.gain.linearRampToValueAtTime(0.5, c.currentTime + 1.5);
+      m.connect(f); f.connect(c.destination); music.g = m; music.cur = i;
+      var step = 60 / T.bpm, next = c.currentTime + 0.1, idx = 0;
+      function chord() {
+        var ch = T.ch[idx++ % T.ch.length], t = next, len = step * 4;
+        note(c, m, 'sine', hz(ch[0] - 12), t, len, 0.16, 0.05);
+        for (var v = 0; v < ch.length; v++) note(c, m, T.w, hz(ch[v]), t, len + 0.6, 0.05, T.arp ? 0.25 : 1.2);
+        for (var k = 0; k < 4 * T.arp; k++) note(c, m, 'sine', hz(ch[(k * 3 + (k >> 2)) % ch.length] + 12), t + k * step / T.arp, step * 1.1, 0.07, 0.01);
+        next += len;
+      }
+      music.timer = setInterval(function () { while (next < c.currentTime + 1.6) chord(); }, 400);
+      while (next < c.currentTime + 1.6) chord();
+    } catch (e) { stopMusic(); }
+  }
+  function setMusic(i) { mcur = i; store.set('music', i < 0 ? 'off' : String(i)); if (i < 0) stopMusic(); else startMusic(i); document.dispatchEvent(new Event('desk:music')); }
+  /* browsers block audio until a gesture: start on the first click, key or tap (the lock screen counts) */
+  ['pointerdown', 'keydown', 'touchend'].forEach(function (ev) {
+    document.addEventListener(ev, function first() {
+      ['pointerdown', 'keydown', 'touchend'].forEach(function (e2) { document.removeEventListener(e2, first, true); });
+      if (mcur >= 0 && music.cur < 0) { startMusic(mcur); document.dispatchEvent(new Event('desk:music')); }
+    }, true);
+  });
+  document.addEventListener('visibilitychange', function () { if (!actx || music.cur < 0) return; if (document.hidden) actx.suspend(); else actx.resume(); });
+
   /* ---------- display brightness (dim overlay) ---------- */
   var dim = el('div', 'dim'); dim.setAttribute('aria-hidden', 'true'); body.appendChild(dim);
   var bright = parseInt(store.get('bright') || '100', 10); if (!(bright >= 40 && bright <= 100)) bright = 100;
@@ -51,7 +107,7 @@
     if (n === 'default') root.removeAttribute('data-wp'); else root.setAttribute('data-wp', n);
     store.set('wp', n); return true;
   }
-  D.prefs = { WALLS: WALLS, wall: wall, setWall: setWall, bright: function () { return bright; }, setBright: setBright, vol: function () { return vol; }, setVol: function (v) { vol = v; store.set('sound', String(v)); }, blip: function () { blip(520, 820, 0.14); } };
+  D.prefs = { music: { tracks: TRACKS.map(function (t) { return t.n; }), cur: function () { return mcur; }, set: setMusic, label: tr0 ? 'Müzik' : 'Music', off: tr0 ? 'Kapalı' : 'Off' }, WALLS: WALLS, wall: wall, setWall: setWall, bright: function () { return bright; }, setBright: setBright, vol: function () { return vol; }, setVol: function (v) { vol = v; store.set('sound', String(v)); }, blip: function () { blip(520, 820, 0.14); } };
   var THEME_ALIAS = { dark: 'dark', light: 'light', matrix: 'matrix', zap: 'high-contrast', 'high-contrast': 'high-contrast' };
 
   /* ---------- popover plumbing ---------- */
@@ -679,6 +735,31 @@
     }, { passive: false });
   })();
 
+  /* ================= menubar music popover ================= */
+  (function musicMenu() {
+    var btn = document.querySelector('.mb-music'); if (!btn) return;
+    btn.hidden = false;
+    var pop = el('div', 'cc mp'); pop.hidden = true; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', btn.getAttribute('aria-label')); body.appendChild(pop);
+    var P = D.prefs.music;
+    function paint() {
+      btn.classList.toggle('on', P.cur() >= 0);
+      pop.querySelectorAll('[data-i]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-i') === P.cur() ? 'true' : 'false'); });
+    }
+    pop.innerHTML = '<p class="cc-h">' + P.label + '</p>' + P.tracks.map(function (n, i) { return '<button type="button" class="mp-row" data-i="' + i + '" aria-pressed="false"><span>' + n + '</span><span class="ck">✓</span></button>'; }).join('') + '<button type="button" class="mp-row" data-i="-1" aria-pressed="false"><span>' + P.off + '</span><span class="ck">✓</span></button>';
+    pop.addEventListener('click', function (e) { e.stopPropagation(); var b = e.target.closest('[data-i]'); if (!b) return; P.set(+b.getAttribute('data-i')); paint(); });
+    document.addEventListener('desk:music', paint);
+    var api = {
+      close: function () { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); },
+      open: function () { closeAll(api); var r = btn.getBoundingClientRect(); pop.style.right = 'auto'; pop.style.left = Math.max(8, Math.min(r.left, innerWidth - 258)) + 'px'; paint(); pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); },
+      isOpen: function () { return !pop.hidden; }
+    };
+    pops.push(api);
+    btn.addEventListener('click', function (e) { e.stopPropagation(); if (api.isOpen()) api.close(); else api.open(); });
+    document.addEventListener('click', function (e) { if (api.isOpen() && !e.target.closest('.mp, .mb-music')) api.close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && api.isOpen()) { api.close(); btn.focus(); e.stopPropagation(); } }, true);
+    paint();
+  })();
+
   /* ---------- weather widget (Open-Meteo, no key). Istanbul by default; "use my location" asks the browser ---------- */
   (function weather() {
     var w = document.querySelector('[data-weather]'); if (!w) return;
@@ -689,12 +770,33 @@
     var cur = loc && typeof loc.lat === 'number' ? loc : DEF, last = null;
     var btn = el('button', 'wx-loc'); btn.type = 'button'; btn.textContent = '📍 ' + (tr ? 'Konumumu kullan' : 'Use my location'); btn.title = tr ? 'Tarayıcı konum izni ister. Konum yalnızca bu tarayıcıda kalır.' : 'Your browser will ask for permission. Your location stays in this browser.';
     w.appendChild(btn);
+    var chip = document.querySelector('.mb-wx'), wp = null, wpBtn = null;
+    if (chip) {
+      wp = el('div', 'cc mp'); wp.hidden = true; wp.setAttribute('role', 'dialog'); wp.setAttribute('aria-label', chip.getAttribute('aria-label'));
+      wp.innerHTML = '<div class="mp-wx"><span class="wx-e" aria-hidden="true"></span><span><b></b><small></small></span></div>'; body.appendChild(wp);
+      wpBtn = el('button', 'wx-loc'); wpBtn.type = 'button'; wpBtn.textContent = btn.textContent; wpBtn.title = btn.title; wp.appendChild(wpBtn);
+      var wapi = {
+        close: function () { wp.hidden = true; chip.setAttribute('aria-expanded', 'false'); },
+        open: function () { closeAll(wapi); var r = chip.getBoundingClientRect(); wp.style.right = 'auto'; wp.style.left = Math.max(8, Math.min(r.left, innerWidth - 258)) + 'px'; wp.hidden = false; chip.setAttribute('aria-expanded', 'true'); },
+        isOpen: function () { return !wp.hidden; }
+      };
+      pops.push(wapi);
+      chip.addEventListener('click', function (e) { e.stopPropagation(); if (wapi.isOpen()) wapi.close(); else wapi.open(); });
+      document.addEventListener('click', function (e) { if (wapi.isOpen() && !e.target.closest('.mp, .mb-wx')) wapi.close(); });
+      wpBtn.addEventListener('click', function (e) { e.stopPropagation(); btn.click(); });
+    }
     function show(d) {
       last = d; var c = d.weather_code, row = W[W.length - 1]; for (var i = 0; i < W.length; i++) { if (c <= W[i][0]) { row = W[i]; break; } }
       w.querySelector('.wx-e').textContent = (c === 0 && !d.is_day) ? '🌙' : row[1];
       w.querySelector('b').textContent = Math.round(d.temperature_2m) + '°C';
       w.querySelector('small').textContent = cur.city + ' · ' + row[tr ? 3 : 2];
       btn.hidden = cur !== DEF; w.hidden = false;
+      if (chip) {
+        var tmp = Math.round(d.temperature_2m) + '°', em = w.querySelector('.wx-e').textContent;
+        chip.querySelector('.wx-e').textContent = em; chip.querySelector('b').textContent = tmp; chip.hidden = false;
+        wp.querySelector('.wx-e').textContent = em; wp.querySelector('b').textContent = Math.round(d.temperature_2m) + '°C'; wp.querySelector('small').textContent = cur.city + ' · ' + row[tr ? 3 : 2];
+        wpBtn.hidden = cur !== DEF;
+      }
     }
     function key() { return cur.lat.toFixed(2) + ',' + cur.lon.toFixed(2); }
     function load() {
