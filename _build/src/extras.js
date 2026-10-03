@@ -475,8 +475,21 @@
           return;
         }
         var bodyTxt = msg + (name || email ? '\n\n' + (name ? name + '\n' : '') + email : '');
-        st.textContent = m.opening + ' ' + c.mail;
-        location.href = 'mailto:' + c.mail + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(bodyTxt);
+        var q = encodeURIComponent(subj), bd = encodeURIComponent(bodyTxt), to = encodeURIComponent(c.mail);
+        var gmail = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + q + '&body=' + bd;
+        var outlook = 'https://outlook.live.com/mail/0/deeplink/compose?to=' + to + '&subject=' + q + '&body=' + bd;
+        var mailto = 'mailto:' + c.mail + '?subject=' + q + '&body=' + bd;
+        st.textContent = m.opening + ' ';
+        [['Gmail', gmail, 1], ['Outlook', outlook, 1], [m.mailApp, mailto, 0]].forEach(function (x, i) {
+          if (i) st.appendChild(document.createTextNode(' · '));
+          var a = link(x[0], x[1], x[2]); st.appendChild(a);
+        });
+        st.appendChild(document.createTextNode(' · '));
+        var cb = el('button', 'ml-copy', m.copyMsg); cb.type = 'button';
+        cb.addEventListener('click', function () { var t = subj + '\n\n' + bodyTxt, done = function () { cb.textContent = m.copied; }; if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, done); else done(); });
+        st.appendChild(cb);
+        /* desktop: webmail is the safe default (many computers have no mail app); phones: native mail app */
+        if (window.matchMedia('(hover:hover) and (pointer:fine)').matches) window.open(gmail, '_blank', 'noopener'); else location.href = mailto;
       });
     }
   };

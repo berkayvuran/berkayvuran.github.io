@@ -188,3 +188,5 @@
 @keyframes flash{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 3px transparent}}
 .flash{animation:flash 1.4s ease-out;border-radius:12px}
 @media (max-width:699px){.side-sub2{display:none!important}}
+.ml-st a{color:var(--accent);text-decoration:underline}
+.ml-st .ml-copy{vertical-align:baseline}

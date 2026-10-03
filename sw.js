@@ -1,5 +1,5 @@
 /* berkayvuran.com service worker: offline-friendly, never serves stale pages while online. */
-const V = 'bv-554ba09f';
+const V = 'bv-9e35feef';
 const SHELL = ['/', '/tr/', '/desk.css', '/desk.js', '/extras.css', '/extras.js', '/apps-en.json', '/apps-tr.json', '/assets/images/avatars/my-avatar-160.webp', '/assets/fonts/poppins-400.woff2', '/assets/fonts/poppins-500.woff2', '/assets/fonts/poppins-600.woff2'];
 
 self.addEventListener('install', e => {
