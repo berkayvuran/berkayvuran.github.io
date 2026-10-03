@@ -121,7 +121,7 @@ const APP = {
     lock: { hint: 'Click or press any key to enter', hintTouch: 'Tap to enter' },
     ql: { open: 'Open', close: 'Close', prev: 'Previous', next: 'Next', hint: 'Space to close' },
     ctx: { terminal: 'Open Terminal', search: 'Search…', wallpaper: 'Wallpaper', theme: 'Theme', lock: 'Lock Screen', cc: 'Control Center', about: 'About this site' },
-    mail: { newMsg: 'New Message', to: 'To', name: 'Your name', email: 'Your email', subject: 'Subject', message: 'Message', send: 'Send', sending: 'Sending…', sent: 'Thank you! Your message is on its way.', opening: 'Your mail app should open now. If not, write to', copy: 'Copy address', copied: 'Copied', required: 'Please add your email and a message.', failed: 'Could not send. Please email directly:', subjectDefault: 'Hello from berkayvuran.com', or: 'Or reach me directly', again: 'Write another' },
+    mail: { newMsg: 'New Message', to: 'To', name: 'Your name', email: 'Your email', subject: 'Subject', message: 'Message', send: 'Send', sending: 'Sending…', sent: 'Thank you! Your message is on its way.', opening: 'Your message is ready. If nothing opened, send it with:', mailApp: 'Mail app', copyMsg: 'Copy message', copy: 'Copy address', copied: 'Copied', required: 'Please add your email and a message.', failed: 'Could not send. Please email directly:', subjectDefault: 'Hello from berkayvuran.com', or: 'Or reach me directly', again: 'Write another' },
     notes: { all: 'All Notes', read: 'Read the full article', back: 'Notes', pick: 'Pick a note on the left' },
     photos: { all: 'All', open: 'Open' },
     term: {
@@ -141,7 +141,7 @@ const APP = {
     lock: { hint: 'Girmek için tıkla veya bir tuşa bas', hintTouch: 'Girmek için dokun' },
     ql: { open: 'Aç', close: 'Kapat', prev: 'Önceki', next: 'Sonraki', hint: 'Kapatmak için Boşluk' },
     ctx: { terminal: 'Terminal’i aç', search: 'Ara…', wallpaper: 'Duvar kâğıdı', theme: 'Tema', lock: 'Ekranı Kilitle', cc: 'Denetim Merkezi', about: 'Bu site hakkında' },
-    mail: { newMsg: 'Yeni İleti', to: 'Kime', name: 'Adın', email: 'E-posta adresin', subject: 'Konu', message: 'Mesaj', send: 'Gönder', sending: 'Gönderiliyor…', sent: 'Teşekkürler! Mesajın yolda.', opening: 'E-posta uygulaman şimdi açılmalı. Açılmazsa şuraya yaz:', copy: 'Adresi kopyala', copied: 'Kopyalandı', required: 'Lütfen e-posta adresini ve mesajını ekle.', failed: 'Gönderilemedi. Doğrudan e-posta at:', subjectDefault: 'berkayvuran.com’dan merhaba', or: 'Ya da doğrudan ulaş', again: 'Bir tane daha yaz' },
+    mail: { newMsg: 'Yeni İleti', to: 'Kime', name: 'Adın', email: 'E-posta adresin', subject: 'Konu', message: 'Mesaj', send: 'Gönder', sending: 'Gönderiliyor…', sent: 'Teşekkürler! Mesajın yolda.', opening: 'Mesajın hazır. Hiçbir şey açılmadıysa şunlardan biriyle gönder:', mailApp: 'Posta uygulaması', copyMsg: 'Mesajı kopyala', copy: 'Adresi kopyala', copied: 'Kopyalandı', required: 'Lütfen e-posta adresini ve mesajını ekle.', failed: 'Gönderilemedi. Doğrudan e-posta at:', subjectDefault: 'berkayvuran.com’dan merhaba', or: 'Ya da doğrudan ulaş', again: 'Bir tane daha yaz' },
     notes: { all: 'Tüm Notlar', read: 'Yazının tamamını oku', back: 'Notlar', pick: 'Soldan bir not seç' },
     photos: { all: 'Tümü', open: 'Aç' },
     term: {
