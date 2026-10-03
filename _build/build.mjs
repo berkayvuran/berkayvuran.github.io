@@ -364,7 +364,7 @@ function homeWidgets(lang, blog, builder) {
         <li><a href="${url(lang, 'blog')}" data-app="blog"><b>${blog.length}</b><span>${esc(u.articles)}</span></a></li>
         <li><a href="${url(lang, 'references')}" data-app="references"><b>${refTotal}</b><span>${esc(u.refs)}</span></a></li>
         <li><a href="${url(lang, 'showcase')}" data-app="showcase"><b>${sc.items.length}</b><span>${esc(NAV[lang].showcase)}</span></a></li></ul></div>
-      <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase" data-certs="${esc(JSON.stringify(certItems.map(c => ({ t: c.title, i: src(c.img) }))))}"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 6).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
+      <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase" data-certs="${esc(JSON.stringify(certItems.map(c => ({ t: c.title, i: src(c.img.replace('/portfolio/', '/portfolio/t/')) }))))}"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 6).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
       <a class="widget w-quote w-extra" href="${url(lang, 'references')}" data-app="references" data-quotes="${esc(JSON.stringify(quotes))}"><h2>${esc(u.says)}</h2><blockquote>“${esc(cut(pick.plain, 190))}”</blockquote><span class="w-by"><span class="w-av">${avatarHtml(pick.name, pick.avatar, 34)}</span><span><b>${esc(pick.name)}</b><i>${esc(pick.role)}</i></span></span></a>
   </aside>`;
 }
@@ -429,7 +429,7 @@ function page(lang, slug) {
 </header>
 <main class="desktop" id="main">
   <div class="hello">
-    <img src="/assets/images/avatars/my-avatar-160.webp" srcset="/assets/images/avatars/my-avatar-160.webp 160w, /assets/images/avatars/my-avatar.png 540w" sizes="(min-width:1100px) 168px, 96px" alt="Berkay Vuran" width="168" height="168" fetchpriority="high">
+    <img src="/assets/images/avatars/my-avatar-160.webp" srcset="/assets/images/avatars/my-avatar-160.webp 160w, /assets/images/avatars/my-avatar-336.webp 336w" sizes="(min-width:1100px) 168px, 96px" alt="Berkay Vuran" width="168" height="168" fetchpriority="high">
     ${slug ? '<p class="hello-name">Berkay Vuran</p>' : '<h1 class="hello-name">Berkay Vuran</h1>'}
     <p class="hello-sub" data-titles="${esc(JSON.stringify(TITLES[lang]))}"><span class="sr-only">${esc(u.tagline)}</span><span class="tw" aria-hidden="true">${esc(u.tagline)}</span><span class="cursor" aria-hidden="true">|</span></p>
     ${slug ? '' : `<p class="hello-bio">${esc(seo(lang, '', {}).description)}</p>`}
