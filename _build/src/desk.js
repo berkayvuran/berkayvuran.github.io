@@ -93,7 +93,7 @@
       if (a.getAttribute('data-filter') === id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
     });
     win.querySelectorAll('[data-cat]').forEach(function (n) { n.hidden = !(id === 'all' || n.getAttribute('data-cat') === id); });
-    win.querySelectorAll('[data-group]').forEach(function (n) { n.hidden = n.getAttribute('data-group') !== id; });
+    win.querySelectorAll('[data-group]').forEach(function (n) { n.hidden = !(id === 'all' || n.getAttribute('data-group') === id); });
     var main = win.querySelector('.win-main'); if (main) main.scrollTop = 0;
   }
 
