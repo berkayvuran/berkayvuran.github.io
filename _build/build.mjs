@@ -13,6 +13,10 @@ const INDEXABLE = args.index === 'true';
 const ORIGIN = 'https://berkayvuran.com';
 const TODAY = new Date().toISOString().slice(0, 10);
 const LANGS = ['en', 'tr'];
+const TITLES = {
+  en: ['Product Leader', 'Builder of Things That Scale', 'Conversational AI Strategist', 'Cross-Functional Aligner', 'Data Over Opinions', '0-to-1 Launcher', 'Human-Centered PM', 'PMP® & Scrum Certified', 'Autonomy for Teams', 'AI + ML + Data, Real Workflows', 'Psychology + Product'],
+  tr: ['Ürün Lideri', 'Ölçeklenen Şeyler İnşa Ederim', 'Konuşma AI Stratejisti', 'Ekipleri Ortak Hedefte Buluşturan', 'Fikir Değil, Veri', 'Sıfırdan Bire Lansman', 'İnsan Odaklı Ürün Yöneticisi', 'PMP® & Scrum Sertifikalı', 'Ekiplere Otonomi', 'Yapay Zeka + ML + Veri, Gerçek İş Akışları', 'Psikoloji + Ürün']
+};
 const SLUGS = ['about', 'cv', 'references', 'showcase', 'blog', 'builder'];
 
 /* ------------------------------------------------------------------ helpers */
@@ -39,8 +43,8 @@ const text = ($, el, lang) => L($, el, lang).text().replace(/\s+/g, ' ').trim();
 const inner = ($, el, lang) => fixUrls((L($, el, lang).html() || '').trim());
 
 const UI = {
-  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Toggle theme', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast' },
-  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Temayı değiştir', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı' }
+  en: { home: 'Home', folders: 'Folders', all: 'All', items: 'items', back: 'Home', close: 'Close', min: 'Minimize', zoom: 'Zoom', menuLabel: 'Sections', skip: 'Skip to content', theme: 'Toggle theme', langLabel: 'Türkçe', langShort: 'TR', read: 'Read more', role: 'Product leader & builder', latest: 'Latest writing', liveProducts: 'live products', productsSub: 'Apps, games & tools built with AI', open: 'Open', download: 'Download PDF', more: 'More', external: 'opens in a new tab', tagline: 'Multi disciplinary product enthusiast', now: 'Currently', glance: 'At a glance', says: 'What people say', certs: 'Certifications', products: 'Products', articles: 'Articles', refs: 'References', certsN: 'Certificates', viewCv: 'Open CV' },
+  tr: { home: 'Ana ekran', folders: 'Klasörler', all: 'Tümü', items: 'öğe', back: 'Ana ekran', close: 'Kapat', min: 'Küçült', zoom: 'Büyüt', menuLabel: 'Bölümler', skip: 'İçeriğe geç', theme: 'Temayı değiştir', langLabel: 'English', langShort: 'EN', read: 'Devamını oku', role: 'Ürün lideri ve üretici', latest: 'Son yazılar', liveProducts: 'canlı ürün', productsSub: 'AI ile inşa edilmiş uygulama ve araçlar', open: 'Aç', download: 'PDF indir', more: 'Daha fazla', external: 'yeni sekmede açılır', tagline: 'Çok disiplinli ürün meraklısı', now: 'Şu an', glance: 'Bir bakışta', says: 'Ne diyorlar', certs: 'Sertifikalar', products: 'Ürün', articles: 'Yazı', refs: 'Referans', certsN: 'Sertifika', viewCv: 'CV’yi aç' }
 };
 const NAV = {
   en: { about: 'About', cv: 'CV', references: 'References', showcase: 'Showcase', blog: 'Blog', builder: 'Builder' },
@@ -331,9 +335,30 @@ function windowHtml(lang, slug, w) {
 
 function homeWidgets(lang, blog, builder) {
   const u = UI[lang];
+  const cv = parseCv(lang)[0].items[0];
+  const refs = parseRefs(lang);
+  const refTotal = refs.reduce((n, g) => n + g.items.length, 0);
+  const pick = refs.flatMap(g => g.items.map(i => ({ ...i, org: g.label }))).find(i => i.plain.length > 160) || refs[0].items[0];
+  const cut = (t, n) => { if (t.length <= n) return t; const c = t.slice(0, n); return c.slice(0, c.lastIndexOf(' ')) + '…'; };
+  const quotes = refs.flatMap(g => g.items).filter(i => i.plain.length > 60).map(i => ({ t: cut(i.plain, 190), n: i.name, r: i.role, a: i.avatar }));
+  const sc = parseShowcase(lang);
+  const certItems = sc.items.filter(i => i.cat === 'certifications');
+  const src = x => fixUrls(`src="${x}"`).slice(5, -1);
   return `<aside class="widgets" aria-label="Highlights">
-    <a class="widget w-builder" href="${url(lang, 'builder')}" data-app="builder"><span class="w-badge">Product Builder</span><b>${builder.cards.length} ${esc(u.liveProducts)} →</b><span>${esc(u.productsSub)}</span></a>
-    <section class="widget w-posts"><h2>${esc(u.latest)}</h2><ul role="list">${blog.slice(0, 3).map(p => `<li><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.title)}</b><time datetime="${esc(p.date)}">${esc(fmtDate(p.date, lang))}</time></a></li>`).join('')}</ul></section>
+    <div class="wcol">
+      <a class="widget w-builder" href="${url(lang, 'builder')}" data-app="builder"><span class="w-badge">Product Builder</span><b>${builder.cards.length} ${esc(u.liveProducts)} →</b><span>${esc(u.productsSub)}</span></a>
+      <section class="widget w-posts"><h2>${esc(u.latest)}</h2><ul role="list">${blog.slice(0, 3).map(p => `<li><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.title)}</b><time datetime="${esc(p.date)}">${esc(fmtDate(p.date, lang))}</time></a></li>`).join('')}</ul></section>
+      <a class="widget w-certs w-extra" href="${url(lang, 'showcase')}" data-app="showcase"><h2>${esc(u.certs)}</h2><span class="w-thumbs">${certItems.slice(0, 3).map(c => `<img src="${esc(src(c.img))}" alt="${esc(c.title)}" width="120" height="68" loading="lazy">`).join('')}</span><span class="w-foot"><b>${certItems.length}</b> ${esc(u.certsN)}</span></a>
+    </div>
+    <div class="wcol">
+      <a class="widget w-now" href="${url(lang, 'cv')}" data-app="cv"><h2>${esc(u.now)}</h2><b>${esc(cv.role)}</b><span>${esc(cv.org)}${cv.date ? ' · ' + esc(cv.date) : ''}</span><em>${esc(u.viewCv)} →</em></a>
+      <div class="widget w-stats"><h2>${esc(u.glance)}</h2><ul role="list">
+        <li><a href="${url(lang, 'builder')}" data-app="builder"><b>${builder.cards.length}</b><span>${esc(u.products)}</span></a></li>
+        <li><a href="${url(lang, 'blog')}" data-app="blog"><b>${blog.length}</b><span>${esc(u.articles)}</span></a></li>
+        <li><a href="${url(lang, 'references')}" data-app="references"><b>${refTotal}</b><span>${esc(u.refs)}</span></a></li>
+        <li><a href="${url(lang, 'showcase')}" data-app="showcase"><b>${sc.items.length}</b><span>${esc(NAV[lang].showcase)}</span></a></li></ul></div>
+      <a class="widget w-quote w-extra" href="${url(lang, 'references')}" data-app="references" data-quotes="${esc(JSON.stringify(quotes))}"><h2>${esc(u.says)}</h2><blockquote>“${esc(cut(pick.plain, 190))}”</blockquote><span class="w-by"><img src="${esc(pick.avatar)}" alt="" width="34" height="34" loading="lazy"><span><b>${esc(pick.name)}</b><i>${esc(pick.role)}</i></span></span></a>
+    </div>
   </aside>`;
 }
 
@@ -390,7 +415,7 @@ function page(lang, slug) {
   <div class="hello">
     <img src="/assets/images/avatars/my-avatar-160.webp" alt="Berkay Vuran" width="96" height="96" fetchpriority="high">
     ${slug ? '<p class="hello-name">Berkay Vuran</p>' : '<h1 class="hello-name">Berkay Vuran</h1>'}
-    <p class="hello-sub">${esc(u.tagline)}</p>
+    <p class="hello-sub" data-titles="${esc(JSON.stringify(TITLES[lang]))}"><span class="sr-only">${esc(u.tagline)}</span><span class="tw" aria-hidden="true">${esc(u.tagline)}</span><span class="cursor" aria-hidden="true">|</span></p>
     ${slug ? '' : `<p class="hello-bio">${esc(seo(lang, '', {}).description)}</p>`}
   </div>
   ${homeWidgets(lang, blog, builder)}

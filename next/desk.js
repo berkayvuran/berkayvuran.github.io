@@ -71,6 +71,45 @@
     }
   }
 
+  /* ---------- typewriter title ---------- */
+  var twTimer = null;
+  function typewriter() {
+    clearTimeout(twTimer);
+    var host = document.querySelector('.hello-sub[data-titles]');
+    if (!host || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var out = host.querySelector('.tw'), titles;
+    try { titles = JSON.parse(host.getAttribute('data-titles')); } catch (e) { return; }
+    var i = 0, n = 0, del = false;
+    out.textContent = '';
+    (function step() {
+      if (!document.body.contains(out)) return;
+      var full = titles[i];
+      if (del) {
+        out.textContent = full.slice(0, --n);
+        if (n === 0) { del = false; i = (i + 1) % titles.length; twTimer = setTimeout(step, 300); return; }
+        twTimer = setTimeout(step, 40);
+      } else {
+        out.textContent = full.slice(0, ++n);
+        if (n === full.length) { del = true; twTimer = setTimeout(step, 1500); return; }
+        twTimer = setTimeout(step, 80);
+      }
+    })();
+  }
+
+  /* ---------- random testimonial ---------- */
+  function randomQuote() {
+    var w = document.querySelector('.w-quote[data-quotes]');
+    if (!w) return;
+    var list; try { list = JSON.parse(w.getAttribute('data-quotes')); } catch (e) { return; }
+    if (!list || list.length < 2) return;
+    var bq = w.querySelector('blockquote'), cur = bq.textContent, q, tries = 0;
+    do { q = list[Math.floor(Math.random() * list.length)]; tries++; } while (('\u201c' + q.t + '\u201d') === cur && tries < 8);
+    bq.textContent = '\u201c' + q.t + '\u201d';
+    var img = w.querySelector('.w-by img'); img.src = q.a;
+    w.querySelector('.w-by b').textContent = q.n;
+    w.querySelector('.w-by i').textContent = q.r;
+  }
+
   /* ---------- soft navigation ---------- */
   function fetchDoc(href) {
     if (cache.has(href)) return cache.get(href);
@@ -111,6 +150,7 @@
     syncHead(doc);
     if (push) history.pushState({ soft: 1 }, '', href);
     initWindow(win);
+    typewriter(); randomQuote();
     var h = win ? win.querySelector('h1') : document.querySelector('.hello-name');
     if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
     if (!win) { var d = document.querySelector('.desktop'); if (d) d.scrollTop = 0; }
@@ -140,4 +180,5 @@
   });
 
   initWindow(document.getElementById('win'));
+  typewriter(); randomQuote();
 })();
