@@ -6,6 +6,8 @@ import * as cheerio from 'cheerio';
 import fs from 'fs';
 import path from 'path';
 
+import { createHash } from 'node:crypto';
+const VER = createHash('md5').update(fs.readFileSync(new URL('./src/desk.css', import.meta.url))).update(fs.readFileSync(new URL('./src/desk.js', import.meta.url))).digest('hex').slice(0, 8);
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, ...v] = a.replace(/^--/, '').split('='); return [k, v.join('=')]; }));
 const BASE = args.base ?? '/next';
 const OUT = path.resolve(args.out ?? '../next');
@@ -224,7 +226,7 @@ function winAbout(lang) {
 function winCv(lang) {
   const g = parseCv(lang);
   const pdf = lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf';
-  const side = sidebar(lang, g.map(x => ({ id: x.id, label: x.title, count: x.items.length })), 'experience');
+  const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: g.reduce((n, x) => n + x.items.length, 0) }, ...g.map(x => ({ id: x.id, label: x.title, count: x.items.length }))], 'experience');
   const body = `<div class="toolbar"><a class="btn" href="${pdf}" target="_blank" rel="noopener noreferrer">${svg('download')}<span>${esc(UI[lang].download)}</span></a></div>` +
     g.map(grp => `<section class="group" id="${grp.id}" data-group="${grp.id}" aria-labelledby="${grp.id}-h">
       <h2 class="group-h" id="${grp.id}-h">${esc(grp.title)} <span class="muted">${grp.items.length} ${esc(UI[lang].items)}</span></h2>
@@ -414,9 +416,9 @@ function page(lang, slug) {
 <meta name="apple-mobile-web-app-title" content="Berkay Vuran">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preload" href="/assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="${BASE}/desk.css" as="style">
+<link rel="preload" href="${BASE}/desk.css?v=${VER}" as="style">
 <script>try{var T=['dark','light','matrix','high-contrast'],t=localStorage.getItem('theme');if(T.indexOf(t)<0)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var g=localStorage.getItem('glass');if(g==='off'||(g===null&&window.matchMedia('(prefers-reduced-transparency: reduce)').matches))document.documentElement.setAttribute('data-glass','off')}catch(e){}</script>
-<link rel="stylesheet" href="${BASE}/desk.css">
+<link rel="stylesheet" href="${BASE}/desk.css?v=${VER}">
 <script type="application/ld+json">${jsonLd(lang, slug, data, s)}</script>
 </head>`;
   const menu = SLUGS.map(id => `<a href="${url(lang, id)}" data-app="${id}"${id === slug ? ' aria-current="page"' : ''}>${esc(NAV[lang][id])}</a>`).join('');
@@ -439,7 +441,7 @@ function page(lang, slug) {
   ${slug ? windowHtml(lang, slug, w) : ''}
 </main>
 <nav class="dock" aria-label="Dock">${['about', 'showcase', 'builder', 'blog'].map(id => iconLink(id, lang)).join('')}<span class="dock-sep" aria-hidden="true"></span>${LINKS.map(l => extLink(l, lang)).join('')}</nav>
-<script src="${BASE}/desk.js" defer></script>
+<script src="${BASE}/desk.js?v=${VER}" defer></script>
 </body>`;
   return `<!DOCTYPE html>\n<html lang="${lang}">\n${head}\n${body}\n</html>\n`;
 }

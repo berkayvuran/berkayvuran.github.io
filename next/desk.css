@@ -484,3 +484,4 @@ a,button,summary,.side-item,.icon,.dot,[role="option"],[data-filter],.btn{cursor
 input,textarea,.hello-sub{cursor:text}
 .rz{cursor:nwse-resize}
 }
+.rz::after{content:'';position:absolute;right:5px;bottom:5px;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);opacity:.6;border-radius:0 0 3px 0}
