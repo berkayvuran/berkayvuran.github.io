@@ -15,7 +15,7 @@
   /* ---------- data (fetched once, on demand) ---------- */
   var dataP = null, ui = null;
   D.data = function () {
-    if (!dataP) dataP = fetch(base + '/apps-' + lang + '.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) { ui = d.ui; return d; }).catch(function (e) { dataP = null; throw e; });
+    if (!dataP) dataP = fetch(base + '/apps-' + lang + '.json?v=' + (body.getAttribute('data-v') || '')).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) { ui = d.ui; return d; }).catch(function (e) { dataP = null; throw e; });
     return dataP;
   };
   var warm = function () { D.data().catch(function () {}); };
@@ -107,7 +107,7 @@
       close: function () { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); },
       open: function () {
         D.data().then(function (d) {
-          themeList = d.themes;
+          themeList = d.themes || [{ id: 'dark', e: '🌙', n: 'Dark' }, { id: 'light', e: '☀️', n: 'Light' }, { id: 'matrix', e: '💚', n: 'Matrix' }, { id: 'high-contrast', e: '⚡', n: 'Zap' }];
           if (!built) build();
           closeAll(api); pop.querySelector('[data-lang]').setAttribute('href', D.langHref());
           pop.querySelector('[data-bright]').value = String(bright); paint();

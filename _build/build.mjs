@@ -519,7 +519,7 @@ function page(lang, slug) {
 <script type="application/ld+json">${jsonLd(lang, slug, data, s)}</script>
 </head>`;
   const menu = SLUGS.map(id => `<a href="${url(lang, id)}" data-app="${id}"${id === slug ? ' aria-current="page"' : ''}>${esc(NAV[lang][id])}</a>`).join('');
-  const body = `<body class="desk page-${slug || 'home'}" data-base="${BASE}" data-lang="${lang}" data-home="${url(lang, '')}">
+  const body = `<body class="desk page-${slug || 'home'}" data-v="${VER}" data-base="${BASE}" data-lang="${lang}" data-home="${url(lang, '')}">
 <a class="skip" href="#main">${esc(u.skip)}</a>
 <div class="wallpaper" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="none"><path d="M0 520C300 440 520 640 820 640S1280 440 1440 500"/><path d="M0 640C320 560 560 780 860 780S1300 580 1440 620"/><path d="M0 760C340 700 600 860 900 860S1320 720 1440 750"/></svg></div>
 <header class="menubar">
