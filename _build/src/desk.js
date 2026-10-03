@@ -15,6 +15,43 @@
   }
   tick(); setInterval(tick, 20000);
 
+
+  /* ---------- calendar popover (click the date and time) ---------- */
+  (function calendar() {
+    var btn = document.querySelector('.mb-clock-btn'); if (!btn) return;
+    var loc = lang === 'tr' ? 'tr-TR' : 'en-GB', first = lang === 'tr' ? 1 : 0;
+    var pop = document.createElement('div');
+    pop.className = 'cal'; pop.hidden = true; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', btn.getAttribute('aria-label'));
+    document.body.appendChild(pop);
+    var view = new Date(); view.setDate(1);
+    function draw() {
+      var now = new Date(), y = view.getFullYear(), m = view.getMonth();
+      var head = now.toLocaleDateString(loc, { weekday: 'long' }), big = now.toLocaleDateString(loc, { day: 'numeric', month: 'long', year: 'numeric' });
+      var days = '', ref = new Date(2023, 0, 1 + first);
+      for (var i = 0; i < 7; i++) { days += '<span>' + new Date(ref.getTime() + i * 864e5).toLocaleDateString(loc, { weekday: 'narrow' }) + '</span>'; }
+      var start = (new Date(y, m, 1).getDay() - first + 7) % 7, dim = new Date(y, m + 1, 0).getDate(), cells = '';
+      for (var s = 0; s < start; s++) cells += '<i></i>';
+      for (var d = 1; d <= dim; d++) {
+        var t = d === now.getDate() && m === now.getMonth() && y === now.getFullYear(), wk = (start + d - 1) % 7, we = (wk + first) % 7;
+        cells += '<b class="' + (t ? 'today' : '') + (we === 0 || we === 6 ? ' we' : '') + '"' + (t ? ' aria-current="date"' : '') + '>' + d + '</b>';
+      }
+      var title = new Date(y, m, 1).toLocaleDateString(loc, { month: 'long', year: 'numeric' });
+      pop.innerHTML = '<div class="cal-top"><small>' + head + '</small><strong>' + big + '</strong></div>' +
+        '<div class="cal-nav"><button type="button" data-n="-1" aria-label="‹">‹</button><span>' + title + '</span><button type="button" data-n="1" aria-label="›">›</button></div>' +
+        '<div class="cal-grid"><div class="cal-wd">' + days + '</div><div class="cal-days">' + cells + '</div></div>' +
+        '<button type="button" class="cal-today" data-n="0">' + btn.getAttribute('data-today') + '</button>';
+    }
+    function setOpen(o) { pop.hidden = !o; btn.setAttribute('aria-expanded', o ? 'true' : 'false'); if (o) { view = new Date(); view.setDate(1); draw(); } }
+    btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(pop.hidden); });
+    pop.addEventListener('click', function (e) {
+      e.stopPropagation(); var n = e.target.closest('[data-n]'); if (!n) return;
+      var v = +n.getAttribute('data-n'); if (v === 0) { view = new Date(); view.setDate(1); } else view.setMonth(view.getMonth() + v);
+      draw();
+    });
+    document.addEventListener('click', function () { if (!pop.hidden) setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { setOpen(false); btn.focus(); e.stopPropagation(); } }, true);
+  })();
+
   /* ---------- theme switcher (dark, light, matrix, high-contrast) ---------- */
   var THEME_IDS = ['dark', 'light', 'matrix', 'high-contrast'];
   var themeBtn = document.querySelector('.mb-theme'), themeMenu = document.querySelector('.theme-menu');
