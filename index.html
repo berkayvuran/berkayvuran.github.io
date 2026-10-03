@@ -1,477 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="description"
-    content="As a passionate and driven product professional, I have a strong foundation in the intersection of psychology, technology, and business.">
-  <meta name="keywords"
-    content="Product, Product Manager, Manager, Product Management, Management, Psychology, Product Owner, Technology, Digital Product, Agile, Scrum, Kanban, Waterfall">
-  <meta name="author" content="Berkay Vuran">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Security Headers (CSP should be set via server HTTP headers for better control) -->
-  <!-- X-Frame-Options removed: must be set via HTTP header, not meta tag -->
-  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
-  <title>Berkay Vuran | Multi Disciplinary Product Enthusiast</title>
-  <!-- Critical LCP image preload - must be in head for immediate discovery -->
-  <link rel="preload" href="./assets/images/avatars/my-avatar-80.webp" as="image" fetchpriority="high" imagesrcset="./assets/images/avatars/my-avatar-80.webp 80w, ./assets/images/avatars/my-avatar-160.webp 160w" imagesizes="(max-width: 480px) 80px, (max-width: 768px) 160px, 160px">
-  <link rel="preload" href="./assets/images/avatars/my-avatar-160.webp" as="image" fetchpriority="high">
-  <!--
-    - favicon
-  -->
-  <link rel="shortcut icon" href="./assets/images/favicon.ico" type="image/x-icon">
-  <!--
-    - custom css link - preload for faster rendering
-  -->
-  <!-- CSS preload for faster loading, then render-blocking stylesheet to prevent FOUC -->
-  <link rel="preload" href="./assets/css/style.css" as="style" fetchpriority="high">
-  <link rel="stylesheet" href="./assets/css/style.css">
-  <!--
-    - local font link
-  -->
-  <!-- Preload critical avatar image for LCP - inline in head for immediate discovery -->
-  <link rel="preload" href="./assets/images/avatars/my-avatar-80.webp" as="image" fetchpriority="high" imagesrcset="./assets/images/avatars/my-avatar-80.webp 80w, ./assets/images/avatars/my-avatar-160.webp 160w" imagesizes="(max-width: 480px) 80px, (max-width: 768px) 160px, 160px">
-  <!-- Inline critical avatar for instant LCP -->
-  <link rel="preload" href="./assets/images/avatars/my-avatar-160.webp" as="image" fetchpriority="high">
-  <!-- Preload all critical font weights to prevent FOUT -->
-  <link rel="preload" href="./assets/fonts/poppins-300.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="./assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
-  <link rel="preload" href="./assets/fonts/poppins-500.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="./assets/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin>
-  <!-- Preload avatar for faster LCP on About page -->
-  <link rel="preload" href="./assets/images/avatars/my-avatar-80.webp" as="image" fetchpriority="high" imagesrcset="./assets/images/avatars/my-avatar-80.webp 80w, ./assets/images/avatars/my-avatar-160.webp 160w" imagesizes="(max-width: 480px) 80px, (max-width: 768px) 160px, 160px">
-  <!-- Preload CV page for faster navigation -->
-  <link rel="preload" href="./pages/cv.html" as="document" fetchpriority="high">
-  <!-- Preload showcase page and critical images for faster LCP -->
-  <link rel="preload" href="./pages/showcase.html" as="document" fetchpriority="high">
-  <link rel="preload" href="./assets/images/abonerez-screenshots/dashboard-screen-400.webp" as="image" fetchpriority="high">
-  <link rel="preload" href="./assets/images/abonerez-screenshots/dashboard-screen-800.webp" as="image" fetchpriority="high">
-  <link rel="preload" href="./assets/images/portfolio/ccaas-glossary-400.webp" as="image" fetchpriority="high">
-  <link rel="preload" href="./assets/images/portfolio/ccaas-glossary-800.webp" as="image" fetchpriority="high">
-  <!-- Inline critical font CSS to reduce render blocking -->
-  <style>
-    @font-face{font-family:'Poppins';font-style:normal;font-weight:300;font-display:swap;src:url('./assets/fonts/poppins-300.woff2') format('woff2'),url('./assets/fonts/poppins-300.ttf') format('truetype');}
-    @font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url('./assets/fonts/poppins-400.woff2') format('woff2'),url('./assets/fonts/poppins-400.ttf') format('truetype');}
-    @font-face{font-family:'Poppins';font-style:normal;font-weight:500;font-display:swap;src:url('./assets/fonts/poppins-500.woff2') format('woff2'),url('./assets/fonts/poppins-500.ttf') format('truetype');}
-    @font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url('./assets/fonts/poppins-600.woff2') format('woff2'),url('./assets/fonts/poppins-600.ttf') format('truetype');}
-  </style>
-  <!-- Inline script to apply accessibility modes immediately on page load -->
-  <script>
-    // Apply colorblind and ADHD modes immediately to prevent FOUC
-    (function() {
-      if (localStorage.getItem('colorblindMode') === 'true') {
-        document.documentElement.setAttribute('data-colorblind', 'true');
-      }
-      if (localStorage.getItem('adhdMode') === 'true') {
-        document.documentElement.setAttribute('data-adhd', 'true');
-      }
-    })();
-  </script>
-  <!-- Load main script with defer for non-blocking execution -->
-  <script src="./assets/js/script.js" defer></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Berkay Vuran | Product Leader &amp; Builder</title>
+<meta name="description" content="Berkay Vuran is a product leader with 7+ years across AI, telco, health, logistics and proptech. Explore his CV, showcase, writing and 13 live AI-built products.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Berkay Vuran">
+<meta name="theme-color" content="#0b0f17">
+<link rel="canonical" href="https://berkayvuran.com/">
+<link rel="alternate" hreflang="en" href="https://berkayvuran.com/">
+<link rel="alternate" hreflang="tr" href="https://berkayvuran.com/tr/">
+<link rel="alternate" hreflang="x-default" href="https://berkayvuran.com/">
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Berkay Vuran">
+<meta property="og:title" content="Berkay Vuran | Product Leader &amp; Builder">
+<meta property="og:description" content="Berkay Vuran is a product leader with 7+ years across AI, telco, health, logistics and proptech. Explore his CV, showcase, writing and 13 live AI-built products.">
+<meta property="og:url" content="https://berkayvuran.com/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="tr_TR">
+<meta property="og:image" content="https://berkayvuran.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Berkay Vuran's portfolio as a desktop with windows and widgets">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Berkay Vuran | Product Leader &amp; Builder">
+<meta name="twitter:description" content="Berkay Vuran is a product leader with 7+ years across AI, telco, health, logistics and proptech. Explore his CV, showcase, writing and 13 live AI-built products.">
+<meta name="twitter:image" content="https://berkayvuran.com/og-image.png">
+<link rel="icon" href="/assets/images/favicon.ico">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Berkay Vuran">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preload" href="/assets/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/desk.css?v=592be584" as="style">
+<script>try{var T=['dark','light','matrix','high-contrast'],t=localStorage.getItem('theme');if(T.indexOf(t)<0)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var g=localStorage.getItem('glass');if(g==='off'||(g===null&&window.matchMedia('(prefers-reduced-transparency: reduce)').matches))document.documentElement.setAttribute('data-glass','off')}catch(e){}</script>
+<link rel="stylesheet" href="/desk.css?v=592be584">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://berkayvuran.com/#person","name":"Berkay Vuran","url":"https://berkayvuran.com/","image":"https://berkayvuran.com/assets/images/avatars/my-avatar-160.webp","jobTitle":"Conversational Intelligence PA Team Leader","worksFor":{"@type":"Organization","name":"SESTEK"},"address":{"@type":"PostalAddress","addressLocality":"Ankara","addressCountry":"TR"},"sameAs":["https://www.linkedin.com/in/berkayvuran","https://github.com/berkayvuran","https://twitter.com/vuranberkay","https://www.instagram.com/vuran.berkay/","https://www.facebook.com/vuranberkay","https://berkayvuran.medium.com/"]},{"@type":"WebSite","@id":"https://berkayvuran.com/#website","url":"https://berkayvuran.com/","name":"Berkay Vuran","inLanguage":["en","tr"],"publisher":{"@id":"https://berkayvuran.com/#person"}},{"@type":"CollectionPage","@id":"https://berkayvuran.com/#page","url":"https://berkayvuran.com/","name":"Berkay Vuran | Product Leader & Builder","description":"Berkay Vuran is a product leader with 7+ years across AI, telco, health, logistics and proptech. Explore his CV, showcase, writing and 13 live AI-built products.","inLanguage":"en","isPartOf":{"@id":"https://berkayvuran.com/#website"},"mainEntity":{"@id":"https://berkayvuran.com/#person"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://berkayvuran.com/"}]}]}</script>
 </head>
-
-<body>
-  <!--
-    - #THEME SWITCHER
-  -->
-  <!-- Theme toggle moved to navbar -->
-
-  <!--
-    - #MAIN
-  -->
-  <main>
-    <!--
-      - #SIDEBAR
-    -->
-    <aside class="sidebar" data-sidebar>
-      <div class="sidebar-info">
-        <figure class="avatar-box">
-          <a href="https://berkayvuran.com" aria-label="Visit berkayvuran.com">
-            <img src="./assets/images/avatars/my-avatar-160.webp" 
-                 srcset="./assets/images/avatars/my-avatar-80.webp 80w, ./assets/images/avatars/my-avatar-160.webp 160w" 
-                 sizes="(max-width: 480px) 80px, (max-width: 768px) 160px, 160px"
-                 alt="Berkay Vuran" 
-                 width="80" 
-                 height="80" 
-                 fetchpriority="high" 
-                 decoding="async"
-                 loading="eager">
-          </a>
-        </figure>
-        <div class="info-content">
-          <h1 class="name" title="Berkay Vuran">Berkay Vuran</h1>
-          <p class="title typewriter-container" data-lang="en">
-            <span class="typewriter" id="typewriter-en"></span>
-            <span class="cursor">|</span>
-          </p>
-          <p class="title typewriter-container" data-lang="tr" style="display: none;">
-            <span class="typewriter" id="typewriter-tr"></span>
-            <span class="cursor">|</span>
-          </p>
-        </div>
-        <button class="info_more-btn" data-sidebar-btn aria-label="Show contacts" data-aria-label-en="Show contacts" data-aria-label-tr="İletişim bilgilerini göster">
-          <span data-lang="en">Show Contacts</span>
-          <span data-lang="tr" style="display: none;">İletişim Bilgileri</span>
-          <svg width="20" height="20" viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="48" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M112 184l144 144 144-144"/></svg>
-        </button>
-      </div>
-      <div class="sidebar-info_more">
-        <div class="separator"></div>
-
-        <ul class="contacts-list">
-
-          <li class="contact-item">
-            <div class="icon-box">
-              <svg width="22" height="22" viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="48" y="96" width="416" height="320" rx="40" ry="40"/><path d="M112 160l144 112 144-112"/></svg>
-            </div>
-
-            <div class="contact-info">
-              <p class="contact-title" data-lang="en">Email</p>
-              <p class="contact-title" data-lang="tr" style="display: none;">E-posta</p>
-              <a href="mailto:berkaypsy@gmail.com" class="contact-link">berkaypsy@gmail.com</a>
-            </div>
-          </li>
-          <li class="contact-item">
-            <div class="icon-box">
-              <svg width="22" height="22" viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="128" y="16" width="256" height="480" rx="48" ry="48"/><path d="M176 96h160M176 416h160"/></svg>
-            </div>
-            <div class="contact-info">
-              <p class="contact-title" data-lang="en">Call</p>
-              <p class="contact-title" data-lang="tr" style="display: none;">Ara</p>
-              <a href="tel:+905424239930" class="contact-link">+90 (542) 423 99 30</a>
-            </div>
-          </li>
-          <li class="contact-item">
-            <div class="icon-box">
-              <svg width="22" height="22" viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M256 48c-79.5 0-144 61.3-144 137 0 87 144 231 144 231s144-144 144-231c0-75.7-64.5-137-144-137z"/><circle cx="256" cy="192" r="48"/></svg>
-            </div>
-            <div class="contact-info">
-              <p class="contact-title" data-lang="en">Location</p>
-              <p class="contact-title" data-lang="tr" style="display: none;">Konum</p>
-              <address>Ankara, 06820, Türkiye</address>
-            </div>
-          </li>
-        </ul>
-        <div class="separator"></div>
-        <ul class="social-list">
-          <li class="social-item">
-            <a href="https://www.linkedin.com/in/berkayvuran" target="_blank" rel="noopener noreferrer"
-              class="social-link" aria-label="Visit my LinkedIn profile">
-              <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M444.17 32H70.28C49.85 32 32 46.7 32 66.89v374.72C32 461.91 49.85 480 70.28 480h373.78c20.54 0 35.94-18.21 35.94-38.39V66.89C480.12 46.7 464.6 32 444.17 32zm-273.3 373.43h-64.18V205.88h64.18zM141 175.54h-.46c-20.54 0-33.84-15.29-33.84-34.43 0-19.49 13.65-34.42 34.65-34.42s33.85 14.82 34.31 34.42c-.01 19.14-13.31 34.43-34.66 34.43zm264.43 229.89h-64.18V296.32c0-26.14-9.34-44-32.56-44-17.74 0-28.24 12-32.91 23.69-1.75 4.2-2.22 9.92-2.22 15.76v113.66h-64.18V205.88h64.18v27.77c9.34-13.3 23.93-32.44 57.88-32.44 42.13 0 74 27.77 74 87.64z"/></svg>
-            </a>
-          </li>
-          <li class="social-item">
-            <a href="https://github.com/berkayvuran" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Visit my GitHub profile">
-              <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M256 32C132.3 32 32 134.9 32 261.7c0 101.5 64.2 187.5 153.2 217.9a12.4 12.4 0 002.7.3c3.1 0 4.1-1.3 4.1-3.1 0-1.3-.1-4.8-.1-9.4-62.1 13.9-75.1-30.8-75.1-30.8-10.2-26.5-24.9-33.6-24.9-33.6-20.5-14.3 1.5-14 1.5-14 22.5 1.6 34.3 23.8 34.3 23.8 20.2 35.1 52.9 25 65.8 19.1 2-14.8 7.9-25 14.3-30.7-50-5.8-102.5-25.5-102.5-113.5 0-25.1 8.7-45.6 23-61.6-2.3-5.8-10-29.2 2.2-60.8a18.6 18.6 0 015-.5c8.1 0 26.4 3.1 56.6 24.1a208.4 208.4 0 01112.2 0c30.2-21 48.5-24.1 56.6-24.1a18.6 18.6 0 015 .5c12.2 31.6 4.5 55 2.2 60.8 14.3 16.1 23 36.6 23 61.6 0 88.2-52.4 107.6-102.3 113.3 8 7.1 15.2 21.1 15.2 42.5 0 30.7-.3 55.5-.3 63 0 1.7 1 3.7 4.1 3.7a12.4 12.4 0 002.7-.3c89-30.4 153.2-116.4 153.2-217.9C480 134.9 379.7 32 256 32z"/></svg>
-            </a>
-          </li>
-          <li class="social-item">
-            <a href="https://www.facebook.com/vuranberkay" target="_blank" rel="noopener noreferrer"
-              class="social-link" aria-label="Visit my Facebook profile">
-              <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M480 257.35c0-123.7-100.3-224-224-224s-224 100.3-224 224c0 111.8 81.9 204.47 189 221.29V322.12h-56.89v-64.77H221V208c0-56.13 33.45-87.16 84.61-87.16 24.51 0 50.15 4.38 50.15 4.38v55.13H327.5c-27.81 0-36.51 17.26-36.51 35v42h62.12l-9.92 64.77H291v156.52c107.1-16.81 189-109.49 189-221.29z"/></svg>
-            </a>
-          </li>
-          <li class="social-item">
-            <a href="https://twitter.com/vuranberkay" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Visit my Twitter profile">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </a>
-          </li>
-          <li class="social-item">
-            <a href="https://www.instagram.com/vuran.berkay/" target="_blank" rel="noopener noreferrer"
-              class="social-link" aria-label="Visit my Instagram profile">
-              <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M349.33 69.33a93.62 93.62 0 0193.34 93.34v186.66a93.62 93.62 0 01-93.34 93.34H162.67a93.62 93.62 0 01-93.34-93.34V162.67a93.62 93.62 0 0193.34-93.34h186.66m0-37.33H162.67C90.8 32 32 90.8 32 162.67v186.66C32 421.2 90.8 480 162.67 480h186.66C421.2 480 480 421.2 480 349.33V162.67C480 90.8 421.2 32 349.33 32z"/><path d="M377.33 162.67a28 28 0 1128-28 27.94 27.94 0 01-28 28zM256 181.33A74.67 74.67 0 11181.33 256 74.75 74.75 0 01256 181.33m0-37.33a112 112 0 10112 112 112 112 0 00-112-112z"/></svg>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Vibe Coding CTA — always visible in sidebar -->
-      <div class="sidebar-separator" style="height: 1px; background: var(--jet); margin: 16px 0;"></div>
-      <a class="sidebar-vibe-cta" data-nav-link="builder" aria-label="Explore Berkay's vibe-coded products" style="cursor: pointer;">
-        <div class="sidebar-vibe-cta-inner">
-          <div class="sidebar-vibe-badge">
-            <span class="sidebar-vibe-dot" aria-hidden="true"></span>
-            <span class="sidebar-vibe-badge-text" data-lang="en">Product Builder</span>
-            <span class="sidebar-vibe-badge-text" data-lang="tr" style="display: none;">Ürün İnşacısı</span>
-          </div>
-          <p class="sidebar-vibe-title" data-lang="en">13 live products →</p>
-          <p class="sidebar-vibe-title" data-lang="tr" style="display: none;">13 canlı ürün →</p>
-          <p class="sidebar-vibe-sub" data-lang="en">Apps, games & tools built with AI</p>
-          <p class="sidebar-vibe-sub" data-lang="tr" style="display: none;">AI ile inşa edilmiş uygulama & araçlar</p>
-        </div>
-      </a>
-    </aside>
-    <!--
-      - #main-content
-    -->
-    <div class="main-content">
-      <!--
-        - #NAVBAR
-      -->
-      <nav class="navbar">
-        <ul class="navbar-list">
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link="about" data-lang="en">About</button>
-            <button class="navbar-link" data-nav-link="about" data-lang="tr" style="display: none;">Hakkımda</button>
-          </li>
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link="cv" data-lang="en">CV</button>
-            <button class="navbar-link" data-nav-link="cv" data-lang="tr" style="display: none;">CV</button>
-          </li>
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link="references" data-lang="en">References</button>
-            <button class="navbar-link" data-nav-link="references" data-lang="tr" style="display: none;">Referanslar</button>
-          </li>
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link="showcase" data-lang="en">Showcase</button>
-            <button class="navbar-link" data-nav-link="showcase" data-lang="tr" style="display: none;">Vitrin</button>
-          </li>
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link="blog" data-lang="en">Blog</button>
-            <button class="navbar-link" data-nav-link="blog" data-lang="tr" style="display: none;">Blog</button>
-          </li>
-          <li class="navbar-item">
-            <button class="navbar-link" data-nav-link="builder" data-lang="en">Builder</button>
-            <button class="navbar-link" data-nav-link="builder" data-lang="tr" style="display: none;">İnşacı</button>
-          </li>
-          <li class="navbar-item navbar-lang-toggle">
-            <div class="lang-dropdown">
-              <button class="lang-dropdown-btn" aria-label="Select language" aria-expanded="false" aria-haspopup="true" title="Select language">
-                <svg class="lang-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-              </button>
-              <div class="lang-dropdown-menu" role="menu">
-                <button class="lang-dropdown-item" data-lang="en" role="menuitem">
-                  <span class="lang-dropdown-item-text">English</span>
-                </button>
-                <button class="lang-dropdown-item" data-lang="tr" role="menuitem">
-                  <span class="lang-dropdown-item-text">Türkçe</span>
-                </button>
-              </div>
-            </div>
-          </li>
-          <li class="navbar-item navbar-settings">
-            <div class="navbar-settings-dropdown">
-              <button class="navbar-settings-btn" id="navbar-settings-btn" aria-label="Open settings menu" aria-expanded="false" aria-haspopup="true" title="Settings">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <line x1="4" y1="21" x2="4" y2="14"></line>
-                  <line x1="4" y1="10" x2="4" y2="3"></line>
-                  <line x1="12" y1="21" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12" y2="3"></line>
-                  <line x1="20" y1="21" x2="20" y2="16"></line>
-                  <line x1="20" y1="12" x2="20" y2="3"></line>
-                  <line x1="1" y1="14" x2="7" y2="14"></line>
-                  <line x1="9" y1="8" x2="15" y2="8"></line>
-                  <line x1="17" y1="16" x2="23" y2="16"></line>
-                </svg>
-              </button>
-              <div class="navbar-settings-menu" id="navbar-settings-menu">
-                <div class="navbar-settings-header">
-                  <span data-lang="en">Settings</span>
-                  <span data-lang="tr" style="display: none;">Ayarlar</span>
-                </div>
-                <div class="navbar-settings-content">
-                  <div class="navbar-settings-item">
-                    <label class="navbar-settings-label" data-lang="en">Theme</label>
-                    <label class="navbar-settings-label" data-lang="tr" style="display: none;">Tema</label>
-                    <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Change theme">
-                      <span class="theme-toggle-text" data-lang="en">🌙 Night Owl</span>
-                      <span class="theme-toggle-text" data-lang="tr" style="display: none;">🌙 Gece Baykuşu</span>
-                    </button>
-                  </div>
-                  <div class="navbar-settings-item">
-                    <label class="navbar-settings-label" for="screen-reader-toggle" data-lang="en">Screen Reader Mode</label>
-                    <label class="navbar-settings-label" for="screen-reader-toggle" data-lang="tr" style="display: none;">Ekran Okuyucu Modu</label>
-                    <div class="accessibility-mode-toggle-wrapper">
-                      <input type="checkbox" id="screen-reader-toggle" class="accessibility-mode-toggle-input" aria-label="Toggle screen reader mode">
-                      <label for="screen-reader-toggle" class="accessibility-mode-toggle-label">
-                        <span class="accessibility-mode-toggle-slider"></span>
-                        <svg class="accessibility-mode-icon-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
-                          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                        </svg>
-                        <svg class="accessibility-mode-icon-off" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
-                          <line x1="23" y1="9" x2="17" y2="15"></line>
-                          <line x1="17" y1="9" x2="23" y2="15"></line>
-                        </svg>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="navbar-settings-item" id="reading-speed-item" style="display: none;">
-                    <label class="navbar-settings-label" for="reading-speed" data-lang="en">Reading Speed</label>
-                    <label class="navbar-settings-label" for="reading-speed" data-lang="tr" style="display: none;">Okuma Hızı</label>
-                    <div class="reading-speed-control">
-                      <input type="range" id="reading-speed" min="0.5" max="2" step="0.1" value="1" aria-label="Reading speed">
-                      <span class="reading-speed-value" id="reading-speed-value">1.0x</span>
-                    </div>
-                  </div>
-                  <div class="navbar-settings-item">
-                    <label class="navbar-settings-label" for="colorblind-toggle" data-lang="en">Colorblind Mode</label>
-                    <label class="navbar-settings-label" for="colorblind-toggle" data-lang="tr" style="display: none;">Renk Körü Modu</label>
-                    <div class="accessibility-mode-toggle-wrapper">
-                      <input type="checkbox" id="colorblind-toggle" class="accessibility-mode-toggle-input" aria-label="Toggle colorblind mode">
-                      <label for="colorblind-toggle" class="accessibility-mode-toggle-label">
-                        <span class="accessibility-mode-toggle-slider"></span>
-                        <svg class="accessibility-mode-icon-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <path d="M12 2a15.3 15.3 0 0 0 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 0 4-10z"></path>
-                        </svg>
-                        <svg class="accessibility-mode-icon-off" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="12" y1="2" x2="12" y2="6"></line>
-                          <line x1="12" y1="18" x2="12" y2="22"></line>
-                          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-                          <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-                          <line x1="2" y1="12" x2="6" y2="12"></line>
-                          <line x1="18" y1="12" x2="22" y2="12"></line>
-                          <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-                          <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-                        </svg>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="navbar-settings-item">
-                    <label class="navbar-settings-label" for="adhd-toggle" data-lang="en">ADHD Mode</label>
-                    <label class="navbar-settings-label" for="adhd-toggle" data-lang="tr" style="display: none;">ADHD Modu</label>
-                    <div class="accessibility-mode-toggle-wrapper">
-                      <input type="checkbox" id="adhd-toggle" class="accessibility-mode-toggle-input" aria-label="Toggle ADHD mode">
-                      <label for="adhd-toggle" class="accessibility-mode-toggle-label">
-                        <span class="accessibility-mode-toggle-slider"></span>
-                        <svg class="accessibility-mode-icon-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="12" y1="8" x2="12" y2="12"></line>
-                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                        <svg class="accessibility-mode-icon-off" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                          <line x1="9" y1="3" x2="9" y2="21"></line>
-                        </svg>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Dynamic Content Area -->
-      <div id="content-area" style="min-height: 500px; width: 100%;">
-        <!-- Initial content loaded inline for instant display - hidden if hash is not about -->
-        <script>
-          // Immediate hash check - hide inline content before render
-          (function() {
-            const hash = window.location.hash.replace('#', '') || 'about';
-            if (hash !== 'about') {
-              document.write('<style>#content-area > article { display: none !important; }</style>');
-            }
-          })();
-        </script>
-        <article class="about" data-page="about" id="inline-about-content">
-          <h2 class="h2 article-title" data-lang="en">About me</h2>
-          <h2 class="h2 article-title" data-lang="tr" style="display: none;">Hakkımda</h2>
-          <section class="about-text">
-            <p data-lang="en">Building technology is the easy part; building the right thing that actually scales is hard. I focus on integrating AI, ML, and data into real-world workflows without losing sight of the end-user. My main goal as a product leader is to align cross-functional teams with business realities—so we solve genuine market problems instead of just shipping features.</p>
-            <p data-lang="en"><strong>Global Scale:</strong> Contributed to platforms reaching 6+ million users and expanding operations into 230 countries, directly supporting a 150% growth in revenue.</p>
-            <p data-lang="en"><strong>Rapid Go-to-Market:</strong> Led the 0-to-1 launch of a global ship-and-shop ecosystem. Managed four strategic domains and took the product from concept to live deployment in just 3 months.</p>
-            <p data-lang="en"><strong>AI & Product Strategy:</strong> Currently leading the Product Analysis team for Conversational Intelligence at SESTEK. In past roles, I've driven Agile transformations and rolled out ML, NLP, and Generative AI initiatives that fundamentally changed how our products operated.</p>
-            <p data-lang="en">I have a BA in Psychology and an MA in Organizational Behavior. This background means I look at product management through a human lens—both in understanding the users we build for and the team dynamics I manage.</p>
-            <p data-lang="en">While I hold a PMP® and a long list of Scrum credentials (PSPO™, PSM™, PAL™, etc.), my core identity is a Product Leader. I view project management frameworks simply as execution tools to bring discipline to the chaos, not as rigid rules. I believe in giving teams autonomy, relying on data over opinions, and creating spaces where good products can scale naturally.</p>
-
-            <p data-lang="tr" style="display: none;">Teknoloji geliştirmek işin kolay kısmı; asıl zor olan, gerçekten ölçeklenebilen doğru ürünü inşa etmektir. Odak noktam; son kullanıcıyı gözden kaçırmadan yapay zeka, makine öğrenimi ve veriyi gerçek dünyadaki iş akışlarına entegre etmek. Bir ürün lideri olarak temel amacım, farklı disiplinlerden gelen ekipleri işin gerçekleriyle aynı hizaya getirmek; böylece sadece yeni "feature" yayına almak yerine, pazardaki gerçek sorunları çözebilmek.</p>
-            <p data-lang="tr" style="display: none;"><strong>Küresel Ölçek:</strong> 6 milyondan fazla kullanıcıya ulaşan ve operasyonlarını 230 ülkeye genişleten platformlara katkı sağlayarak, gelirlerdeki %150'lik büyümenin doğrudan destekleyicisi oldum.</p>
-            <p data-lang="tr" style="display: none;"><strong>Hızlı Pazara Çıkış:</strong> Küresel bir "ship-and-shop" ekosisteminin sıfırdan lansmanına liderlik ettim. Dört stratejik alanı yöneterek ürünü fikir aşamasından sadece 3 ay içinde canlıya taşıdım.</p>
-            <p data-lang="tr" style="display: none;"><strong>Yapay Zeka ve Ürün Stratejisi:</strong> Şu anda SESTEK'te Diyalogsal Yapay Zeka (Conversational Intelligence) ürünleri için Ürün Analizi ekibine liderlik ediyorum. Önceki rollerimde çevik (Agile) dönüşümleri yönettim ve ürünlerimizin çalışma şeklini temelden değiştiren makine öğrenimi (ML), doğal dil işleme (NLP) ve üretken yapay zeka (Generative AI) inisiyatiflerini hayata geçirdim.</p>
-            <p data-lang="tr" style="display: none;">Psikoloji alanında lisans ve Örgütsel Davranış alanında yüksek lisans derecesine sahibim. Bu altyapı, ürün yönetimine insan odaklı bir mercekten bakmamı sağlıyor; hem ürün geliştirdiğimiz kullanıcıları hem de yönettiğim ekibin dinamiklerini bu perspektifle okuyorum.</p>
-            <p data-lang="tr" style="display: none;">PMP® ve uzun bir Scrum sertifikaları listesine (PSPO™, PSM™, PAL™ vb.) sahip olsam da, temel kimliğim bir Ürün Lideri. Proje yönetimi çerçevelerini katı kurallar olarak değil, sadece kaosa disiplin getiren birer icra (execution) aracı olarak görüyorum. Ekiplere otonomi vermeye, fikirler yerine veriye güvenmeye ve iyi ürünlerin doğal olarak ölçeklenebileceği alanlar yaratmaya inanıyorum.</p>
-          </section>
-          <section class="service">
-            <h3 class="h3 service-title" data-lang="en">What i'm doing</h3>
-            <h3 class="h3 service-title" data-lang="tr" style="display: none;">Neler yapıyorum</h3>
-            <ul class="service-list">
-              <li class="service-item">
-                <div id="123" class="service-icon-box">
-                  <img src="./assets/images/what-i-m-doing/icon-design.svg" alt="design icon" width="40" height="40" fetchpriority="high" decoding="async">
-                </div>
-                <div class="service-content-box">
-                  <h4 class="h4 service-item-title" data-lang="en">Product Management</h4>
-                  <h4 class="h4 service-item-title" data-lang="tr" style="display: none;">Ürün Yönetimi</h4>
-                  <p class="service-item-text" data-lang="en">
-                    Product enthusiast with 7+ years of experience in sectors that AI, telco, health, logistics, and
-                    proptech.
-                  </p>
-                  <p class="service-item-text" data-lang="tr" style="display: none;">
-                    Telekomünikasyon, sağlık, lojistik, AI ve proptech sektörlerinde 7+ yıllık deneyime sahip ürün
-                    tutkunuyum.
-                  </p>
-                </div>
-              </li>
-              <li class="service-item">
-                <div class="service-icon-box">
-                  <img src="./assets/images/what-i-m-doing/icon-dev.svg" alt="Web development icon" width="40" height="40" fetchpriority="high" decoding="async">
-                </div>
-                <div class="service-content-box">
-                  <h4 class="h4 service-item-title" data-lang="en">Data & BI Analysis & SQL</h4>
-                  <h4 class="h4 service-item-title" data-lang="tr" style="display: none;">Veri Analizi & İş Zekası</h4>
-                  <p class="service-item-text" data-lang="en">
-                    Have a data-driven mindset with my business intelligence, data analysis, and SQL competencies.
-                  </p>
-                  <p class="service-item-text" data-lang="tr" style="display: none;">
-                    İş zekası, veri analizi ve SQL yetkinliklerim ile veri odaklı bir zihniyete sahibim.
-                  </p>
-                </div>
-              </li>
-              <li class="service-item">
-                <div class="service-icon-box">
-                  <img src="./assets/images/what-i-m-doing/icon-tent.svg" alt="mobile app icon" width="40" height="40" fetchpriority="high" decoding="async">
-                </div>
-                <div class="service-content-box">
-                  <h4 class="h4 service-item-title" data-lang="en">Hobbies</h4>
-                  <h4 class="h4 service-item-title" data-lang="tr" style="display: none;">Hobiler</h4>
-                  <p class="service-item-text" data-lang="en">
-                    I love kickbox, cinema, music, camping, trekking, canoeing and running. I live minimalist and proud of
-                    it.
-                  </p>
-                  <p class="service-item-text" data-lang="tr" style="display: none;">
-                    Kick boksu, sinemayı, müziği, kamp yapmayı, trekking'i, kanoyu ve koşmayı seviyorum. Minimalist
-                    yaşıyorum.
-                  </p>
-                </div>
-              </li>
-              <li class="service-item">
-                <div class="service-icon-box">
-                  <img src="./assets/images/what-i-m-doing/icon-vegan.svg" alt="camera icon" width="40" height="40" fetchpriority="high" decoding="async">
-                </div>
-                <div class="service-content-box">
-                  <h4 class="h4 service-item-title" data-lang="en">Nature Advocacy</h4>
-                  <h4 class="h4 service-item-title" data-lang="tr" style="display: none;">Doğa Tutkunu</h4>
-                  <p class="service-item-text" data-lang="en">
-                    I am a nature enthusiast. I am opposed to all forms of discrimination, bullying, and abuse.
-                  </p>
-                  <p class="service-item-text" data-lang="tr" style="display: none;">
-                    Ben bir doğa tutkunuyum. Ayrımcılığın, zorbalığın ve istismarın her türlüsüne karşıyım.
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </section>
-
-        </article>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- Script moved to head for faster loading -->
-
-
+<body class="desk page-home" data-base="" data-lang="en" data-home="/">
+<a class="skip" href="#main">Skip to content</a>
+<div class="wallpaper" aria-hidden="true"><svg viewBox="0 0 1440 900" preserveAspectRatio="none"><path d="M0 520C300 440 520 640 820 640S1280 440 1440 500"/><path d="M0 640C320 560 560 780 860 780S1300 580 1440 620"/><path d="M0 760C340 700 600 860 900 860S1320 720 1440 750"/></svg></div>
+<header class="menubar">
+  <div class="mb-left"><a class="mb-logo" href="/" data-app="home" aria-label="Home">BV</a><strong class="mb-app" id="mb-app">Berkay Vuran</strong><nav class="mb-menu" aria-label="Sections"><a href="/about/" data-app="about">About</a><a href="/cv/" data-app="cv">CV</a><a href="/references/" data-app="references">References</a><a href="/showcase/" data-app="showcase">Showcase</a><a href="/blog/" data-app="blog">Blog</a><a href="/builder/" data-app="builder">Builder</a></nav></div>
+  <div class="mb-right"><button class="mb-search" type="button" aria-label="Search" aria-haspopup="dialog" data-ph="Search sections, writing, projects, CV…" data-empty="No results" data-sections="Sections" data-hint="to open"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg><kbd class="mb-kbd" aria-hidden="true">⌘K</kbd></button><a class="mb-lang" href="/tr/" hreflang="tr" lang="tr" aria-label="Türkçe">TR</a><div class="mb-themewrap"><button class="mb-theme" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Theme"><span class="th-e" aria-hidden="true">🌙</span><span class="th-n">Night Owl</span></button><ul class="theme-menu" role="menu" aria-label="Theme" hidden><li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="dark" data-emoji="🌙" data-name="Night Owl"><span class="te" aria-hidden="true">🌙</span><span>Night Owl</span><span class="tc" aria-hidden="true">✓</span></button></li><li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="light" data-emoji="☀️" data-name="Sunshine Mode"><span class="te" aria-hidden="true">☀️</span><span>Sunshine Mode</span><span class="tc" aria-hidden="true">✓</span></button></li><li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="matrix" data-emoji="💚" data-name="Matrix Vibes"><span class="te" aria-hidden="true">💚</span><span>Matrix Vibes</span><span class="tc" aria-hidden="true">✓</span></button></li><li role="none"><button type="button" role="menuitemradio" aria-checked="false" data-theme-set="high-contrast" data-emoji="⚡" data-name="Zap Mode"><span class="te" aria-hidden="true">⚡</span><span>Zap Mode</span><span class="tc" aria-hidden="true">✓</span></button></li><li role="separator" class="tm-sep"></li><li role="none"><button type="button" role="menuitemcheckbox" aria-checked="true" data-glass-toggle><span class="te" aria-hidden="true">🪟</span><span>Glass effect</span><span class="sw" aria-hidden="true"></span></button></li></ul></div><time class="mb-clock" id="clock"></time></div>
+</header>
+<main class="desktop" id="main">
+  <div class="hello">
+    <img src="/assets/images/avatars/my-avatar-160.webp" srcset="/assets/images/avatars/my-avatar-160.webp 160w, /assets/images/avatars/my-avatar-336.webp 336w" sizes="(min-width:1100px) 168px, 96px" alt="Berkay Vuran" width="168" height="168" fetchpriority="high">
+    <h1 class="hello-name">Berkay Vuran</h1>
+    <p class="hello-sub" data-titles="[&quot;Product Leader&quot;,&quot;Builder of Things That Scale&quot;,&quot;Conversational AI Strategist&quot;,&quot;Cross-Functional Aligner&quot;,&quot;Data Over Opinions&quot;,&quot;0-to-1 Launcher&quot;,&quot;Human-Centered PM&quot;,&quot;PMP® &amp; Scrum Certified&quot;,&quot;Autonomy for Teams&quot;,&quot;AI + ML + Data, Real Workflows&quot;,&quot;Psychology + Product&quot;]"><span class="sr-only">Multi disciplinary product enthusiast</span><span class="tw" aria-hidden="true">Multi disciplinary product enthusiast</span><span class="cursor" aria-hidden="true">|</span></p>
+    <p class="hello-bio">Berkay Vuran is a product leader with 7+ years across AI, telco, health, logistics and proptech. Explore his CV, showcase, writing and 13 live AI-built products.</p>
+  </div>
+  <aside class="widgets" aria-label="Highlights">
+      <a class="widget w-builder" href="/builder/" data-app="builder"><span class="w-badge">Product Builder</span><b>13 live products →</b><span>Apps, games &amp; tools built with AI</span></a>
+      <a class="widget w-now" href="/cv/" data-app="cv"><h2>Currently</h2><b>Conversational Intelligence PA Team Leader</b><span>SESTEK · 2025 - Present</span><em>Open CV →</em></a>
+      <section class="widget w-posts"><h2>Latest writing</h2><ul role="list"><li><a href="https://berkayvuran.medium.com/silikon-vadisinin-yeni-%C3%BCtopyas%C4%B1-ve-yapay-zeka-devriminin-gizli-maliyetleri-vaatler-ve-ger%C3%A7ekler-f20a91f595e4?source=rss-3eba33c864cf------2" target="_blank" rel="noopener noreferrer"><b>Silikon Vadisi’nin Yeni Ütopyası ve Yapay Zeka Devriminin Gizli Maliyetleri: Vaatler ve Gerçekler…</b><time datetime="2026-09-15">Sep 15, 2026</time></a></li><li><a href="https://berkayvuran.medium.com/what-is-my-purpose-maksatl%C4%B1l%C4%B1k-ve-do%C4%9Frultu-tayini-cb9035942921?source=rss-3eba33c864cf------2" target="_blank" rel="noopener noreferrer"><b>What is my Purpose?: Maksatlılık ve Doğrultu Tayini</b><time datetime="2026-08-28">Aug 28, 2026</time></a></li><li><a href="https://berkayvuran.medium.com/%C3%B6rg%C3%BCtlerde-reform-ve-ya-k%C3%B6kten-de%C4%9Fi%C5%9Fim-5d5b3b0bf52d?source=rss-3eba33c864cf------2" target="_blank" rel="noopener noreferrer"><b>Örgütlerde Reform ve/ya Kökten Değişim</b><time datetime="2026-08-12">Aug 12, 2026</time></a></li></ul></section>
+      <div class="widget w-stats"><h2>At a glance</h2><ul role="list">
+        <li><a href="/builder/" data-app="builder"><b>13</b><span>Products</span></a></li>
+        <li><a href="/blog/" data-app="blog"><b>82</b><span>Articles</span></a></li>
+        <li><a href="/references/" data-app="references"><b>19</b><span>References</span></a></li>
+        <li><a href="/showcase/" data-app="showcase"><b>39</b><span>Showcase</span></a></li></ul></div>
+      <a class="widget w-certs w-extra" href="/showcase/" data-app="showcase" data-certs="[{&quot;t&quot;:&quot;Project Management Professional (PMP)®&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-pmp.webp&quot;},{&quot;t&quot;:&quot;Professional Scrum™ with User Experience (PSU)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-psu.webp&quot;},{&quot;t&quot;:&quot;Professional Scrum Facilitation Skills™ (PSFS)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-psfs.webp&quot;},{&quot;t&quot;:&quot;Professional Agile Leadership™ (PAL)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-pal.webp&quot;},{&quot;t&quot;:&quot;Professional Scrum Developer™ (PSD)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-psd.webp&quot;},{&quot;t&quot;:&quot;Professional Scrum Product Owner™ I (PSPO-I)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-pspo1.webp&quot;},{&quot;t&quot;:&quot;Professional Scrum Master™ I (PSM-I)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-psm1.webp&quot;},{&quot;t&quot;:&quot;AI for Product Management&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-ai-for-pm.webp&quot;},{&quot;t&quot;:&quot;Product Analytics Certification&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-product-analytics.webp&quot;},{&quot;t&quot;:&quot;Product-led Certification&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-product-led.webp&quot;},{&quot;t&quot;:&quot;Product Roadmapping™️ (PRC)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-prc.webp&quot;},{&quot;t&quot;:&quot;Product Strategy™️ (PSC)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-psc.webp&quot;},{&quot;t&quot;:&quot;Product-led Growth™️ (PLGC)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-plgc.webp&quot;},{&quot;t&quot;:&quot;Software Engineer&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-softwareengineer.webp&quot;},{&quot;t&quot;:&quot;SQL (Intermediate)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-sqlintermediate.webp&quot;},{&quot;t&quot;:&quot;SQL (Basic)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-sqlbasic.webp&quot;},{&quot;t&quot;:&quot;JavaScript (Intermediate)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-jsintermediate.webp&quot;},{&quot;t&quot;:&quot;JavaScript (Basic)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-jsbasic.webp&quot;},{&quot;t&quot;:&quot;RestAPI (Intermediate)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-restapiintermediate.webp&quot;},{&quot;t&quot;:&quot;CSS&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-css.webp&quot;},{&quot;t&quot;:&quot;Problem Solving (Intermediate)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-problemsolvingintermediate.webp&quot;},{&quot;t&quot;:&quot;Problem Solving (Basic)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-problemsolvingbasic.webp&quot;},{&quot;t&quot;:&quot;React (Basic)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-reactbasic.webp&quot;},{&quot;t&quot;:&quot;Angular (Basic)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-angularbasic.webp&quot;},{&quot;t&quot;:&quot;Node (Basic)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-nodebasic.webp&quot;},{&quot;t&quot;:&quot;C# (Basic)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-csharpbasic.webp&quot;},{&quot;t&quot;:&quot;Go (Basic)&quot;,&quot;i&quot;:&quot;/assets/images/portfolio/t/certification-gobasic.webp&quot;}]"><h2>Certifications</h2><span class="w-thumbs"><img src="/assets/images/portfolio/certification-pmp.webp" alt="Project Management Professional (PMP)®" width="120" height="68" loading="lazy"><img src="/assets/images/portfolio/certification-psu.webp" alt="Professional Scrum™ with User Experience (PSU)" width="120" height="68" loading="lazy"><img src="/assets/images/portfolio/certification-psfs.webp" alt="Professional Scrum Facilitation Skills™ (PSFS)" width="120" height="68" loading="lazy"><img src="/assets/images/portfolio/certification-pal.webp" alt="Professional Agile Leadership™ (PAL)" width="120" height="68" loading="lazy"><img src="/assets/images/portfolio/certification-psd.webp" alt="Professional Scrum Developer™ (PSD)" width="120" height="68" loading="lazy"><img src="/assets/images/portfolio/certification-pspo1.webp" alt="Professional Scrum Product Owner™ I (PSPO-I)" width="120" height="68" loading="lazy"></span><span class="w-foot"><b>27</b> Certificates</span></a>
+      <a class="widget w-quote w-extra" href="/references/" data-app="references" data-quotes="[{&quot;t&quot;:&quot;I had the opportunity to work with Berkay while I was serving as a Presales Manager and he was a Product Analyst. One of the things that stood out most about Berkay was his excellent…&quot;,&quot;n&quot;:&quot;Erçin Altundağ&quot;,&quot;r&quot;:&quot;Presales Manager&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-era.webp&quot;,&quot;i&quot;:&quot;EA&quot;},{&quot;t&quot;:&quot;I've had the pleasure of working with Berkay for the past 2 years as his team leader. Berkay excels at managing multiple projects simultaneously and maintains meticulous oversight of tasks.…&quot;,&quot;n&quot;:&quot;Özge Seçkin&quot;,&quot;r&quot;:&quot;Product Team Lead&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-os.webp&quot;,&quot;i&quot;:&quot;ÖS&quot;},{&quot;t&quot;:&quot;We were colleagues with Berkay at Emlakjet. Berkay is someone who can touch every aspect of the project that we worked on, who respects every idea and has the ability to quickly come up…&quot;,&quot;n&quot;:&quot;Özge Işık&quot;,&quot;r&quot;:&quot;Product Designer&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-oi.webp&quot;,&quot;i&quot;:&quot;ÖI&quot;},{&quot;t&quot;:&quot;Working with Berkay has always been very enjoyable and valuable with his communication skills, work and process monitoring, awareness of responsibility and many other features.&quot;,&quot;n&quot;:&quot;Cansın Çamoğlu&quot;,&quot;r&quot;:&quot;HR Specialist&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-cc.webp&quot;,&quot;i&quot;:&quot;CÇ&quot;},{&quot;t&quot;:&quot;During our collaboration on Jetchat for Emlakjet, I had the chance to work closely with Berkay. His clarity in communication and strong understanding of the product were invaluable. He has…&quot;,&quot;n&quot;:&quot;Zeki Ünyıldız&quot;,&quot;r&quot;:&quot;Software Developer&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-zeu.webp&quot;,&quot;i&quot;:&quot;ZÜ&quot;},{&quot;t&quot;:&quot;Berkay is passionate about his work. Although there were many challenges in the project we worked on together, he always managed to overcome them. He turned his work into education and…&quot;,&quot;n&quot;:&quot;Pınar Kılıç&quot;,&quot;r&quot;:&quot;Coordinator&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-pk.webp&quot;,&quot;i&quot;:&quot;PK&quot;},{&quot;t&quot;:&quot;I enjoyed collaborating with Berkay Vuran on the GCS Network, the Search 'n Stuff Conference, and many other projects. As a senior product manager and scrum master, Berkay's deep expertise…&quot;,&quot;n&quot;:&quot;Tümay Ulutaş Ertuğrul&quot;,&quot;r&quot;:&quot;Co-Founder&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-tua.webp&quot;,&quot;i&quot;:&quot;TE&quot;},{&quot;t&quot;:&quot;We worked with Berkay during the Navlungo &amp; Craftgate payment gateway integration process. Berkay is a very proficient, and proactive product guy. We worked with him with great pleasure on…&quot;,&quot;n&quot;:&quot;Hakan Erdoğan&quot;,&quot;r&quot;:&quot;CEO @Craftgate&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-he.webp&quot;,&quot;i&quot;:&quot;HE&quot;},{&quot;t&quot;:&quot;Berkay has always impressed me with his effective communication skills. His approach to problems and his style of analysis have always been guiding. He is a product owner who always…&quot;,&quot;n&quot;:&quot;Zikriye Ürkmez&quot;,&quot;r&quot;:&quot;Software Manager&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-zu.webp&quot;,&quot;i&quot;:&quot;ZÜ&quot;},{&quot;t&quot;:&quot;Berkay has always impressed me with his effective communication skills. His approach to problems and his style of analysis have always been guiding. He is a product owner who always…&quot;,&quot;n&quot;:&quot;Erhan Arda&quot;,&quot;r&quot;:&quot;Software Developer&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-ea.webp&quot;,&quot;i&quot;:&quot;EA&quot;},{&quot;t&quot;:&quot;Berkay is one of the greatest person I’ve ever met in my work life. His working passion and communication skills impressed me so much. If any person will get a chance to work with him, will…&quot;,&quot;n&quot;:&quot;Ersin Kılıçoğlu&quot;,&quot;r&quot;:&quot;Art Director&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-ek.webp&quot;,&quot;i&quot;:&quot;EK&quot;},{&quot;t&quot;:&quot;Berkay is a real generalist with broad knowledge of various disciplines and a deep willingness to learn more. Each new project or challenge with him is much easier to handle thanks to his…&quot;,&quot;n&quot;:&quot;Gül Pınar Avşar&quot;,&quot;r&quot;:&quot;Digital Marketing Specialist&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-gpa.webp&quot;,&quot;i&quot;:&quot;GA&quot;},{&quot;t&quot;:&quot;Berkay is an incredibly hard worker with his cool work and agility in times of crisis. As a PM, he takes a developer-friendly approach and makes difficult times easier, at the end of the…&quot;,&quot;n&quot;:&quot;Cengiz Cemal Mataracı&quot;,&quot;r&quot;:&quot;Software Developer&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-ccm.webp&quot;,&quot;i&quot;:&quot;CM&quot;},{&quot;t&quot;:&quot;Berkay is a sharp innovator, as well as a great friend and a team player and a motivator. We have served together within one of the five largest digital transformation projects in the telco…&quot;,&quot;n&quot;:&quot;Tamay Önal&quot;,&quot;r&quot;:&quot;Team Lead&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-to.webp&quot;,&quot;i&quot;:&quot;TÖ&quot;},{&quot;t&quot;:&quot;Working together with Berkay was enjoyable and very productive. Thanks to its technical approach to determining business value, business processing, and projecting, we quickly advanced the…&quot;,&quot;n&quot;:&quot;Uğur Açıkgöz&quot;,&quot;r&quot;:&quot;Head of Engineering&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-ua.webp&quot;,&quot;i&quot;:&quot;UA&quot;},{&quot;t&quot;:&quot;When I first met, when I looked at his LinkedIn profile, what surprised me the most was that his undergraduate education was in psychology. The secret of the success of Berkay, who worked…&quot;,&quot;n&quot;:&quot;Erdal Yıldız&quot;,&quot;r&quot;:&quot;Security Consultant&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-ey.webp&quot;,&quot;i&quot;:&quot;EY&quot;},{&quot;t&quot;:&quot;He is a person who I am happy to work with in the Ministry of Health, has the will to work, has a high desire to learn, and gets what he wants. It completes its work with solution-oriented…&quot;,&quot;n&quot;:&quot;Nusret Semih Çelik&quot;,&quot;r&quot;:&quot;Data Scientist&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-nsc.webp&quot;,&quot;i&quot;:&quot;NÇ&quot;},{&quot;t&quot;:&quot;During the time we worked together at the Ministry of Health, I enjoyed spending time together with his curiosity, interest, broad perspective, and solution-oriented working approach. His…&quot;,&quot;n&quot;:&quot;Faruk Sarı&quot;,&quot;r&quot;:&quot;Software Manager&quot;,&quot;a&quot;:&quot;/assets/images/avatars/avatar-fs.webp&quot;,&quot;i&quot;:&quot;FS&quot;},{&quot;t&quot;:&quot;During the time I had the opportunity to work with him as a product owner on the project we developed for the General Directorate of Health Promotion; He is one of the most suitable…&quot;,&quot;n&quot;:&quot;Doğa Bekaroğlu&quot;,&quot;r&quot;:&quot;Team Lead&quot;,&quot;a&quot;:&quot;&quot;,&quot;i&quot;:&quot;DB&quot;}]"><h2>What people say</h2><blockquote>“I had the opportunity to work with Berkay while I was serving as a Presales Manager and he was a Product Analyst. One of the things that stood out most about Berkay was his excellent…”</blockquote><span class="w-by"><span class="w-av"><img class="" src="/assets/images/avatars/avatar-era.webp" alt="Erçin Altundağ" width="34" height="34" loading="lazy"></span><span><b>Erçin Altundağ</b><i>Presales Manager</i></span></span></a>
+  </aside>
+  <nav class="icons" aria-label="Sections"><a class="icon c-about" href="/about/" data-app="about"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="lbl">About</span></a><a class="icon c-cv" href="/cv/" data-app="cv"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg></span><span class="lbl">CV</span></a><a class="icon c-references" href="/references/" data-app="references"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span class="lbl">References</span></a><a class="icon c-showcase" href="/showcase/" data-app="showcase"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><span class="lbl">Showcase</span></a><a class="icon c-blog" href="/blog/" data-app="blog"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20l1-5L16 4l4 4L9 19z"/><path d="M13 7l4 4"/></svg></span><span class="lbl">Blog</span></a><a class="icon c-builder" href="/builder/" data-app="builder"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 7l3-3 3 3-3 3z"/><path d="M4 20l9-9M12 5l7 7"/></svg></span><span class="lbl">Builder</span></a></nav>
+  
+</main>
+<nav class="dock" aria-label="Dock"><a class="icon c-about" href="/about/" data-app="about"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="lbl">About</span></a><a class="icon c-showcase" href="/showcase/" data-app="showcase"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><span class="lbl">Showcase</span></a><a class="icon c-builder" href="/builder/" data-app="builder"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 7l3-3 3 3-3 3z"/><path d="M4 20l9-9M12 5l7 7"/></svg></span><span class="lbl">Builder</span></a><a class="icon c-blog" href="/blog/" data-app="blog"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20l1-5L16 4l4 4L9 19z"/><path d="M13 7l4 4"/></svg></span><span class="lbl">Blog</span></a><span class="dock-sep" aria-hidden="true"></span><a class="icon c-linkedin" href="https://www.linkedin.com/in/berkayvuran" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9v10M6 5v.01M11 19v-6a3 3 0 016 0v6M11 9v10"/></svg></span><span class="lbl">LinkedIn</span></a><a class="icon c-github" href="https://github.com/berkayvuran" target="_blank" rel="noopener noreferrer" aria-label="GitHub (opens in a new tab)"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 19c-4 1-4-2-6-2m12 4v-3a3 3 0 00-1-2c3 0 6-1.5 6-6a5 5 0 00-1-3 5 5 0 000-3s-1-.3-3 1a10 10 0 00-6 0C8 3 7 3.3 7 3.3a5 5 0 000 3 5 5 0 00-1 3c0 4.5 3 6 6 6a3 3 0 00-1 2v3"/></svg></span><span class="lbl">GitHub</span></a><a class="icon c-mail" href="mailto:berkaypsy@gmail.com" aria-label="Email"><span class="tile"><svg class="" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span><span class="lbl">Email</span></a></nav>
+<script src="/desk.js?v=592be584" defer></script>
 </body>
-
 </html>
