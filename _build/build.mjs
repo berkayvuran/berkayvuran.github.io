@@ -240,7 +240,7 @@ function parseShowcase(lang) {
     const a = $(li).find('> a').first();
     const im = a.find('img').first();
     return {
-      href: a.attr('href'),
+      href: fixUrls(`href="${a.attr('href') || ''}"`).slice(6, -1),
       img: (im.attr('src') || '').trim(), w: im.attr('width'), h: im.attr('height'), alt: im.attr('alt') || '',
       title: text($, a.find('.project-title'), lang),
       cat: ($(li).attr('data-category') || '').trim(),

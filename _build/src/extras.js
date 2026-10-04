@@ -126,6 +126,7 @@
       pop.querySelectorAll('[data-t]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-t') === cur ? 'true' : 'false'); });
       var g = pop.querySelector('[data-glass]'); if (g) g.setAttribute('aria-pressed', glassOn() ? 'true' : 'false');
       var w = pop.querySelector('[data-wall] small'); if (w) w.textContent = ui.walls[wall()];
+      pop.querySelectorAll('[data-mu]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-mu') === D.prefs.music.cur() ? 'true' : 'false'); });
       var s = pop.querySelector('[data-snd]'); if (s) s.setAttribute('aria-pressed', vol > 0 ? 'true' : 'false');
     }
     function build() {
@@ -140,6 +141,7 @@
         '<button type="button" class="cc-tile" data-lock><span class="ic">' + svgLock + '</span><span class="tx"><b>' + ui.ccLock + '</b></span></button>' +
         '<button type="button" class="cc-tile" data-mc><span class="ic">' + svgMC + '</span><span class="tx"><b>' + ui.ccMC + '</b></span></button>' +
         '</div>' +
+        '<p class="cc-h">' + D.prefs.music.label + '</p><div class="cc-tiles cc-music">' + D.prefs.music.tracks.concat([D.prefs.music.off]).map(function (n, i) { return '<button type="button" class="cc-tile" data-mu="' + (i < D.prefs.music.tracks.length ? i : -1) + '" aria-pressed="false"><span class="ic">' + svgNote + '</span><span class="tx"><b>' + n + '</b></span></button>'; }).join('') + '</div>' +
         '<label class="cc-slider"><span><b>' + ui.ccBright + '</b></span><input type="range" min="40" max="100" step="1" data-bright aria-label="' + ui.ccBright + '"></label>' +
         '<label class="cc-slider"><span><b>' + ui.ccSound + '</b><button type="button" class="cc-mini" data-snd aria-pressed="false" aria-label="' + ui.ccSound + '">' + svgSound + '</button></span><input type="range" min="0" max="100" step="5" data-vol aria-label="' + ui.ccSound + '"></label>';
       pop.querySelector('[data-bright]').value = String(bright);
@@ -151,6 +153,7 @@
         e.stopPropagation();
         var b = e.target.closest('button'); if (!b) return;
         if (b.hasAttribute('data-t')) D.setTheme(b.getAttribute('data-t'));
+        else if (b.hasAttribute('data-mu')) D.prefs.music.set(+b.getAttribute('data-mu'));
         else if (b.hasAttribute('data-glass')) D.setGlass(!D.glassOn());
         else if (b.hasAttribute('data-wall')) setWall(WALLS[(WALLS.indexOf(wall()) + 1) % WALLS.length]);
         else if (b.hasAttribute('data-lock')) { api.close(); showLock(true); return; }
@@ -172,12 +175,13 @@
       },
       isOpen: function () { return !pop.hidden; }
     };
-    pops.push(api); D.cc = api;
+    pops.push(api); D.cc = api; document.addEventListener('desk:music', function () { if (built) paint(); });
     btn.addEventListener('click', function (e) { e.stopPropagation(); if (api.isOpen()) api.close(); else api.open(); });
     document.addEventListener('click', function (e) { if (api.isOpen() && !e.target.closest('.cc, .mb-cc')) api.close(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && api.isOpen()) { api.close(); btn.focus(); e.stopPropagation(); } }, true);
   })();
 
+  var svgNote = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="16" r="2.5"/></svg>';
   var svgGlass = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 9c1.5-1.4 3-1.8 4.5-1.8"/></svg>';
   var svgGlobe = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5z"/></svg>';
   var svgImage = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4.5 3.5 3L15 13l5 4.5"/></svg>';
@@ -772,12 +776,12 @@
     w.appendChild(btn);
     var chip = document.querySelector('.mb-wx'), wp = null, wpBtn = null;
     if (chip) {
-      wp = el('div', 'cc mp'); wp.hidden = true; wp.setAttribute('role', 'dialog'); wp.setAttribute('aria-label', chip.getAttribute('aria-label'));
+      wp = el('div', 'cc mp wxp'); wp.hidden = true; wp.setAttribute('role', 'dialog'); wp.setAttribute('aria-label', chip.getAttribute('aria-label'));
       wp.innerHTML = '<div class="mp-wx"><span class="wx-e" aria-hidden="true"></span><span><b></b><small></small></span></div>'; body.appendChild(wp);
       wpBtn = el('button', 'wx-loc'); wpBtn.type = 'button'; wpBtn.textContent = btn.textContent; wpBtn.title = btn.title; wp.appendChild(wpBtn);
       var wapi = {
         close: function () { wp.hidden = true; chip.setAttribute('aria-expanded', 'false'); },
-        open: function () { closeAll(wapi); var r = chip.getBoundingClientRect(); wp.style.right = 'auto'; wp.style.left = Math.max(8, Math.min(r.left, innerWidth - 258)) + 'px'; wp.hidden = false; chip.setAttribute('aria-expanded', 'true'); },
+        open: function () { closeAll(wapi); var r = chip.getBoundingClientRect(); wp.style.right = 'auto'; wp.style.left = Math.max(8, Math.min(r.left, innerWidth - 348)) + 'px'; wp.hidden = false; chip.setAttribute('aria-expanded', 'true'); },
         isOpen: function () { return !wp.hidden; }
       };
       pops.push(wapi);
@@ -785,8 +789,27 @@
       document.addEventListener('click', function (e) { if (wapi.isOpen() && !e.target.closest('.mp, .mb-wx')) wapi.close(); });
       wpBtn.addEventListener('click', function (e) { e.stopPropagation(); btn.click(); });
     }
-    function show(d) {
-      last = d; var c = d.weather_code, row = W[W.length - 1]; for (var i = 0; i < W.length; i++) { if (c <= W[i][0]) { row = W[i]; break; } }
+    function wrow(c) { for (var i = 0; i < W.length; i++) { if (c <= W[i][0]) return W[i]; } return W[W.length - 1]; }
+    var L = tr ? { feels: 'Hissedilen', hum: 'Nem', wind: 'Rüzgar', rain: 'Yağış', uv: 'UV', sun: 'Gün doğumu · batımı', now: 'Şimdi', today: 'Bugün', hi: 'Y', lo: 'D' } : { feels: 'Feels like', hum: 'Humidity', wind: 'Wind', rain: 'Rain chance', uv: 'UV index', sun: 'Sunrise / sunset', now: 'Now', today: 'Today', hi: 'H', lo: 'L' };
+    function hhmm(t) { return (t || '').slice(11, 16); }
+    function details(d) {
+      var c = d.c, h = d.h, dl = d.d, out = '';
+      var pill = function (k, v) { return '<div class="wx-s"><small>' + k + '</small><b>' + v + '</b></div>'; };
+      out += '<div class="wx-grid">' + pill(L.feels, Math.round(c.apparent_temperature) + '°') + pill(L.hum, Math.round(c.relative_humidity_2m) + '%') + pill(L.wind, Math.round(c.wind_speed_10m) + ' km/h') +
+        pill(L.rain, (dl.precipitation_probability_max[0] != null ? dl.precipitation_probability_max[0] : 0) + '%') + pill(L.uv, dl.uv_index_max[0] != null ? Math.round(dl.uv_index_max[0]) : '-') + pill(L.sun, '☀️ ' + hhmm(dl.sunrise[0]) + '  🌙 ' + hhmm(dl.sunset[0])).replace('wx-s', 'wx-s wide') + '</div>';
+      var i0 = 0; for (var i = 0; i < h.time.length; i++) { if (h.time[i] >= c.time.slice(0, 13) + ':00') { i0 = i; break; } }
+      out += '<div class="wx-hours" role="list">';
+      for (var k = 0; k < 10 && i0 + k < h.time.length; k++) { var j = i0 + k; out += '<div role="listitem"><small>' + (k === 0 ? L.now : hhmm(h.time[j])) + '</small><span aria-hidden="true">' + wrow(h.weather_code[j])[1] + '</span><b>' + Math.round(h.temperature_2m[j]) + '°</b></div>'; }
+      out += '</div><div class="wx-days">';
+      var mn = Math.min.apply(null, dl.temperature_2m_min), mx = Math.max.apply(null, dl.temperature_2m_max), span = Math.max(1, mx - mn);
+      for (var n = 0; n < Math.min(6, dl.time.length); n++) {
+        var day = n === 0 ? L.today : new Date(dl.time[n] + 'T12:00').toLocaleDateString(tr ? 'tr-TR' : 'en-US', { weekday: 'short' }), lo = dl.temperature_2m_min[n], hi = dl.temperature_2m_max[n];
+        out += '<div class="wx-d"><span class="dn">' + day + '</span><span aria-hidden="true">' + wrow(dl.weather_code[n])[1] + '</span><span class="dp">' + (dl.precipitation_probability_max[n] || 0) + '%</span><span class="dl">' + Math.round(lo) + '°</span><span class="bar"><i style="left:' + ((lo - mn) / span * 100).toFixed(1) + '%;right:' + ((mx - hi) / span * 100).toFixed(1) + '%"></i></span><span class="dh">' + Math.round(hi) + '°</span></div>';
+      }
+      return out + '</div>';
+    }
+    function show(all) {
+      var d = all.c; last = d; var c = d.weather_code, row = wrow(c);
       w.querySelector('.wx-e').textContent = (c === 0 && !d.is_day) ? '🌙' : row[1];
       w.querySelector('b').textContent = Math.round(d.temperature_2m) + '°C';
       w.querySelector('small').textContent = cur.city + ' · ' + row[tr ? 3 : 2];
@@ -794,16 +817,17 @@
       if (chip) {
         var tmp = Math.round(d.temperature_2m) + '°', em = w.querySelector('.wx-e').textContent;
         chip.querySelector('.wx-e').textContent = em; chip.querySelector('b').textContent = tmp; chip.hidden = false;
-        wp.querySelector('.wx-e').textContent = em; wp.querySelector('b').textContent = Math.round(d.temperature_2m) + '°C'; wp.querySelector('small').textContent = cur.city + ' · ' + row[tr ? 3 : 2];
+        wp.querySelector('.wx-e').textContent = em; wp.querySelector('.mp-wx b').textContent = Math.round(d.temperature_2m) + '°C'; wp.querySelector('.mp-wx small').textContent = cur.city + ' · ' + row[tr ? 3 : 2] + (all.d ? ' · ' + L.hi + ' ' + Math.round(all.d.temperature_2m_max[0]) + '° ' + L.lo + ' ' + Math.round(all.d.temperature_2m_min[0]) + '°' : '');
+        var box = wp.querySelector('.wx-more'); if (!box) { box = el('div', 'wx-more'); wp.insertBefore(box, wpBtn); } try { if (all.h && all.d) box.innerHTML = details(all); } catch (e) {}
         wpBtn.hidden = cur !== DEF;
       }
     }
     function key() { return cur.lat.toFixed(2) + ',' + cur.lon.toFixed(2); }
     function load() {
-      var cached = null; try { cached = JSON.parse(sessionStorage.getItem('wx') || 'null'); } catch (e) {}
+      var cached = null; try { cached = JSON.parse(sessionStorage.getItem('wx2') || 'null'); } catch (e) {}
       if (cached && cached.k === key() && Date.now() - cached.t < 30 * 60000) { show(cached.d); return; }
-      fetch('https://api.open-meteo.com/v1/forecast?latitude=' + cur.lat + '&longitude=' + cur.lon + '&current=temperature_2m,weather_code,is_day&timezone=auto').then(function (r) { return r.json(); }).then(function (j) {
-        if (!j.current) return; show(j.current); try { sessionStorage.setItem('wx', JSON.stringify({ t: Date.now(), k: key(), d: j.current })); } catch (e) {}
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=' + cur.lat + '&longitude=' + cur.lon + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day,wind_speed_10m&hourly=temperature_2m,weather_code,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset&forecast_days=6&timezone=auto').then(function (r) { return r.json(); }).then(function (j) {
+        if (!j.current) return; var d = { c: j.current, h: j.hourly, d: j.daily }; show(d); try { sessionStorage.setItem('wx2', JSON.stringify({ t: Date.now(), k: key(), d: d })); } catch (e) {}
       }).catch(function () {});
     }
     btn.addEventListener('click', function (e) {
