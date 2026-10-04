@@ -381,11 +381,9 @@ button.st-r:active,a.st-r:active{background:var(--accent-soft)}
 .widgets{will-change:scroll-position}
 
 /* ---------- menubar weather + music ---------- */
-.mb-wx,.mb-music{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 7px;border:0;border-radius:6px;background:none;color:var(--onwall);font:inherit;font-size:13px;cursor:default}
-.mb-wx[hidden],.mb-music[hidden]{display:none}
-.mb-wx:hover,.mb-music:hover,.mb-wx[aria-expanded="true"],.mb-music[aria-expanded="true"]{background:var(--hover)}
-.mb-music svg{width:16px;height:16px}
-.mb-music.on svg{color:#30d158}
+.mb-wx{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 7px;border:0;border-radius:6px;background:none;color:var(--onwall);font:inherit;font-size:13px;cursor:default}
+.mb-wx[hidden]{display:none}
+.mb-wx:hover,.mb-wx[aria-expanded="true"]{background:var(--hover)}
 .mb-wx .wx-e{font-size:14px;line-height:1}
 .mb-wx b{font-weight:500}
 .mp{width:250px;padding:10px}
