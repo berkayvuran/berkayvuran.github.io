@@ -739,31 +739,6 @@
     }, { passive: false });
   })();
 
-  /* ================= menubar music popover ================= */
-  (function musicMenu() {
-    var btn = document.querySelector('.mb-music'); if (!btn) return;
-    btn.hidden = false;
-    var pop = el('div', 'cc mp'); pop.hidden = true; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', btn.getAttribute('aria-label')); body.appendChild(pop);
-    var P = D.prefs.music;
-    function paint() {
-      btn.classList.toggle('on', P.cur() >= 0);
-      pop.querySelectorAll('[data-i]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-i') === P.cur() ? 'true' : 'false'); });
-    }
-    pop.innerHTML = '<p class="cc-h">' + P.label + '</p>' + P.tracks.map(function (n, i) { return '<button type="button" class="mp-row" data-i="' + i + '" aria-pressed="false"><span>' + n + '</span><span class="ck">✓</span></button>'; }).join('') + '<button type="button" class="mp-row" data-i="-1" aria-pressed="false"><span>' + P.off + '</span><span class="ck">✓</span></button>';
-    pop.addEventListener('click', function (e) { e.stopPropagation(); var b = e.target.closest('[data-i]'); if (!b) return; P.set(+b.getAttribute('data-i')); paint(); });
-    document.addEventListener('desk:music', paint);
-    var api = {
-      close: function () { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); },
-      open: function () { closeAll(api); var r = btn.getBoundingClientRect(); pop.style.right = 'auto'; pop.style.left = Math.max(8, Math.min(r.left, innerWidth - 258)) + 'px'; paint(); pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); },
-      isOpen: function () { return !pop.hidden; }
-    };
-    pops.push(api);
-    btn.addEventListener('click', function (e) { e.stopPropagation(); if (api.isOpen()) api.close(); else api.open(); });
-    document.addEventListener('click', function (e) { if (api.isOpen() && !e.target.closest('.mp, .mb-music')) api.close(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && api.isOpen()) { api.close(); btn.focus(); e.stopPropagation(); } }, true);
-    paint();
-  })();
-
   /* ---------- weather widget (Open-Meteo, no key). Istanbul by default; "use my location" asks the browser ---------- */
   (function weather() {
     var w = document.querySelector('[data-weather]'); if (!w) return;
