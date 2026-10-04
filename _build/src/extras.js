@@ -23,7 +23,10 @@
   document.addEventListener('touchstart', warm, { once: true, passive: true });
 
   /* ---------- sound (off by default, tiny WebAudio blips) ---------- */
-  var vol = parseInt(store.get('sound') || '0', 10) || 0, actx = null;
+  var vol = parseInt(store.get('vol2') || '60', 10); if (!(vol >= 0 && vol <= 100)) vol = 60;
+  var actx = null, music = { cur: -1, g: null, timer: null };
+  function mlevel() { return vol / 100 * 0.8; }
+  function setVol(v) { vol = v; store.set('vol2', String(v)); if (music.g && actx) { try { music.g.gain.cancelScheduledValues(actx.currentTime); music.g.gain.setTargetAtTime(mlevel(), actx.currentTime, 0.05); } catch (e) {} } }
   function blip(f1, f2, dur) {
     if (!vol) return;
     try {
@@ -45,7 +48,6 @@
     { n: tr0 ? 'Pazar Piyanosu' : 'Sunday Piano', bpm: 60, w: 'sine', lp: 2600, arp: 1, ch: [[48, 52, 55, 64], [45, 52, 57, 64], [53, 57, 60, 65], [55, 59, 62, 67]] },
     { n: tr0 ? 'Derin Uzay' : 'Deep Space', bpm: 44, w: 'triangle', lp: 700, arp: 0, ch: [[50, 57, 62, 64], [45, 52, 57, 59], [43, 50, 55, 62], [48, 55, 60, 62]] }
   ];
-  var music = { cur: -1, g: null, timer: null };
   var mcur = store.get('music'); mcur = mcur === 'off' ? -1 : (parseInt(mcur || '0', 10) || 0); if (mcur >= TRACKS.length) mcur = 0;
   function ctx() { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); return actx; }
   function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
@@ -69,7 +71,7 @@
     try {
       var c = ctx(); if (c.state === 'suspended') c.resume();
       var m = c.createGain(), f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = T.lp;
-      m.gain.setValueAtTime(0, c.currentTime); m.gain.linearRampToValueAtTime(0.5, c.currentTime + 1.5);
+      m.gain.setValueAtTime(0, c.currentTime); m.gain.linearRampToValueAtTime(Math.max(0.0001, mlevel()), c.currentTime + 1.5);
       m.connect(f); f.connect(c.destination); music.g = m; music.cur = i;
       var step = 60 / T.bpm, next = c.currentTime + 0.1, idx = 0;
       function chord() {
@@ -107,7 +109,7 @@
     if (n === 'default') root.removeAttribute('data-wp'); else root.setAttribute('data-wp', n);
     store.set('wp', n); return true;
   }
-  D.prefs = { music: { tracks: TRACKS.map(function (t) { return t.n; }), cur: function () { return mcur; }, set: setMusic, label: tr0 ? 'Müzik' : 'Music', off: tr0 ? 'Kapalı' : 'Off' }, WALLS: WALLS, wall: wall, setWall: setWall, bright: function () { return bright; }, setBright: setBright, vol: function () { return vol; }, setVol: function (v) { vol = v; store.set('sound', String(v)); }, blip: function () { blip(520, 820, 0.14); } };
+  D.prefs = { music: { tracks: TRACKS.map(function (t) { return t.n; }), cur: function () { return mcur; }, set: setMusic, label: tr0 ? 'Müzik' : 'Music', off: tr0 ? 'Kapalı' : 'Off' }, WALLS: WALLS, wall: wall, setWall: setWall, bright: function () { return bright; }, setBright: setBright, vol: function () { return vol; }, setVol: setVol, blip: function () { blip(520, 820, 0.14); } };
   var THEME_ALIAS = { dark: 'dark', light: 'light', matrix: 'matrix', zap: 'high-contrast', 'high-contrast': 'high-contrast' };
 
   /* ---------- popover plumbing ---------- */
@@ -147,7 +149,7 @@
       pop.querySelector('[data-bright]').value = String(bright);
       pop.querySelector('[data-vol]').value = String(vol);
       pop.querySelector('[data-bright]').addEventListener('input', function (e) { setBright(+e.target.value); });
-      pop.querySelector('[data-vol]').addEventListener('input', function (e) { vol = +e.target.value; store.set('sound', String(vol)); paint(); });
+      pop.querySelector('[data-vol]').addEventListener('input', function (e) { setVol(+e.target.value); paint(); });
       pop.querySelector('[data-vol]').addEventListener('change', function () { blip(520, 820, 0.14); });
       pop.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -158,7 +160,7 @@
         else if (b.hasAttribute('data-wall')) setWall(WALLS[(WALLS.indexOf(wall()) + 1) % WALLS.length]);
         else if (b.hasAttribute('data-lock')) { api.close(); showLock(true); return; }
         else if (b.hasAttribute('data-mc')) { api.close(); D.missionControl(); return; }
-        else if (b.hasAttribute('data-snd')) { vol = vol > 0 ? 0 : 50; store.set('sound', String(vol)); pop.querySelector('[data-vol]').value = String(vol); if (vol) blip(520, 820, 0.14); }
+        else if (b.hasAttribute('data-snd')) { setVol(vol > 0 ? 0 : 60); pop.querySelector('[data-vol]').value = String(vol); if (vol) blip(520, 820, 0.14); }
         paint();
       });
     }
