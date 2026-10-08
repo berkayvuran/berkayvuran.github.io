@@ -111,7 +111,7 @@ const LINKS = [
   { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/berkayvuran' },
   { id: 'github', label: 'GitHub', href: 'https://github.com/berkayvuran' },
   { id: 'phone', label: { en: 'Call', tr: 'Ara' }, href: 'tel:+905424239930' },
-  { id: 'mail', app: 'mail', label: { en: 'Mail', tr: 'Posta' }, href: 'mailto:berkaypsy@gmail.com' }
+  { id: 'mail', app: 'mail', label: { en: 'Mail', tr: 'Posta' }, href: 'mailto:hello@berkayvuran.com' }
 ];
 
 
@@ -137,7 +137,7 @@ const APP = {
       welcome: 'Berkay Vuran, version 1.0. Type "help" to see what you can do.', prompt: 'guest@berkayvuran', unknown: 'command not found:', tryHelp: 'Type "help" for the list of commands.',
       help: [['help', 'show this list'], ['about', 'who I am'], ['experience', 'where I have worked'], ['education', 'where I studied'], ['projects', 'AI-built products you can open'], ['blog', 'latest writing'], ['skills', 'what I do'], ['contact', 'phone, email and links'], ['open <name>', 'open a window: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <name>', 'dark, light, matrix or zap'], ['wallpaper <name>', 'default, aurora, sunset or ocean'], ['lang <en|tr>', 'switch language'], ['lock', 'show the lock screen'], ['ls / cat <file>', 'look around'], ['neofetch', 'system info'], ['snake', 'a tiny game'], ['cowsay <text>', 'a talking cow'], ['matrix', 'follow the white rabbit'], ['date, echo, history, clear, exit', 'the usual']],
       files: ['about.txt', 'contact.txt', 'cv.txt', 'projects/', 'blog/'], noFile: 'No such file:', usage: 'usage:', opened: 'opening', themeSet: 'theme set to', wallSet: 'wallpaper set to', langSwitch: 'switching language…', badTheme: 'unknown theme. Try: dark, light, matrix, zap', badWall: 'unknown wallpaper. Try: default, aurora, sunset, ocean', badOpen: 'unknown window. Try: about, cv, references, showcase, blog, builder, notes, photos, mail',
-      sudo: ['[sudo] password for guest: ********', 'Access granted. Hiring pipeline unlocked.', 'Opening the mail app, say hi at berkaypsy@gmail.com.'], root: 'Nice try. This is a very polite machine, but it is not that polite.', hello: 'Hello! Great to see you here.', matrixMsg: 'Wake up, Neo…', snakeHint: 'Arrow keys or WASD to move, q to quit. Swipe on touch.', exit: 'Closing the terminal…',
+      sudo: ['[sudo] password for guest: ********', 'Access granted. Hiring pipeline unlocked.', 'Opening the mail app, say hi at hello@berkayvuran.com.'], root: 'Nice try. This is a very polite machine, but it is not that polite.', hello: 'Hello! Great to see you here.', matrixMsg: 'Wake up, Neo…', snakeHint: 'Arrow keys or WASD to move, q to quit. Swipe on touch.', exit: 'Closing the terminal…',
       neofetch: ['Berkay Vuran', 'OS', 'Product Leader 1.0', 'Role', 'Product leader and builder', 'Focus', 'AI, ML, data and real workflows', 'Shell', 'berkayvuran.com', 'Theme']
     }
   },
@@ -161,13 +161,13 @@ const APP = {
       welcome: 'Berkay Vuran, sürüm 1.0. Neler yapabileceğini görmek için "help" yaz.', prompt: 'misafir@berkayvuran', unknown: 'komut bulunamadı:', tryHelp: 'Komut listesi için "help" yaz.',
       help: [['help', 'bu listeyi göster'], ['about', 'ben kimim'], ['experience', 'nerelerde çalıştım'], ['education', 'nerede okudum'], ['projects', 'açabileceğin AI ürünleri'], ['blog', 'son yazılar'], ['skills', 'ne yaparım'], ['contact', 'telefon, e-posta ve bağlantılar'], ['open <ad>', 'pencere aç: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <ad>', 'dark, light, matrix veya zap'], ['wallpaper <ad>', 'default, aurora, sunset veya ocean'], ['lang <en|tr>', 'dili değiştir'], ['lock', 'kilit ekranını göster'], ['ls / cat <dosya>', 'etrafa bak'], ['neofetch', 'sistem bilgisi'], ['snake', 'küçük bir oyun'], ['cowsay <metin>', 'konuşan inek'], ['matrix', 'beyaz tavşanı takip et'], ['date, echo, history, clear, exit', 'bildiklerin']],
       files: ['about.txt', 'contact.txt', 'cv.txt', 'projects/', 'blog/'], noFile: 'Böyle bir dosya yok:', usage: 'kullanım:', opened: 'açılıyor', themeSet: 'tema ayarlandı:', wallSet: 'duvar kâğıdı ayarlandı:', langSwitch: 'dil değiştiriliyor…', badTheme: 'bilinmeyen tema. Dene: dark, light, matrix, zap', badWall: 'bilinmeyen duvar kâğıdı. Dene: default, aurora, sunset, ocean', badOpen: 'bilinmeyen pencere. Dene: about, cv, references, showcase, blog, builder, notes, photos, mail',
-      sudo: ['[sudo] misafir için parola: ********', 'Erişim verildi. İşe alım hattı açıldı.', 'Posta uygulaması açılıyor, merhaba de: berkaypsy@gmail.com.'], root: 'Güzel deneme. Bu makine çok kibar ama o kadar da değil.', hello: 'Merhaba! Burada olman çok güzel.', matrixMsg: 'Uyan, Neo…', snakeHint: 'Hareket için ok tuşları ya da WASD, çıkmak için q. Dokunmatikte kaydır.', exit: 'Terminal kapatılıyor…',
+      sudo: ['[sudo] misafir için parola: ********', 'Erişim verildi. İşe alım hattı açıldı.', 'Posta uygulaması açılıyor, merhaba de: hello@berkayvuran.com.'], root: 'Güzel deneme. Bu makine çok kibar ama o kadar da değil.', hello: 'Merhaba! Burada olman çok güzel.', matrixMsg: 'Uyan, Neo…', snakeHint: 'Hareket için ok tuşları ya da WASD, çıkmak için q. Dokunmatikte kaydır.', exit: 'Terminal kapatılıyor…',
       neofetch: ['Berkay Vuran', 'İS', 'Ürün Lideri 1.0', 'Rol', 'Ürün lideri ve üretici', 'Odak', 'AI, ML, veri ve gerçek iş akışları', 'Kabuk', 'berkayvuran.com', 'Tema']
     }
   }
 };
 const VAPPS = ['terminal', 'notes', 'photos', 'finder', 'ask', 'settings'];
-const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : id === 'finder' ? (lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf') : id === 'ask' || id === 'settings' ? url(lang, 'about') : 'mailto:berkaypsy@gmail.com';
+const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : id === 'finder' ? (lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf') : id === 'ask' || id === 'settings' ? url(lang, 'about') : 'mailto:hello@berkayvuran.com';
 const vIcon = (id, lang, cls = 'icon') => `<a class="${cls} c-${id}" href="${esc(vFallback(id, lang))}" data-vapp="${id}"><span class="tile">${tile(id)}</span><span class="lbl">${esc(APP[lang].names[id])}</span></a>`;
 
 /* ------------------------------------------------------------------ parsers */
@@ -297,9 +297,9 @@ function sidebar(lang, entries, defaultId) {
 const PHONE = { tel: '+905424239930', show: '+90 542 423 99 30' };
 const VCARD = (() => {
   const photo = fs.readFileSync(new URL('./src/vcard-photo.jpg', import.meta.url)).toString('base64').match(/.{1,74}/g).map((l, i) => (i ? ' ' : '') + l).join('\r\n');
-  return ['BEGIN:VCARD', 'VERSION:3.0', 'N:Vuran;Berkay;;;', 'FN:Berkay Vuran', 'TITLE:Product Leader & Builder', `TEL;TYPE=CELL,VOICE:${PHONE.tel}`, 'EMAIL;TYPE=INTERNET,PREF:berkaypsy@gmail.com', `URL:${ORIGIN}`, 'URL:https://www.linkedin.com/in/berkayvuran', 'URL:https://github.com/berkayvuran', 'PHOTO;ENCODING=b;TYPE=JPEG:' + photo, 'END:VCARD', ''].join('\r\n');
+  return ['BEGIN:VCARD', 'VERSION:3.0', 'N:Vuran;Berkay;;;', 'FN:Berkay Vuran', 'TITLE:Product Leader & Builder', `TEL;TYPE=CELL,VOICE:${PHONE.tel}`, 'EMAIL;TYPE=INTERNET,PREF:hello@berkayvuran.com', `URL:${ORIGIN}`, 'URL:https://www.linkedin.com/in/berkayvuran', 'URL:https://github.com/berkayvuran', 'PHOTO;ENCODING=b;TYPE=JPEG:' + photo, 'END:VCARD', ''].join('\r\n');
 })();
-const contactCard = (lang, cls = '') => { const u = UI[lang]; return `<div class="contact ${cls}"><a class="call-btn" href="tel:${PHONE.tel}"><span class="cb-ic">${tile('phone')}</span><span class="cb-t"><small>${esc(u.callMe)}</small><b>${PHONE.show}</b></span></a><a class="mail-btn" href="mailto:berkaypsy@gmail.com"><span class="cb-ic">${tile('mail')}</span><span class="cb-t"><small>${esc(u.mailMe)}</small><b>berkaypsy@gmail.com</b></span></a><a class="vc-btn" href="${BASE}/berkay-vuran.vcf" download="berkay-vuran.vcf">${svg('addc')}<span>${esc(u.addContact)}</span></a></div>`; };
+const contactCard = (lang, cls = '') => { const u = UI[lang]; return `<div class="contact ${cls}"><a class="call-btn" href="tel:${PHONE.tel}"><span class="cb-ic">${tile('phone')}</span><span class="cb-t"><small>${esc(u.callMe)}</small><b>${PHONE.show}</b></span></a><a class="mail-btn" href="mailto:hello@berkayvuran.com"><span class="cb-ic">${tile('mail')}</span><span class="cb-t"><small>${esc(u.mailMe)}</small><b>hello@berkayvuran.com</b></span></a><a class="vc-btn" href="${BASE}/berkay-vuran.vcf" download="berkay-vuran.vcf">${svg('addc')}<span>${esc(u.addContact)}</span></a></div>`; };
 
 function winAbout(lang) {
   const d = parseAbout(lang);
@@ -578,7 +578,7 @@ function kbData(lang) {
     { k: 'now current currently role job position doing today su an simdi gorev pozisyon calisiyor ne yapiyor', a: `${now.role}${now.org ? ' @ ' + now.org : ''}${now.date ? ' (' + now.date + ')' : ''}.`, l: [win('cv')] },
     { k: 'experience work worked companies career history employer deneyim calis sirket kariyer nerelerde isyeri', a: exp.slice(0, 6).map(line).join('\n'), l: [win('cv')] },
     { k: 'education school university degree studied study okul universite egitim mezun okudu', a: edu.length ? edu.map(line).join('\n') : (tr ? 'Eğitim bilgileri CV penceresinde.' : 'Education details are in the CV window.'), l: [win('cv')] },
-    { k: 'contact phone call number email mail reach message iletisim telefon numara ara eposta ulas yaz', a: `${PHONE.show}\nberkaypsy@gmail.com`, l: [L(tr ? 'Ara' : 'Call', 'tel:' + PHONE.tel), { t: tr ? 'Mesaj yaz' : 'Write a message', u: '#mail', e: 0 }] },
+    { k: 'contact phone call number email mail reach message iletisim telefon numara ara eposta ulas yaz', a: `${PHONE.show}\nhello@berkayvuran.com`, l: [L(tr ? 'Ara' : 'Call', 'tel:' + PHONE.tel), { t: tr ? 'Mesaj yaz' : 'Write a message', u: '#mail', e: 0 }] },
     { k: 'linkedin github social profile sosyal profil', a: 'LinkedIn: linkedin.com/in/berkayvuran\nGitHub: github.com/berkayvuran', l: [L('LinkedIn', LINKS[0].href, 1), L('GitHub', LINKS[1].href, 1)] },
     { k: 'projects products builder apps built made tools games urun proje uygulama yaptigi insa arac oyun', a: (tr ? `${b.cards.length} canlı ürün: ` : `${b.cards.length} live products: `) + b.cards.slice(0, 5).map(c => c.name).join(', ') + '…', l: [win('builder')] },
     { k: 'blog writing articles posts write read yazi makale yazdi yazar okumak', a: blog.slice(0, 3).map(p => `${fmtDate(p.date, lang)}: ${p.title}`).join('\n'), l: [win('blog')] },
@@ -596,7 +596,7 @@ function appsData(lang) {
   return {
     ui: { ...a, addContact: UI[lang].addContact, back: UI[lang].back, close: UI[lang].close, min: UI[lang].min, zoom: UI[lang].zoom, home: url(lang, ''), other: url(lang === 'en' ? 'tr' : 'en', ''), otherShort: UI[lang].langShort, lang },
     form: FORM_URL,
-    contact: { tel: PHONE.tel, show: PHONE.show, mail: 'berkaypsy@gmail.com', linkedin: LINKS[0].href, github: LINKS[1].href, site: ORIGIN },
+    contact: { tel: PHONE.tel, show: PHONE.show, mail: 'hello@berkayvuran.com', linkedin: LINKS[0].href, github: LINKS[1].href, site: ORIGIN },
     about: seo(lang, '', {}).description,
     focus: TITLES[lang],
     cv: { experience: cv[0].items.map(i => ({ r: i.role, o: i.org, d: i.date })), education: (cv[1] || { items: [] }).items.map(i => ({ r: i.role, o: i.org, d: i.date })) },
