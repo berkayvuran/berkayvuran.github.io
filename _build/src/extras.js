@@ -692,7 +692,7 @@
   function swDraw() { sw.el.querySelectorAll('.asw-i').forEach(function (n, k) { n.classList.toggle('on', k === sw.i); }); }
   function swEnd(apply) { if (!sw.el) return; var pick = sw.list[sw.i]; sw.el.remove(); sw.el = null; if (apply && pick) { var ww = document.querySelector('.window[data-slug="' + pick.slug + '"]'); if (ww) ww.classList.remove('is-min'); D.focus(pick.slug); } }
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'F3' || (e.ctrlKey && e.key === 'ArrowUp' && !e.shiftKey)) { e.preventDefault(); if (mcEl) closeMC(); else openMC(); return; }
+    if (e.key === 'F3' || (e.ctrlKey && !e.altKey && e.key === 'ArrowUp' && !e.shiftKey)) { e.preventDefault(); if (mcEl) closeMC(); else openMC(); return; }
     if (e.key === 'Escape' && mcEl) { e.preventDefault(); e.stopPropagation(); closeMC(); return; }
     if (e.altKey && e.key === 'Tab') {
       var list = D.list().sort(function (x, y) { return y.z - x.z; }); if (list.length < 2) return;
@@ -889,6 +889,7 @@
       c: '<svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><rect x="4.5" y="5" width="7" height="6" rx="1" fill="currentColor" stroke="none" opacity=".55"/></svg>',
       f: '<svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" fill="currentColor" stroke="none" opacity=".55"/></svg>'
     };
+    var mac = /Mac|iPhone|iPad/.test(navigator.platform), KEYS = mac ? { l: '⌃⌥←', r: '⌃⌥→', c: '⌃⌥↩', f: '⌃⌥↑' } : { l: 'Ctrl Alt ←', r: 'Ctrl Alt →', c: 'Ctrl Alt ↵', f: 'Ctrl Alt ↑' };
     var menu = null, target = null, showT = 0, hideT = 0;
     function arrange(win, mode) {
       if (mode === 'f') { win.querySelector('.dot.g').click(); return; }
@@ -901,12 +902,20 @@
       win.style.left = l + 'px'; win.style.top = top + 'px'; win.style.width = w + 'px'; win.style.height = h + 'px'; win.style.right = 'auto'; win.style.bottom = 'auto';
       D.focus(win.getAttribute('data-slug'));
     }
+    /* keyboard: Ctrl+Alt (Control+Option on a Mac) + Left / Right / Enter / Up. Cmd+Option and the Windows key belong to the browser and OS, so they never reach the page. */
+    var KMAP = { ArrowLeft: 'l', ArrowRight: 'r', Enter: 'c', ArrowUp: 'f' };
+    document.addEventListener('keydown', function (e) {
+      if (!e.ctrlKey || !e.altKey || e.metaKey || e.shiftKey || !D.wide.matches) return;
+      var mode = KMAP[e.key]; if (!mode) return;
+      var win = document.querySelector('.window.active'); if (!win) return;
+      e.preventDefault(); e.stopPropagation(); hide(); arrange(win, mode);
+    }, true);
     function hide() { clearTimeout(showT); clearTimeout(hideT); if (menu) { menu.remove(); menu = null; } target = null; }
     function show(dot) {
       hide(); var win = dot.closest('.window'); if (!win || win.classList.contains('is-max') && false) return;
       target = dot; menu = el('div', 'zm'); menu.setAttribute('role', 'menu');
       menu.appendChild(el('div', 'zm-h', T.h));
-      ['l', 'r', 'c', 'f'].forEach(function (k) { var b = el('button'); b.type = 'button'; b.setAttribute('role', 'menuitem'); b.innerHTML = IC[k] + '<span></span>'; b.querySelector('span').textContent = T[k]; b.addEventListener('click', function () { var w = win; hide(); arrange(w, k); }); menu.appendChild(b); });
+      ['l', 'r', 'c', 'f'].forEach(function (k) { var b = el('button'); b.type = 'button'; b.setAttribute('role', 'menuitem'); b.innerHTML = IC[k] + '<span></span><kbd></kbd>'; b.querySelector('span').textContent = T[k]; b.querySelector('kbd').textContent = KEYS[k]; b.addEventListener('click', function () { var w = win; hide(); arrange(w, k); }); menu.appendChild(b); });
       body.appendChild(menu);
       var r = dot.getBoundingClientRect(), mw = menu.offsetWidth, left = Math.max(8, Math.min(r.left + r.width / 2 - 22, innerWidth - mw - 8));
       menu.style.left = left + 'px'; menu.style.top = (r.bottom + 9) + 'px'; menu.style.setProperty('--cx', (r.left + r.width / 2 - left) + 'px');
