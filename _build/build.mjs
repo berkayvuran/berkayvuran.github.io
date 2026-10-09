@@ -131,7 +131,6 @@ const APP = {
       search: 'Search', help: 'Show this list', mc: 'Mission Control', sw: 'Switch windows', left: 'Snap window left', right: 'Snap window right', center: 'Center window', fill: 'Fill the screen', close: 'Close the front window', ql: 'Quick Look on a card', konami: 'A small surprise' },
     dockm: { open: 'Open', close: 'Close window', all: 'Show all windows' },
     askfb: { ok: 'Helpful', bad: 'Not helpful', thanks: 'Thanks for the feedback!', report: 'Tell Berkay what I missed', subject: 'Question for the site assistant', msg: 'The assistant could not answer this question:' },
-    print: 'Print',
     cc: 'Control Center', ccTheme: 'Theme', ccGlass: 'Glass', ccLang: 'Language', ccSound: 'Sound', ccWall: 'Wallpaper', ccBright: 'Display', ccLock: 'Lock Screen', ccOn: 'On', ccOff: 'Off',
     walls: { default: 'Default', aurora: 'Aurora', sunset: 'Sunset', ocean: 'Ocean' },
     lock: { hint: 'Click or press any key to enter', hintTouch: 'Tap to enter' },
@@ -161,7 +160,6 @@ const APP = {
       search: 'Ara', help: 'Bu listeyi göster', mc: 'Mission Control', sw: 'Pencere değiştir', left: 'Pencereyi sola yasla', right: 'Pencereyi sağa yasla', center: 'Pencereyi ortala', fill: 'Ekranı doldur', close: 'Öndeki pencereyi kapat', ql: 'Karttan hızlı önizleme', konami: 'Küçük bir sürpriz' },
     dockm: { open: 'Aç', close: 'Pencereyi kapat', all: 'Tüm pencereleri göster' },
     askfb: { ok: 'Yardımcı oldu', bad: 'Yardımcı olmadı', thanks: 'Geri bildirimin için teşekkürler!', report: 'Berkay’a neyi bilemediğimi söyle', subject: 'Site asistanı için soru', msg: 'Asistan şu soruyu cevaplayamadı:' },
-    print: 'Yazdır',
     cc: 'Denetim Merkezi', ccTheme: 'Tema', ccGlass: 'Cam', ccLang: 'Dil', ccSound: 'Ses', ccWall: 'Duvar kâğıdı', ccBright: 'Ekran', ccLock: 'Ekranı Kilitle', ccOn: 'Açık', ccOff: 'Kapalı',
     walls: { default: 'Varsayılan', aurora: 'Aurora', sunset: 'Gün batımı', ocean: 'Okyanus' },
     lock: { hint: 'Girmek için tıkla veya bir tuşa bas', hintTouch: 'Girmek için dokun' },
@@ -332,7 +330,7 @@ function winCv(lang) {
   const g = parseCv(lang);
   const pdf = lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf';
   const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: g.reduce((n, x) => n + x.items.length, 0) }, ...g.map(x => ({ id: x.id, label: x.title, count: x.items.length, children: x.items.map((it, i) => ({ id: `cv-${x.id}-${i}`, label: it.role + (it.org ? ' · ' + it.org : '') })) }))], 'experience');
-  const body = `<div class="toolbar"><a class="btn" href="${pdf}" target="_blank" rel="noopener noreferrer">${svg('download')}<span>${esc(UI[lang].download)}</span></a><button class="btn" type="button" data-print>${svg('file')}<span>${esc(APP[lang].print)}</span></button></div>` +
+  const body = `<div class="toolbar"><a class="btn" href="${pdf}" target="_blank" rel="noopener noreferrer">${svg('download')}<span>${esc(UI[lang].download)}</span></a></div>` +
     g.map(grp => `<section class="group" id="${grp.id}" data-group="${grp.id}" aria-labelledby="${grp.id}-h">
       <h2 class="group-h" id="${grp.id}-h">${esc(grp.title)} <span class="muted">${grp.items.length} ${esc(UI[lang].items)}</span></h2>
       <div class="rows">${grp.items.map((it, i) => `<details class="row" id="cv-${grp.id}-${i}"${grp.id === 'experience' && i === 0 ? ' open' : ''}>

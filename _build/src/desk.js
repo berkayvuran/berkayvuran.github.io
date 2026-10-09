@@ -393,6 +393,7 @@
   function loadIndex() {
     if (spot.data) return Promise.resolve(spot.data);
     if (!spot.loading) spot.loading = fetch(body.getAttribute('data-base') + '/search-' + lang + '.json').then(function (r) { return r.json(); }).then(function (d) {
+      if (!wide.matches) d = d.filter(function (e) { return e.v !== 'shortcuts'; });
       d.forEach(function (e) { e.h = norm(e.t + ' ' + (e.d || '') + ' ' + e.s); e.n = norm(e.t); }); spot.data = d; return d;
     });
     return spot.loading;
