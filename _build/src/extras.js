@@ -139,7 +139,6 @@
       pop.querySelectorAll('[data-mu]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-mu') === D.prefs.music.cur() ? 'true' : 'false'); });
       var kk = pop.querySelector('[data-sc] small'); if (kk) kk.textContent = D.keys.on() ? ui.ccOn : ui.ccOff;
       var mo = pop.querySelector('[data-motion]'); if (mo) mo.setAttribute('aria-pressed', motion ? 'true' : 'false');
-      var tt = pop.querySelector('[data-tsz] small'); if (tt) tt.textContent = ui.textSizes[tsize];
       var s = pop.querySelector('[data-snd]'); if (s) s.setAttribute('aria-pressed', vol > 0 ? 'true' : 'false');
     }
     function build() {
@@ -155,7 +154,6 @@
         '<button type="button" class="cc-tile" data-mc><span class="ic">' + svgMC + '</span><span class="tx"><b>' + ui.ccMC + '</b></span></button>' +
         '<button type="button" class="cc-tile" data-sc><span class="ic">' + svgKbd + '</span><span class="tx"><b>' + ui.ccKeys + '</b><small></small></span></button>' +
         '<button type="button" class="cc-tile" data-motion aria-pressed="false"><span class="ic">' + svgWave + '</span><span class="tx"><b>' + ui.ccMotion + '</b></span></button>' +
-        '<button type="button" class="cc-tile" data-tsz><span class="ic ic-t">Aa</span><span class="tx"><b>' + ui.ccText + '</b><small></small></span></button>' +
         '</div>' +
         '<p class="cc-h">' + D.prefs.music.label + '</p><div class="cc-tiles cc-music">' + D.prefs.music.tracks.concat([D.prefs.music.off]).map(function (n, i) { return '<button type="button" class="cc-tile" data-mu="' + (i < D.prefs.music.tracks.length ? i : -1) + '" aria-pressed="false"><span class="ic">' + svgNote + '</span><span class="tx"><b>' + n + '</b></span></button>'; }).join('') + '</div>' +
         '<label class="cc-slider"><span><b>' + ui.ccBright + '</b></span><input type="range" min="40" max="100" step="1" data-bright aria-label="' + ui.ccBright + '"></label>' +
@@ -172,7 +170,6 @@
         if (b.hasAttribute('data-t')) D.setTheme(b.getAttribute('data-t'));
         else if (b.hasAttribute('data-sc')) { api.close(); D.openVirtual('shortcuts'); return; }
         else if (b.hasAttribute('data-motion')) setMotion(!motion);
-        else if (b.hasAttribute('data-tsz')) setTsize((tsize + 1) % 3);
         else if (b.hasAttribute('data-mu')) D.prefs.music.set(+b.getAttribute('data-mu'));
         else if (b.hasAttribute('data-glass')) D.setGlass(!D.glassOn());
         else if (b.hasAttribute('data-wall')) setWall(WALLS[(WALLS.indexOf(wall()) + 1) % WALLS.length]);
@@ -1107,12 +1104,6 @@
     document.addEventListener('pointerdown', function (e) { if (menu && !e.target.closest('.zm')) hide(); }, true);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu) { hide(); e.stopPropagation(); } }, true);
   })();
-
-  /* ---------- print the CV window ---------- */
-  document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-print]')) { e.preventDefault(); window.print(); } });
-  var opened = [];
-  window.addEventListener('beforeprint', function () { opened = []; document.querySelectorAll('.window.active details.row:not([open])').forEach(function (n) { n.open = true; opened.push(n); }); });
-  window.addEventListener('afterprint', function () { opened.forEach(function (n) { n.open = false; }); opened = []; });
 
   /* ---------- bring back the windows from the last visit ---------- */
   D.restore();

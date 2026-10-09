@@ -85,7 +85,6 @@
       var lli = el('li'); lli.appendChild(la); g.appendChild(lli);
       row(g, 'lock', '#8E8E93', u.ccLock, el('span', 'st-chev', '›'), function () { D.lock(); });
       row(g, 'mc', '#30B0C7', u.ccMC, el('span', 'st-chev', '›'), function () { D.missionControl(); });
-      row(g, 'kbd', '#5856D6', u.ccKeys, el('span', 'st-chev', '›'), function () { D.openVirtual('shortcuts'); });
       var vc = el('a', 'st-r st-link'); vc.href = (document.body.getAttribute('data-base') || '') + '/berkay-vuran.vcf'; vc.download = 'berkay-vuran.vcf';
       vc.appendChild(ico('person', '#34C759')); vc.appendChild(el('span', 'st-l', u.addContact)); vc.appendChild(el('span', 'st-chev', '›'));
       var li = el('li'); li.appendChild(vc); g.appendChild(li);
