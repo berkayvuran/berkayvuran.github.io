@@ -147,7 +147,7 @@
   function focusWin(slug, push) {
     var w = wins[slug]; if (!w) return;
     w.classList.remove('is-min'); w.style.zIndex = ++zTop; active = slug;
-    chrome(); setUrl(slug, push);
+    chrome(); setUrl(slug, push); save();
     var h = w.querySelector('h1'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
   }
   function afterLeave(push) {
@@ -162,9 +162,10 @@
     delete wins[slug];
     if (Desk.exit) Desk.exit(w, slug, function () { w.remove(); }); else w.remove();
     if (active === slug) afterLeave(false); else chrome();
+    save();
   }
-  function minimizeWin(slug) { var w = wins[slug]; if (!w) return; w.classList.add('is-min'); if (active === slug) afterLeave(false); else chrome(); }
-  function showDesktop(push) { Object.keys(wins).forEach(function (k) { wins[k].classList.add('is-min'); }); active = null; chrome(); setUrl('', push); }
+  function minimizeWin(slug) { var w = wins[slug]; if (!w) return; w.classList.add('is-min'); if (active === slug) afterLeave(false); else chrome(); save(); }
+  function showDesktop(push) { Object.keys(wins).forEach(function (k) { wins[k].classList.add('is-min'); }); active = null; chrome(); setUrl('', push); save(); }
 
   function initWindow(win, slug) {
     var side = win.querySelector('.win-side');
@@ -252,6 +253,26 @@
   }
   /* virtual apps (Terminal, Notes, Photos, Mail) live in extras.js: windows without their own URL */
   var Desk = window.Desk = { apps: {}, go: null, closeWin: closeWin, wide: wide };
+  /* keyboard shortcuts can be switched off as a whole (Escape on overlays always keeps working) */
+  var keysOff = false; try { keysOff = localStorage.getItem('keys') === '0'; } catch (e) {}
+  Desk.keys = { on: function () { return !keysOff; }, set: function (v) { keysOff = !v; try { localStorage.setItem('keys', v ? '1' : '0'); } catch (e) {} document.dispatchEvent(new Event('desk:keys')); } };
+  /* open windows and their places survive a reload and a language switch (desktop only) */
+  var saveT = 0;
+  function snapshot() {
+    if (!wide.matches || Desk.restoring) return;
+    var list = Object.keys(wins).map(function (k) {
+      var w = wins[k], o = { s: k, z: parseInt(w.style.zIndex || 0, 10), mn: w.classList.contains('is-min') ? 1 : 0, mx: w.classList.contains('is-max') ? 1 : 0 };
+      if (!o.mx && !o.mn) {
+        var mv = w.classList.contains('is-moved'), ox = mv ? 0 : (parseInt(w.style.getPropertyValue('--ox'), 10) || 0), oy = mv ? 0 : (parseInt(w.style.getPropertyValue('--oy'), 10) || 0);
+        o.l = w.offsetLeft + ox; o.t = w.offsetTop + oy; o.w = w.offsetWidth; o.h = w.offsetHeight;
+      }
+      return o;
+    });
+    try { localStorage.setItem('deskState', JSON.stringify({ t: Date.now(), a: active, w: list })); } catch (e) {}
+  }
+  function save() { clearTimeout(saveT); saveT = setTimeout(snapshot, 250); }
+  document.addEventListener('pointerup', save, true);
+  window.addEventListener('pagehide', snapshot);
   function openVirtual(slug) {
     var def = Desk.apps[slug];
     if (!def) return Promise.reject(new Error('no app'));
@@ -283,6 +304,36 @@
     if (s === null) { location.href = href; return; }
     if (s === '') showDesktop(push); else openApp(s, push);
   }
+
+  function applyGeo(w, o) {
+    if (!w) return;
+    if (o.l != null) {
+      var ww = Math.min(o.w, innerWidth - 24), hh = Math.min(o.h, innerHeight - 90);
+      w.classList.add('is-moved'); w.style.left = Math.max(0, Math.min(o.l, innerWidth - ww)) + 'px'; w.style.top = Math.max(32, Math.min(o.t, innerHeight - 100)) + 'px'; w.style.width = ww + 'px'; w.style.height = hh + 'px'; w.style.right = 'auto'; w.style.bottom = 'auto';
+    }
+    if (o.mx) w.classList.add('is-max');
+  }
+  Desk.restore = function () {
+    if (!wide.matches || Desk.restoring) return;
+    var st = null; try { st = JSON.parse(localStorage.getItem('deskState') || 'null'); } catch (e) {}
+    if (!st || !st.w || Date.now() - st.t > 7 * 864e5) return;
+    var target = active || st.a, todo = st.w.filter(function (o) { return !wins[o.s]; }).sort(function (a, b) { return a.z - b.z; }).slice(0, 8);
+    st.w.forEach(function (o) { if (wins[o.s] && !wins[o.s].classList.contains('is-moved')) applyGeo(wins[o.s], o); });
+    if (!todo.length) { return; }
+    Desk.restoring = true;
+    var chain = Promise.resolve();
+    todo.forEach(function (o) {
+      chain = chain.then(function () {
+        var p = Desk.apps[o.s] ? openVirtual(o.s) : (SECTIONS.indexOf(o.s) > -1 ? openApp(o.s, false) : null);
+        return Promise.resolve(p).then(function () { applyGeo(wins[o.s], o); });
+      }).catch(function () {});
+    });
+    chain.then(function () {
+      if (target && wins[target]) focusWin(target, false);
+      todo.forEach(function (o) { if (o.mn && wins[o.s] && o.s !== target) wins[o.s].classList.add('is-min'); });
+      chrome(); Desk.restoring = false; snapshot();
+    });
+  };
 
   Desk.list = function () { return Object.keys(wins).map(function (k) { return { slug: k, title: labelOf(k), z: parseInt(wins[k].style.zIndex || 0, 10), min: wins[k].classList.contains('is-min'), active: k === active }; }); };
   Desk.focus = function (slug) { focusWin(slug, true); };
@@ -428,6 +479,7 @@
   if (spot.btn) spot.btn.addEventListener('click', openSpot);
   document.addEventListener('keydown', function (e) {
     var t = e.target, typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+    if (!Desk.keys.on()) return;
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSpot(); }
     else if (e.key === '/' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); openSpot(); }
   });
@@ -462,7 +514,7 @@
     if (s === '') showDesktop(false); else openApp(s, false);
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && wide.matches && active && !(e.target.matches && e.target.matches('input,textarea,select')) && !document.querySelector('.ql:not([hidden]),.lock:not([hidden]),.cc:not([hidden]),.ctx:not([hidden])') && !(spot.el && !spot.el.hidden)) closeWin(active);
+    if (e.key === 'Escape' && Desk.keys.on() && wide.matches && active && !(e.target.matches && e.target.matches('input,textarea,select')) && !document.querySelector('.ql:not([hidden]),.lock:not([hidden]),.cc:not([hidden]),.ctx:not([hidden])') && !(spot.el && !spot.el.hidden)) closeWin(active);
   });
 
   document.querySelectorAll('.window[data-slug]').forEach(function (w) { register(w.getAttribute('data-slug'), w); active = w.getAttribute('data-slug'); w.style.zIndex = ++zTop; });

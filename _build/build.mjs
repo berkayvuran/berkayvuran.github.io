@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createHash } from 'node:crypto';
+const BUILT = new Date().toISOString().slice(0, 10);
 const VER = createHash('md5').update(['desk.css', 'desk.js', 'extras.css', 'extras.js', 'ios.css', 'ios.js'].map(f => fs.readFileSync(new URL('./src/' + f, import.meta.url))).join('')).digest('hex').slice(0, 8);
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, ...v] = a.replace(/^--/, '').split('='); return [k, v.join('=')]; }));
 const BASE = args.base ?? '/next';
@@ -118,13 +119,19 @@ const LINKS = [
 /* ------------------------------------------------------------------ virtual apps (Terminal, Notes, Photos, Mail) + Control Center strings */
 const APP = {
   en: {
-    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail', finder: 'Finder', ask: 'Ask', settings: 'Settings' },
-    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message', finder: 'Resume, contact card and pictures to download', ask: 'Ask questions about Berkay and get answers from this site', settings: 'Theme, wallpaper, language, display and sound' },
+    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail', finder: 'Finder', ask: 'Ask', settings: 'Settings', shortcuts: 'Keyboard Shortcuts' },
+    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message', finder: 'Resume, contact card and pictures to download', ask: 'Ask questions about Berkay and get answers from this site', settings: 'Theme, wallpaper, language, display and sound', shortcuts: 'Every keyboard shortcut, with an on/off switch' },
     apps: 'Apps',
     finder: { fav: 'Favorites', all: 'All Files', open: 'Open', download: 'Download', items: 'items', folders: { documents: 'Documents', pictures: 'Pictures', certificates: 'Certificates' }, empty: 'Nothing here' },
     ask: { ph: 'Ask about Berkay…', hello: 'Hi! I am a small assistant that only knows this site. Ask me about Berkay’s work, projects, writing or how to reach him.', chips: ['Who is Berkay?', 'What does he do now?', 'Show his projects', 'How can I contact him?', 'Where did he work?'], fallback: 'I could not find that on this site. Try a project or article name, or ask about his work, writing, certificates or contact details. For anything else, the best way is to write to him directly.', chips2: ['Show his certificates', 'What has he written?', 'Any references?', 'Can I hire him?', 'Download his CV'], open: 'Open', read: 'Read', more: 'Show more', didYou: 'Did you mean:', alsoSee: 'Also:', clear: 'New chat', send: 'Send', mailCta: 'Write to Berkay', you: 'You' },
     mc: { title: 'Mission Control', desktop: 'Desktop', none: 'No open windows. Open an app from the dock.', hint: 'Esc to close', close: 'Close window' },
     ccMC: 'Mission Control',
+    ccKeys: 'Shortcuts', ccMotion: 'Reduce Motion', ccText: 'Text Size', textSizes: ['Normal', 'Large', 'Larger'], updated: 'Updated',
+    sc: { master: 'Keyboard shortcuts', masterSub: 'Turn every shortcut on or off', note: 'Escape still closes menus and panels. Shortcuts are saved in this browser.', off: 'Shortcuts are off. Turn them on above.', g1: 'Navigation', g2: 'Windows', g3: 'Extras',
+      search: 'Search', help: 'Show this list', mc: 'Mission Control', sw: 'Switch windows', left: 'Snap window left', right: 'Snap window right', center: 'Center window', fill: 'Fill the screen', close: 'Close the front window', ql: 'Quick Look on a card', konami: 'A small surprise' },
+    dockm: { open: 'Open', close: 'Close window', all: 'Show all windows' },
+    askfb: { ok: 'Helpful', bad: 'Not helpful', thanks: 'Thanks for the feedback!', report: 'Tell Berkay what I missed', subject: 'Question for the site assistant', msg: 'The assistant could not answer this question:' },
+    print: 'Print',
     cc: 'Control Center', ccTheme: 'Theme', ccGlass: 'Glass', ccLang: 'Language', ccSound: 'Sound', ccWall: 'Wallpaper', ccBright: 'Display', ccLock: 'Lock Screen', ccOn: 'On', ccOff: 'Off',
     walls: { default: 'Default', aurora: 'Aurora', sunset: 'Sunset', ocean: 'Ocean' },
     lock: { hint: 'Click or press any key to enter', hintTouch: 'Tap to enter' },
@@ -142,13 +149,19 @@ const APP = {
     }
   },
   tr: {
-    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta', finder: 'Finder', ask: 'Sor', settings: 'Ayarlar' },
-    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder', finder: 'CV, kartvizit ve indirilebilir resimler', ask: 'Berkay hakkında sor, cevabı bu siteden al', settings: 'Tema, duvar kâğıdı, dil, ekran ve ses' },
+    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta', finder: 'Finder', ask: 'Sor', settings: 'Ayarlar', shortcuts: 'Klavye Kısayolları' },
+    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder', finder: 'CV, kartvizit ve indirilebilir resimler', ask: 'Berkay hakkında sor, cevabı bu siteden al', settings: 'Tema, duvar kâğıdı, dil, ekran ve ses', shortcuts: 'Tüm klavye kısayolları, aç/kapat anahtarıyla' },
     apps: 'Uygulamalar',
     finder: { fav: 'Sık Kullanılanlar', all: 'Tüm Dosyalar', open: 'Aç', download: 'İndir', items: 'öğe', folders: { documents: 'Belgeler', pictures: 'Resimler', certificates: 'Sertifikalar' }, empty: 'Burada bir şey yok' },
     ask: { ph: 'Berkay hakkında sor…', hello: 'Merhaba! Ben yalnızca bu siteyi bilen küçük bir asistanım. Berkay’ın işini, projelerini, yazılarını ya da ona nasıl ulaşacağını sorabilirsin.', chips: ['Berkay kim?', 'Şu an ne yapıyor?', 'Projelerini göster', 'Ona nasıl ulaşırım?', 'Nerelerde çalıştı?'], fallback: 'Bunu bu sitede bulamadım. Bir proje ya da yazı adı yazmayı, ya da işini, yazılarını, sertifikalarını ve iletişim bilgilerini sormayı dene. Başka bir şey için en iyisi ona doğrudan yazmak.', chips2: ['Sertifikalarını göster', 'Neler yazdı?', 'Referansları var mı?', 'Çalışmak için müsait mi?', 'CV’sini indir'], open: 'Aç', read: 'Oku', more: 'Daha fazla göster', didYou: 'Şunu mu demek istedin:', alsoSee: 'Ayrıca:', clear: 'Yeni sohbet', send: 'Gönder', mailCta: 'Berkay’a yaz', you: 'Sen' },
     mc: { title: 'Mission Control', desktop: 'Masaüstü', none: 'Açık pencere yok. Dock’tan bir uygulama aç.', hint: 'Kapatmak için Esc', close: 'Pencereyi kapat' },
     ccMC: 'Mission Control',
+    ccKeys: 'Kısayollar', ccMotion: 'Hareketi Azalt', ccText: 'Yazı Boyutu', textSizes: ['Normal', 'Büyük', 'Daha büyük'], updated: 'Güncellendi',
+    sc: { master: 'Klavye kısayolları', masterSub: 'Tüm kısayolları aç veya kapat', note: 'Escape menüleri ve panelleri kapatmaya devam eder. Kısayol tercihi bu tarayıcıda saklanır.', off: 'Kısayollar kapalı. Yukarıdan açabilirsin.', g1: 'Gezinme', g2: 'Pencereler', g3: 'Ekstralar',
+      search: 'Ara', help: 'Bu listeyi göster', mc: 'Mission Control', sw: 'Pencere değiştir', left: 'Pencereyi sola yasla', right: 'Pencereyi sağa yasla', center: 'Pencereyi ortala', fill: 'Ekranı doldur', close: 'Öndeki pencereyi kapat', ql: 'Karttan hızlı önizleme', konami: 'Küçük bir sürpriz' },
+    dockm: { open: 'Aç', close: 'Pencereyi kapat', all: 'Tüm pencereleri göster' },
+    askfb: { ok: 'Yardımcı oldu', bad: 'Yardımcı olmadı', thanks: 'Geri bildirimin için teşekkürler!', report: 'Berkay’a neyi bilemediğimi söyle', subject: 'Site asistanı için soru', msg: 'Asistan şu soruyu cevaplayamadı:' },
+    print: 'Yazdır',
     cc: 'Denetim Merkezi', ccTheme: 'Tema', ccGlass: 'Cam', ccLang: 'Dil', ccSound: 'Ses', ccWall: 'Duvar kâğıdı', ccBright: 'Ekran', ccLock: 'Ekranı Kilitle', ccOn: 'Açık', ccOff: 'Kapalı',
     walls: { default: 'Varsayılan', aurora: 'Aurora', sunset: 'Gün batımı', ocean: 'Okyanus' },
     lock: { hint: 'Girmek için tıkla veya bir tuşa bas', hintTouch: 'Girmek için dokun' },
@@ -319,7 +332,7 @@ function winCv(lang) {
   const g = parseCv(lang);
   const pdf = lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf';
   const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: g.reduce((n, x) => n + x.items.length, 0) }, ...g.map(x => ({ id: x.id, label: x.title, count: x.items.length, children: x.items.map((it, i) => ({ id: `cv-${x.id}-${i}`, label: it.role + (it.org ? ' · ' + it.org : '') })) }))], 'experience');
-  const body = `<div class="toolbar"><a class="btn" href="${pdf}" target="_blank" rel="noopener noreferrer">${svg('download')}<span>${esc(UI[lang].download)}</span></a></div>` +
+  const body = `<div class="toolbar"><a class="btn" href="${pdf}" target="_blank" rel="noopener noreferrer">${svg('download')}<span>${esc(UI[lang].download)}</span></a><button class="btn" type="button" data-print>${svg('file')}<span>${esc(APP[lang].print)}</span></button></div>` +
     g.map(grp => `<section class="group" id="${grp.id}" data-group="${grp.id}" aria-labelledby="${grp.id}-h">
       <h2 class="group-h" id="${grp.id}-h">${esc(grp.title)} <span class="muted">${grp.items.length} ${esc(UI[lang].items)}</span></h2>
       <div class="rows">${grp.items.map((it, i) => `<details class="row" id="cv-${grp.id}-${i}"${grp.id === 'experience' && i === 0 ? ' open' : ''}>
@@ -597,7 +610,7 @@ function appsData(lang) {
   const a = APP[lang], cv = parseCv(lang), blog = parseBlog(lang), b = parseBuilder(lang), sc = parseShowcase(lang);
   const im = x => fixUrls(`src="${x}"`).slice(5, -1);
   return {
-    ui: { ...a, addContact: UI[lang].addContact, back: UI[lang].back, close: UI[lang].close, min: UI[lang].min, zoom: UI[lang].zoom, home: url(lang, ''), other: url(lang === 'en' ? 'tr' : 'en', ''), otherShort: UI[lang].langShort, lang },
+    ui: { ...a, built: BUILT, addContact: UI[lang].addContact, back: UI[lang].back, close: UI[lang].close, min: UI[lang].min, zoom: UI[lang].zoom, home: url(lang, ''), other: url(lang === 'en' ? 'tr' : 'en', ''), otherShort: UI[lang].langShort, lang },
     form: FORM_URL,
     contact: { tel: PHONE.tel, show: PHONE.show, mail: 'hello@berkayvuran.com', linkedin: LINKS[0].href, github: LINKS[1].href, site: ORIGIN },
     about: seo(lang, '', {}).description,
@@ -623,7 +636,7 @@ for (const lang of LANGS) {
 function searchIndex(lang) {
   const u = UI[lang], out = [];
   SLUGS.forEach(id => out.push({ t: NAV[lang][id], d: seo(lang, id, WIN[id](lang).meta).description, s: u.goTo, u: url(lang, id), k: 1 }));
-  [...VAPPS, 'mail'].forEach(id => out.push({ t: APP[lang].names[id], d: APP[lang].descs[id], s: APP[lang].apps, u: '#' + id, v: id, k: 1 }));
+  [...VAPPS, 'mail', 'shortcuts'].forEach(id => out.push({ t: APP[lang].names[id], d: APP[lang].descs[id], s: APP[lang].apps, u: '#' + id, v: id, k: 1 }));
   parseCv(lang).forEach(g => g.items.forEach(it => out.push({ t: it.role + (it.org ? ' @ ' + it.org : ''), d: `${g.title} · ${it.date}`, s: NAV[lang].cv, u: url(lang, 'cv') })));
   parseBlog(lang).forEach(p => out.push({ t: p.title, d: `${p.cat} · ${fmtDate(p.date, lang)}`, s: NAV[lang].blog, u: p.href, e: 1 }));
   parseShowcase(lang).items.forEach(p => out.push({ t: p.title, d: p.catLabel, s: NAV[lang].showcase, u: p.href, e: 1 }));
