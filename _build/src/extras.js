@@ -561,7 +561,7 @@
       var cp = main.querySelector('.ml-copy'); cp.textContent = m.copy;
       cp.addEventListener('click', function () { var done = function () { cp.textContent = m.copied; setTimeout(function () { cp.textContent = m.copy; }, 1600); }; if (navigator.clipboard) navigator.clipboard.writeText(c.mail).then(done, done); else done(); });
       send.textContent = m.send;
-      var vc = el('a', 'ml-call', '+ ' + m.addContact); vc.href = base + '/berkay-vuran.vcf'; vc.download = 'berkay-vuran.vcf'; main.querySelector('.ml-act').appendChild(vc);
+      var vc = el('a', 'ml-call', '+ ' + d.ui.addContact); vc.href = base + '/berkay-vuran.vcf'; vc.download = 'berkay-vuran.vcf'; main.querySelector('.ml-act').appendChild(vc);
       var call = main.querySelector('.ml-call'); call.href = 'tel:' + c.tel; call.textContent = m.or + ': ' + c.show;
       f.elements.subject.placeholder = m.subjectDefault;
       D._mailApply = function () { if (!D.mailDraft) return; f.elements.subject.value = D.mailDraft.subject || ''; f.elements.message.value = D.mailDraft.message || ''; D.mailDraft = null; f.elements.name.focus({ preventScroll: true }); };
