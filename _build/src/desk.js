@@ -244,7 +244,7 @@
   function register(slug, w) { wins[slug] = w; initWindow(w, slug); }
 
   function mount(w, slug, push) {
-    if (wide.matches && Object.keys(wins).length) { var off = (opened % 6 + 1) * 28; w.style.setProperty('--ox', off + 'px'); w.style.setProperty('--oy', off + 'px'); }
+    if (wide.matches && Object.keys(wins).length) { var off = (Object.keys(wins).length % 4) * 22; w.style.setProperty('--ox', off + 'px'); w.style.setProperty('--oy', off + 'px'); }
     opened++;
     document.getElementById('main').appendChild(w);
     register(slug, w); focusWin(slug, push);
