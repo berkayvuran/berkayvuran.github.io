@@ -616,26 +616,70 @@
     }
   };
 
-  /* ---------- Ask (answers from the site's own data) ---------- */
-  var STOP = ' the a an is are of to and in on for it he his him she her me my you your do does did what who whom which where when how can i we they this that be as at by with about tell show bu bir ve mi mu mi de da ne kim hangi nasil icin ile var mi ' ;
+  /* ---------- Ask (answers from the site's own data; ranked with a tiny TF-IDF, no model, no network) ---------- */
+  var STOP = ' the a an is are of to and in on for it he his him she her me my you your do does did what which when how can i we they this that be as at by with about tell show give has have had was were been would could should some any list many please goster listele soyle bana misin bu bir ve mi mu de da ne kim hangi nasil icin ile var ' ;
+  var MORE = ' more next another continue go on daha fazla devam baska diger sonraki ';
   function nrm(s) { return String(s).toLocaleLowerCase('tr').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i').replace(/[^a-z0-9\s]/g, ' '); }
   function words(s) { return nrm(s).split(/\s+/).filter(function (w) { return w && STOP.indexOf(' ' + w + ' ') < 0; }); }
-  function answer(kb, q) {
-    var qs = words(q), best = null, bs = 0;
-    kb.forEach(function (e, idx) {
-      if (!e._w) e._w = words(e.k);
-      var sc = 0;
-      qs.forEach(function (t) { for (var i = 0; i < e._w.length; i++) { var w = e._w[i]; if (w === t || (t.length > 3 && w.indexOf(t) === 0) || (w.length > 3 && t.indexOf(w) === 0)) { sc++; break; } } });
-      if (sc > bs) { bs = sc; best = e; }
+  function near(a, b) {
+    if (a === b) return true; var la = a.length, lb = b.length; if (Math.abs(la - lb) > 1) return false;
+    var i = 0, j = 0, d = 0;
+    while (i < la && j < lb) { if (a[i] === b[j]) { i++; j++; continue; } if (++d > 1) return false; if (la > lb) i++; else if (lb > la) j++; else { i++; j++; } }
+    return d + (la - i) + (lb - j) <= 1;
+  }
+  function buildIndex(d, a) {
+    var E = [], topic = {}, df = {};
+    d.kb.forEach(function (e) { e.topic = true; E.push(e); if (e.id) topic[e.id] = e; });
+    function wl(id) { return topic[id] && topic[id].l && topic[id].l[0] ? [topic[id].l[0]] : []; }
+    function cut(t, n) { t = t || ''; return t.length > n ? t.slice(0, n).replace(/\s+\S*$/, '') + '…' : t; }
+    d.projects.forEach(function (p) { E.push({ title: p.n, k: p.n + ' ' + p.d, a: p.n + ': ' + p.d, l: [{ t: a.open, u: p.u, e: 1 }].concat(wl('projects')) }); });
+    d.cv.experience.forEach(function (x) { E.push({ title: x.o || x.r, k: x.r + ' ' + x.o + ' ' + x.d, a: x.d + ': ' + x.r + (x.o ? ' @ ' + x.o : ''), l: wl('exp') }); });
+    d.cv.education.forEach(function (x) { E.push({ title: x.o || x.r, k: x.r + ' ' + x.o + ' ' + x.d, a: x.d + ': ' + x.r + (x.o ? ' @ ' + x.o : ''), l: wl('edu') }); });
+    d.photos.items.filter(function (it) { return it.c === 'certifications'; }).forEach(function (it) { E.push({ title: it.t, k: it.t + ' certificate certification', a: it.t, l: [{ t: a.open, u: it.u, e: 1 }].concat(wl('certs')) }); });
+    d.posts.forEach(function (p) { E.push({ title: p.t, k: p.t + ' ' + p.c + ' ' + (p.e || ''), a: p.d + ': ' + p.t + (p.e ? '\n' + cut(p.e, 170) : ''), l: [{ t: a.read, u: p.u, e: 1 }].concat(wl('blog')) }); });
+    var byCat = {}; d.posts.forEach(function (p) { (byCat[p.c] = byCat[p.c] || []).push(p); });
+    Object.keys(byCat).forEach(function (c) { var ps = byCat[c]; E.push({ title: c, k: c + ' ' + (d.ui.lang === 'tr' ? 'kategori konu yazi yazdi' : 'category topic posts written wrote about'), a: ps.length + (d.ui.lang === 'tr' ? ' yazı, son üçü:\n' : ' posts, latest:\n') + ps.slice(0, 3).map(function (p) { return p.d + ': ' + p.t; }).join('\n'), l: wl('blog') }); });
+    E.forEach(function (e) {
+      e._k = words(e.k); e._t = words(e.title || '');
+      var seen = {}; e._k.concat(e._t).forEach(function (w) { if (!seen[w]) { seen[w] = 1; df[w] = (df[w] || 0) + 1; } });
     });
-    return bs > 0 ? best : null;
+    return { E: E, df: df, N: E.length, lists: {
+      projects: d.projects.map(function (p) { return p.n + ': ' + cut(p.d, 90); }),
+      blog: d.posts.map(function (p) { return p.d + ': ' + p.t; }),
+      certs: d.photos.items.filter(function (it) { return it.c === 'certifications'; }).map(function (it) { return it.t; })
+    } };
+  }
+  /* one-word queries that always mean a whole topic, never one article or job */
+  var HOT = { contact: ' contact iletisim phone telefon email eposta ', projects: ' projects project products urunler projeler proje urun ', blog: ' blog writing yazilar yazi articles ', certs: ' certificates certification sertifikalar sertifika ', refs: ' references referanslar referans ', exp: ' experience deneyim career kariyer ', edu: ' education egitim ', cv: ' cv resume ozgecmis ', who: ' about hakkinda ', now: ' now simdi ' };
+  var SMALL = { hi: 1, thanks: 1, bye: 1, help: 1 };
+  function rank(ix, q) {
+    var qs = words(q); if (!qs.length) return [];
+    return ix.E.map(function (e) {
+      var sc = 0, hit = 0;
+      qs.forEach(function (t) {
+        var best = 0;
+        function scan(list, mult) {
+          for (var i = 0; i < list.length; i++) {
+            var w = list[i], m = 0;
+            if (w === t) m = 1; else if ((t.length > 3 && w.indexOf(t) === 0) || (w.length > 3 && t.indexOf(w) === 0)) m = 0.6; else if (t.length > 4 && w.length > 4 && near(w, t)) m = 0.55;
+            if (m) { var v = m * mult * Math.log(1 + ix.N / (ix.df[w] || 1)); if (v > best) best = v; }
+          }
+        }
+        scan(e._k, 1); scan(e._t, 1.5);
+        if (best) { sc += best; hit++; }
+      });
+      var cov = hit / qs.length;
+      var ex = e.topic && HOT[e.id] && qs.every(function (t) { return HOT[e.id].indexOf(' ' + t + ' ') >= 0; });
+      return { e: e, s: sc * (0.4 + 0.6 * cov) * (e.topic ? (SMALL[e.id] ? 2.5 : ex ? 2 : 1.1) : 1), cov: cov };
+    }).filter(function (r) { return r.s > 0; }).sort(function (x, y) { return y.s - x.s; });
   }
   D.apps.ask = {
     focus: function (w) { if (D.wide.matches) { var i = w.querySelector('.as-in input'); if (i) i.focus({ preventScroll: true }); } },
     build: function (main, d) {
-      var a = d.ui.ask;
+      var a = d.ui.ask, ix = buildIndex(d, a), asked = {}, last = null, PAGE = 5;
+      var pool = a.chips.concat(a.chips2 || []);
       main.classList.add('as');
-      main.innerHTML = '<div class="as-log" role="log" aria-live="polite"></div><div class="as-chips"></div><form class="as-in" autocomplete="off"><input type="text" aria-label="' + a.ph + '" placeholder="' + a.ph + '" enterkeyhint="send" maxlength="200"><button type="submit" class="btn">' + a.send + '</button></form>';
+      main.innerHTML = '<div class="as-log" role="log" aria-live="polite"></div><div class="as-chips"></div><form class="as-in" autocomplete="off"><button type="button" class="as-clear" aria-label="' + a.clear + '" title="' + a.clear + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v4.5h4.5"/></svg></button><input type="text" aria-label="' + a.ph + '" placeholder="' + a.ph + '" enterkeyhint="send" maxlength="200"><button type="submit" class="btn">' + a.send + '</button></form>';
       var log = main.querySelector('.as-log'), chips = main.querySelector('.as-chips'), form = main.querySelector('form'), input = form.querySelector('input');
       function bubble(cls, node) { var b = el('div', 'as-b ' + cls); if (typeof node === 'string') b.textContent = node; else b.appendChild(node); log.appendChild(b); log.scrollTop = log.scrollHeight; return b; }
       function linkNode(l) {
@@ -643,21 +687,61 @@
         var x = el('a', 'as-l', l.t); x.href = l.u; if (l.e) { x.target = '_blank'; x.rel = 'noopener noreferrer'; } else if (/^\//.test(l.u)) x.setAttribute('data-app', (D.slugOf(l.u) || '') === '' ? 'home' : D.slugOf(l.u));
         return x;
       }
-      function reply(e) {
-        var box = el('div');
-        (e ? e.a : a.fallback).split('\n').forEach(function (ln) { box.appendChild(el('p', null, ln)); });
-        var ls = e ? e.l : [{ t: a.mailCta, u: '#mail' }];
-        if (ls && ls.length) { var row = el('div', 'as-row'); ls.forEach(function (l) { row.appendChild(linkNode(l)); }); box.appendChild(row); }
+      function paras(box, text) { String(text).split('\n').forEach(function (ln) { box.appendChild(el('p', null, ln)); }); }
+      function chipBtn(label, fn) { var b = el('button', 'as-chip', label); b.type = 'button'; b.addEventListener('click', fn); return b; }
+      function refreshChips() {
+        chips.textContent = '';
+        pool.filter(function (c) { return !asked[nrm(c)]; }).slice(0, 5).forEach(function (c) { chips.appendChild(chipBtn(c, function () { ask(c); })); });
+      }
+      function moreBtn(id, state) {
+        var b = el('button', 'as-l', a.more); b.type = 'button';
+        b.addEventListener('click', function () { b.remove(); page(id, state); });
+        return b;
+      }
+      function page(id, state) {
+        var list = ix.lists[id], box = el('div'), chunk = list.slice(state.i, state.i + PAGE);
+        chunk.forEach(function (t) { box.appendChild(el('p', null, '• ' + t)); });
+        state.i += PAGE;
+        if (state.i < list.length) { var row = el('div', 'as-row'); row.appendChild(moreBtn(id, state)); box.appendChild(row); }
         bubble('bot', box);
       }
+      function reply(r) {
+        var box = el('div');
+        if (r.length && r[0].cov >= 0.5 && (r[0].s >= 1.6 || (r[0].e.topic && r[0].cov === 1 && r[0].s >= 0.9))) {
+          var e = r[0].e; last = e; paras(box, e.a);
+          var row = el('div', 'as-row');
+          (e.l || []).forEach(function (l) { row.appendChild(linkNode(l)); });
+          if (e.id && ix.lists[e.id]) row.appendChild(moreBtn(e.id, { i: 0 }));
+          if (row.childNodes.length) box.appendChild(row);
+          var alt = e.topic ? [] : r.slice(1).filter(function (x) { return !x.e.topic && x.e.title && x.e !== e && x.s >= r[0].s * 0.55; }).slice(0, 2);
+          if (alt.length) { var ar = el('div', 'as-row'); ar.appendChild(el('span', 'as-note', a.alsoSee)); alt.forEach(function (x) { ar.appendChild(chipBtn(x.e.title, function () { ask(x.e.title); })); }); box.appendChild(ar); }
+        } else {
+          last = null; paras(box, a.fallback);
+          var sug = r.filter(function (x) { return !x.e.topic && x.e.title; }).slice(0, 3);
+          var row2 = el('div', 'as-row');
+          if (sug.length) { box.appendChild(el('p', 'as-note', a.didYou)); sug.forEach(function (x) { row2.appendChild(chipBtn(cutLabel(x.e.title), function () { ask(x.e.title); })); }); }
+          row2.appendChild(linkNode({ t: a.mailCta, u: '#mail' })); box.appendChild(row2);
+        }
+        bubble('bot', box);
+      }
+      function cutLabel(t) { return t.length > 44 ? t.slice(0, 42) + '…' : t; }
       function ask(q) {
         q = q.trim(); if (!q) return;
-        bubble('me', q); var e = answer(d.kb, q);
-        setTimeout(function () { reply(e); }, 320);
+        asked[nrm(q)] = 1; bubble('me', q); refreshChips();
+        var qw = nrm(q).split(/\s+/).filter(Boolean), isMore = qw.length && qw.every(function (w) { return MORE.indexOf(' ' + w + ' ') >= 0; });
+        var typing = el('span', 'as-typing'); typing.innerHTML = '<i></i><i></i><i></i>';
+        var tb = bubble('bot', typing);
+        setTimeout(function () {
+          tb.remove();
+          if (isMore && last && last.id && ix.lists[last.id]) { page(last.id, last._st || (last._st = { i: 0 })); return; }
+          if (isMore) { reply(rank(ix, 'help')); return; }
+          reply(rank(ix, q));
+        }, 280 + Math.min(420, q.length * 10));
       }
-      bubble('bot', a.hello);
-      a.chips.forEach(function (c) { var b = el('button', 'as-chip', c); b.type = 'button'; b.addEventListener('click', function () { ask(c); }); chips.appendChild(b); });
+      function start() { log.textContent = ''; asked = {}; last = null; bubble('bot', a.hello); refreshChips(); }
+      start();
       form.addEventListener('submit', function (e) { e.preventDefault(); var v = input.value; input.value = ''; ask(v); });
+      main.querySelector('.as-clear').addEventListener('click', function () { start(); input.focus({ preventScroll: true }); });
     }
   };
 
