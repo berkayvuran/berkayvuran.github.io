@@ -28,7 +28,7 @@
   function mlevel() { return vol / 100 * 0.8; }
   function setVol(v) { vol = v; store.set('vol2', String(v)); if (music.g && actx) { try { music.g.gain.cancelScheduledValues(actx.currentTime); music.g.gain.setTargetAtTime(mlevel(), actx.currentTime, 0.05); } catch (e) {} } }
   function blip(f1, f2, dur) {
-    if (!vol) return;
+    if (!vol || D.restoring) return;
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
       var t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
@@ -95,6 +95,13 @@
   });
   document.addEventListener('visibilitychange', function () { if (!actx || music.cur < 0) return; if (document.hidden) actx.suspend(); else actx.resume(); });
 
+  /* ---------- accessibility: reduce motion + text size ---------- */
+  var motion = store.get('motion') === '1', tsize = parseInt(store.get('tsize') || '0', 10) || 0; if (tsize < 0 || tsize > 2) tsize = 0;
+  function paintA11y() { if (motion) root.setAttribute('data-motion', 'reduce'); else root.removeAttribute('data-motion'); if (tsize) root.setAttribute('data-ts', String(tsize)); else root.removeAttribute('data-ts'); }
+  function setMotion(v) { motion = !!v; store.set('motion', motion ? '1' : '0'); paintA11y(); document.dispatchEvent(new Event('desk:a11y')); }
+  function setTsize(v) { tsize = v; store.set('tsize', String(v)); paintA11y(); document.dispatchEvent(new Event('desk:a11y')); }
+  paintA11y();
+
   /* ---------- display brightness (dim overlay) ---------- */
   var dim = el('div', 'dim'); dim.setAttribute('aria-hidden', 'true'); body.appendChild(dim);
   var bright = parseInt(store.get('bright') || '100', 10); if (!(bright >= 40 && bright <= 100)) bright = 100;
@@ -109,7 +116,8 @@
     if (n === 'default') root.removeAttribute('data-wp'); else root.setAttribute('data-wp', n);
     store.set('wp', n); return true;
   }
-  D.prefs = { music: { tracks: TRACKS.map(function (t) { return t.n; }), cur: function () { return mcur; }, set: setMusic, label: tr0 ? 'Müzik' : 'Music', off: tr0 ? 'Kapalı' : 'Off' }, WALLS: WALLS, wall: wall, setWall: setWall, bright: function () { return bright; }, setBright: setBright, vol: function () { return vol; }, setVol: setVol, blip: function () { blip(520, 820, 0.14); } };
+  D.prefs = { music: { tracks: TRACKS.map(function (t) { return t.n; }), cur: function () { return mcur; }, set: setMusic, label: tr0 ? 'Müzik' : 'Music', off: tr0 ? 'Kapalı' : 'Off' }, WALLS: WALLS, wall: wall, setWall: setWall, bright: function () { return bright; }, setBright: setBright, vol: function () { return vol; }, setVol: setVol, blip: function () { blip(520, 820, 0.14); },
+    keys: { on: D.keys.on, set: D.keys.set }, motion: { on: function () { return motion; }, set: setMotion }, tsize: { cur: function () { return tsize; }, set: setTsize } };
   var THEME_ALIAS = { dark: 'dark', light: 'light', matrix: 'matrix', zap: 'high-contrast', 'high-contrast': 'high-contrast' };
 
   /* ---------- popover plumbing ---------- */
@@ -129,6 +137,9 @@
       var g = pop.querySelector('[data-glass]'); if (g) g.setAttribute('aria-pressed', glassOn() ? 'true' : 'false');
       var w = pop.querySelector('[data-wall] small'); if (w) w.textContent = ui.walls[wall()];
       pop.querySelectorAll('[data-mu]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-mu') === D.prefs.music.cur() ? 'true' : 'false'); });
+      var kk = pop.querySelector('[data-sc] small'); if (kk) kk.textContent = D.keys.on() ? ui.ccOn : ui.ccOff;
+      var mo = pop.querySelector('[data-motion]'); if (mo) mo.setAttribute('aria-pressed', motion ? 'true' : 'false');
+      var tt = pop.querySelector('[data-tsz] small'); if (tt) tt.textContent = ui.textSizes[tsize];
       var s = pop.querySelector('[data-snd]'); if (s) s.setAttribute('aria-pressed', vol > 0 ? 'true' : 'false');
     }
     function build() {
@@ -142,10 +153,14 @@
         '<button type="button" class="cc-tile" data-wall><span class="ic">' + svgImage + '</span><span class="tx"><b>' + ui.ccWall + '</b><small></small></span></button>' +
         '<button type="button" class="cc-tile" data-lock><span class="ic">' + svgLock + '</span><span class="tx"><b>' + ui.ccLock + '</b></span></button>' +
         '<button type="button" class="cc-tile" data-mc><span class="ic">' + svgMC + '</span><span class="tx"><b>' + ui.ccMC + '</b></span></button>' +
+        '<button type="button" class="cc-tile" data-sc><span class="ic">' + svgKbd + '</span><span class="tx"><b>' + ui.ccKeys + '</b><small></small></span></button>' +
+        '<button type="button" class="cc-tile" data-motion aria-pressed="false"><span class="ic">' + svgWave + '</span><span class="tx"><b>' + ui.ccMotion + '</b></span></button>' +
+        '<button type="button" class="cc-tile" data-tsz><span class="ic ic-t">Aa</span><span class="tx"><b>' + ui.ccText + '</b><small></small></span></button>' +
         '</div>' +
         '<p class="cc-h">' + D.prefs.music.label + '</p><div class="cc-tiles cc-music">' + D.prefs.music.tracks.concat([D.prefs.music.off]).map(function (n, i) { return '<button type="button" class="cc-tile" data-mu="' + (i < D.prefs.music.tracks.length ? i : -1) + '" aria-pressed="false"><span class="ic">' + svgNote + '</span><span class="tx"><b>' + n + '</b></span></button>'; }).join('') + '</div>' +
         '<label class="cc-slider"><span><b>' + ui.ccBright + '</b></span><input type="range" min="40" max="100" step="1" data-bright aria-label="' + ui.ccBright + '"></label>' +
-        '<label class="cc-slider"><span><b>' + ui.ccSound + '</b><button type="button" class="cc-mini" data-snd aria-pressed="false" aria-label="' + ui.ccSound + '">' + svgSound + '</button></span><input type="range" min="0" max="100" step="5" data-vol aria-label="' + ui.ccSound + '"></label>';
+        '<label class="cc-slider"><span><b>' + ui.ccSound + '</b><button type="button" class="cc-mini" data-snd aria-pressed="false" aria-label="' + ui.ccSound + '">' + svgSound + '</button></span><input type="range" min="0" max="100" step="5" data-vol aria-label="' + ui.ccSound + '"></label>' +
+        (ui.built ? '<p class="cc-foot">' + ui.updated + ' ' + new Date(ui.built + 'T12:00').toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + '</p>' : '');
       pop.querySelector('[data-bright]').value = String(bright);
       pop.querySelector('[data-vol]').value = String(vol);
       pop.querySelector('[data-bright]').addEventListener('input', function (e) { setBright(+e.target.value); });
@@ -155,6 +170,9 @@
         e.stopPropagation();
         var b = e.target.closest('button'); if (!b) return;
         if (b.hasAttribute('data-t')) D.setTheme(b.getAttribute('data-t'));
+        else if (b.hasAttribute('data-sc')) { api.close(); D.openVirtual('shortcuts'); return; }
+        else if (b.hasAttribute('data-motion')) setMotion(!motion);
+        else if (b.hasAttribute('data-tsz')) setTsize((tsize + 1) % 3);
         else if (b.hasAttribute('data-mu')) D.prefs.music.set(+b.getAttribute('data-mu'));
         else if (b.hasAttribute('data-glass')) D.setGlass(!D.glassOn());
         else if (b.hasAttribute('data-wall')) setWall(WALLS[(WALLS.indexOf(wall()) + 1) % WALLS.length]);
@@ -184,6 +202,8 @@
   })();
 
   var svgNote = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="16" r="2.5"/></svg>';
+  var svgKbd = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg>';
+  var svgWave = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c2.5-5 4.500 5 7.500 0s5 5 7.500 0 2.500 1.500 3-1"/></svg>';
   var svgGlass = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 9c1.5-1.4 3-1.8 4.5-1.8"/></svg>';
   var svgGlobe = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5z"/></svg>';
   var svgImage = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4.5 3.5 3L15 13l5 4.5"/></svg>';
@@ -267,7 +287,7 @@
   var hov = null;
   document.addEventListener('pointerover', function (e) { hov = e.target.closest ? e.target.closest('.tile-card a') : null; }, { passive: true });
   document.addEventListener('keydown', function (e) {
-    if (e.key !== ' ' || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+    if (e.key !== ' ' || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented || !D.keys.on()) return;
     var t = e.target, typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
     if (typing) return;
     var a = (document.activeElement && document.activeElement.closest && document.activeElement.closest('.tile-card a')) || hov;
@@ -293,6 +313,22 @@
     function sep() { var li = el('li', 'cs'); li.setAttribute('role', 'separator'); return li; }
     document.addEventListener('contextmenu', function (e) {
       if (!D.wide.matches || !window.matchMedia('(pointer:fine)').matches) return;
+      var dk = e.target.closest('.dock a[data-app], .dock a[data-vapp]');
+      if (dk) {
+        e.preventDefault(); var dx = e.clientX, dy = e.clientY, dslug = dk.getAttribute('data-app') || dk.getAttribute('data-vapp'), isV = !!dk.getAttribute('data-vapp');
+        D.data().then(function (d) {
+          var m = d.ui.dockm, open = D.list().some(function (w) { return w.slug === dslug; }); menu.textContent = '';
+          menu.appendChild(item(m.open, function () { if (isV) D.openVirtual(dslug); else D.go(dk.getAttribute('href')); }));
+          if (open) menu.appendChild(item(m.close, function () { D.closeWin(dslug); }));
+          menu.appendChild(sep());
+          menu.appendChild(item(m.all, function () { D.missionControl(); }, { key: 'F3' }));
+          closeAll(api); menu.hidden = false;
+          var w = menu.offsetWidth, h = menu.offsetHeight;
+          menu.style.left = Math.max(8, Math.min(dx, innerWidth - w - 8)) + 'px'; menu.style.top = Math.max(36, dy - h - 12) + 'px';
+          var first = menu.querySelector('button'); if (first) first.focus({ preventScroll: true });
+        }).catch(function () {});
+        return;
+      }
       if (e.target.closest('.window, .widget, .dock, .icons, .menubar, .ctx, .cc, .cal, .spot, .lock, .ql, input, textarea, a, button')) return;
       e.preventDefault();
       var x = e.clientX, y = e.clientY;
@@ -531,6 +567,8 @@
       var vc = el('a', 'ml-call', '+ ' + m.addContact); vc.href = base + '/berkay-vuran.vcf'; vc.download = 'berkay-vuran.vcf'; main.querySelector('.ml-act').appendChild(vc);
       var call = main.querySelector('.ml-call'); call.href = 'tel:' + c.tel; call.textContent = m.or + ': ' + c.show;
       f.elements.subject.placeholder = m.subjectDefault;
+      D._mailApply = function () { if (!D.mailDraft) return; f.elements.subject.value = D.mailDraft.subject || ''; f.elements.message.value = D.mailDraft.message || ''; D.mailDraft = null; f.elements.name.focus({ preventScroll: true }); };
+      D._mailApply();
       f.addEventListener('submit', function (e) {
         e.preventDefault();
         var name = f.elements.name.value.trim(), email = f.elements.email.value.trim(), msg = f.elements.message.value.trim(), subj = f.elements.subject.value.trim() || m.subjectDefault;
@@ -615,6 +653,43 @@
       draw();
     }
   };
+
+  /* ---------- Keyboard Shortcuts app: the list, and one switch for all of them ---------- */
+  D.apps.shortcuts = {
+    build: function (main, d) {
+      var t = d.ui.sc, mac = /Mac|iPhone|iPad/.test(navigator.platform), C = mac ? '⌃' : 'Ctrl', A = mac ? '⌥' : 'Alt', M = mac ? '⌘' : 'Ctrl';
+      main.classList.add('st', 'kbapp');
+      var top = el('section', 'st-g sc-master'), tul = el('ul'); top.appendChild(tul); main.appendChild(top);
+      var li = el('li'), r = el('div', 'st-r'), lab = el('span', 'st-l'); lab.appendChild(el('b', null, t.master)); lab.appendChild(el('small', 'sc-sub', t.masterSub));
+      var sw = el('button', 'st-switch'); sw.type = 'button'; sw.setAttribute('role', 'switch'); sw.setAttribute('aria-label', t.master); sw.appendChild(el('i'));
+      r.appendChild(lab); r.appendChild(sw); li.appendChild(r); tul.appendChild(li);
+      var groups = [
+        [t.g1, [[t.search, [[M, 'K'], ['/']]], [t.help, [['?']]], [t.mc, [['F3'], [C, '↑']]], [t.sw, [[A, 'Tab']]]]],
+        [t.g2, [[t.left, [[C, A, '←']]], [t.right, [[C, A, '→']]], [t.center, [[C, A, '↩']]], [t.fill, [[C, A, '↑']]], [t.close, [['Esc']]]]],
+        [t.g3, [[t.ql, [['Space']]], [t.konami, [['↑ ↑ ↓ ↓ ← → ← → B A']]]]]
+      ], body = el('div', 'sc-body'); main.appendChild(body);
+      groups.forEach(function (g) {
+        var sec = el('section', 'st-g'); sec.appendChild(el('h3', null, g[0])); var ul = el('ul'); ul.setAttribute('role', 'list'); sec.appendChild(ul);
+        g[1].forEach(function (x) {
+          var li2 = el('li'), r2 = el('div', 'st-r'); r2.appendChild(el('span', 'st-l', x[0]));
+          var kb = el('span', 'kbs'); x[1].forEach(function (combo, i) { if (i) kb.appendChild(el('em', null, '/')); var grp = el('span', 'kbg'); combo.forEach(function (k) { grp.appendChild(el('kbd', null, k)); }); kb.appendChild(grp); });
+          r2.appendChild(kb); li2.appendChild(r2); ul.appendChild(li2);
+        });
+        body.appendChild(sec);
+      });
+      body.appendChild(el('p', 'st-foot sc-note', t.note));
+      var offNote = el('p', 'st-foot sc-offnote', t.off); main.insertBefore(offNote, body);
+      function paint() { var on = D.keys.on(); sw.setAttribute('aria-checked', on ? 'true' : 'false'); main.classList.toggle('sc-off', !on); offNote.hidden = on; }
+      sw.addEventListener('click', function () { D.keys.set(!D.keys.on()); paint(); });
+      document.addEventListener('desk:keys', paint); paint();
+    }
+  };
+  /* "?" opens the list from anywhere (when shortcuts are on) */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== '?' || e.metaKey || e.ctrlKey || e.altKey || !D.keys.on() || !D.wide.matches) return;
+    var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+    e.preventDefault(); D.openVirtual('shortcuts').catch(function () {});
+  });
 
   /* ---------- Ask (answers from the site's own data; ranked with a tiny TF-IDF, no model, no network) ---------- */
   var STOP = ' the a an is are of to and in on for it he his him she her me my you your do does did what which when how can i we they this that be as at by with about tell show give has have had was were been would could should some any list many please goster listele soyle bana misin bu bir ve mi mu de da ne kim hangi nasil icin ile var ' ;
@@ -705,7 +780,19 @@
         if (state.i < list.length) { var row = el('div', 'as-row'); row.appendChild(moreBtn(id, state)); box.appendChild(row); }
         bubble('bot', box);
       }
-      function reply(r) {
+      var fb = d.ui.askfb;
+      function reportBtn(q, label) {
+        var b = el('button', 'as-l', label); b.type = 'button';
+        b.addEventListener('click', function () { D.mailDraft = { subject: fb.subject, message: fb.msg + '\n"' + q + '"\n\n' }; D.openVirtual('mail').then(function () { if (D._mailApply) D._mailApply(); }).catch(function () {}); });
+        return b;
+      }
+      function feedback(box, q) {
+        var row = el('div', 'as-fb'), ok = el('button', 'as-fbb', '👍 ' + fb.ok), bad = el('button', 'as-fbb', '👎 ' + fb.bad); ok.type = bad.type = 'button';
+        ok.addEventListener('click', function () { row.textContent = fb.thanks; });
+        bad.addEventListener('click', function () { row.textContent = ''; row.appendChild(document.createTextNode(fb.thanks + ' ')); row.appendChild(reportBtn(q, fb.report)); });
+        row.appendChild(ok); row.appendChild(bad); box.appendChild(row);
+      }
+      function reply(r, q) {
         var box = el('div');
         if (r.length && r[0].cov >= 0.5 && (r[0].s >= 1.6 || (r[0].e.topic && r[0].cov === 1 && r[0].s >= 0.9))) {
           var e = r[0].e; last = e; paras(box, e.a);
@@ -714,13 +801,14 @@
           if (e.id && ix.lists[e.id]) row.appendChild(moreBtn(e.id, { i: 0 }));
           if (row.childNodes.length) box.appendChild(row);
           var alt = e.topic ? [] : r.slice(1).filter(function (x) { return !x.e.topic && x.e.title && x.e !== e && x.s >= r[0].s * 0.55; }).slice(0, 2);
+          if (q) feedback(box, q);
           if (alt.length) { var ar = el('div', 'as-row'); ar.appendChild(el('span', 'as-note', a.alsoSee)); alt.forEach(function (x) { ar.appendChild(chipBtn(x.e.title, function () { ask(x.e.title); })); }); box.appendChild(ar); }
         } else {
           last = null; paras(box, a.fallback);
           var sug = r.filter(function (x) { return !x.e.topic && x.e.title; }).slice(0, 3);
           var row2 = el('div', 'as-row');
           if (sug.length) { box.appendChild(el('p', 'as-note', a.didYou)); sug.forEach(function (x) { row2.appendChild(chipBtn(cutLabel(x.e.title), function () { ask(x.e.title); })); }); }
-          row2.appendChild(linkNode({ t: a.mailCta, u: '#mail' })); box.appendChild(row2);
+          row2.appendChild(reportBtn(q || '', fb.report)); box.appendChild(row2);
         }
         bubble('bot', box);
       }
@@ -735,7 +823,7 @@
           tb.remove();
           if (isMore && last && last.id && ix.lists[last.id]) { page(last.id, last._st || (last._st = { i: 0 })); return; }
           if (isMore) { reply(rank(ix, 'help')); return; }
-          reply(rank(ix, q));
+          reply(rank(ix, q), q);
         }, 280 + Math.min(420, q.length * 10));
       }
       function start() { log.textContent = ''; asked = {}; last = null; bubble('bot', a.hello); refreshChips(); }
@@ -746,7 +834,7 @@
   };
 
   /* ---------- Mission Control + app switcher ---------- */
-  var TILE_CLASS = { about: 'c-about', cv: 'c-cv', references: 'c-references', showcase: 'c-showcase', blog: 'c-blog', builder: 'c-builder', terminal: 'c-terminal', notes: 'c-notes', photos: 'c-photos', mail: 'c-mail', finder: 'c-finder', ask: 'c-ask' };
+  var TILE_CLASS = { about: 'c-about', cv: 'c-cv', references: 'c-references', showcase: 'c-showcase', blog: 'c-blog', builder: 'c-builder', terminal: 'c-terminal', notes: 'c-notes', photos: 'c-photos', mail: 'c-mail', finder: 'c-finder', ask: 'c-ask', settings: 'c-settings', shortcuts: 'c-settings' };
   var mcEl = null;
   function closeMC() { if (mcEl) { mcEl.remove(); mcEl = null; } }
   function openMC() {
@@ -776,9 +864,9 @@
   function swDraw() { sw.el.querySelectorAll('.asw-i').forEach(function (n, k) { n.classList.toggle('on', k === sw.i); }); }
   function swEnd(apply) { if (!sw.el) return; var pick = sw.list[sw.i]; sw.el.remove(); sw.el = null; if (apply && pick) { var ww = document.querySelector('.window[data-slug="' + pick.slug + '"]'); if (ww) ww.classList.remove('is-min'); D.focus(pick.slug); } }
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'F3' || (e.ctrlKey && !e.altKey && e.key === 'ArrowUp' && !e.shiftKey)) { e.preventDefault(); if (mcEl) closeMC(); else openMC(); return; }
+    if (D.keys.on() && (e.key === 'F3' || (e.ctrlKey && !e.altKey && e.key === 'ArrowUp' && !e.shiftKey))) { e.preventDefault(); if (mcEl) closeMC(); else openMC(); return; }
     if (e.key === 'Escape' && mcEl) { e.preventDefault(); e.stopPropagation(); closeMC(); return; }
-    if (e.altKey && e.key === 'Tab') {
+    if (D.keys.on() && e.altKey && e.key === 'Tab') {
       var list = D.list().sort(function (x, y) { return y.z - x.z; }); if (list.length < 2) return;
       e.preventDefault();
       if (!sw.el) {
@@ -908,7 +996,7 @@
   (function konami() {
     var seq = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'], pos = 0;
     document.addEventListener('keydown', function (e) {
-      var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) { pos = 0; return; }
+      var t = e.target; if (!D.keys.on() || (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA'))) { pos = 0; return; }
       var k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
       if (k === seq[pos]) { pos++; if (pos === seq.length) { pos = 0; party(); } } else pos = k === seq[0] ? 1 : 0;
     });
@@ -989,7 +1077,7 @@
     /* keyboard: Ctrl+Alt (Control+Option on a Mac) + Left / Right / Enter / Up. Cmd+Option and the Windows key belong to the browser and OS, so they never reach the page. */
     var KMAP = { ArrowLeft: 'l', ArrowRight: 'r', Enter: 'c', ArrowUp: 'f' };
     document.addEventListener('keydown', function (e) {
-      if (!e.ctrlKey || !e.altKey || e.metaKey || e.shiftKey || !D.wide.matches) return;
+      if (!D.keys.on() || !e.ctrlKey || !e.altKey || e.metaKey || e.shiftKey || !D.wide.matches) return;
       var mode = KMAP[e.key]; if (!mode) return;
       var win = document.querySelector('.window.active'); if (!win) return;
       e.preventDefault(); e.stopPropagation(); hide(); arrange(win, mode);
@@ -1019,6 +1107,15 @@
     document.addEventListener('pointerdown', function (e) { if (menu && !e.target.closest('.zm')) hide(); }, true);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu) { hide(); e.stopPropagation(); } }, true);
   })();
+
+  /* ---------- print the CV window ---------- */
+  document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-print]')) { e.preventDefault(); window.print(); } });
+  var opened = [];
+  window.addEventListener('beforeprint', function () { opened = []; document.querySelectorAll('.window.active details.row:not([open])').forEach(function (n) { n.open = true; opened.push(n); }); });
+  window.addEventListener('afterprint', function () { opened.forEach(function (n) { n.open = false; }); opened = []; });
+
+  /* ---------- bring back the windows from the last visit ---------- */
+  D.restore();
 
   /* ---------- offline support + SPA analytics hook ---------- */
   document.addEventListener('desk:nav', function (e) { try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: e.detail.path }); } catch (er) {} });

@@ -18,6 +18,9 @@
     person: '<svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.6"/><path d="M3.5 20c0-3.6 2.9-6 6.5-6 1.4 0 2.6.3 3.6 1M18 14v6M15 17h6"/></svg>',
     glass: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 9c1.5-1.4 3-1.8 4.5-1.8"/></svg>',
     sun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12H5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>',
+    wave: '<svg viewBox="0 0 24 24"><path d="M3 12c2.5-5 4.5 5 7.5 0s5 5 7.5 0 2.5 1.5 3-1"/></svg>',
+    kbd: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg>',
+    text: '<svg viewBox="0 0 24 24"><path d="M4 18l5-12 5 12M6 14h6M17 18v-8M14.5 10h5"/></svg>',
     sound: '<svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5l4.5 3.5v-12L7.5 9.5z"/><path d="M15.5 9a4 4 0 010 6M18 6.5a8 8 0 010 11"/></svg>',
     image: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4.5 3.5 3L15 13l5 4.5"/></svg>',
     palette: '<svg viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 100 17c1.3 0 2-.9 2-1.8 0-1.2-1.1-1.5-1.1-2.7 0-1 .8-1.7 1.9-1.7H17a3.5 3.5 0 003.5-3.5C20.500 6.700 16.800 3.500 12 3.500z"/><circle cx="8" cy="11" r="1"/><circle cx="11" cy="7.500" r="1"/><circle cx="15.500" cy="8.500" r="1"/></svg>'
@@ -72,21 +75,28 @@
       });
       function paintMusic() { musicBtns.forEach(function (b) { b.setAttribute('aria-checked', +b.getAttribute('data-m') === M.cur() ? 'true' : 'false'); }); }
       document.addEventListener('desk:music', paintMusic); paintMusic();
+      var mr = row(dl, 'wave', '#FF9F0A', u.ccMotion, null, null);
+      var msw = el('button', 'st-switch'); msw.type = 'button'; msw.setAttribute('role', 'switch'); msw.setAttribute('aria-label', u.ccMotion); msw.appendChild(el('i'));
+      msw.addEventListener('click', function () { P.motion.set(!P.motion.on()); paint(); }); mr.appendChild(msw);
+      var tv = el('span', 'st-v'); var tr2 = row(dl, 'text', '#0A84FF', u.ccText, tv, function () { P.tsize.set((P.tsize.cur() + 1) % 3); paint(); });
       /* general */
       var g = group(SET.gen);
       var la = el('a', 'st-r st-link'); la.href = D.langHref(); la.appendChild(ico('globe', '#0A84FF')); la.appendChild(el('span', 'st-l', u.ccLang)); la.appendChild(el('span', 'st-v', u.otherShort)); la.appendChild(el('span', 'st-chev', '›'));
       var lli = el('li'); lli.appendChild(la); g.appendChild(lli);
       row(g, 'lock', '#8E8E93', u.ccLock, el('span', 'st-chev', '›'), function () { D.lock(); });
       row(g, 'mc', '#30B0C7', u.ccMC, el('span', 'st-chev', '›'), function () { D.missionControl(); });
+      row(g, 'kbd', '#5856D6', u.ccKeys, el('span', 'st-chev', '›'), function () { D.openVirtual('shortcuts'); });
       var vc = el('a', 'st-r st-link'); vc.href = (document.body.getAttribute('data-base') || '') + '/berkay-vuran.vcf'; vc.download = 'berkay-vuran.vcf';
       vc.appendChild(ico('person', '#34C759')); vc.appendChild(el('span', 'st-l', u.addContact)); vc.appendChild(el('span', 'st-chev', '›'));
       var li = el('li'); li.appendChild(vc); g.appendChild(li);
-      main.appendChild(el('p', 'st-foot', 'berkayvuran.com'));
+      main.appendChild(el('p', 'st-foot', 'berkayvuran.com' + (u.built ? ' · ' + u.updated + ' ' + new Date(u.built + 'T12:00').toLocaleDateString(u.lang === 'tr' ? 'tr-TR' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '')));
       function paint() {
         var cur = root.getAttribute('data-theme'), w = P.wall();
         themeBtns.forEach(function (b) { b.setAttribute('aria-checked', b.getAttribute('data-t') === cur ? 'true' : 'false'); });
         wallBtns.forEach(function (b) { b.setAttribute('aria-checked', b.getAttribute('data-w') === w ? 'true' : 'false'); });
         sw.setAttribute('aria-checked', D.glassOn() ? 'true' : 'false');
+        msw.setAttribute('aria-checked', P.motion.on() ? 'true' : 'false');
+        tv.textContent = u.textSizes[P.tsize.cur()];
       }
       paint();
     }
