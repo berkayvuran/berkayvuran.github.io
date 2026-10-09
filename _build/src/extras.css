@@ -425,3 +425,6 @@ button.st-r:active,a.st-r:active{background:var(--accent-soft)}
 .wx-s.wide{grid-column:1/-1!important}
 .cc-music{margin-bottom:12px}
 .cc-tiles + .cc-h{margin-top:16px}
+.zm button kbd{margin-left:auto;padding-left:14px;font:inherit;font-size:11.5px;opacity:.6;white-space:nowrap}
+.zm button:hover kbd,.zm button:focus-visible kbd{opacity:.85}
+.zm{min-width:210px}
