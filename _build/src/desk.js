@@ -273,8 +273,20 @@
   function save() { clearTimeout(saveT); saveT = setTimeout(snapshot, 250); }
   document.addEventListener('pointerup', save, true);
   window.addEventListener('pagehide', snapshot);
+  /* the extra apps (Calculator, Clock, ...) live in apps.js, loaded the first time one is opened */
+  var LAZY = ['calculator', 'clock', 'calendar', 'monitor', 'music', 'reminders', 'preview', 'board', 'mines', 'sysinfo'], lazyP = null;
+  Desk.lazyIds = LAZY;
+  function loadApps() {
+    if (!lazyP) lazyP = new Promise(function (res, rej) {
+      var b = body.getAttribute('data-base') || '', v = body.getAttribute('data-v') || '';
+      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = b + '/apps.css?v=' + v; document.head.appendChild(l);
+      var sc = document.createElement('script'); sc.src = b + '/apps.js?v=' + v; sc.onload = res; sc.onerror = function () { lazyP = null; rej(new Error('apps')); }; document.head.appendChild(sc);
+    });
+    return lazyP;
+  }
   function openVirtual(slug) {
     var def = Desk.apps[slug];
+    if (!def && LAZY.indexOf(slug) > -1) return loadApps().then(function () { return openVirtual(slug); });
     if (!def) return Promise.reject(new Error('no app'));
     if (wins[slug]) { focusWin(slug, false); return Promise.resolve(); }
     return Promise.resolve(Desk.data()).then(function (data) {
@@ -324,7 +336,7 @@
     var chain = Promise.resolve();
     todo.forEach(function (o) {
       chain = chain.then(function () {
-        var p = Desk.apps[o.s] ? openVirtual(o.s) : (SECTIONS.indexOf(o.s) > -1 ? openApp(o.s, false) : null);
+        var p = (Desk.apps[o.s] || LAZY.indexOf(o.s) > -1) ? openVirtual(o.s) : (SECTIONS.indexOf(o.s) > -1 ? openApp(o.s, false) : null);
         return Promise.resolve(p).then(function () { applyGeo(wins[o.s], o); });
       }).catch(function () {});
     });
@@ -500,7 +512,7 @@
   /* ---------- global wiring ---------- */
   document.addEventListener('click', function (e) {
     var v = e.target.closest('a[data-vapp]');
-    if (v && !e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && Desk.apps[v.getAttribute('data-vapp')]) { e.preventDefault(); openVirtual(v.getAttribute('data-vapp')).catch(function () { location.href = v.href; }); return; }
+    if (v && !e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && (Desk.apps[v.getAttribute('data-vapp')] || LAZY.indexOf(v.getAttribute('data-vapp')) > -1)) { e.preventDefault(); openVirtual(v.getAttribute('data-vapp')).catch(function () { location.href = v.href; }); return; }
     var a = e.target.closest('a[data-app]');
     if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault(); go(a.getAttribute('href'));

@@ -1,6 +1,6 @@
 /* berkayvuran.com service worker: offline-friendly, never serves stale pages while online. */
-const V = 'bv-fe25c1b5';
-const SHELL = ['/', '/tr/', '/desk.css', '/desk.js', '/extras.css', '/extras.js', '/ios.css', '/ios.js', '/apps-en.json', '/apps-tr.json', '/assets/images/avatars/my-avatar-160.webp', '/assets/fonts/poppins-400.woff2', '/assets/fonts/poppins-500.woff2', '/assets/fonts/poppins-600.woff2'];
+const V = 'bv-ef0333a4';
+const SHELL = ['/', '/tr/', '/desk.css', '/desk.js', '/extras.css', '/extras.js', '/ios.css', '/ios.js', '/apps.js', '/apps.css', '/apps-en.json', '/apps-tr.json', '/assets/images/avatars/my-avatar-160.webp', '/assets/fonts/poppins-400.woff2', '/assets/fonts/poppins-500.woff2', '/assets/fonts/poppins-600.woff2'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));
