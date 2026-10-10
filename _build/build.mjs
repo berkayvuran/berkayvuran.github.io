@@ -9,7 +9,7 @@ import path from 'path';
 
 import { createHash } from 'node:crypto';
 const BUILT = new Date().toISOString().slice(0, 10);
-const VER = createHash('md5').update(['desk.css', 'desk.js', 'extras.css', 'extras.js', 'ios.css', 'ios.js'].map(f => fs.readFileSync(new URL('./src/' + f, import.meta.url))).join('')).digest('hex').slice(0, 8);
+const VER = createHash('md5').update(['desk.css', 'desk.js', 'extras.css', 'extras.js', 'ios.css', 'ios.js', 'apps.css', 'apps.js'].map(f => fs.readFileSync(new URL('./src/' + f, import.meta.url))).join('')).digest('hex').slice(0, 8);
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, ...v] = a.replace(/^--/, '').split('='); return [k, v.join('=')]; }));
 const BASE = args.base ?? '/next';
 const OUT = path.resolve(args.out ?? '../next');
@@ -107,6 +107,16 @@ TILE.settings = '<path fill-rule="evenodd" d="M10.4 2.6h3.2l.6 2.4c.5.2 1 .5 1.5
 TILE.notes = '<path fill-rule="evenodd" d="M6.5 3.5h11A2.5 2.5 0 0 1 20 6v12a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18V6a2.5 2.5 0 0 1 2.5-2.5zM7.6 8v1.5h8.8V8zm0 3.6v1.5h8.8v-1.5zm0 3.6v1.5h5.2v-1.5z"/>';
 const PETALS = ['#FF9500', '#FFCC00', '#34C759', '#5AC8FA', '#007AFF', '#AF52DE', '#FF2D55', '#FF3B30'];
 const PHOTOS_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" stroke="none">${PETALS.map((c, i) => `<ellipse cx="12" cy="7.3" rx="2.5" ry="4.4" fill="${c}" opacity=".88" transform="rotate(${i * 45} 12 12)" style="mix-blend-mode:multiply"/>`).join('')}</svg>`;
+TILE.calculator = '<rect x="5.2" y="3.4" width="13.6" height="4.6" rx="1.3"/><circle cx="8.4" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="15.6" cy="12" r="1.4"/><circle cx="8.4" cy="15.7" r="1.4"/><circle cx="12" cy="15.7" r="1.4"/><circle cx="15.6" cy="15.7" r="1.4"/><circle cx="8.4" cy="19.4" r="1.4"/><circle cx="12" cy="19.4" r="1.4"/><circle cx="15.6" cy="19.4" r="1.4"/>';
+TILE.clock = '<path fill-rule="evenodd" d="M12 3a9 9 0 100 18 9 9 0 000-18zm0 2a7 7 0 110 14 7 7 0 010-14z"/><path d="M11.2 7.6h1.6v4.4l3 1.8-.8 1.3-3.8-2.3z"/>';
+TILE.calendar = '<path fill-rule="evenodd" d="M7.2 2.8h1.7v1.7h6.2V2.8h1.7v1.7h1.2a2.3 2.3 0 0 1 2.3 2.3v11a2.3 2.3 0 0 1-2.3 2.2H5.8a2.3 2.3 0 0 1-2.3-2.2v-11a2.3 2.3 0 0 1 2.3-2.3h1.4zM5.2 9v8.8c0 .4.2.6.6.6h12.4c.4 0 .6-.2.6-.6V9z"/><rect x="7.3" y="11.2" width="2.4" height="2.2" rx=".5"/><rect x="10.8" y="11.2" width="2.4" height="2.2" rx=".5"/><rect x="14.3" y="11.2" width="2.4" height="2.2" rx=".5"/><rect x="7.3" y="14.6" width="2.4" height="2.2" rx=".5"/><rect x="10.8" y="14.6" width="2.4" height="2.2" rx=".5"/>';
+TILE.monitor = '<path d="M3 12.2h3.6l1.8-5.4 3.2 10.4 2.4-7 1.4 2H21v1.8h-6.8l-.6-.9-3.6 10.6L7.1 11.2l-.6 2H3z" transform="translate(0 -3.2) scale(1 .82) translate(0 3.4)"/>';
+TILE.music = '<path d="M9 5.2l10-2v12.1a3 3 0 11-1.8-2.7V6.6L10.8 8v9.2a3 3 0 11-1.8-2.7z"/>';
+TILE.reminders = '<circle cx="6" cy="7" r="1.7"/><circle cx="6" cy="12" r="1.7"/><circle cx="6" cy="17" r="1.7"/><rect x="10" y="6" width="9.5" height="2" rx="1"/><rect x="10" y="11" width="9.5" height="2" rx="1"/><rect x="10" y="16" width="9.5" height="2" rx="1"/>';
+TILE.preview = '<path fill-rule="evenodd" d="M5.5 4h13A2.5 2.5 0 0 1 21 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-11A2.5 2.5 0 0 1 5.5 4zm2.7 3.4a1.8 1.8 0 100 3.600 1.8 1.8 0 000-3.600zM5 17.800h14v-1.200l-4.100-4.800-3.100 3.700-2.600-2.600L5 15.900z"/>';
+TILE.board = '<path d="M16.8 3.6a2 2 0 012.8 0l.8.8a2 2 0 010 2.8L9.4 18.200 5 19l.8-4.400z"/><rect x="4" y="20.200" width="16" height="1.800" rx=".9"/>';
+TILE.mines = '<circle cx="12" cy="13" r="5.600"/><rect x="11.100" y="3.600" width="1.800" height="3.400" rx=".9"/><rect x="11.100" y="19" width="1.800" height="3.400" rx=".9"/><rect x="1.800" y="12.100" width="3.400" height="1.800" rx=".9"/><rect x="18.800" y="12.100" width="3.400" height="1.800" rx=".9"/><circle cx="10.200" cy="11.200" r="1.200" fill="#000" opacity=".25"/>';
+TILE.launchpad = '<rect x="3.800" y="3.800" width="4.800" height="4.800" rx="1.300"/><rect x="9.600" y="3.800" width="4.800" height="4.800" rx="1.300"/><rect x="15.400" y="3.800" width="4.800" height="4.800" rx="1.300"/><rect x="3.800" y="9.600" width="4.800" height="4.800" rx="1.300"/><rect x="9.600" y="9.600" width="4.800" height="4.800" rx="1.300"/><rect x="15.400" y="9.600" width="4.800" height="4.800" rx="1.300"/><rect x="3.800" y="15.400" width="4.800" height="4.800" rx="1.300"/><rect x="9.600" y="15.400" width="4.800" height="4.800" rx="1.300"/><rect x="15.400" y="15.400" width="4.800" height="4.800" rx="1.300"/>';
 const tile = n => n === 'photos' ? PHOTOS_SVG : TILE[n] ? `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#fff" stroke="none">${TILE[n]}</svg>` : svg(n);
 const LINKS = [
   { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/berkayvuran' },
@@ -119,8 +129,8 @@ const LINKS = [
 /* ------------------------------------------------------------------ virtual apps (Terminal, Notes, Photos, Mail) + Control Center strings */
 const APP = {
   en: {
-    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail', finder: 'Finder', ask: 'Ask', settings: 'Settings', shortcuts: 'Keyboard Shortcuts' },
-    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message', finder: 'Resume, contact card and pictures to download', ask: 'Ask questions about Berkay and get answers from this site', settings: 'Theme, wallpaper, language, display and sound', shortcuts: 'Every keyboard shortcut, with an on/off switch' },
+    names: { terminal: 'Terminal', notes: 'Notes', photos: 'Photos', mail: 'Mail', finder: 'Finder', ask: 'Ask', settings: 'Settings', shortcuts: 'Keyboard Shortcuts', calculator: 'Calculator', clock: 'Clock', calendar: 'Calendar', monitor: 'Activity Monitor', music: 'Music', reminders: 'Reminders', preview: 'Preview', board: 'Whiteboard', mines: 'Minesweeper', sysinfo: 'About This Site', launchpad: 'Launchpad' },
+    descs: { terminal: 'Command line: try help, about, projects or sudo hire berkay', notes: 'Writing, as notes', photos: 'Certificates, websites and projects as photos', mail: 'Send Berkay a message', finder: 'Resume, contact card and pictures to download', ask: 'Ask questions about Berkay and get answers from this site', settings: 'Theme, wallpaper, language, display and sound', shortcuts: 'Every keyboard shortcut, with an on/off switch', calculator: 'A simple calculator that works with the keyboard', clock: 'World clock, stopwatch, timer and alarm', calendar: 'Month view with your own events', monitor: 'See every open window as a process and force quit it', music: 'Four generated tracks with a visualizer', reminders: 'A small to-do list saved in this browser', preview: 'View the CV, certificates and pictures', board: 'Draw and save a picture', mines: 'The classic puzzle', sysinfo: 'Version and system information', launchpad: 'All apps in one place' },
     apps: 'Apps',
     finder: { fav: 'Favorites', all: 'All Files', open: 'Open', download: 'Download', items: 'items', folders: { documents: 'Documents', pictures: 'Pictures', certificates: 'Certificates' }, empty: 'Nothing here' },
     ask: { ph: 'Ask about Berkay…', hello: 'Hi! I am a small assistant that only knows this site. Ask me about Berkay’s work, projects, writing or how to reach him.', chips: ['Who is Berkay?', 'What does he do now?', 'Show his projects', 'How can I contact him?', 'Where did he work?'], fallback: 'I could not find that on this site. Try a project or article name, or ask about his work, writing, certificates or contact details. For anything else, the best way is to write to him directly.', chips2: ['Show his certificates', 'What has he written?', 'Any references?', 'Can I hire him?', 'Download his CV'], open: 'Open', read: 'Read', more: 'Show more', didYou: 'Did you mean:', alsoSee: 'Also:', clear: 'New chat', send: 'Send', mailCta: 'Write to Berkay', you: 'You' },
@@ -144,12 +154,12 @@ const APP = {
       help: [['help', 'show this list'], ['about', 'who I am'], ['experience', 'where I have worked'], ['education', 'where I studied'], ['projects', 'AI-built products you can open'], ['blog', 'latest writing'], ['skills', 'what I do'], ['contact', 'phone, email and links'], ['open <name>', 'open a window: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <name>', 'dark, light, matrix or zap'], ['wallpaper <name>', 'default, aurora, sunset or ocean'], ['lang <en|tr>', 'switch language'], ['lock', 'show the lock screen'], ['ls / cat <file>', 'look around'], ['neofetch', 'system info'], ['snake', 'a tiny game'], ['cowsay <text>', 'a talking cow'], ['matrix', 'follow the white rabbit'], ['date, echo, history, clear, exit', 'the usual']],
       files: ['about.txt', 'contact.txt', 'cv.txt', 'projects/', 'blog/'], noFile: 'No such file:', usage: 'usage:', opened: 'opening', themeSet: 'theme set to', wallSet: 'wallpaper set to', langSwitch: 'switching language…', badTheme: 'unknown theme. Try: dark, light, matrix, zap', badWall: 'unknown wallpaper. Try: default, aurora, sunset, ocean', badOpen: 'unknown window. Try: about, cv, references, showcase, blog, builder, notes, photos, mail',
       sudo: ['[sudo] password for guest: ********', 'Access granted. Hiring pipeline unlocked.', 'Opening the mail app, say hi at hello@berkayvuran.com.'], root: 'Nice try. This is a very polite machine, but it is not that polite.', hello: 'Hello! Great to see you here.', matrixMsg: 'Wake up, Neo…', snakeHint: 'Arrow keys or WASD to move, q to quit. Swipe on touch.', exit: 'Closing the terminal…',
-      neofetch: ['Berkay Vuran', 'OS', 'Product Leader 1.0', 'Role', 'Product leader and builder', 'Focus', 'AI, ML, data and real workflows', 'Shell', 'berkayvuran.com', 'Theme']
+      neofetch: ['Berkay Vuran', 'OS', 'BerkayOS 1.0 (Sonnet 5.5 edition)', 'Kernel', 'not written yet', 'Focus', 'AI, ML, data and real workflows', 'Shell', 'berkayvuran.com', 'Theme']
     }
   },
   tr: {
-    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta', finder: 'Finder', ask: 'Sor', settings: 'Ayarlar', shortcuts: 'Klavye Kısayolları' },
-    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder', finder: 'CV, kartvizit ve indirilebilir resimler', ask: 'Berkay hakkında sor, cevabı bu siteden al', settings: 'Tema, duvar kâğıdı, dil, ekran ve ses', shortcuts: 'Tüm klavye kısayolları, aç/kapat anahtarıyla' },
+    names: { terminal: 'Terminal', notes: 'Notlar', photos: 'Fotoğraflar', mail: 'Posta', finder: 'Finder', ask: 'Sor', settings: 'Ayarlar', shortcuts: 'Klavye Kısayolları', calculator: 'Hesap Makinesi', clock: 'Saat', calendar: 'Takvim', monitor: 'Etkinlik Monitörü', music: 'Müzik', reminders: 'Anımsatıcılar', preview: 'Önizleme', board: 'Beyaz Tahta', mines: 'Mayın Tarlası', sysinfo: 'Bu Site Hakkında', launchpad: 'Launchpad' },
+    descs: { terminal: 'Komut satırı: help, about, projects veya sudo hire berkay dene', notes: 'Yazılar, not olarak', photos: 'Sertifikalar, web siteleri ve projeler, fotoğraf olarak', mail: 'Berkay’a mesaj gönder', finder: 'CV, kartvizit ve indirilebilir resimler', ask: 'Berkay hakkında sor, cevabı bu siteden al', settings: 'Tema, duvar kâğıdı, dil, ekran ve ses', shortcuts: 'Tüm klavye kısayolları, aç/kapat anahtarıyla', calculator: 'Klavyeyle de çalışan basit hesap makinesi', clock: 'Dünya saati, kronometre, zamanlayıcı ve alarm', calendar: 'Kendi etkinliklerinle ay görünümü', monitor: 'Açık her pencereyi süreç olarak gör, zorla kapat', music: 'Görselleştiricili, üretilmiş dört parça', reminders: 'Bu tarayıcıda saklanan küçük yapılacaklar listesi', preview: 'CV, sertifika ve resimleri görüntüle', board: 'Çiz ve resmi kaydet', mines: 'Klasik bulmaca', sysinfo: 'Sürüm ve sistem bilgisi', launchpad: 'Tüm uygulamalar tek yerde' },
     apps: 'Uygulamalar',
     finder: { fav: 'Sık Kullanılanlar', all: 'Tüm Dosyalar', open: 'Aç', download: 'İndir', items: 'öğe', folders: { documents: 'Belgeler', pictures: 'Resimler', certificates: 'Sertifikalar' }, empty: 'Burada bir şey yok' },
     ask: { ph: 'Berkay hakkında sor…', hello: 'Merhaba! Ben yalnızca bu siteyi bilen küçük bir asistanım. Berkay’ın işini, projelerini, yazılarını ya da ona nasıl ulaşacağını sorabilirsin.', chips: ['Berkay kim?', 'Şu an ne yapıyor?', 'Projelerini göster', 'Ona nasıl ulaşırım?', 'Nerelerde çalıştı?'], fallback: 'Bunu bu sitede bulamadım. Bir proje ya da yazı adı yazmayı, ya da işini, yazılarını, sertifikalarını ve iletişim bilgilerini sormayı dene. Başka bir şey için en iyisi ona doğrudan yazmak.', chips2: ['Sertifikalarını göster', 'Neler yazdı?', 'Referansları var mı?', 'Çalışmak için müsait mi?', 'CV’sini indir'], open: 'Aç', read: 'Oku', more: 'Daha fazla göster', didYou: 'Şunu mu demek istedin:', alsoSee: 'Ayrıca:', clear: 'Yeni sohbet', send: 'Gönder', mailCta: 'Berkay’a yaz', you: 'Sen' },
@@ -173,12 +183,13 @@ const APP = {
       help: [['help', 'bu listeyi göster'], ['about', 'ben kimim'], ['experience', 'nerelerde çalıştım'], ['education', 'nerede okudum'], ['projects', 'açabileceğin AI ürünleri'], ['blog', 'son yazılar'], ['skills', 'ne yaparım'], ['contact', 'telefon, e-posta ve bağlantılar'], ['open <ad>', 'pencere aç: about, cv, references, showcase, blog, builder, notes, photos, mail'], ['theme <ad>', 'dark, light, matrix veya zap'], ['wallpaper <ad>', 'default, aurora, sunset veya ocean'], ['lang <en|tr>', 'dili değiştir'], ['lock', 'kilit ekranını göster'], ['ls / cat <dosya>', 'etrafa bak'], ['neofetch', 'sistem bilgisi'], ['snake', 'küçük bir oyun'], ['cowsay <metin>', 'konuşan inek'], ['matrix', 'beyaz tavşanı takip et'], ['date, echo, history, clear, exit', 'bildiklerin']],
       files: ['about.txt', 'contact.txt', 'cv.txt', 'projects/', 'blog/'], noFile: 'Böyle bir dosya yok:', usage: 'kullanım:', opened: 'açılıyor', themeSet: 'tema ayarlandı:', wallSet: 'duvar kâğıdı ayarlandı:', langSwitch: 'dil değiştiriliyor…', badTheme: 'bilinmeyen tema. Dene: dark, light, matrix, zap', badWall: 'bilinmeyen duvar kâğıdı. Dene: default, aurora, sunset, ocean', badOpen: 'bilinmeyen pencere. Dene: about, cv, references, showcase, blog, builder, notes, photos, mail',
       sudo: ['[sudo] misafir için parola: ********', 'Erişim verildi. İşe alım hattı açıldı.', 'Posta uygulaması açılıyor, merhaba de: hello@berkayvuran.com.'], root: 'Güzel deneme. Bu makine çok kibar ama o kadar da değil.', hello: 'Merhaba! Burada olman çok güzel.', matrixMsg: 'Uyan, Neo…', snakeHint: 'Hareket için ok tuşları ya da WASD, çıkmak için q. Dokunmatikte kaydır.', exit: 'Terminal kapatılıyor…',
-      neofetch: ['Berkay Vuran', 'İS', 'Ürün Lideri 1.0', 'Rol', 'Ürün lideri ve üretici', 'Odak', 'AI, ML, veri ve gerçek iş akışları', 'Kabuk', 'berkayvuran.com', 'Tema']
+      neofetch: ['Berkay Vuran', 'İS', 'BerkayOS 1.0 (Sonnet 5.5 sürümü)', 'Çekirdek', 'henüz yazılmadı', 'Odak', 'AI, ML, veri ve gerçek iş akışları', 'Kabuk', 'berkayvuran.com', 'Tema']
     }
   }
 };
 const VAPPS = ['terminal', 'notes', 'photos', 'finder', 'ask', 'settings'];
-const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : id === 'finder' ? (lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf') : id === 'ask' || id === 'settings' ? url(lang, 'about') : 'mailto:hello@berkayvuran.com';
+const VAPPS2 = ['calculator', 'clock', 'calendar', 'monitor', 'music', 'reminders', 'preview', 'board', 'mines'];
+const vFallback = (id, lang) => id === 'terminal' ? url(lang, 'about') : id === 'notes' ? url(lang, 'blog') : id === 'photos' ? url(lang, 'showcase') : id === 'finder' ? (lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf') : id === 'ask' || id === 'settings' || VAPPS2.includes(id) ? url(lang, 'about') : 'mailto:hello@berkayvuran.com';
 const vIcon = (id, lang, cls = 'icon') => `<a class="${cls} c-${id}" href="${esc(vFallback(id, lang))}" data-vapp="${id}"><span class="tile">${tile(id)}</span><span class="lbl">${esc(APP[lang].names[id])}</span></a>`;
 
 /* ------------------------------------------------------------------ parsers */
@@ -547,11 +558,11 @@ function page(lang, slug) {
   </div>
   ${homeWidgets(lang, blog, builder)}
   </div><div class="pg pg-home">
-  <nav class="icons" aria-label="${esc(u.menuLabel)}">${SLUGS.map(id => iconLink(id, lang)).join('')}${VAPPS.map(id => vIcon(id, lang, 'icon icon-x')).join('')}</nav>
+  <nav class="icons" aria-label="${esc(u.menuLabel)}">${SLUGS.map(id => iconLink(id, lang)).join('')}${VAPPS.map(id => vIcon(id, lang, 'icon icon-x')).join('')}${VAPPS2.map(id => vIcon(id, lang, 'icon icon-x')).join('')}</nav>
   </div></div>
   ${slug ? windowHtml(lang, slug, w) : ''}
 </main>
-<nav class="dock" aria-label="Dock">${['about', 'showcase', 'builder', 'blog'].map(id => iconLink(id, lang)).join('')}${VAPPS.filter(id => id !== 'settings').map(id => vIcon(id, lang, 'icon dk-x')).join('')}<span class="dock-sep" aria-hidden="true"></span>${LINKS.map(l => extLink(l, lang)).join('')}</nav>
+<nav class="dock" aria-label="Dock"><button class="icon c-launchpad dk-x" type="button" data-launchpad aria-haspopup="dialog"><span class="tile">${tile('launchpad')}</span><span class="lbl">${esc(APP[lang].names.launchpad)}</span></button>${['about', 'showcase', 'builder', 'blog'].map(id => iconLink(id, lang)).join('')}${VAPPS.filter(id => id !== 'settings').map(id => vIcon(id, lang, 'icon dk-x')).join('')}<span class="dock-sep" aria-hidden="true"></span>${LINKS.map(l => extLink(l, lang)).join('')}</nav>
 <script src="${BASE}/desk.js?v=${VER}" defer></script>
 <script src="${BASE}/extras.js?v=${VER}" defer></script>
 <script src="${BASE}/ios.js?v=${VER}" defer></script>
@@ -634,7 +645,7 @@ for (const lang of LANGS) {
 function searchIndex(lang) {
   const u = UI[lang], out = [];
   SLUGS.forEach(id => out.push({ t: NAV[lang][id], d: seo(lang, id, WIN[id](lang).meta).description, s: u.goTo, u: url(lang, id), k: 1 }));
-  [...VAPPS, 'mail', 'shortcuts'].forEach(id => out.push({ t: APP[lang].names[id], d: APP[lang].descs[id], s: APP[lang].apps, u: '#' + id, v: id, k: 1 }));
+  [...VAPPS, ...VAPPS2, 'mail', 'shortcuts', 'sysinfo'].forEach(id => out.push({ t: APP[lang].names[id], d: APP[lang].descs[id], s: APP[lang].apps, u: '#' + id, v: id, k: 1 }));
   parseCv(lang).forEach(g => g.items.forEach(it => out.push({ t: it.role + (it.org ? ' @ ' + it.org : ''), d: `${g.title} · ${it.date}`, s: NAV[lang].cv, u: url(lang, 'cv') })));
   parseBlog(lang).forEach(p => out.push({ t: p.title, d: `${p.cat} · ${fmtDate(p.date, lang)}`, s: NAV[lang].blog, u: p.href, e: 1 }));
   parseShowcase(lang).items.forEach(p => out.push({ t: p.title, d: p.catLabel, s: NAV[lang].showcase, u: p.href, e: 1 }));
@@ -658,6 +669,8 @@ write('extras.css', minify('extras.css'));
 write('extras.js', minify('extras.js'));
 write('ios.css', minify('ios.css'));
 write('ios.js', minify('ios.js'));
+write('apps.css', minify('apps.css'));
+write('apps.js', minify('apps.js'));
 if (BASE === '') write('sw.js', fs.readFileSync(new URL('./src/sw.js', import.meta.url), 'utf8').replace('__VER__', VER));
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

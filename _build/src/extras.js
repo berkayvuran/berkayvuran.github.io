@@ -72,7 +72,8 @@
       var c = ctx(); if (c.state === 'suspended') c.resume();
       var m = c.createGain(), f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = T.lp;
       m.gain.setValueAtTime(0, c.currentTime); m.gain.linearRampToValueAtTime(Math.max(0.0001, mlevel()), c.currentTime + 1.5);
-      m.connect(f); f.connect(c.destination); music.g = m; music.cur = i;
+      var an = c.createAnalyser(); an.fftSize = 128; an.smoothingTimeConstant = 0.8;
+      m.connect(f); f.connect(an); an.connect(c.destination); music.g = m; music.cur = i; music.an = an;
       var step = 60 / T.bpm, next = c.currentTime + 0.1, idx = 0;
       function chord() {
         var ch = T.ch[idx++ % T.ch.length], t = next, len = step * 4;
@@ -116,7 +117,7 @@
     if (n === 'default') root.removeAttribute('data-wp'); else root.setAttribute('data-wp', n);
     store.set('wp', n); return true;
   }
-  D.prefs = { music: { tracks: TRACKS.map(function (t) { return t.n; }), cur: function () { return mcur; }, set: setMusic, label: tr0 ? 'Müzik' : 'Music', off: tr0 ? 'Kapalı' : 'Off' }, WALLS: WALLS, wall: wall, setWall: setWall, bright: function () { return bright; }, setBright: setBright, vol: function () { return vol; }, setVol: setVol, blip: function () { blip(520, 820, 0.14); },
+  D.prefs = { music: { tracks: TRACKS.map(function (t) { return t.n; }), cur: function () { return mcur; }, set: setMusic, analyser: function () { return music.cur >= 0 ? music.an : null; }, label: tr0 ? 'Müzik' : 'Music', off: tr0 ? 'Kapalı' : 'Off' }, WALLS: WALLS, wall: wall, setWall: setWall, bright: function () { return bright; }, setBright: setBright, vol: function () { return vol; }, setVol: setVol, blip: function () { blip(520, 820, 0.14); },
     keys: { on: D.keys.on, set: D.keys.set }, motion: { on: function () { return motion; }, set: setMotion }, tsize: { cur: function () { return tsize; }, set: setTsize } };
   var THEME_ALIAS = { dark: 'dark', light: 'light', matrix: 'matrix', zap: 'high-contrast', 'high-contrast': 'high-contrast' };
 
@@ -337,7 +338,7 @@
         menu.appendChild(item(d.ui.mc.title, function () { D.missionControl(); }, { key: 'F3' }));
         menu.appendChild(item(c.lock, function () { showLock(true); }));
         menu.appendChild(item(c.cc, function () { D.cc.open(); }));
-        menu.appendChild(item(c.about, function () { D.go(d.sections[0].u); }));
+        menu.appendChild(item(c.about, function () { D.openVirtual('sysinfo'); }));
         closeAll(api); menu.hidden = false;
         var w = menu.offsetWidth, h = menu.offsetHeight;
         menu.style.left = Math.max(8, Math.min(x, innerWidth - w - 8)) + 'px'; menu.style.top = Math.max(36, Math.min(y, innerHeight - h - 8)) + 'px';
@@ -352,6 +353,42 @@
       else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
       else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); api.close(); }
     });
+  })();
+
+  /* ================= Launchpad: every app in one grid (desktop dock) ================= */
+  (function launchpad() {
+    var btn = document.querySelector('[data-launchpad]'); if (!btn) return;
+    var lp = null, label = btn.querySelector('.lbl').textContent;
+    function items() {
+      var seen = {}, out = [];
+      document.querySelectorAll('.icons a.icon').forEach(function (a) {
+        var slug = a.getAttribute('data-app') || a.getAttribute('data-vapp'); if (!slug || seen[slug]) return; seen[slug] = 1;
+        out.push({ slug: slug, virt: !!a.getAttribute('data-vapp'), href: a.getAttribute('href'), tile: a.querySelector('.tile').innerHTML, cls: (a.className.match(/c-[\w-]+/) || [''])[0], label: a.querySelector('.lbl').textContent });
+      });
+      return out;
+    }
+    function close() { if (!lp) return; var n = lp; lp = null; n.classList.remove('show'); btn.setAttribute('aria-expanded', 'false'); setTimeout(function () { n.remove(); }, 220); }
+    function open() {
+      if (lp) return; closeAll(); D.data().catch(function () {});
+      lp = el('div', 'lp'); lp.setAttribute('role', 'dialog'); lp.setAttribute('aria-label', label);
+      var inp = el('input', 'lp-s'); inp.type = 'search'; inp.placeholder = (lang === 'tr' ? 'Ara' : 'Search'); inp.setAttribute('aria-label', inp.placeholder); lp.appendChild(inp);
+      var grid = el('div', 'lp-grid'); lp.appendChild(grid);
+      items().forEach(function (it) {
+        var a = el('a', 'lp-i ' + it.cls); a.href = it.href; a.setAttribute('data-l', it.label.toLowerCase());
+        a.innerHTML = '<span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" fill="#fff" stroke="none"></svg></span><span class="lbl"></span>';
+        a.querySelector('.tile').innerHTML = it.tile; a.querySelector('.lbl').textContent = it.label;
+        a.addEventListener('click', function (e) { e.preventDefault(); close(); if (it.virt) D.openVirtual(it.slug).catch(function () {}); else D.go(it.href); });
+        grid.appendChild(a);
+      });
+      inp.addEventListener('input', function () { var q = inp.value.trim().toLowerCase(); grid.querySelectorAll('.lp-i').forEach(function (a) { a.hidden = q && a.getAttribute('data-l').indexOf(q) < 0; }); });
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { var f = grid.querySelector('.lp-i:not([hidden])'); if (f) f.click(); } });
+      lp.addEventListener('click', function (e) { if (!e.target.closest('.lp-i, .lp-s')) close(); });
+      body.appendChild(lp); btn.setAttribute('aria-expanded', 'true'); requestAnimationFrame(function () { lp.classList.add('show'); inp.focus({ preventScroll: true }); });
+    }
+    btn.addEventListener('click', function (e) { e.stopPropagation(); if (lp) close(); else open(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lp) { e.preventDefault(); e.stopPropagation(); close(); btn.focus(); } }, true);
+    pops.push({ close: close, isOpen: function () { return !!lp; } });
+    D.launchpad = { open: open, close: close };
   })();
 
   /* ================= dock: magnification + tooltips ================= */
@@ -396,7 +433,8 @@
         return false;
       }
       var CMD = {
-        help: function () { t.help.forEach(function (h) { dd(h[0], h[1]); }); },
+        help: function () { t.help.forEach(function (h) { dd(h[0], h[1]); }); dd('uname -a', lang === 'tr' ? 'çekirdek (henüz yok)' : 'kernel (not yet)'); },
+        uname: function (a) { line(a && a[0] === '-a' ? 'BerkayOS 1.0 sonnet-5.5 web-desktop #1 ' + new Date().toISOString().slice(0, 10) + ' (kernel: ' + (lang === 'tr' ? 'henüz yok' : 'not written yet') + ')' : 'BerkayOS'); },
         about: function () { line(d.about); },
         whoami: function () { line('guest'); },
         experience: function () { d.cv.experience.forEach(function (i) { dd(i.d, i.r + (i.o ? ' @ ' + i.o : '')); }); },
@@ -831,7 +869,7 @@
   };
 
   /* ---------- Mission Control + app switcher ---------- */
-  var TILE_CLASS = { about: 'c-about', cv: 'c-cv', references: 'c-references', showcase: 'c-showcase', blog: 'c-blog', builder: 'c-builder', terminal: 'c-terminal', notes: 'c-notes', photos: 'c-photos', mail: 'c-mail', finder: 'c-finder', ask: 'c-ask', settings: 'c-settings', shortcuts: 'c-settings' };
+  var TILE_CLASS = { about: 'c-about', cv: 'c-cv', references: 'c-references', showcase: 'c-showcase', blog: 'c-blog', builder: 'c-builder', terminal: 'c-terminal', notes: 'c-notes', photos: 'c-photos', mail: 'c-mail', finder: 'c-finder', ask: 'c-ask', settings: 'c-settings', shortcuts: 'c-settings', sysinfo: 'c-settings', calculator: 'c-calculator', clock: 'c-clock', calendar: 'c-calendar', monitor: 'c-monitor', music: 'c-music', reminders: 'c-reminders', preview: 'c-preview', board: 'c-board', mines: 'c-mines' };
   var mcEl = null;
   function closeMC() { if (mcEl) { mcEl.remove(); mcEl = null; } }
   function openMC() {

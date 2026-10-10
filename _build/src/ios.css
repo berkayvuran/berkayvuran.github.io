@@ -37,7 +37,7 @@ body.has-win .ios-foot,body.has-win .dock{display:none}
 .w-contact{order:-1}
 
 /* apps: a plain iOS grid with labels */
-.icons{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 0;margin:0;max-width:none;flex-direction:row}
+.icons{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px 0;margin:0;max-width:none;flex-direction:row}
 .icon,.icon:hover{display:flex;flex-direction:column;align-items:center;width:auto;padding:0;background:none}
 .icon[aria-current="page"],.icon.is-open{background:none}
 .icon .tile{width:60px;height:60px;margin:0 0 6px;border-radius:22.5%;box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 0 0 .5px rgba(255,255,255,.12);transition:transform .12s}

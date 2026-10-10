@@ -467,3 +467,30 @@ html[data-ts="2"] .win-main{zoom:1.25}
 .as-fb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;color:var(--muted)}
 .as-fbb{padding:3px 10px;border:1px solid var(--line);border-radius:99px;background:none;color:inherit;font:inherit;font-size:12.5px;cursor:pointer}
 .as-fbb:hover{background:var(--accent-soft)}
+
+/* ---------- extra apps: tiles ---------- */
+.c-calculator .tile{background:linear-gradient(160deg,#ffb340,#ff9500)}
+.c-clock .tile{background:linear-gradient(160deg,#3a3a3c,#0b0b0c)}
+.c-calendar .tile{background:linear-gradient(160deg,#ff6b5e,#e0261b)}
+.c-monitor .tile{background:linear-gradient(160deg,#34c759,#0b7a34)}
+.c-music .tile{background:linear-gradient(160deg,#ff6b81,#ff2d55)}
+.c-reminders .tile{background:linear-gradient(160deg,#4da3ff,#0a5fe0)}
+.c-preview .tile{background:linear-gradient(160deg,#3fd0e0,#0b8aa6)}
+.c-board .tile{background:linear-gradient(160deg,#ffd60a,#ff9f0a)}
+.c-mines .tile{background:linear-gradient(160deg,#8e8e93,#3a3a3c)}
+.c-launchpad .tile{background:linear-gradient(160deg,#b8b8c0,#5a5a62)}
+.dock button.icon{border:0;background:none;padding:0;color:inherit;font:inherit;cursor:pointer}
+
+/* ---------- Launchpad ---------- */
+.lp{position:fixed;inset:0;z-index:9300;display:flex;flex-direction:column;align-items:center;padding:clamp(36px,8vh,84px) 6vw 120px;background:color-mix(in srgb,var(--bg0) 58%,transparent);-webkit-backdrop-filter:blur(34px) saturate(1.5);backdrop-filter:blur(34px) saturate(1.5);opacity:0;transform:scale(1.04);transition:opacity .22s ease,transform .22s ease;overflow:auto}
+.lp.show{opacity:1;transform:none}
+.lp-s{width:min(280px,80vw);padding:8px 16px;border:1px solid var(--glass-line);border-radius:99px;background:color-mix(in srgb,var(--bg0) 50%,transparent);color:var(--text);font:inherit;font-size:15px;text-align:center;outline:0}
+.lp-s:focus{border-color:var(--accent)}
+.lp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:34px 18px;width:min(940px,100%);margin-top:46px}
+.lp-i{display:flex;flex-direction:column;align-items:center;gap:9px;color:var(--text);text-decoration:none;border-radius:16px;padding:6px 0;transition:transform .15s}
+.lp-i:hover,.lp-i:focus-visible{transform:scale(1.07);outline:0}
+.lp-i .tile{display:grid;place-items:center;width:78px;height:78px;border-radius:18px;box-shadow:0 8px 20px rgba(0,0,0,.28)}
+.lp-i .tile svg{width:44px;height:44px;fill:#fff;stroke:none}
+.lp-i .lbl{font-size:13.5px;font-weight:500;text-align:center}
+.lp-i[hidden]{display:none}
+.cc-tile .tx b{white-space:normal;overflow-wrap:anywhere;line-height:1.2}
