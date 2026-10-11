@@ -39,6 +39,20 @@ const url = (lang, slug = '') => `${BASE}/${lang === 'tr' ? 'tr/' : ''}${slug ? 
 const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
 const isBlank = src => { try { return fs.statSync(path.join(ROOT, src.replace(/^\//, ''))).size < 3000; } catch { return false; } };
 const initials = n => n.split(/\s+/).filter(Boolean).map((w, i, a) => (i === 0 || i === a.length - 1) ? w[0] : '').join('').toUpperCase();
+/* organisation logos (square 128px webp in assets/images/logos); organisations without a logo get a coloured monogram */
+const LOGOS = [[/sestek/i, 'sestek'], [/emlakjet/i, 'emlakjet'], [/superpeer/i, 'superpeer'], [/gcsn|global cyber/i, 'gcsn'], [/miuul/i, 'miuul'], [/navlungo/i, 'navlungo'], [/etiya/i, 'etiya'], [/ministry of health|sağlık bakanlığı/i, 'saglik'], [/radio hacettepe|radyo/i, 'radyo'], [/hacettepe/i, 'hacettepe'], [/anadolu/i, 'anadolu']];
+const logoKey = n => { const m = LOGOS.find(([re]) => re.test(n || '')); return m ? m[1] : ''; };
+const MONO = ['#5E5CE6', '#FF9F0A', '#30B0C7', '#FF375F', '#34C759', '#BF5AF2'];
+const lang0 = 'en';
+const orgTile = (name, cls = '', label = '') => {
+  const k = logoKey(name);
+  if (k) return `<span class="lg ${cls}"><img src="/assets/images/logos/${k}.webp" alt="" width="40" height="40" loading="lazy" decoding="async"></span>`;
+  const h = [...String(name || '?')].reduce((a, c) => a + c.charCodeAt(0), 0);
+  const STOP = new Set(['of', 'in', 'the', 'and', 've', 'ile', 'for', 'at']);
+  const ws = String(name || '?').replace(/\([^)]*\)/g, ' ').replace(/[|&].*$/, ' ').split(/\s+/).filter(w => /^\p{L}/u.test(w) && !STOP.has(w.toLowerCase()));
+  const ini = (ws.length > 1 ? ws[0][0] + ws[1][0] : (ws[0] || '?').slice(0, 1)).toLocaleUpperCase(lang0);
+  return `<span class="lg mono ${cls}${label ? ' lg-t' : ''}" style="--mc:${MONO[h % MONO.length]}" aria-hidden="true">${esc(label || ini)}</span>`;
+};
 const avatarHtml = (name, src, size, cls = '') => (src && !isBlank(src)) ? `<img class="${cls}" src="${esc(src)}" alt="${esc(name)}" width="${size}" height="${size}" loading="lazy">` : `<span class="av-init ${cls}" style="width:${size}px;height:${size}px" role="img" aria-label="${esc(name)}">${esc(initials(name))}</span>`;
 const abs = (lang, slug) => ORIGIN + url(lang, slug);
 
@@ -340,12 +354,20 @@ function winAbout(lang) {
 function winCv(lang) {
   const g = parseCv(lang);
   const pdf = lang === 'tr' ? '/assets/appendices/berkay-vuran-ozgecmis.pdf' : '/assets/appendices/berkay-vuran-resume.pdf';
-  const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: g.reduce((n, x) => n + x.items.length, 0) }, ...g.map(x => ({ id: x.id, label: x.title, count: x.items.length, children: x.items.map((it, i) => ({ id: `cv-${x.id}-${i}`, label: it.role + (it.org ? ' · ' + it.org : '') })) }))], 'experience');
-  const body = `<div class="toolbar"><a class="btn" href="${pdf}" target="_blank" rel="noopener noreferrer">${svg('download')}<span>${esc(UI[lang].download)}</span></a></div>` +
+  const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: g.reduce((n, x) => n + x.items.length, 0) }, ...g.map(x => ({ id: x.id, label: x.title, count: x.items.length, children: x.items.map((it, i) => { const sub = it.org || (x.id === 'education' ? cheerio.load(it.body || '', null, false)('p').first().text().replace(/\s+/g, ' ').trim() : ''); return { id: `cv-${x.id}-${i}`, label: it.role + (sub ? ' · ' + sub : '') }; }) }))], 'experience');
+  const exp = g[0].items, years = exp.map(it => +(String(it.date).match(/\d{4}/) || [0])[0]).filter(Boolean), since = years.length ? Math.min(...years) : '';
+  const orgs = [...new Set(exp.map(it => logoKey(it.org) || it.org).filter(Boolean))];
+  const CVT = lang === 'tr' ? { roles: 'Rol', orgs: 'Kurum', since: 'Başlangıç', now: 'Şimdi' } : { roles: 'Roles', orgs: 'Organizations', since: 'Since', now: 'Now' };
+  const seen = new Set(), logoStrip = exp.filter(it => { const k = logoKey(it.org) || it.org; if (!k || seen.has(k)) return false; seen.add(k); return true; }).map(it => `<span title="${esc(it.org)}">${orgTile(it.org, 'lg-s')}</span>`).join('');
+  const first = exp[0] || { role: '', org: '' };
+  const body = `<div class="cv-hero"><img class="cv-av" src="/assets/images/avatars/my-avatar-160.webp" alt="" width="64" height="64"><div class="cv-id"><b>Berkay Vuran</b><span>${esc(first.role)}${first.org ? ' · ' + esc(first.org) : ''}</span></div>
+    <dl class="cv-stats"><div><dt>${esc(CVT.roles)}</dt><dd>${exp.length}</dd></div><div><dt>${esc(CVT.orgs)}</dt><dd>${orgs.length}</dd></div><div><dt>${esc(CVT.since)}</dt><dd>${since}</dd></div></dl>
+    <a class="btn" href="${pdf}" target="_blank" rel="noopener noreferrer">${svg('download')}<span>${esc(UI[lang].download)}</span></a></div>
+    <div class="cv-logos" data-group="experience" aria-label="${esc(CVT.orgs)}">${logoStrip}</div>` +
     g.map(grp => `<section class="group" id="${grp.id}" data-group="${grp.id}" aria-labelledby="${grp.id}-h">
       <h2 class="group-h" id="${grp.id}-h">${esc(grp.title)} <span class="muted">${grp.items.length} ${esc(UI[lang].items)}</span></h2>
       <div class="rows">${grp.items.map((it, i) => `<details class="row" id="cv-${grp.id}-${i}"${grp.id === 'experience' && i === 0 ? ' open' : ''}>
-        <summary>${svg(grp.id === 'experience' ? 'file' : 'file', 'ri')}<span class="rt"><b>${esc(it.role)}</b>${it.org ? `<span class="org">${esc(it.org)}</span>` : ''}</span><span class="rd">${esc(it.date)}</span></summary>
+        <summary>${grp.id === 'publications' ? `<span class="lg doc" aria-hidden="true">${svg('file')}</span>` : grp.id === 'test-scores' ? orgTile(it.role, '', it.role.replace(/\s.*$/, '').slice(0, 5)) : orgTile(grp.id === 'experience' ? it.org : (it.org || it.role))}<span class="rt"><b>${esc(it.role)}${grp.id === 'experience' && /present|günümüz/i.test(it.date) ? `<i class="now-b">${esc(CVT.now)}</i>` : ''}</b>${(() => { const sub = it.org || (grp.id === 'education' ? cheerio.load(it.body || '', null, false)('p').first().text().replace(/\s+/g, ' ').trim() : ''); return sub ? `<span class="org">${esc(sub)}</span>` : ''; })()}</span><span class="rd">${esc(it.date)}</span></summary>
         <div class="row-body">${it.body}</div></details>`).join('')}</div></section>`).join('');
   return { side, body, meta: { groups: g } };
 }
@@ -356,7 +378,7 @@ function winRefs(lang) {
   const side = sidebar(lang, [{ id: 'all', label: UI[lang].all, count: total }, ...groups.map(g => ({ id: g.id, label: g.label, count: g.items.length, children: g.items.map((it, i) => ({ id: `ref-${g.id}-${i}`, label: it.name })) }))], 'all');
   const cards = groups.flatMap(g => g.items.map((it, i) => ({ ...it, g, n: i })));
   const body = `<ul class="people" role="list">${cards.map(it => `<li class="person" id="ref-${it.g.id}-${it.n}" data-cat="${it.g.id}"><details>
-      <summary>${avatarHtml(it.name, it.avatar, 56)}<span class="pn"><b>${esc(it.name)}</b><span>${esc(it.role)}</span><em>${esc(it.g.label)}</em></span></summary>
+      <summary><span class="pa">${avatarHtml(it.name, it.avatar, 56)}${orgTile(it.g.label, 'lg-xs')}</span><span class="pn"><b>${esc(it.name)}</b><span>${esc(it.role)}</span><em>${esc(it.g.label)}</em></span></summary>
       <div class="quote">${it.html}</div></details></li>`).join('')}</ul>`;
   return { side, body, meta: { total, groups } };
 }
@@ -474,7 +496,7 @@ function homeWidgets(lang, blog, builder) {
   return `<aside class="widgets" aria-label="Highlights"><div class="wcol">
       <section class="widget w-contact"><h2>${esc(u.contact)}</h2>${contactCard(lang)}</section>
       <a class="widget w-builder" href="${url(lang, 'builder')}" data-app="builder"><span class="w-badge">Product Builder</span><b>${builder.cards.length} ${esc(u.liveProducts)} →</b><span>${esc(u.productsSub)}</span></a>
-      <a class="widget w-now" href="${url(lang, 'cv')}" data-app="cv"><h2>${esc(u.now)}</h2><b>${esc(cv.role)}</b><span>${esc(cv.org)}${cv.date ? ' · ' + esc(cv.date) : ''}</span><em>${esc(u.viewCv)} →</em></a>
+      <a class="widget w-now" href="${url(lang, 'cv')}" data-app="cv">${orgTile(cv.org, 'lg-w')}<h2>${esc(u.now)}</h2><b>${esc(cv.role)}</b><span>${esc(cv.org)}${cv.date ? ' · ' + esc(cv.date) : ''}</span><em>${esc(u.viewCv)} →</em></a>
       <section class="widget w-posts"><h2>${esc(u.latest)}</h2><ul role="list">${blog.slice(0, 3).map(p => `<li><a href="${esc(p.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(p.title)}</b><time datetime="${esc(p.date)}">${esc(fmtDate(p.date, lang))}</time></a></li>`).join('')}</ul></section>
 </div><div class="wcol">
       <div class="widget w-stats"><h2>${esc(u.glance)}</h2><ul role="list">

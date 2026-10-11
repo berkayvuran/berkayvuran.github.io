@@ -494,3 +494,41 @@ html[data-ts="2"] .win-main{zoom:1.25}
 .lp-i .lbl{font-size:13.5px;font-weight:500;text-align:center}
 .lp-i[hidden]{display:none}
 .cc-tile .tx b{white-space:normal;overflow-wrap:anywhere;line-height:1.2}
+
+/* ---------- organisation logos, CV hero ---------- */
+.lg{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:#fff;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.28),inset 0 0 0 1px rgba(0,0,0,.07)}
+.lg img{width:100%;height:100%;object-fit:contain;display:block}
+.lg.mono{background:linear-gradient(150deg,var(--mc),color-mix(in srgb,var(--mc) 55%,#000));color:#fff;font-weight:700;font-size:16px;letter-spacing:.4px}
+.lg-s{width:38px;height:38px;border-radius:11px}
+.lg-s.mono{font-size:13px}
+.lg-xs{position:absolute;right:-7px;bottom:-5px;width:26px;height:26px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.lg-xs.mono{font-size:10px}
+.pa{position:relative;flex:none;display:block}
+.lg-w{position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:12px}
+.w-now{position:relative}
+.cv-hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 18px;margin-bottom:12px;border-radius:18px;background:linear-gradient(135deg,var(--accent-soft),var(--win2));border:1px solid var(--line)}
+.cv-av{width:64px;height:64px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--accent),0 6px 16px rgba(0,0,0,.25)}
+.cv-id{display:flex;flex-direction:column;min-width:150px;flex:1}
+.cv-id b{font-size:19px;letter-spacing:-.2px}
+.cv-id span{font-size:13px;color:var(--muted);margin-top:2px}
+.cv-stats{display:flex;gap:6px}
+.cv-stats div{padding:6px 14px;border-radius:12px;background:var(--win2);border:1px solid var(--line);text-align:center;min-width:76px}
+.cv-stats dt{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.cv-stats dd{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;margin:0}
+.cv-hero .btn{margin-left:auto}
+.cv-logos{display:flex;flex-wrap:wrap;gap:10px;margin:0 2px 22px}
+.cv-logos .lg{transition:transform .15s}
+.cv-logos .lg:hover{transform:translateY(-3px) scale(1.06)}
+.row summary{gap:14px;padding:12px 16px}
+.row summary .lg{transition:transform .2s}
+.row summary:hover .lg{transform:scale(1.07) rotate(-2deg)}
+.rt b{font-weight:600;font-size:15px;display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.now-b{font-style:normal;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#30d158;background:rgba(48,209,88,.15);padding:2px 8px;border-radius:99px}
+.rd{padding:3px 10px;border-radius:99px;background:var(--win2);border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.row-body{padding:4px 20px 18px 76px}
+.row[open]{background:linear-gradient(180deg,var(--accent-soft),transparent 60%)}
+@media (max-width:700px){.cv-hero .btn{margin-left:0}.cv-stats{width:100%}.cv-stats div{flex:1;min-width:0;padding:6px 6px}.cv-stats dt{font-size:9.5px;letter-spacing:.2px}.row-body{padding:4px 14px 16px 14px}.lg{width:42px;height:42px}}
+@media (min-width:1100px) and (hover:hover){.window .group-h{display:flex;align-items:baseline}}
+.lg-t{font-size:11px!important;letter-spacing:0}
+.lg.doc{background:linear-gradient(150deg,var(--accent),var(--accent2));color:#fff}.lg.doc svg{width:22px;height:22px;stroke:#fff;fill:none}
+.w-now b{padding-right:52px}
