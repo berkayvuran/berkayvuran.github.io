@@ -24,14 +24,30 @@ jobs:
         run: pip install feedparser
 
       - name: Run sync script
-        run: python scripts/sync_medium.py
+        id: sync
+        run: |
+          python scripts/sync_medium.py
+          if git diff --quiet -- pages/blog.html; then echo "changed=false" >> "$GITHUB_OUTPUT"; else echo "changed=true" >> "$GITHUB_OUTPUT"; fi
 
-      - name: Commit and push if changed
+      # Yeni yazı masaüstüne, Notlar'a, aramaya, Ask'e ve sitemap'e ancak build ile düşer
+      - name: Set up Node
+        if: steps.sync.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build site
+        if: steps.sync.outputs.changed == 'true'
+        working-directory: _build
+        run: |
+          npm ci
+          node build.mjs --base= --out=.. --index=true
+
+      - name: Commit and push
+        if: steps.sync.outputs.changed == 'true'
         run: |
           git config user.name "medium-sync[bot]"
           git config user.email "medium-sync@users.noreply.github.com"
-          git diff --quiet || (
-            git add pages/blog.html &&
-            git commit -m "sync: Medium'dan yeni makale eklendi" &&
-            git push
-          )
+          git add -A
+          git commit -m "sync: Medium'dan yeni makale eklendi"
+          git push
