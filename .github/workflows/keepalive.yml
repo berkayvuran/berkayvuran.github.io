@@ -1,0 +1,24 @@
+name: Keep-Alive
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # Her gün saat 09:00 UTC
+  workflow_dispatch:      # Manuel tetikleme
+
+jobs:
+  # GitHub scheduled workflows disable themselves on inactive repos.
+  # This job commits a tiny file to keep the repo "active".
+  touch-repo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update keepalive timestamp
+        run: |
+          echo "Last keepalive: $(date -u)" > .github/keepalive.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/keepalive.txt
+          git diff --cached --quiet || git commit -m "chore: keepalive $(date -u +%Y-%m-%d)"
+          git push
