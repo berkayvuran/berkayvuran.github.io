@@ -6,6 +6,7 @@ Yeni makaleleri tespit eder ve pages/blog.html'in başına ekler.
 
 import re
 import sys
+import urllib.request
 from datetime import datetime
 from html.parser import HTMLParser
 
@@ -15,6 +16,9 @@ MEDIUM_RSS = "https://medium.com/feed/@berkayvuran"
 BLOG_HTML = "pages/blog.html"
 MEDIUM_LOGO = "../assets/images/blog-headers/medium-logo.webp"
 INSERT_AFTER = '<ul class="blog-posts-list">'
+COVER_DIR = "assets/images/blog-headers"
+# Medium'un görsel sunucusu kapağı diğer başlık görselleriyle aynı boyutta (1120x630) webp olarak kırpar
+COVER_URL = "https://miro.medium.com/v2/resize:fill:1120:630/format:webp/{}"
 
 MONTH_MAP = {
     1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr",
@@ -72,12 +76,48 @@ def format_dates(entry):
     return iso, display
 
 
+def extract_cover_id(entry):
+    """Yazıdaki ilk Medium görselinin kimliğini döner (ör. 1*abc.png); görsel yoksa None."""
+    content = entry.get("content") or [{}]
+    html = content[0].get("value", "") or entry.get("summary", "")
+    for src in re.findall(r'<img[^>]+src="([^"]+)"', html):
+        # Sondaki 1x1 istatistik pikseli (medium.com/_/stat) görsel değil
+        if "cdn-images-1.medium.com" in src or "miro.medium.com" in src:
+            return src.rstrip("/").split("/")[-1]
+    return None
+
+
+def download_cover(entry, post_url):
+    """Kapak görselini indirip blog.html'deki yolunu döner; indirilemezse uyarı basar ve Medium logosunu kullanır."""
+    image_id = extract_cover_id(entry)
+    if not image_id:
+        return MEDIUM_LOGO
+    post_id = post_url.split("?")[0].rstrip("/").split("-")[-1]
+    file_name = f"medium-{post_id}.webp"
+    req = urllib.request.Request(COVER_URL.format(image_id), headers={"User-Agent": "berkayvuran.com medium-sync"})
+    # "::warning::" satırları GitHub Actions çalışmasının özetinde uyarı olarak görünür
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            content_type = resp.headers.get_content_type()
+            data = resp.read()
+    except OSError as err:
+        print(f"::warning::Kapak indirilemedi, Medium logosu kullanıldı: {post_url} ({err})")
+        return MEDIUM_LOGO
+    if content_type != "image/webp":
+        print(f"::warning::Kapak webp değil ({content_type}), Medium logosu kullanıldı: {post_url}")
+        return MEDIUM_LOGO
+    with open(f"{COVER_DIR}/{file_name}", "wb") as f:
+        f.write(data)
+    return f"../{COVER_DIR}/{file_name}"
+
+
 def build_html_block(entry):
     url = entry.get("link", "").strip()
     title = entry.get("title", "").strip()
     category = extract_category(entry)
     summary = extract_summary(entry)
     iso_date, display_date = format_dates(entry)
+    cover = download_cover(entry, url)
 
     # Başlıktaki tek tırnakları escape et
     safe_title = title.replace("'", "&#39;")
@@ -88,7 +128,7 @@ def build_html_block(entry):
                 target="_blank" rel="noopener noreferrer">
 
                 <figure class="blog-banner-box">
-                  <img loading="eager" decoding="async" src="{MEDIUM_LOGO}" fetchpriority="high" width="800" height="400"
+                  <img loading="eager" decoding="async" src="{cover}" fetchpriority="high" width="800" height="400"
                     alt="'{safe_title}'">
                 </figure>
 
