@@ -179,6 +179,13 @@ a{color:inherit;text-decoration:none}
 .sl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sc{margin-left:auto;font-size:12px;opacity:.65}
 .win-main{overflow:auto;padding:22px 26px 36px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+/* a page of the site shown in a window (opened by link) fills the window */
+.win-page .win-main{padding:0;overflow:hidden;display:flex}
+.win-page iframe{flex:1;width:100%;min-height:0;border:0;background:#fff}
+@media (max-width:1099px),(min-width:1100px) and (hover:none){
+  .win-page .back span{display:none}
+  .win-page .titlebar h1{padding:0 48px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
 .muted{color:var(--muted);font-weight:400}
 
 /* shared bits */
@@ -283,6 +290,8 @@ a{color:inherit;text-decoration:none}
   .window{top:52px;bottom:104px;left:0;right:0;width:min(980px,calc(100vw - 80px));margin-inline:auto;max-width:none}
   .window.is-max{top:var(--bar)!important;bottom:0!important;left:0!important;right:0!important;max-width:none;width:auto!important;height:auto!important;margin:0!important;border-radius:0}
   .window.is-moved{margin:0;max-width:none}
+  /* a page opened by link gets most of the screen and still leaves the dock free */
+  .win-page:not(.is-max):not(.is-moved){top:calc(var(--bar) + 12px);left:24px;right:24px;width:auto;margin:0}
 }
 
 @media (min-width:1360px) and (hover:hover){

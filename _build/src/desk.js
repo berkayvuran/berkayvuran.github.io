@@ -138,6 +138,8 @@
     });
   }
   function setUrl(slug, push) {
+    var own = slug && wins[slug] && wins[slug].getAttribute('data-path');
+    if (own) { if (location.pathname + location.search !== own) { try { history.replaceState(null, '', own); } catch (e) {} } return; }
     if (isVirtual(slug)) return;
     var href = urlOf(slug);
     if (location.pathname !== href) { try { history[push === false ? 'replaceState' : 'pushState']({ w: 1 }, '', href); if (push !== false) document.dispatchEvent(new CustomEvent('desk:nav', { detail: { path: href } })); } catch (e) {} }
@@ -284,15 +286,19 @@
     });
     return lazyP;
   }
+  function virtualFrame(slug, ui) {
+    var w = document.createElement('section');
+    w.className = 'window no-side win-virt win-' + slug; w.setAttribute('data-slug', slug); w.setAttribute('data-virtual', '1'); w.setAttribute('aria-labelledby', 'win-title-' + slug);
+    w.innerHTML = '<header class="titlebar"><a class="back" href="' + home + '"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg><span>' + ui.back + '</span></a><div class="dots"><a class="dot r" href="' + home + '" aria-label="' + ui.close + '"></a><button class="dot y" type="button" aria-label="' + ui.min + '"></button><button class="dot g" type="button" aria-label="' + ui.zoom + '"></button></div><h1 id="win-title-' + slug + '"></h1></header><div class="win-body"><div class="win-main"></div></div>';
+    return w;
+  }
   function openVirtual(slug) {
     var def = Desk.apps[slug];
     if (!def && LAZY.indexOf(slug) > -1) return loadApps().then(function () { return openVirtual(slug); });
     if (!def) return Promise.reject(new Error('no app'));
     if (wins[slug]) { focusWin(slug, false); return Promise.resolve(); }
     return Promise.resolve(Desk.data()).then(function (data) {
-      var ui = data.ui, w = document.createElement('section');
-      w.className = 'window no-side win-virt win-' + slug; w.setAttribute('data-slug', slug); w.setAttribute('data-virtual', '1'); w.setAttribute('aria-labelledby', 'win-title-' + slug);
-      w.innerHTML = '<header class="titlebar"><a class="back" href="' + home + '"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg><span>' + ui.back + '</span></a><div class="dots"><a class="dot r" href="' + home + '" aria-label="' + ui.close + '"></a><button class="dot y" type="button" aria-label="' + ui.min + '"></button><button class="dot g" type="button" aria-label="' + ui.zoom + '"></button></div><h1 id="win-title-' + slug + '"></h1></header><div class="win-body"><div class="win-main"></div></div>';
+      var ui = data.ui, w = virtualFrame(slug, ui);
       w.querySelector('h1').textContent = ui.names[slug];
       if (!wide.matches) Object.keys(wins).forEach(function (k) { wins[k].remove(); delete wins[k]; });
       def.build(w.querySelector('.win-main'), data, w);
@@ -301,6 +307,41 @@
     });
   }
   Desk.openVirtual = openVirtual;
+  /* a page of this site in a window, for pages that open only by a link like /#open=/some/page/;
+     nothing on the desktop points to them; the address bar shows the page's own address while it is open
+     and the plain site address once it is closed */
+  function openPage(path) {
+    var u;
+    try { u = new URL(path, location.href); } catch (e) { return Promise.reject(e); }
+    if (u.origin !== location.origin || !/^\/[^/]/.test(u.pathname) || slugOf(u.href) !== null) return Promise.reject(new Error('not a page'));
+    if (wins.page) closeWin('page');
+    return Promise.resolve(Desk.data()).then(function (data) {
+      var w = virtualFrame('page', data.ui), fr = document.createElement('iframe');
+      w.setAttribute('data-path', u.pathname + u.search);
+      fr.src = u.pathname + u.search;
+      fr.setAttribute('allow', 'clipboard-read; clipboard-write; web-share');
+      fr.addEventListener('load', function () {
+        // the window takes the page's short name (application-name) and the tab its full title
+        var doc = null; try { doc = fr.contentDocument; } catch (e) {}
+        if (!doc || !doc.title) return;
+        var short = doc.querySelector('meta[name="application-name"]'), name = (short && short.content) || doc.title;
+        w.querySelector('h1').textContent = name; fr.title = name;
+        if (active === 'page') { document.title = doc.title; chrome(); }
+      });
+      w.querySelector('.win-main').appendChild(fr);
+      if (!wide.matches) Object.keys(wins).forEach(function (k) { wins[k].remove(); delete wins[k]; });
+      mount(w, 'page', false);
+    });
+  }
+  document.addEventListener('desk:close', function (e) {
+    if (!e.detail || e.detail.slug !== 'page') return;
+    setTimeout(function () { if (location.pathname === home && !location.search) { try { history.replaceState(null, '', '/'); } catch (er) {} } }, 0);
+  });
+  function openFromLink() {
+    var m = /^#open=(.+)$/.exec(location.hash);
+    if (m) openPage(decodeURIComponent(m[1])).catch(function () {});
+  }
+  window.addEventListener('hashchange', openFromLink);
   function openApp(slug, push) {
     if (wins[slug]) { focusWin(slug, push); return Promise.resolve(); }
     return fetchDoc(urlOf(slug)).then(function (doc) {
@@ -326,7 +367,7 @@
     if (o.mx) w.classList.add('is-max');
   }
   Desk.restore = function () {
-    if (!wide.matches || Desk.restoring) return;
+    if (!wide.matches || Desk.restoring || /^#open=/.test(location.hash)) return;
     var st = null; try { st = JSON.parse(localStorage.getItem('deskState') || 'null'); } catch (e) {}
     if (!st || !st.w || Date.now() - st.t > 7 * 864e5) return;
     var target = active || st.a, todo = st.w.filter(function (o) { return !wins[o.s]; }).sort(function (a, b) { return a.z - b.z; }).slice(0, 8);
@@ -533,4 +574,5 @@
   document.querySelectorAll('.window[data-slug]').forEach(function (w) { register(w.getAttribute('data-slug'), w); active = w.getAttribute('data-slug'); w.style.zIndex = ++zTop; });
   chrome();
   typewriter(); randomQuote(); randomCerts();
+  document.addEventListener('DOMContentLoaded', openFromLink);
 })();
