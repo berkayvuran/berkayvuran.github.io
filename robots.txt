@@ -1,4 +1,5 @@
 User-agent: *
 Disallow: /dashboard-parameters/
+Disallow: /ales/
 
 Sitemap: https://berkayvuran.com/sitemap.xml

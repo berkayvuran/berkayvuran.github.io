@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<title>ALES Profil</title>
+<style>
+@font-face { font-family: Poppins; font-weight: 400; src: url(/assets/fonts/poppins-400.woff2) format('woff2'); font-display: swap; }
+@font-face { font-family: Poppins; font-weight: 600; src: url(/assets/fonts/poppins-600.woff2) format('woff2'); font-display: swap; }
+:root {
+  color-scheme: light;
+  --bg: #f4f3f0; --surface-1: #fcfcfb; --border: #e3e1dc;
+  --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #77756f;
+  --series-1: #2a78d6; --grid: #ebe9e4; --track: #ecebe7;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111110; --surface-1: #1a1a19; --border: #2c2b29;
+    --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #96958c;
+    --series-1: #3987e5; --grid: #262624; --track: #262624;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111110; --surface-1: #1a1a19; --border: #2c2b29;
+  --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #96958c;
+  --series-1: #3987e5; --grid: #262624; --track: #262624;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text-primary); font: 15px/1.5 Poppins, system-ui, sans-serif; }
+main { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 22px; font-weight: 600; margin: 0; }
+h2 { font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+.sub { color: var(--text-secondary); font-size: 13px; margin: 2px 0 20px; }
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.tile .k { color: var(--text-secondary); font-size: 12px; }
+.tile .v { font-size: 26px; font-weight: 600; line-height: 1.2; margin-top: 4px; }
+.tile .d { color: var(--text-muted); font-size: 12px; }
+ul { margin: 0; padding-left: 18px; } li { margin: 4px 0; }
+.weak { border-top: 1px solid var(--border); padding: 10px 0; } .weak:first-child { border-top: 0; padding-top: 0; }
+.weak b { display: block; } .weak .ev, .muted { color: var(--text-secondary); font-size: 13px; }
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: minmax(110px, 38%) 1fr 70px; gap: 10px; align-items: center; font-size: 13px; }
+.bar-row .lbl { color: var(--text-secondary); overflow-wrap: anywhere; }
+.bar-row .val { color: var(--text-primary); text-align: right; font-variant-numeric: tabular-nums; }
+.track { height: 16px; background: var(--track); border-radius: 0 4px 4px 0; position: relative; }
+.fill { height: 100%; background: var(--series-1); border-radius: 0 4px 4px 0; min-width: 2px; }
+.track.empty { background: repeating-linear-gradient(45deg, var(--track) 0 4px, transparent 4px 8px); }
+svg text { fill: var(--text-muted); font: 11px Poppins, system-ui, sans-serif; }
+.tip { position: fixed; pointer-events: none; background: var(--text-primary); color: var(--surface-1); font-size: 12px; padding: 6px 8px; border-radius: 6px; opacity: 0; transition: opacity .1s; z-index: 9; max-width: 240px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 7px 6px; border-top: 1px solid var(--border); vertical-align: top; }
+th { color: var(--text-secondary); font-weight: 600; border-top: 0; }
+.lock { text-align: center; padding: 80px 16px; color: var(--text-secondary); }
+.tag { display: inline-block; font-size: 11px; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 999px; padding: 0 8px; margin-left: 6px; }
+.scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main id="app"><div class="lock">Yükleniyor...</div></main>
+<div class="tip" id="tip"></div>
+<script>
+(async () => {
+  const app = document.getElementById('app');
+  const lock = msg => { app.innerHTML = ''; const d = el('div', 'lock', msg); app.append(d); };
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const pct = r => r == null ? '–' : Math.round(r * 100) + '%';
+  const m = location.hash.match(/k=([A-Za-z0-9_-]{43})/);
+  if (!m) return lock('Bu sayfa yalnız özel bağlantıyla açılır.');
+  let data;
+  try {
+    const raw = Uint8Array.from(atob(m[1].replace(/-/g, '+').replace(/_/g, '/') + '='), c => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
+    const res = await fetch('veri.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return lock('Henüz yayınlanmış veri yok.');
+    const box = await res.json();
+    const b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(box.iv) }, key, b(box.ct));
+    data = JSON.parse(new TextDecoder().decode(plain));
+  } catch (e) { return lock('Bağlantı geçersiz ya da veri okunamadı.'); }
+  render(data);
+
+  function render(d) {
+    app.innerHTML = '';
+    app.append(el('h1', null, 'ALES Sözel Profil'));
+    const when = new Date(d.uretildi);
+    app.append(el('p', 'sub', 'Son güncelleme: ' + when.toLocaleString('tr-TR', { dateStyle: 'medium', timeStyle: 'short' }) + ' · saatte bir yenilenir'));
+    if (!d.toplam_soru) { app.append(card('Henüz kayıt yok', [el('p', 'muted', 'İlk soruyu çözdürdüğünde profil burada oluşur.')])); return; }
+
+    const tiles = el('div', 'tiles');
+    const tile = (k, v, s) => { const t = el('div', 'tile'); t.append(el('div', 'k', k), el('div', 'v', v), el('div', 'd', s)); tiles.append(t); };
+    tile('Çözülen soru', d.toplam_soru, d.isaretli.n + ' tanesinde senin cevabın var');
+    tile('Senin doğruluğun', pct(d.isaretli.oran), d.isaretli.dogru + ' / ' + d.isaretli.n + ' doğru');
+    tile('Olumsuz kökte', pct(d.olumsuz_kok.oran), 'olumlu kökte ' + pct(d.olumlu_kok.oran));
+    tile('İtirazlar', d.itiraz.n, d.itiraz.korundu + ' korundu, ' + d.itiraz.degisti + ' değişti');
+    app.append(tiles);
+
+    const k = d.koc;
+    if (k) {
+      const kids = [el('p', null, k.ozet)];
+      if (k.veri_uyarisi) kids.push(el('p', 'muted', 'Not: ' + k.veri_uyarisi));
+      app.append(card('Koç yorumu', kids));
+      if (k.zayif && k.zayif.length) {
+        const box = el('div');
+        k.zayif.forEach(z => { const w = el('div', 'weak'); w.append(el('b', null, z.baslik), el('div', 'ev', z.kanit), el('div', null, 'Öneri: ' + z.oneri)); box.append(w); });
+        app.append(card('Eksik yönler', [box]));
+      }
+      const list = arr => { const u = el('ul'); (arr || []).forEach(x => u.append(el('li', null, x))); return u; };
+      if (k.dusunme_kaliplari && k.dusunme_kaliplari.length) app.append(card('Düşünme kalıpların', [list(k.dusunme_kaliplari)]));
+      if (k.guclu && k.guclu.length) app.append(card('Güçlü yönler', [list(k.guclu)]));
+      if (k.siradaki_calisma && k.siradaki_calisma.length) app.append(card('Sıradaki çalışma', [list(k.siradaki_calisma)]));
+    }
+
+    const typeBars = el('div', 'bars');
+    d.turler.forEach(t => typeBars.append(barRow(t.ad || t.tur, t.oran, t.n ? t.dogru + '/' + t.n : '–',
+      (t.ad || t.tur) + ': ' + t.soru + ' soru, ' + (t.n ? t.dogru + '/' + t.n + ' doğru (' + pct(t.oran) + ')' : 'işaretli soru yok'), 1)));
+    app.append(card('Soru türüne göre doğruluğun', [typeBars, el('p', 'muted', 'Taralı çubuk: o türde senin işaretlediğin soru yok.')]));
+
+    if (d.gunler.length > 1) app.append(card('Günlük doğruluk', [lineChart(d.gunler)]));
+
+    if (d.hata_turleri.length) {
+      const max = Math.max(...d.hata_turleri.map(h => h.adet));
+      const hb = el('div', 'bars');
+      d.hata_turleri.forEach(h => hb.append(barRow(h.ad || h.kod, h.adet / max, String(h.adet), (h.ad || h.kod) + ': ' + h.adet + ' yanlış', 0)));
+      app.append(card('Hata türleri', [hb]));
+    }
+
+    if (d.son_yanlislar.length) {
+      const wrap = el('div', 'scroll'), tb = el('table');
+      const hr = el('tr'); ['Soru', 'Tür', 'Sen', 'Doğru', 'Hata'].forEach(h => hr.append(el('th', null, h))); tb.append(hr);
+      d.son_yanlislar.forEach(r => {
+        const tr = el('tr');
+        const c = el('td', null, r.ozet); if (r.gerekce) c.append(el('div', 'muted', 'Gerekçen: ' + r.gerekce));
+        tr.append(c, el('td', null, r.tur_ad || r.tur), el('td', null, r.isaret), el('td', null, r.cevap), el('td', null, r.hata_ad || r.hata_turu || '–'));
+        tb.append(tr);
+      });
+      wrap.append(tb); app.append(card('Son yanlışların', [wrap]));
+    }
+  }
+
+  function card(title, kids) { const c = el('section', 'card'); c.append(el('h2', null, title), ...kids); return c; }
+
+  function barRow(label, ratio, valText, tipText, isRate) {
+    const r = el('div', 'bar-row'), tr = el('div', 'track' + (ratio == null ? ' empty' : ''));
+    if (ratio != null) { const f = el('div', 'fill'); f.style.width = Math.max(ratio * 100, 0.5) + '%'; tr.append(f); }
+    r.append(el('div', 'lbl', label), tr, el('div', 'val', isRate && ratio != null ? pct(ratio) + ' · ' + valText : valText));
+    hover(r, () => tipText); return r;
+  }
+
+  function lineChart(days) {
+    const pts = days.filter(g => g.n > 0);
+    const W = Math.max(300, app.clientWidth - 34), H = 190, L = 36, R = 12, T = 12, B = 26, ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.style.width = '100%';
+    const x = i => L + (pts.length < 2 ? (W - L - R) / 2 : i * (W - L - R) / (pts.length - 1));
+    const y = v => T + (1 - v) * (H - T - B);
+    const mk = (tag, a) => { const e = document.createElementNS(ns, tag); for (const k in a) e.setAttribute(k, a[k]); svg.append(e); return e; };
+    [0, .5, 1].forEach(v => { mk('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: 'var(--grid)' }); mk('text', { x: L - 6, y: y(v) + 4, 'text-anchor': 'end' }).textContent = Math.round(v * 100) + '%'; });
+    if (!pts.length) return el('p', 'muted', 'İşaretli soru olan gün yok.');
+    mk('path', { d: pts.map((p, i) => (i ? 'L' : 'M') + x(i) + ' ' + y(p.oran)).join(' '), fill: 'none', stroke: 'var(--series-1)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    pts.forEach((p, i) => {
+      if (i === 0 || i === pts.length - 1 || pts.length <= 8) mk('text', { x: x(i), y: H - 8, 'text-anchor': 'middle' }).textContent = p.gun.slice(5);
+      mk('circle', { cx: x(i), cy: y(p.oran), r: 4, fill: 'var(--series-1)', stroke: 'var(--surface-1)', 'stroke-width': 2 });
+      const hit = mk('rect', { x: x(i) - 14, y: T, width: 28, height: H - T - B, fill: 'transparent' });
+      hover(hit, () => p.gun + ': ' + p.dogru + '/' + p.n + ' doğru (' + pct(p.oran) + '), toplam ' + p.soru + ' soru');
+    });
+    return svg;
+  }
+
+  function hover(node, text) {
+    const tip = document.getElementById('tip');
+    const show = e => { tip.textContent = text(); tip.style.opacity = 1; const p = e.touches ? e.touches[0] : e; tip.style.left = Math.min(p.clientX + 12, innerWidth - 250) + 'px'; tip.style.top = (p.clientY + 12) + 'px'; };
+    node.addEventListener('mousemove', show); node.addEventListener('touchstart', show, { passive: true });
+    node.addEventListener('mouseleave', () => tip.style.opacity = 0); node.addEventListener('touchend', () => setTimeout(() => tip.style.opacity = 0, 1500));
+  }
+})();
+</script>
+</body>
+</html>
