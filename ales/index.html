@@ -89,7 +89,7 @@ th { color: var(--text-secondary); font-weight: 600; border-top: 0; }
     app.innerHTML = '';
     app.append(el('h1', null, 'ALES Sözel Profil'));
     const when = new Date(d.uretildi);
-    app.append(el('p', 'sub', 'Son güncelleme: ' + when.toLocaleString('tr-TR', { dateStyle: 'medium', timeStyle: 'short' }) + ' · saatte bir yenilenir'));
+    app.append(el('p', 'sub', 'Son güncelleme: ' + when.toLocaleString('tr-TR', { dateStyle: 'medium', timeStyle: 'short' }) + ' · 10 dakikada bir yenilenir'));
     if (!d.toplam_soru) { app.append(card('Henüz kayıt yok', [el('p', 'muted', 'İlk soruyu çözdürdüğünde profil burada oluşur.')])); return; }
 
     const tiles = el('div', 'tiles');
