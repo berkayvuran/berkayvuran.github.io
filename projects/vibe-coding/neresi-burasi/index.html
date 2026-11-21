@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tahmin oyunu</title>
+  <meta name="description" content="En fazla 15 kişilik online odalarda oynanan bir tahmin oyunu: fotoğrafa bak, Türkiye haritasında yerini işaretle, en yakın tahmin kazansın.">
+  <meta name="theme-color" content="#2a6f97">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+  <link rel="stylesheet" href="assets/fonts/inter.css">
+  <link rel="stylesheet" href="vendor/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="decor" class="decor" aria-hidden="true"></canvas>
+
+  <main id="app">
+
+    <!-- Home -->
+    <section id="screen-home" class="screen home" aria-labelledby="home-title">
+      <div class="card postcard home-card">
+        <div class="airmail" aria-hidden="true"></div>
+        <div class="brand-row">
+          <span class="kicker">Ekipçe tahmin oyunu · 1-15 kişi</span>
+          <span class="stamp" aria-hidden="true"><img src="assets/favicon.svg" alt="" width="40" height="40"></span>
+        </div>
+        <h1 id="home-title" class="title">Tahmin oyunu</h1>
+        <p id="home-lead" class="lead"></p>
+
+        <label class="label" for="in-name">Adın</label>
+        <input id="in-name" class="input" type="text" maxlength="16" autocomplete="nickname" spellcheck="false" placeholder="Ekip seni nasıl görsün?">
+
+        <div class="look-wrap">
+          <span id="look-preview" class="avatar xl" aria-hidden="true"></span>
+          <div class="look">
+            <div class="look-row"><span class="label">Kim</span><div id="look-body" class="body-pick" role="radiogroup" aria-label="Görünüm"><button type="button" role="radio" data-body="0">Kadın</button><button type="button" role="radio" data-body="1">Erkek</button></div></div>
+            <div class="look-row"><span class="label">Ten</span><div id="look-skin" class="swatches" role="radiogroup" aria-label="Ten rengi"></div></div>
+            <div class="look-row"><span class="label">Saç</span><div id="look-hair" class="swatches" role="radiogroup" aria-label="Saç rengi"></div></div>
+            <div class="look-row"><span class="label">Tişört</span><div id="look-shirt" class="swatches" role="radiogroup" aria-label="Tişört rengi"></div></div>
+          </div>
+        </div>
+        <div id="career" class="career">
+          <div><b id="career-level">Seviye 1</b><span id="career-title"></span></div>
+          <span class="bar xp" aria-hidden="true"><i id="career-bar"></i></span>
+          <small id="career-xp"></small>
+        </div>
+
+        <div id="invite" class="invite" hidden>
+          <p class="invite-text">Bir oyuna davet edildin: <b id="invite-code"></b></p>
+        </div>
+        <button id="btn-create" class="btn primary block" type="button">Yeni oda kur</button>
+        <form id="join-form" class="join" autocomplete="off">
+          <label class="label" for="in-code" id="join-label">Ya da bir odaya katıl</label>
+          <div class="join-row">
+            <input id="in-code" class="input code-input" type="text" maxlength="5" autocapitalize="characters" spellcheck="false" placeholder="KOD">
+            <button id="btn-join" class="btn" type="submit">Katıl</button>
+          </div>
+        </form>
+        <button id="btn-create-alt" class="btn ghost block" type="button" hidden>Kendi odamı kurmak istiyorum</button>
+        <p id="home-msg" class="msg" role="status" aria-live="polite"></p>
+
+        <details class="howto">
+          <summary>Nasıl oynanır?</summary>
+          <ol id="howto-list"></ol>
+        </details>
+      </div>
+    </section>
+
+    <!-- Lobby -->
+    <section id="screen-lobby" class="screen lobby" aria-labelledby="lobby-title" hidden>
+      <div class="card postcard lobby-card">
+        <div class="airmail" aria-hidden="true"></div>
+        <div class="lobby-top">
+          <div>
+            <h1 id="lobby-title" class="title h-title">Oyun odası</h1>
+            <p class="muted small">Kodu ya da linki ekibe gönder. En fazla 15 kişi.</p>
+          </div>
+          <div class="code-box">
+            <span class="muted small">Oda kodu</span>
+            <strong id="lobby-code" class="code">-----</strong>
+          </div>
+        </div>
+        <button id="btn-copy" class="btn block" type="button">Davet linkini kopyala</button>
+        <p id="lobby-net" class="msg warn" role="status" hidden></p>
+
+        <div class="section-head">
+          <h2 id="team-title">Oyuncular</h2>
+          <span id="lobby-count" class="count">0/15</span>
+        </div>
+        <ul id="lobby-players" class="seats" aria-labelledby="team-title"></ul>
+        <div id="bot-controls" class="row">
+          <button class="btn small" type="button" data-bot="rookie">+ Çaylak bot</button>
+          <button class="btn small" type="button" data-bot="pro">+ Usta bot</button>
+        </div>
+
+        <div class="settings">
+          <div class="setting">
+            <span class="label">Tur</span>
+            <p id="set-rounds" class="static">5 tur, her turda bir fotoğraf</p>
+          </div>
+          <div class="setting">
+            <span id="lbl-time" class="label">Tur süresi</span>
+            <div id="set-time" class="seg" role="radiogroup" aria-labelledby="lbl-time"></div>
+          </div>
+        </div>
+        <button id="btn-start" class="btn primary block big" type="button">Oyunu başlat</button>
+        <p id="lobby-wait" class="waiting" hidden>Oda sahibinin oyunu başlatması bekleniyor…</p>
+        <button id="btn-leave" class="btn ghost block" type="button">Odadan çık</button>
+      </div>
+    </section>
+
+    <!-- Game: guess (photo, inset map) and reveal (big map, results) -->
+    <section id="screen-game" class="screen game" data-phase="guess" aria-label="Oyun" hidden>
+      <div id="stage" class="stage">
+        <img id="photo-bg" class="photo-bg" alt="" aria-hidden="true">
+        <img id="photo" class="photo" alt="Tahmin edilecek fotoğraf" draggable="false">
+        <p id="photo-wait" class="photo-wait" role="status">Fotoğraf yükleniyor…</p>
+        <span class="zoom-hint" aria-hidden="true">Yakınlaştırmak için fotoğrafa tıkla</span>
+      </div>
+
+      <header class="hud">
+        <span id="hud-round" class="pill round">Tur 1/5</span>
+        <p id="hud-question" class="question"></p>
+        <span id="hud-timer" class="pill timer" role="timer">0:00</span>
+        <button id="btn-mute" class="icon-btn" type="button" aria-pressed="false" title="Ses">🔊</button>
+        <button id="btn-quit" class="icon-btn" type="button" title="Odadan çık" aria-label="Odadan çık">✕</button>
+      </header>
+
+      <ul id="chips" class="chips" aria-label="Oyuncular"></ul>
+
+      <div id="mapbox" class="mapbox">
+        <div class="map-wrap">
+          <div id="map" class="map" aria-label="Türkiye haritası"></div>
+          <span id="map-hover" class="map-hover" hidden></span>
+          <button id="btn-map-size" class="map-size" type="button" aria-pressed="false" title="Haritayı büyüt">⤢</button>
+        </div>
+        <div class="guess-bar">
+          <span id="guess-info" class="guess-info" role="status"></span>
+          <button id="btn-guess" class="btn primary" type="button" disabled>Tahmin et</button>
+        </div>
+      </div>
+
+      <aside id="reveal" class="card reveal" aria-labelledby="rv-title" hidden>
+        <div class="rv-head"><span id="rv-round" class="pill round"></span><span id="rv-mine" class="rv-mine"></span></div>
+        <h2 id="rv-title" class="title"></h2>
+        <p class="rv-place"><span id="rv-label"></span>: <b id="rv-province"></b></p>
+        <p id="rv-desc" class="rv-desc"></p>
+        <figure class="rv-photo">
+          <img id="rv-img" alt="">
+          <figcaption id="rv-credit" class="rv-credit"></figcaption>
+        </figure>
+        <div class="section-head"><h3>Bu turun sonuçları</h3></div>
+        <ol id="rv-results" class="results"></ol>
+        <div class="rv-next">
+          <span id="rv-count" class="muted small"></span>
+          <button id="btn-next" class="btn primary" type="button">Sonraki tur</button>
+        </div>
+      </aside>
+    </section>
+
+  </main>
+
+  <div id="end" class="overlay" role="dialog" aria-modal="true" aria-labelledby="end-title" hidden>
+    <div class="card postcard end-card">
+      <div class="airmail" aria-hidden="true"></div>
+      <h2 id="end-title" class="title"></h2>
+      <p id="end-sub" class="muted"></p>
+      <div id="podium" class="podium"></div>
+      <h3 class="end-h">Sıralama</h3>
+      <ol id="end-rank" class="rank"></ol>
+      <p id="end-xp" class="end-xp"></p>
+      <div class="row end-actions">
+        <button id="btn-again" class="btn primary" type="button">Tekrar oyna</button>
+        <button id="btn-home" class="btn ghost" type="button">Ana sayfa</button>
+      </div>
+      <p id="end-wait" class="waiting" hidden>Oda sahibi yeni oyunu başlatacak.</p>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script src="vendor/peerjs.min.js"></script>
+  <script src="vendor/leaflet.js"></script>
+  <script src="game/config.js"></script>
+  <script src="sim.js"></script>
+  <script src="net.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
