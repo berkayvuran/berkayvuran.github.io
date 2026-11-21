@@ -15,10 +15,23 @@
   const HOST_TIMEOUT = 15000;  // a guest gives up on a silent host after this
   const TIME_LABELS = { 120: '2 dk', 180: '3 dk', 300: '5 dk' };
   const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  const TR_CREDIT = 'İl sınırları: <a href="https://www.geoboundaries.org/" target="_blank" rel="noopener">geoBoundaries</a>';
   const KEY = 'tg.' + GAME.id + '.';   // client id and career are per game; name and look are shared by the games of this site
   const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
-  // ?sure=12 shortens the rounds of a room opened on this machine, for testing only.
+  // ?sure=12 shortens the rounds of a room or a solo game opened on this machine, for testing only.
   const debugRoundTime = LOCAL ? Math.max(0, Math.min(600, Math.round(Number(new URLSearchParams(location.search).get('sure')) || 0))) : 0;
+  const DIR_NAMES = { K: 'kuzey', KD: 'kuzeydoğu', D: 'doğu', GD: 'güneydoğu', G: 'güney', GB: 'güneybatı', B: 'batı', KB: 'kuzeybatı' };
+  const DIR_DEG = { K: 0, KD: 45, D: 90, GD: 135, G: 180, GB: 225, B: 270, KB: 315 };
+  const SOLO_BOTS = 3;
+  const BOT_CHOICES = [['none', 'Yok'], ['rookie', '3 çaylak'], ['pro', '3 usta']];
+  // One line for the reveal per photo kind; kinds missing here (the dishes) stay silent.
+  const FLAVOUR = {
+    coast: 'Deniz kokusu aldın mı?',
+    nature: 'Burada sözü doğa alıyor.',
+    monument: 'Bu taşların anlatacak çok hikayesi var.',
+    city: 'Şehrin uğultusu fotoğraftan taşıyor.',
+    village: 'Köy sabahı, taze ekmek kokusu.'
+  };
 
   const $ = sel => document.querySelector(sel);
   function el(tag, cls, text) {
@@ -36,6 +49,9 @@
   function save(kind, key, value) {
     try { window[kind].setItem(key, value); } catch { return false; }
     return true;
+  }
+  function loadJson(key) {
+    try { const v = JSON.parse(load('localStorage', key) || 'null'); return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch { return {}; }
   }
 
   function randomCode(n) {
@@ -60,18 +76,54 @@
     for (const k of Object.keys(look)) { const v = Number(saved && saved[k]); if (Number.isInteger(v) && v >= 0 && v < (k === 'body' ? 2 : HK.LOOK_RANGE)) look[k] = v; }
   } catch { /* unreadable saved look: keep the defaults */ }
 
+  /* Photo pools (Türkiye, Dünya) come from GAME.pools; the top-level GAME fields are the defaults of a missing key.
+   * Photo URLs are <dir>/<file>, dir being the manifest's folder unless the pool names one. */
+  function normPool(p) {
+    const manifest = typeof p.manifest === 'string' && p.manifest ? p.manifest : 'game/manifest.json';
+    const bounds = p.bounds || HK.BOUNDS;
+    const geojson = p.geojson || 'vendor/tr-provinces.json';
+    return {
+      id: String(p.id || 'tr'), label: p.label || 'Türkiye', manifest,
+      dir: typeof p.dir === 'string' ? p.dir : manifest.replace(/\/?[^/]*$/, ''),
+      geojson, nameProp: p.nameProp || 'name', regionLabel: p.regionLabel || 'İl',
+      attribution: typeof p.attribution === 'string' ? p.attribution : geojson === 'vendor/tr-provinces.json' ? TR_CREDIT : '',
+      bounds, minZoom: Number(p.minZoom) > 0 ? Number(p.minZoom) : (bounds.lngMax - bounds.lngMin > 90 ? 1 : 4),
+      scoreScaleKm: Number(p.scoreScaleKm) > 0 ? Number(p.scoreScaleKm) : GAME.scoreScaleKm,
+      provinceBonus: p.provinceBonus != null ? p.provinceBonus : GAME.provinceBonus,
+      botSigma: p.botSigma || null, question: p.question || GAME.question, revealLabel: p.revealLabel || GAME.revealLabel
+    };
+  }
+  const POOLS = (Array.isArray(GAME.pools) && GAME.pools.length ? GAME.pools : [{}]).map(normPool);
+  const poolOf = id => POOLS.find(p => p.id === id) || POOLS[0];
+  const DECOR_POOL = poolOf('tr');   // the home atlas is drawn from the Türkiye provinces
+  const poolOpts = pool => ({ pool: pool.id, bounds: pool.bounds, scoreScaleKm: pool.scoreScaleKm, provinceBonus: pool.provinceBonus, botSigma: pool.botSigma, regionLabel: pool.regionLabel });
+
   /* Career: experience points gathered over games, stored in this browser only (one point per 100 game points). */
   const TITLES = ['Çaylak', 'Meraklı', 'Gezgin', 'Kaşif', 'Uzman', 'Usta', 'Efsane'];
   const career = { xp: Math.max(0, Number(load('localStorage', KEY + 'xp')) || 0) };
   const levelOf = xp => Math.min(TITLES.length, 1 + Math.floor(Math.sqrt(xp / 120)));
   const xpForLevel = lvl => (lvl - 1) * (lvl - 1) * 120;
+  /** Career points of a finished game: score / 100, ten per streak round in Seri, none in Keşif. */
+  const xpFor = (mode, score) => (mode.scoring === 'none' ? 0 : mode.scoring === 'streak' ? score * 10 : Math.round(score / 100));
+  const dailyKey = poolId => KEY + 'daily.' + poolId;     // { "20261121": { score, rounds: [{ points, km }] } }
+  const streakKey = poolId => KEY + 'streak.' + poolId;   // best Seri length
+  const bestStreak = poolId => Math.max(0, Number(load('localStorage', streakKey(poolId))) || 0);
+  /** Today's date on this computer as YYYYMMDD (Günün Oyunu follows the player's calendar). */
+  function today() {
+    const d = new Date();
+    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  }
+  const fmtDay = day => { const s = String(day); return s.slice(6, 8) + '.' + s.slice(4, 6) + '.' + s.slice(0, 4); };
 
   const S = {
-    role: null, link: null, room: null, myId: null, view: null,
+    role: null, link: null, room: null, myId: null, view: null, solo: false,
     conns: new Map(), seen: new Map(), dirty: false, lastSend: 0, stopTicker: null, timers: [],
-    seenNotice: 0, lastState: 0, endKey: '', offline: false, reconnecting: false,
-    items: null, pin: null, roundKey: '', sentKey: '', revealKey: '', myMarker: null, myMarkerSig: '', lastSec: -1, lastXp: 0, promo: '', hover: '', hl: ''
+    seenNotice: 0, lastState: 0, endKey: '', offline: false, reconnecting: false, poolBusy: false,
+    pin: null, roundKey: '', tryKey: '', sentKey: '', revealKey: '', myMarker: null, myMarkerSig: '', lastSec: -1, lastXp: 0, promo: '', hover: '', hl: '',
+    record: false, best: 0, replay: false
   };
+  const savedPool = load('localStorage', KEY + 'pool');
+  const solo = { pool: poolOf(savedPool).id, mode: null, bots: 'none', time: 180 };
 
   /* ------------------------------------------------------------ sound */
   const audio = {
@@ -101,6 +153,7 @@
     start() { [440, 554, 659].forEach((f, i) => audio.tone(f, 0.16, { at: i * 0.09, gain: 0.05, type: 'triangle' })); },
     pin() { audio.tone(660, 0.08, { gain: 0.05, type: 'triangle' }); },
     ok() { [523, 659, 784].forEach((f, i) => audio.tone(f, 0.14, { at: i * 0.07, gain: 0.06, type: 'triangle' })); },
+    miss() { audio.tone(330, 0.16, { gain: 0.05, type: 'triangle', to: 262 }); audio.tone(247, 0.2, { at: 0.12, gain: 0.04, type: 'triangle' }); },
     tick() { audio.tone(1200, 0.05, { gain: 0.03, type: 'square' }); },
     gong() { audio.tone(196, 0.9, { gain: 0.07, type: 'triangle', to: 180 }); audio.tone(392, 0.6, { gain: 0.03 }); },
     fanfare() { [523, 659, 784, 1047].forEach((f, i) => audio.tone(f, 0.25, { at: i * 0.12, gain: 0.06, type: 'triangle' })); }
@@ -150,8 +203,19 @@
     const pickWords = words.length > 1 ? [words[0], words[words.length - 1]] : words;
     return pickWords.map(w => w[0]).join('').toLocaleUpperCase('tr-TR').slice(0, 2) || '?';
   }
-  /** Only plain relative paths inside game/ are loaded; anything else from a snapshot is ignored. */
-  const gameUrl = file => (typeof file === 'string' && /^[A-Za-z0-9_\-./]+$/.test(file) && !file.includes('..') && !file.startsWith('/') ? 'game/' + file : '');
+  /** Only plain relative paths inside the pool's folder are loaded; anything else from a snapshot is ignored. */
+  const gameUrl = (file, pool) => (typeof file === 'string' && /^[A-Za-z0-9_\-./]+$/.test(file) && !file.includes('..') && !file.startsWith('/') ? (pool.dir ? pool.dir + '/' : '') + file : '');
+  const modeOf = v => HK.MODES[v && v.mode] || HK.MODES.klasik;
+  const modeLabel = (m, pool) => HK.modeText(m.label, pool.regionLabel);
+  const modeDesc = (m, pool) => HK.modeText(m.desc, pool.regionLabel);
+  const viewPool = v => poolOf(v ? v.pool : solo.pool);
+  /** "ilk denemede", "2. denemede ×0,7", "3 deneme, ıska ×0,5" for a reveal pin. */
+  function triesText(pin, mode) {
+    const n = pin.attempts || 1;
+    const mult = HK.ATTEMPT_MULT[Math.min(n, HK.ATTEMPT_MULT.length) - 1];
+    const text = pin.hit ? (n === 1 ? 'ilk denemede' : `${n}. denemede`) : `${n} deneme, ıska`;
+    return text + (mult < 1 && !['streak', 'none'].includes(mode.scoring) ? ' ×' + String(mult).replace('.', ',') : '');
+  }
 
   /* ------------------------------------------------------------ avatars and colours */
   function palette(kind, i) {
@@ -185,6 +249,24 @@
     return a;
   }
 
+  /* ------------------------------------------------------------ QR code of the invite link (vendor/qrcode.min.js) */
+  const inviteUrl = code => location.origin + location.pathname + '?oda=' + code;
+  const qrCache = new Map();
+  function setQr(img, text) {
+    if (img.dataset.qr === text) return;
+    img.dataset.qr = text;
+    let url = qrCache.get(text) || '';
+    if (!url && text && typeof window.qrcode === 'function') {
+      const qr = window.qrcode(0, 'M');
+      qr.addData(text);
+      qr.make();
+      url = qr.createDataURL(6, 2);
+      qrCache.set(text, url);
+    }
+    img.hidden = !url;
+    if (url) img.src = url;
+  }
+
   /* ------------------------------------------------------------ screens */
   function show(name) {
     const was = ['home', 'lobby', 'game'].find(k => !$('#screen-' + k).hidden);
@@ -196,7 +278,7 @@
   }
 
   function setBusy(busy) {
-    for (const b of [$('#btn-create'), $('#btn-join')]) b.disabled = busy;
+    for (const b of [$('#btn-create'), $('#btn-join'), $('#btn-solo-start'), ...document.querySelectorAll('#solo-modes button')]) b.disabled = busy;
   }
 
   function leave(reason) {
@@ -204,22 +286,29 @@
     if (S.stopTicker) S.stopTicker();
     S.timers.forEach(clearInterval);
     const link = S.link;
-    Object.assign(S, { role: null, link: null, room: null, myId: null, view: null, conns: new Map(), seen: new Map(), dirty: false, stopTicker: null, timers: [], seenNotice: 0, endKey: '', offline: false, reconnecting: false, pin: null, roundKey: '', sentKey: '', revealKey: '', lastSec: -1 });
+    Object.assign(S, { role: null, link: null, room: null, myId: null, view: null, solo: false, conns: new Map(), seen: new Map(), dirty: false, stopTicker: null, timers: [], seenNotice: 0, endKey: '', offline: false, reconnecting: false, poolBusy: false, pin: null, roundKey: '', tryKey: '', sentKey: '', revealKey: '', lastSec: -1 });
     if (link) setTimeout(() => link.close(), 150);
     clearMapLayers();
     $('#end').hidden = true;
     document.body.classList.remove('in-game');
     show('home');
+    renderSolo();
     setBusy(false);
     homeMsg(reason || '', reason ? 'error' : '');
     history.replaceState(null, '', location.pathname);
   }
 
-  /* ------------------------------------------------------------ provinces (GeoJSON) */
-  const geo = { raw: null, features: null, loading: null };
-  function loadGeo() {
+  /* ------------------------------------------------------------ regions (GeoJSON per pool) */
+  const geos = new Map();   // pool id -> { raw, features, loading }
+  function geoOf(pool) {
+    let g = geos.get(pool.id);
+    if (!g) { g = { raw: null, features: null, loading: null }; geos.set(pool.id, g); }
+    return g;
+  }
+  function loadGeo(pool) {
+    const geo = geoOf(pool);
     if (!geo.loading) {
-      geo.loading = fetch('vendor/tr-provinces.json')
+      geo.loading = fetch(pool.geojson)
         .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(data => {
           geo.raw = data;
@@ -228,15 +317,15 @@
             const polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
             const bbox = [Infinity, Infinity, -Infinity, -Infinity];
             for (const poly of polys) for (const [x, y] of poly[0]) { bbox[0] = Math.min(bbox[0], x); bbox[1] = Math.min(bbox[1], y); bbox[2] = Math.max(bbox[2], x); bbox[3] = Math.max(bbox[3], y); }
-            return { name: String((f.properties && f.properties.name) || ''), polys, bbox };
+            return { name: String((f.properties && f.properties[pool.nameProp]) || ''), polys, bbox };
           });
-          addProvinceLayer();
-          drawDecor();
+          syncRegionLayer();
+          if (pool === DECOR_POOL) drawDecor();
           return true;
         })
         .catch(err => {
           geo.loading = null;
-          toast('İl sınırları yüklenemedi: ' + err.message, 'warn');
+          toast(`${pool.regionLabel} sınırları yüklenemedi: ${err.message}`, 'warn');
           return false;
         });
     }
@@ -255,10 +344,11 @@
     return inside;
   }
   const inPolygon = (poly, x, y) => inRing(poly[0], x, y) && !poly.slice(1).some(hole => inRing(hole, x, y));
-  /** The province under a point, '' at sea, abroad or before the GeoJSON has loaded. */
-  function provinceAt(lat, lng) {
-    if (!geo.features || !Number.isFinite(lat) || !Number.isFinite(lng)) return '';
-    for (const f of geo.features) {
+  /** The province (or country) under a point in a pool, '' at sea, outside or before its GeoJSON has loaded. */
+  function provinceAt(lat, lng, poolId) {
+    const features = geoOf(poolOf(poolId)).features;
+    if (!features || !Number.isFinite(lat) || !Number.isFinite(lng)) return '';
+    for (const f of features) {
       const b = f.bbox;
       if (lng < b[0] || lng > b[2] || lat < b[1] || lat > b[3]) continue;
       if (f.polys.some(poly => inPolygon(poly, lng, lat))) return f.name;
@@ -270,7 +360,8 @@
   const ATLAS = ['#f1d9b5', '#d9e4c6', '#f4e3a6', '#cfe1ea', '#efcfc3', '#e4d8ea'];
   function drawDecor() {
     const cv = $('#decor');
-    if (!cv || !geo.features || document.body.classList.contains('in-game')) return;
+    const features = geoOf(DECOR_POOL).features;
+    if (!cv || !features || document.body.classList.contains('in-game')) return;
     const w = window.innerWidth;
     const h = window.innerHeight;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -291,7 +382,7 @@
     const oy = box.y + (box.h - (N0 - 35.8) * scale) / 2;
     const P = (x, y) => [ox + (x - W0) * k * scale, oy + (N0 - y) * scale];
     ctx.lineJoin = 'round';
-    geo.features.forEach((f, i) => {
+    features.forEach((f, i) => {
       ctx.beginPath();
       for (const poly of f.polys) for (const ring of poly) ring.forEach(([x, y], j) => { const [px, py] = P(x, y); if (j) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
       ctx.fillStyle = ATLAS[i % ATLAS.length];
@@ -325,25 +416,33 @@
   let map = null;
   let mapTouched = false;
   let myLayer = null;
+  let triesLayer = null;
   let revealLayer = null;
   let provLayer = null;
+  let provPool = '';
+  let mapPool = '';
   const provByName = new Map();
   const PROV_STYLE = { color: '#2a6f97', weight: 0.7, opacity: 0.4, fill: false };
   const PROV_HL = { color: '#b5482a', weight: 1.8, opacity: 0.9, fill: true, fillColor: '#b5482a', fillOpacity: 0.1 };
-  const playBounds = () => L.latLngBounds([HK.BOUNDS.latMin, HK.BOUNDS.lngMin], [HK.BOUNDS.latMax, HK.BOUNDS.lngMax]);
+  const activePool = () => viewPool(S.view);
+  const playBounds = () => { const b = activePool().bounds; return L.latLngBounds([b.latMin, b.lngMin], [b.latMax, b.lngMax]); };
 
   function ensureMap() {
     if (map || typeof L === 'undefined') return;
+    const pool = activePool();
     map = L.map($('#map'), {
-      minZoom: 4, maxZoom: 13, maxBounds: playBounds(), maxBoundsViscosity: 1, zoomSnap: 0.25, zoomDelta: 0.5,
+      minZoom: pool.minZoom, maxZoom: 13, maxBounds: playBounds(), maxBoundsViscosity: 1, zoomSnap: 0.25, zoomDelta: 0.5,
       wheelPxPerZoomLevel: 80, worldCopyJump: false, boxZoom: false
     });
+    mapPool = pool.id;
     map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
     L.tileLayer(TILE_URL, {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> katkıcıları · İl sınırları: <a href="https://www.geoboundaries.org/" target="_blank" rel="noopener">geoBoundaries</a>'
+      maxZoom: 19, noWrap: true,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> katkıcıları'
     }).addTo(map);
+    if (pool.attribution) map.attributionControl.addAttribution(pool.attribution);
     myLayer = L.layerGroup().addTo(map);
+    triesLayer = L.layerGroup().addTo(map);
     revealLayer = L.layerGroup().addTo(map);
     map.fitBounds(playBounds(), { animate: false });
     map.on('click', onMapClick);
@@ -351,12 +450,12 @@
     map.on('mousemove', e => {
       if (hoverQueued) { hoverQueued = e.latlng; return; }
       hoverQueued = e.latlng;
-      requestAnimationFrame(() => { const ll = hoverQueued; hoverQueued = null; setHover(provinceAt(ll.lat, ll.lng)); });
+      requestAnimationFrame(() => { const ll = hoverQueued; hoverQueued = null; setHover(provinceAt(ll.lat, ll.lng, activePool().id)); });
     });
     map.on('mouseout', () => setHover(''));
-    addProvinceLayer();
+    syncRegionLayer();
     // The inset grows on hover; Leaflet must learn its new size or clicks land on the wrong spot. Until the player
-    // zooms or pans on purpose, every resize re-fits Turkey, otherwise the big map shows half the Middle East.
+    // zooms or pans on purpose, every resize re-fits the play area, otherwise the big map shows half the Middle East.
     const touched = () => { mapTouched = true; };
     map.getContainer().addEventListener('wheel', touched, { passive: true });
     map.getContainer().addEventListener('dblclick', touched);
@@ -368,12 +467,32 @@
       if (!mapTouched && S.view && S.view.phase === 'guess') map.fitBounds(playBounds(), { animate: false });
     });
   }
-  function addProvinceLayer() {
-    if (!map || provLayer || !geo.raw) return;
+  /** A room or solo game on another pool: new bounds, zoom floor and region layer. */
+  function syncMapPool() {
+    if (!map) return;
+    const pool = activePool();
+    if (mapPool !== pool.id) {
+      const was = poolOf(mapPool);
+      if (was.attribution) map.attributionControl.removeAttribution(was.attribution);
+      if (pool.attribution) map.attributionControl.addAttribution(pool.attribution);
+      mapPool = pool.id;
+      map.setMinZoom(pool.minZoom);
+      map.setMaxBounds(playBounds());
+      map.fitBounds(playBounds(), { animate: false });
+    }
+    syncRegionLayer();
+  }
+  function syncRegionLayer() {
+    if (!map) return;
+    const pool = activePool();
+    if (provLayer && provPool === pool.id) return;
+    if (provLayer) { provLayer.remove(); provLayer = null; provPool = ''; provByName.clear(); S.hl = ''; }
+    const geo = geoOf(pool);
+    if (!geo.raw) { loadGeo(pool); return; }
+    provPool = pool.id;
     provLayer = L.geoJSON(geo.raw, { renderer: L.canvas({ padding: 0.3 }), interactive: false, style: () => Object.assign({}, PROV_STYLE) });
-    provLayer.eachLayer(layer => provByName.set(layer.feature.properties.name, layer));
+    provLayer.eachLayer(layer => provByName.set(String(layer.feature.properties[pool.nameProp] || ''), layer));
     provLayer.addTo(map);
-    S.hl = '';
     paintHighlight();
   }
   function highlightProvince(name) {
@@ -387,7 +506,7 @@
   function paintHighlight() {
     const v = S.view;
     if (!v) { highlightProvince(''); return; }
-    if (v.phase === 'guess') highlightProvince(S.hover || (v.mine ? v.mine.province : S.pin ? S.pin.province : ''));
+    if (v.phase === 'guess') highlightProvince(S.hover || (S.pin ? S.pin.province : v.mine && v.mine.done ? v.mine.province : ''));
     else highlightProvince(v.reveal ? findProvince(v.reveal.item.province) : '');
   }
   function findProvince(name) {
@@ -414,16 +533,25 @@
   }
   function clearMapLayers() {
     if (myLayer) myLayer.clearLayers();
+    if (triesLayer) triesLayer.clearLayers();
     if (revealLayer) revealLayer.clearLayers();
     S.myMarker = null;
     S.myMarkerSig = '';
     if (map) setHover('');
   }
+  /** The player's own earlier attempts: faint dots joined by a dotted line, in the order they were placed. */
+  function drawTrail(layer, attempts, upTo) {
+    const color = colorOf((me(S.view) || {}).look);
+    const pts = attempts.map(t => [t.lat, t.lng]);
+    if (pts.length > 1) L.polyline(pts, { color, weight: 2, opacity: 0.55, dashArray: '2 6', interactive: false }).addTo(layer);
+    attempts.slice(0, upTo).forEach(t => L.circleMarker([t.lat, t.lng], { radius: 6, color, weight: 2, opacity: 0.7, fillColor: color, fillOpacity: 0.25, interactive: false }).addTo(layer));
+  }
   function placePin(lat, lng) {
     const v = S.view;
-    if (!v || v.phase !== 'guess' || v.mine) return false;
-    if (!HK.inBounds(lat, lng)) { toast('Bu nokta oyun alanının dışında. Türkiye üzerinde bir yer seç.', 'warn'); return false; }
-    S.pin = { lat, lng, province: provinceAt(lat, lng) };
+    if (!v || v.phase !== 'guess' || (v.mine && v.mine.done) || isPresenter(v) || S.sentKey === S.tryKey) return false;
+    const pool = activePool();
+    if (!HK.inBounds(lat, lng, pool.bounds)) { toast('Bu nokta oyun alanının dışında. Haritanın içinde bir yer seç.', 'warn'); return false; }
+    S.pin = { lat, lng, province: provinceAt(lat, lng, pool.id) };
     audio.pin();
     renderGuess(v);
     return true;
@@ -478,8 +606,8 @@
     applyZoom();
   }
   function resetZoom() { zoom.s = 1; zoom.x = 0; zoom.y = 0; applyZoom(); }
-  function setPhoto(file) {
-    const url = gameUrl(file);
+  function setPhoto(file, pool) {
+    const url = gameUrl(file, pool);
     const stage = $('#stage');
     const img = $('#photo');
     resetZoom();
@@ -539,6 +667,8 @@
 
   const isLive = pid => pid === S.myId || [...S.conns.values()].includes(pid);
   const inGame = phase => phase === 'guess' || phase === 'reveal';
+  // The host's province (or country) lookup for every guess, in the room's current pool.
+  const hostLookup = (lat, lng, poolId) => provinceAt(lat, lng, poolId);
 
   function hostDrop(connId) {
     const pid = S.conns.get(connId);
@@ -587,7 +717,7 @@
     }
   }
 
-  /** Each player gets a snapshot of their own: before the reveal it holds only their own pin. */
+  /** Each player gets a snapshot of their own: before the reveal it holds only their own pin. A solo game sends nothing. */
   function publish(toGuests) {
     if (toGuests && S.link) {
       S.lastSend = performance.now();
@@ -622,24 +752,26 @@
     });
   }
 
-  async function loadManifest() {
-    if (S.items) return S.items;
-    const res = await fetch('game/manifest.json', { cache: 'no-cache' });
+  const manifests = new Map();   // pool id -> items
+  async function loadManifest(pool) {
+    if (manifests.has(pool.id)) return manifests.get(pool.id);
+    const res = await fetch(pool.manifest, { cache: 'no-cache' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const items = (data && Array.isArray(data.items) ? data.items : []).filter(it => it && typeof it.file === 'string' && Number.isFinite(it.lat) && Number.isFinite(it.lng));
     if (!items.length) throw new Error('liste boş');
-    S.items = items;
+    manifests.set(pool.id, items);
     return items;
   }
 
   async function hostStart() {
     if (!checkName()) return;
+    const pool = POOLS[0];
     setBusy(true);
     homeMsg('Fotoğraflar hazırlanıyor…');
     let items;
     try {
-      [items] = await Promise.all([loadManifest(), loadGeo()]);
+      [items] = await Promise.all([loadManifest(pool), loadGeo(pool)]);
     } catch (err) {
       setBusy(false);
       homeMsg(`Fotoğraf listesi yüklenemedi (${err.message}). Sayfayı yenileyip tekrar dene.`, 'error');
@@ -667,9 +799,8 @@
     S.myId = cid;
     S.link = link;
     S.offline = !link;
-    S.room = HK.createRoom(link ? code : '', cid, crypto.getRandomValues(new Uint32Array(1))[0] | 0, items, {
-      scoreScaleKm: GAME.scoreScaleKm, provinceBonus: GAME.provinceBonus, provinceAt: (lat, lng) => provinceAt(lat, lng), debugRoundTime
-    });
+    S.room = HK.createRoom(link ? code : '', cid, crypto.getRandomValues(new Uint32Array(1))[0] | 0, items,
+      Object.assign(poolOpts(pool), { provinceAt: hostLookup, debugRoundTime }));
     HK.addPlayer(S.room, { id: cid, name: profile.name, emoji: profile.emoji, look: Object.assign({}, look) });
     const net = $('#lobby-net');
     net.hidden = !!link;
@@ -678,6 +809,68 @@
     startHostLoop();
     homeMsg('');
     setBusy(false);
+    publish(true);
+  }
+
+  /** The host picks another pool in the lobby: its photos and borders load first, then everyone switches. */
+  async function choosePool(id) {
+    const pool = poolOf(id);
+    if (S.role !== 'host' || !S.room || S.room.phase !== 'lobby' || S.poolBusy) return;
+    if (!S.room.pools[pool.id]) {
+      S.poolBusy = true;
+      if (S.view) renderLobby(S.view);
+      try {
+        const [items] = await Promise.all([loadManifest(pool), loadGeo(pool)]);
+        if (!S.room) return;
+        HK.addPool(S.room, pool.id, items, poolOpts(pool));
+      } catch (err) {
+        toast(`${pool.label} fotoğrafları yüklenemedi (${err.message}).`, 'warn');
+        return;
+      } finally {
+        S.poolBusy = false;
+      }
+    }
+    intent({ t: 'settings', pool: pool.id });
+  }
+
+  /* ------------------------------------------------------------ solo: the host loop runs here, nothing goes out */
+  async function soloStart(modeId) {
+    const m = HK.MODES[modeId];
+    if (!m || !checkName()) return;
+    const pool = poolOf(solo.pool);
+    setBusy(true);
+    homeMsg('Fotoğraflar hazırlanıyor…');
+    let items;
+    try {
+      [items] = await Promise.all([loadManifest(pool), loadGeo(pool)]);
+    } catch (err) {
+      setBusy(false);
+      homeMsg(`Fotoğraf listesi yüklenemedi (${err.message}). Sayfayı yenileyip tekrar dene.`, 'error');
+      return;
+    }
+    S.role = 'host';
+    S.solo = true;
+    S.myId = cid;
+    S.link = null;
+    S.room = HK.createRoom('', cid, crypto.getRandomValues(new Uint32Array(1))[0] | 0, items,
+      Object.assign(poolOpts(pool), { provinceAt: hostLookup, debugRoundTime, solo: true }));
+    HK.addPlayer(S.room, { id: cid, name: profile.name, emoji: profile.emoji, look: Object.assign({}, look) });
+    HK.apply(S.room, cid, { t: 'settings', mode: m.id, roundTime: solo.time });
+    if (m.bots && solo.bots !== 'none') for (let i = 0; i < SOLO_BOTS; i++) HK.apply(S.room, cid, { t: 'addBot', level: solo.bots });
+    const res = HK.apply(S.room, cid, { t: 'start', day: today() });
+    if (!res.ok) { leave('Oyun başlatılamadı: ' + res.reason); return; }
+    solo.mode = null;
+    startHostLoop();
+    homeMsg('');
+    setBusy(false);
+    publish(true);
+  }
+  /** "Tekrar oyna" in a solo game starts the same mode at once; a solo game never shows the lobby. */
+  function soloAgain() {
+    HK.apply(S.room, S.myId, { t: 'again' });
+    const res = HK.apply(S.room, S.myId, { t: 'start', day: today() });
+    if (!res.ok) { leave('Oyun başlatılamadı: ' + res.reason); return; }
+    S.dirty = true;
     publish(true);
   }
 
@@ -739,7 +932,7 @@
     setBusy(true);
     homeMsg('Odaya bağlanılıyor…');
     S.role = 'guest';
-    loadGeo();
+    loadGeo(POOLS[0]);
     for (let attempt = 1; ; attempt++) {
       try {
         await connectGuest(code);
@@ -775,10 +968,9 @@
 
   function confirmGuess() {
     const v = S.view;
-    if (!S.pin || !v || v.phase !== 'guess' || v.mine || S.sentKey === S.roundKey) return;
-    S.sentKey = S.roundKey;
+    if (!S.pin || !v || v.phase !== 'guess' || (v.mine && v.mine.done) || isPresenter(v) || S.sentKey === S.tryKey) return;
+    S.sentKey = S.tryKey;
     intent({ t: 'guess', lat: S.pin.lat, lng: S.pin.lng, province: S.pin.province || '' });
-    audio.ok();
     // The host's own guess may have ended the round already; only a still running round shows "sending".
     if (S.view && S.view.phase === 'guess') renderGuess(S.view);
   }
@@ -791,6 +983,7 @@
   }
 
   function me(v) { return v && v.players.find(p => p.id === S.myId); }
+  const isPresenter = v => !!(me(v) && me(v).spectator);
 
   function renderCareer() {
     const lvl = levelOf(career.xp);
@@ -845,7 +1038,7 @@
 
   async function copyInvite() {
     if (!S.view || !S.view.code) return;
-    const url = location.origin + location.pathname + '?oda=' + S.view.code;
+    const url = inviteUrl(S.view.code);
     try {
       await navigator.clipboard.writeText(url);
       toast('Davet linki kopyalandı. Ekibe gönder!', 'ok');
@@ -853,6 +1046,54 @@
       // Clipboard access can be denied (no permission or an insecure context): show the link to copy by hand.
       window.prompt('Davet linkini kopyala:', url);
     }
+  }
+
+  /* ------------------------------------------------------------ home: solo mode cards and setup */
+  function renderSolo() {
+    const pool = poolOf(solo.pool);
+    $('#solo-pool-row').hidden = POOLS.length < 2;
+    renderSeg($('#solo-pool'), POOLS.map(p => [p.id, p.label]), pool.id, true, id => {
+      solo.pool = poolOf(id).id;
+      save('localStorage', KEY + 'pool', solo.pool);
+      renderSolo();
+    });
+    const day = today();
+    const daily = loadJson(dailyKey(pool.id));
+    const best = bestStreak(pool.id);
+    const box = $('#solo-modes');
+    box.replaceChildren(...Object.values(HK.MODES).filter(m => m.solo).map(m => {
+      const b = el('button', 'mode-card');
+      b.type = 'button';
+      b.dataset.mode = m.id;
+      b.setAttribute('aria-pressed', String(solo.mode === m.id));
+      const meta = [pool.label];
+      if (m.daily) meta.push(fmtDay(day), daily[day] ? `Bugün: ${fmt(daily[day].score)} puan` : 'Bugün oynanmadı');
+      if (m.scoring === 'streak' && best) meta.push(`En iyi seri: ${best}`);
+      b.append(el('b', '', modeLabel(m, pool)), el('small', '', modeDesc(m, pool)), el('span', 'meta', meta.join(' · ')));
+      b.addEventListener('click', () => pickSoloMode(m.id));
+      return b;
+    }));
+    renderSoloSetup();
+  }
+  /** A mode with choices (bots, round time) opens the setup card; the others start at once. */
+  function pickSoloMode(id) {
+    const m = HK.MODES[id];
+    if (!m.bots) { solo.mode = null; renderSoloSetup(); soloStart(id); return; }
+    solo.mode = id;
+    for (const b of document.querySelectorAll('#solo-modes button')) b.setAttribute('aria-pressed', String(b.dataset.mode === id));
+    renderSoloSetup();
+  }
+  function renderSoloSetup() {
+    const box = $('#solo-setup');
+    const m = HK.MODES[solo.mode];
+    box.hidden = !m;
+    if (!m) return;
+    const pool = poolOf(solo.pool);
+    setText($('#solo-name'), `${modeLabel(m, pool)} · ${pool.label}`);
+    setText($('#solo-desc'), modeDesc(m, pool));
+    renderSeg($('#solo-bots'), BOT_CHOICES, solo.bots, true, val => { solo.bots = val; renderSoloSetup(); });
+    $('#solo-time-row').hidden = m.roundTime != null;
+    renderSeg($('#solo-time'), HK.ROUND_TIMES.map(d => [String(d), TIME_LABELS[d] || d + ' sn']), String(solo.time), true, val => { solo.time = Number(val); renderSoloSetup(); });
   }
 
   /* ------------------------------------------------------------ state handling */
@@ -868,19 +1109,50 @@
 
   function feedback(prev, v) {
     if (!prev || !v) return;
-    if (prev.phase === 'lobby' && v.phase === 'guess') audio.start();
+    if ((prev.phase === 'lobby' || prev.phase === 'end') && v.phase === 'guess') audio.start();
+    if (prev.phase === 'guess' && v.phase === 'guess' && prev.round === v.round && v.mine) {
+      const before = prev.mine ? prev.mine.attempts.length : 0;
+      const last = v.mine.attempts[v.mine.attempts.length - 1];
+      if (v.mine.attempts.length > before && last) { if (last.hit) audio.ok(); else audio.miss(); }
+    }
     if (prev.phase === 'guess' && v.phase === 'reveal') {
       audio.gong();
       const mine = me(v);
-      if (mine && v.reveal && v.reveal.pins.some(x => x.pid === S.myId)) toast(`+${fmt(mine.lastPoints)} puan`, 'ok');
+      if (mine && v.reveal && v.reveal.pins.some(x => x.pid === S.myId) && modeOf(v).scoring !== 'none') toast(`+${fmt(mine.lastPoints)} puan`, 'ok');
+      // At most one bot joke per round, on every screen, never during a guess.
+      const bn = v.reveal && v.reveal.banter;
+      const bot = bn && v.players.find(p => p.id === bn.pid);
+      if (bot) toast(`${bot.name}: "${bn.text}"`, 'info');
     }
     if (prev.phase !== 'end' && v.phase === 'end') {
       audio.fanfare();
-      const mine = me(v);
-      S.lastXp = mine ? Math.round(mine.score / 100) : 0;
+      const mode = modeOf(v);
+      const mine = (v.standings || []).find(r => r.id === S.myId);
+      S.lastXp = mine ? xpFor(mode, mine.score) : 0;
+      S.record = false;
+      S.replay = false;
+      if (v.solo && mine) recordSolo(v, mode, mine);
       // The end card has the whole story; toasts from the last round would only cover its title.
       $('#toasts').replaceChildren();
       S.promo = earnXp(S.lastXp, true);
+    }
+  }
+  /** Solo results kept in this browser: the best Seri and the day's first Günün Oyunu result, per pool. */
+  function recordSolo(v, mode, mine) {
+    const pool = viewPool(v);
+    if (mode.scoring === 'streak') {
+      const best = bestStreak(pool.id);
+      S.record = mine.score > best;
+      S.best = Math.max(best, mine.score);
+      if (S.record) save('localStorage', streakKey(pool.id), String(mine.score));
+    }
+    if (mode.daily) {
+      const all = loadJson(dailyKey(pool.id));
+      S.replay = !!all[v.day];
+      if (!S.replay) {
+        all[v.day] = { score: mine.score, rounds: mine.rounds.map((points, i) => ({ points, km: mine.kms[i] })) };
+        save('localStorage', dailyKey(pool.id), JSON.stringify(all));
+      }
     }
   }
 
@@ -911,15 +1183,21 @@
   /* ------------------------------------------------------------ lobby */
   function renderLobby(v) {
     const host = S.myId === v.hostId;
+    const pool = viewPool(v);
+    const mode = HK.MODES[v.settings.mode] || HK.MODES.klasik;
+    const seated = v.players.filter(p => !p.spectator);
+    const max = v.max - (v.players.length - seated.length);   // the presenter's seat is not a playing seat
     const full = v.players.length >= v.max;
     setText($('#lobby-code'), v.code || 'YEREL');
     $('#btn-copy').hidden = !v.code;
-    setText($('#lobby-count'), `${v.players.length}/${v.max}`);
-    const seats = v.players.map(p => ({ p }));
-    for (let i = v.players.length; i < v.max; i++) seats.push({ empty: i });
-    syncList($('#lobby-players'), seats, s => (s.p ? s.p.id : 'empty' + s.empty), s => {
+    setText($('#lobby-count'), `${seated.length}/${max}`);
+    // Empty seats fold into one line, so the settings and the start button stay in view.
+    const seats = seated.map(p => ({ p }));
+    const free = max - seated.length;
+    if (free > 0) seats.push({ empty: free });
+    syncList($('#lobby-players'), seats, s => (s.p ? s.p.id : 'empty'), s => {
       const li = el('li', 'seat' + (s.p ? '' : ' seat-free'));
-      if (!s.p) { li.textContent = 'Boş koltuk'; return li; }
+      if (!s.p) return li;
       li.append(avatar(s.p.look), el('div', 'who'), el('span', 'tags'));
       li.querySelector('.who').append(el('b'), el('small'));
       if (host && s.p.bot) {
@@ -931,7 +1209,7 @@
       }
       return li;
     }, (li, s) => {
-      if (!s.p) return;
+      if (!s.p) { setText(li, s.empty === 1 ? '1 boş koltuk' : `${s.empty} boş koltuk`); return; }
       const p = s.p;
       paintAvatar(li.querySelector('.avatar'), p.look);
       setText(li.querySelector('.who b'), p.name);
@@ -944,19 +1222,37 @@
         tags.replaceChildren(...want.map(([c, t]) => el('span', 'tag ' + c, t)));
       }
     });
-    $('#bot-controls').hidden = !host;
+    $('#bot-controls').hidden = !host || !mode.bots;
     for (const b of document.querySelectorAll('#bot-controls button')) b.disabled = full;
-    setText($('#set-rounds'), `${HK.ROUNDS} tur, her turda bir fotoğraf`);
+    const roomModes = Object.values(HK.MODES).filter(m => m.room);
+    renderSeg($('#set-mode'), roomModes.map(m => [m.id, modeLabel(m, pool)]), mode.id, host, val => intent({ t: 'settings', mode: val }));
+    setText($('#set-mode-desc'), modeDesc(mode, pool));
+    $('#row-pool').hidden = POOLS.length < 2;
+    renderSeg($('#set-pool'), POOLS.map(p => [p.id, p.label]), pool.id, host && !S.poolBusy, choosePool);
+    setText($('#set-rounds'), mode.roundTime == null ? `${mode.rounds} tur, her turda bir fotoğraf` : `${mode.rounds} tur, her tur ${mode.roundTime} sn`);
+    $('#row-time').hidden = mode.roundTime != null;
     renderSeg($('#set-time'), HK.ROUND_TIMES.map(d => [String(d), TIME_LABELS[d] || d + ' sn']), String(v.settings.roundTime), host, val => intent({ t: 'settings', roundTime: Number(val) }));
-    $('#btn-start').hidden = !host;
+    const presenter = !!v.settings.presenter;
+    const box = $('#set-presenter');
+    box.checked = presenter;
+    box.disabled = !host;
+    $('#row-presenter').hidden = !host && !presenter;
+    $('#lobby-qr').hidden = !(presenter && v.code);
+    if (presenter && v.code) setQr($('#lobby-qr-img'), inviteUrl(v.code));
+    const waiting = presenter && !seated.some(p => !p.bot);
+    const start = $('#btn-start');
+    start.hidden = !host;
+    start.disabled = waiting;
+    setText(start, waiting ? 'En az bir oyuncu bekleniyor' : 'Oyunu başlat');
     $('#lobby-wait').hidden = host;
     setText($('#btn-leave'), host ? 'Odayı kapat' : 'Odadan çık');
+    loadGeo(pool);
   }
 
   function renderSeg(box, options, current, enabled, onPick) {
     if (box.childElementCount !== options.length) {
-      box.replaceChildren(...options.map(([val, label]) => {
-        const b = el('button', '', label);
+      box.replaceChildren(...options.map(([val]) => {
+        const b = el('button');
         b.type = 'button';
         b.dataset.val = val;
         b.setAttribute('role', 'radio');
@@ -964,38 +1260,50 @@
         return b;
       }));
     }
-    for (const b of box.children) {
+    [...box.children].forEach((b, i) => {
+      setText(b, options[i][1]);
       b.setAttribute('aria-checked', String(b.dataset.val === current));
       b.disabled = !enabled;
-    }
+    });
   }
 
   /* ------------------------------------------------------------ game */
   function renderGame(v) {
     const game = $('#screen-game');
     const layout = v.phase === 'guess' ? 'guess' : 'reveal';
-    ensureMap();
-    if (game.dataset.phase !== layout) {
-      game.dataset.phase = layout;
-      if (map) map.invalidateSize({ pan: false });
-    }
-    setText($('#hud-round'), `Tur ${v.round}/${v.rounds}`);
-    setText($('#hud-question'), v.phase === 'guess' ? GAME.question : v.phase === 'reveal' ? GAME.title + ' · sonuçlar' : 'Oyun bitti');
+    const presenter = isPresenter(v);
+    const changed = game.dataset.phase !== layout || game.hasAttribute('data-presenter') !== presenter;
+    game.dataset.phase = layout;
+    game.toggleAttribute('data-presenter', presenter);
+    // The presenter's guess screen has no map; it is built once the reveal shows one.
+    if (!(presenter && layout === 'guess')) ensureMap();
+    if (changed && map) map.invalidateSize({ pan: false });
+    syncMapPool();
+    const mode = modeOf(v);
+    const pool = viewPool(v);
+    setText($('#hud-round'), v.rounds ? `Tur ${v.round}/${v.rounds}` : `Tur ${v.round}`);
+    setText($('#hud-mode'), mode.scoring === 'streak' ? `${modeLabel(mode, pool)} · ${v.streak}` : modeLabel(mode, pool));
+    setText($('#hud-question'), v.phase === 'guess' ? pool.question : v.phase === 'reveal' ? GAME.title + ' · sonuçlar' : 'Oyun bitti');
     renderChips(v);
-    if (v.phase === 'guess') { $('#reveal').hidden = true; renderGuess(v); } else renderReveal(v);
+    renderPresent(v, presenter);
+    if (v.phase === 'guess') { $('#reveal').hidden = true; renderGuess(v); } else { showCompass(null); renderReveal(v); }
   }
 
   function renderChips(v) {
-    syncList($('#chips'), v.players, p => p.id, p => {
+    syncList($('#chips'), v.players.filter(p => !p.spectator), p => p.id, p => {
       const li = el('li', 'chip');
-      li.append(avatar(p.look, 'sm'), el('span', 'who'));
+      const dots = el('span', 'tries');
+      dots.setAttribute('aria-hidden', 'true');
+      dots.append(...Array.from({ length: HK.ATTEMPTS }, () => el('i')));
+      li.append(avatar(p.look, 'sm'), el('span', 'who'), dots);
       li.querySelector('.who').append(el('b'), el('small'));
       return li;
     }, (li, p) => {
       paintAvatar(li.querySelector('.avatar'), p.look);
       setText(li.querySelector('.who b'), p.name + (p.id === S.myId ? ' (sen)' : ''));
-      const state = p.guessed ? 'Tahmin etti ✓' : p.takeover ? 'Koptu, bot oynuyor' : !p.online ? 'Bağlantı yok' : p.bot ? 'Bot düşünüyor' : 'Düşünüyor…';
+      const state = p.takeover ? 'Koptu, bot oynuyor' : p.guessed ? 'Tahmin etti ✓' : !p.online ? 'Bağlantı yok' : p.tries ? `Deniyor (${p.tries}/${HK.ATTEMPTS})` : p.bot ? 'Bot düşünüyor' : 'Düşünüyor…';
       setText(li.querySelector('.who small'), state);
+      [...li.querySelector('.tries').children].forEach((d, i) => d.classList.toggle('on', i < p.tries));
       li.classList.toggle('guessed', p.guessed);
       li.classList.toggle('me', p.id === S.myId);
       li.classList.toggle('bot', p.bot);
@@ -1004,35 +1312,85 @@
     });
   }
 
+  /** The presenter's join card: the room code in large type and a QR of the invite link. */
+  function renderPresent(v, presenter) {
+    const box = $('#present');
+    box.hidden = !(presenter && v.phase === 'guess' && v.code);
+    if (box.hidden) return;
+    const url = inviteUrl(v.code);
+    setText($('#present-code'), v.code);
+    setText($('#present-url'), url.replace(/^https?:\/\//, ''));
+    setQr($('#present-qr'), url);
+  }
+
+  /** After a miss: the compass card with the direction, the distance band, the hint and the attempts left. */
+  function showCompass(mine) {
+    const card = $('#compass');
+    const tries = mine ? mine.attempts.length : 0;
+    const last = tries ? mine.attempts[tries - 1] : null;
+    const on = !!(last && !last.hit && !mine.done);
+    card.hidden = !on;
+    card.parentElement.classList.toggle('compassing', on);
+    if (!on) return;
+    const left = HK.ATTEMPTS - tries;
+    setText($('#compass-band'), last.kmBand);
+    setText($('#compass-text'), `Iska! ${last.kmBand}, ${DIR_NAMES[last.dir] || ''} yönünde. ${left} hakkın kaldı.`);
+    const hint = $('#compass-hint');
+    hint.hidden = !last.hint;
+    setText(hint, last.hint || '');
+    const dots = $('#compass-dots');
+    if (dots.childElementCount !== HK.ATTEMPTS) dots.replaceChildren(...Array.from({ length: HK.ATTEMPTS }, () => el('i')));
+    [...dots.children].forEach((d, i) => d.classList.toggle('on', i < left));
+    card.dataset.dir = last.dir;
+    card.classList.remove('in');
+    void card.offsetWidth;   // restart the slide-in
+    card.classList.add('in');
+    const needle = $('#compass-needle');
+    requestAnimationFrame(() => { needle.style.transform = `rotate(${DIR_DEG[last.dir] || 0}deg)`; });
+  }
+
   function renderGuess(v) {
     const key = v.gameNo + ':' + v.round;
     if (S.roundKey !== key) {
       S.roundKey = key;
       S.pin = null;
       S.sentKey = '';
+      S.tryKey = '';
       S.revealKey = '';
       S.lastSec = -1;
       clearMapLayers();
-      if (v.photo) setPhoto(v.photo.file);
+      if (v.photo) setPhoto(v.photo.file, viewPool(v));
       mapTouched = false;
       if (map) { map.invalidateSize({ pan: false }); map.setMaxBounds(playBounds()); map.fitBounds(playBounds(), { animate: false }); }
     }
-    const locked = !!v.mine;
-    setMyMarker(locked ? v.mine : S.pin, locked);
-    const sending = !locked && S.sentKey === key;
+    const mine = v.mine;
+    const tries = mine ? mine.attempts.length : 0;
+    const done = !!(mine && mine.done);
+    const tryKey = key + ':' + tries;
+    if (S.tryKey !== tryKey) {
+      // A new attempt starts without a pin; the earlier ones stay as a faint trail.
+      S.tryKey = tryKey;
+      S.pin = null;
+      if (triesLayer) { triesLayer.clearLayers(); if (tries) drawTrail(triesLayer, mine.attempts, done ? tries - 1 : tries); }
+      showCompass(mine);
+    }
+    setMyMarker(done ? mine : S.pin, done);
+    const sending = !done && S.sentKey === tryKey;
     const btn = $('#btn-guess');
-    btn.disabled = locked || sending || !S.pin;
-    setText(btn, locked ? 'Tahmin edildi' : sending ? 'Gönderiliyor…' : 'Tahmin et');
-    const where = locked ? v.mine.province : S.pin ? S.pin.province : '';
-    setText($('#guess-info'), locked ? 'Tahminin alındı. Diğerleri bekleniyor…'
+    btn.disabled = done || sending || !S.pin;
+    setText(btn, done ? 'Tahmin edildi' : sending ? 'Gönderiliyor…' : tries === 0 ? 'Tahmin et' : tries >= HK.ATTEMPTS - 1 ? 'Son tahmin' : `${tries + 1}. tahmin`);
+    const where = S.pin ? S.pin.province : '';
+    const hitNow = done && mine.attempts[tries - 1].hit;
+    setText($('#guess-info'), done ? (hitNow ? 'İsabet! ' : '') + 'Tahminin alındı, diğerleri bekleniyor'
       : S.pin ? (where ? `İğne: ${where}. Taşıyabilir ya da onaylayabilirsin.` : 'İğne yerinde. Taşıyabilir ya da onaylayabilirsin.')
-        : 'Haritada tahmin ettiğin yere tıkla.');
+        : tries ? 'Pusulaya bak, haritada yeni bir yer seç.' : 'Haritada tahmin ettiğin yere tıkla.');
     const timer = $('#hud-timer');
+    timer.hidden = !(v.roundTime > 0);
     setText(timer, mmss(v.timeLeft));
     timer.classList.toggle('warn', v.timeLeft <= 30 && v.timeLeft > 10);
     timer.classList.toggle('danger', v.timeLeft <= 10);
     const sec = Math.ceil(v.timeLeft);
-    if (sec !== S.lastSec) { if (S.lastSec > 0 && sec <= 5 && sec > 0 && !locked) audio.tick(); S.lastSec = sec; }
+    if (sec !== S.lastSec) { if (S.lastSec > 0 && sec <= 5 && sec > 0 && !done && !isPresenter(v)) audio.tick(); S.lastSec = sec; }
     if (map) paintHighlight();
   }
 
@@ -1054,35 +1412,48 @@
     $('#reveal').hidden = !R;
     if (!R) return;
     const host = S.myId === v.hostId;
+    const mode = modeOf(v);
+    const pool = viewPool(v);
     const key = v.gameNo + ':' + R.round;
     if (S.revealKey !== key) {
       S.revealKey = key;
       const it = R.item || {};
-      setText($('#rv-round'), `Tur ${R.round}/${v.rounds}`);
+      setText($('#rv-round'), v.rounds ? `Tur ${R.round}/${v.rounds}` : `Tur ${R.round}`);
       setText($('#rv-title'), it.title || '');
-      setText($('#rv-label'), GAME.revealLabel);
+      setText($('#rv-label'), pool.revealLabel);
       setText($('#rv-province'), it.province || '');
       const desc = $('#rv-desc');
       desc.hidden = !it.description;
       setText(desc, it.description || '');
+      const flavour = $('#rv-flavour');
+      const line = FLAVOUR[it.kind] || '';
+      flavour.hidden = !line;
+      setText(flavour, line);
       const img = $('#rv-img');
-      img.src = gameUrl(it.file);
+      img.src = gameUrl(it.file, pool);
       img.alt = it.title || '';
       credit(it);
       const mineRow = $('#rv-mine');
       const myPin = R.pins.find(x => x.pid === S.myId);
-      setText(mineRow, myPin ? `Sen: ${fmtKm(myPin.km)} · +${fmt(myPin.points)} puan` : (me(v) ? 'Bu tur tahmin yapmadın' : ''));
-      mineRow.classList.toggle('none', !myPin);
+      const mine = me(v);
+      let text = '';
+      if (myPin && mode.scoring === 'streak') text = myPin.hit ? `Doğru! Seri: ${v.streak}` : `Iska, seri ${v.streak} turda bitti`;
+      else if (myPin && mode.scoring === 'none') text = `Sen: ${fmtKm(myPin.km)} · ${triesText(myPin, mode)}`;
+      else if (myPin) text = `Sen: ${fmtKm(myPin.km)} · +${fmt(myPin.points)} puan`;
+      else if (mine && !mine.spectator) text = 'Bu tur tahmin yapmadın';
+      setText(mineRow, text);
+      mineRow.classList.toggle('none', !myPin || (mode.scoring === 'streak' && !myPin.hit));
       drawReveal(v);
       // Load the next photo now, so the next round starts with it on screen.
-      if (v.next) { const pre = new Image(); pre.src = gameUrl(v.next.file); }
+      if (v.next) { const pre = new Image(); pre.src = gameUrl(v.next.file, pool); }
     }
     const pinOf = new Map(R.pins.map(x => [x.pid, x]));
-    const rows = v.players.map(p => ({ p, pin: pinOf.get(p.id) || null }))
+    const badges = R.badges || {};
+    const rows = v.players.filter(p => !p.spectator).map(p => ({ p, pin: pinOf.get(p.id) || null }))
       .sort((a, b) => (b.pin ? b.pin.points : -1) - (a.pin ? a.pin.points : -1) || b.p.score - a.p.score);
     syncList($('#rv-results'), rows, r => r.p.id, () => {
       const li = el('li', 'result');
-      li.append(el('span', 'pos'), avatar(null, 'sm'), el('div', 'who'), el('div', 'pts'));
+      li.append(el('span', 'pos'), avatar(null, 'sm'), el('div', 'who'), el('span', 'bdg'), el('div', 'pts'));
       li.querySelector('.who').append(el('b'), el('small'));
       li.querySelector('.pts').append(el('b'), el('small'));
       return li;
@@ -1091,21 +1462,28 @@
       setText(li.querySelector('.pos'), String(i + 1));
       paintAvatar(li.querySelector('.avatar'), r.p.look);
       setText(li.querySelector('.who b'), r.p.name + (r.p.id === S.myId ? ' (sen)' : ''));
-      const detail = r.pin ? fmtKm(r.pin.km) + (r.pin.province ? ' · ' + r.pin.province : '') : 'Tahmin yok';
+      const detail = r.pin ? fmtKm(r.pin.km) + (r.pin.province ? ' · ' + r.pin.province : '') + ' · ' + triesText(r.pin, mode) : 'Tahmin yok';
       setText(li.querySelector('.who small'), detail + (r.p.takeover ? ' · bot oynadı' : ''));
-      setText(li.querySelector('.pts b'), r.pin ? '+' + fmt(r.pin.points) : '0');
-      setText(li.querySelector('.pts small'), 'Toplam ' + fmt(r.p.score));
+      const mine = (badges[r.p.id] || []).map(id => HK.BADGES[id]).filter(Boolean);
+      const bdg = li.querySelector('.bdg');
+      setText(bdg, mine.map(b => b.icon).join(''));
+      bdg.title = mine.map(b => b.label).join(', ');
+      bdg.setAttribute('aria-label', bdg.title);
+      setText(li.querySelector('.pts b'), mode.scoring === 'none' ? '' : r.pin ? '+' + fmt(r.pin.points) : '0');
+      setText(li.querySelector('.pts small'), mode.scoring === 'none' ? '' : 'Toplam ' + fmt(r.p.score));
       li.classList.toggle('me', r.p.id === S.myId);
       li.classList.toggle('nopin', !r.pin);
       li.classList.toggle('takeover', !!r.p.takeover);
     });
     const btn = $('#btn-next');
     if (v.phase === 'reveal') {
-      const last = v.round >= v.rounds;
+      const last = !!v.last;
       const secs = Math.max(0, Math.ceil(v.timeLeft));
-      setText($('#rv-count'), host ? `${secs} sn sonra kendiliğinden geçer` : last ? `Sonuçlar ${secs} sn içinde` : `Sonraki tur ${secs} sn içinde başlıyor`);
+      const auto = v.revealTime > 0;
+      setText($('#rv-count'), !auto ? '' : host ? `${secs} sn sonra kendiliğinden geçer` : last ? `Sonuçlar ${secs} sn içinde` : `Sonraki tur ${secs} sn içinde başlıyor`);
       btn.hidden = !host;
-      setText(btn, last ? 'Sonuçları gör' : 'Sonraki tur');
+      btn.classList.toggle('big', isPresenter(v));
+      setText(btn, last ? 'Sonuçları gör' : mode.scoring === 'none' ? 'Sonraki' : 'Sonraki tur');
     } else {
       setText($('#rv-count'), '');
       btn.hidden = true;
@@ -1116,12 +1494,14 @@
     if (!map) return;
     const R = v.reveal;
     myLayer.clearLayers();
+    triesLayer.clearLayers();
     S.myMarker = null;
     S.myMarkerSig = '';
     revealLayer.clearLayers();
     const it = R.item;
     const truth = [it.lat, it.lng];
     const points = [truth];
+    const pool = viewPool(v);
     for (const pin of R.pins) {
       const p = v.players.find(x => x.id === pin.pid);
       const name = p ? p.name : '?';
@@ -1133,8 +1513,11 @@
         .addTo(revealLayer);
       points.push([pin.lat, pin.lng]);
     }
+    // Only this player's own earlier attempts, faint, for the story of the round.
+    const own = v.mine && Array.isArray(v.mine.attempts) ? v.mine.attempts : [];
+    if (own.length > 1) drawTrail(revealLayer, own, own.length - 1);
     L.marker(truth, { icon: truthIcon(), keyboard: false, zIndexOffset: 1000 })
-      .bindTooltip(tipEl(`${GAME.revealLabel}: ${it.title || ''}`), { direction: 'top' })
+      .bindTooltip(tipEl(`${pool.revealLabel}: ${it.title || ''}`), { direction: 'top' })
       .addTo(revealLayer);
     // The play-area limit would pan the framed reveal away from pins near its edge; it is back for the next guess.
     map.setMaxBounds(null);
@@ -1144,9 +1527,40 @@
   }
 
   /* ------------------------------------------------------------ end */
+  /** The Günün Oyunu result to paste: date, score, stars and one square per round. */
+  function shareText(v, mine) {
+    const pool = viewPool(v);
+    const mode = modeOf(v);
+    const scale = pool.scoreScaleKm / 200;
+    const byRegion = ['region', 'streak'].includes(mode.scoring);
+    const perRound = mode.scoring === 'region' ? 1000 : HK.MAX_POINTS + (pool.provinceBonus > 0 ? pool.provinceBonus : 0);
+    const stars = Math.max(0, Math.min(5, Math.round((mine.score / (perRound * Math.max(1, mine.rounds.length))) * 5)));
+    const marks = mine.kms.map((km, i) => (byRegion ? (mine.hits[i] ? '✅' : '❌')
+      : km == null ? '🟥' : km <= 50 * scale ? '🟩' : km <= 250 * scale ? '🟨' : km <= 600 * scale ? '🟧' : '🟥'));
+    const parts = [GAME.title, fmtDay(v.day)];
+    if (pool !== POOLS[0]) parts.push(pool.label);
+    parts.push(fmt(mine.score) + ' puan', '⭐'.repeat(stars) + '☆'.repeat(5 - stars));
+    if (S.replay) parts.push('tekrar');
+    return parts.join(' · ') + '\n' + marks.join('');
+  }
+  async function copyShare() {
+    const box = $('#share-text');
+    try {
+      await navigator.clipboard.writeText(box.value);
+      toast('Sonuç kopyalandı.', 'ok');
+    } catch {
+      // Clipboard access can be denied: select the text so it can be copied by hand.
+      box.focus();
+      box.select();
+      toast('Kopyalanamadı. Metni seçtim, elle kopyalayabilirsin.', 'warn');
+    }
+  }
+
   function renderEnd(v) {
     const st = v.standings || [];
     const host = S.myId === v.hostId;
+    const mode = modeOf(v);
+    const pool = viewPool(v);
     $('#btn-again').hidden = !host;
     $('#end-wait').hidden = host;
     const key = v.gameNo + '|' + st.map(r => r.id + ':' + r.score).join();
@@ -1154,24 +1568,59 @@
     S.endKey = key;
     const top = st[0];
     const mine = st.find(r => r.id === S.myId);
-    setText($('#end-title'), !top ? 'Oyun bitti' : top.id === S.myId ? 'Tebrikler, kazandın!' : `Kazanan: ${top.name}`);
-    setText($('#end-sub'), mine ? `${mine.rank}. oldun · ${fmt(mine.score)} puan` : `${GAME.title} bitti.`);
+    const many = st.length > 1;
+    const label = modeLabel(mode, pool);
+    let title = !top ? 'Oyun bitti' : top.id === S.myId ? 'Tebrikler, kazandın!' : `Kazanan: ${top.name}`;
+    let sub = mine ? `${mine.rank}. oldun · ${fmt(mine.score)} puan` : `${GAME.title} bitti.`;
+    if (v.solo && mine) {
+      if (mode.scoring === 'streak') { title = 'Seri bitti'; sub = `Serin: ${mine.score} · En iyi serin: ${S.best}` + (S.record ? ' · Yeni rekor!' : ''); }
+      else if (mode.scoring === 'none') { title = `${label} bitti`; sub = `${mine.rounds.length} yer gezdin.`; }
+      else if (mode.daily) { title = `${label} · ${fmtDay(v.day)}`; sub = `${fmt(mine.score)} puan` + (S.replay ? ' · tekrar' : ''); }
+      else if (!many) { title = `${label} bitti`; sub = `${fmt(mine.score)} puan`; }
+    }
+    setText($('#end-title'), title);
+    setText($('#end-sub'), sub);
     const places = [[st[1], 2], [st[0], 1], [st[2], 3]];
+    $('#podium').hidden = !many;
     $('#podium').replaceChildren(...places.map(([r, n]) => {
       const d = el('div', 'place p' + n);
       if (!r) return d;
       d.append(avatar(r.look, 'lg'), el('b', '', r.name + (r.id === S.myId ? ' (sen)' : '')), el('span', '', fmt(r.score) + ' puan'), el('div', 'block', String(r.rank)));
       return d;
     }));
+    $('#end-rank-h').hidden = !many;
+    $('#end-rank').hidden = !many;
     $('#end-rank').replaceChildren(...st.map(r => {
       const li = el('li', r.id === S.myId ? 'me' : '');
       const who = el('div', 'who');
       who.append(el('b', '', r.name + (r.id === S.myId ? ' (sen)' : '') + (r.bot ? ' · bot' : '')), el('small', '', r.rounds.map(x => (x == null ? '-' : fmt(x))).join(' · ')));
+      const earned = (r.badges || []).map(id => HK.BADGES[id]).filter(Boolean);
+      if (earned.length) {
+        const row = el('span', 'end-badges');
+        row.append(...earned.map(b => el('span', 'tag', b.icon + ' ' + b.label)));
+        who.append(row);
+      }
       li.append(el('span', 'pos', String(r.rank)), avatar(r.look, 'sm'), who, el('span', 'pts', fmt(r.score)));
       return li;
     }));
+    // Solo: one row per round with the answer, the distance and the points.
+    const showRounds = !!(v.solo && mine);
+    $('#end-rounds-h').hidden = !showRounds;
+    $('#end-rounds').hidden = !showRounds;
+    $('#end-rounds').replaceChildren(...(showRounds ? mine.rounds.map((points, i) => {
+      const h = (v.history || [])[i] || {};
+      const li = el('li');
+      const who = el('div', 'who');
+      const mark = ['region', 'streak'].includes(mode.scoring) ? (mine.hits[i] ? '✅ ' : '❌ ') : '';
+      who.append(el('b', '', h.title || ''), el('small', '', mark + (h.province || '')));
+      li.append(el('span', 'pos', String(i + 1)), who, el('span', 'km', mine.kms[i] == null ? 'Tahmin yok' : fmtKm(mine.kms[i])), el('span', 'pts', mode.scoring === 'none' ? '' : fmt(points)));
+      return li;
+    }) : []));
+    const share = $('#end-share');
+    share.hidden = !(v.solo && mine && mode.daily);
+    if (!share.hidden) $('#share-text').value = shareText(v, mine);
     const lvl = levelOf(career.xp);
-    setText($('#end-xp'), mine ? `+${fmt(S.lastXp)} kariyer puanı · Seviye ${lvl}, ${TITLES[lvl - 1]}` + (S.promo ? ` · Terfi! Artık ${S.promo} oldun.` : '') : '');
+    setText($('#end-xp'), mine && mode.scoring !== 'none' ? `+${fmt(S.lastXp)} kariyer puanı · Seviye ${lvl}, ${TITLES[lvl - 1]}` + (S.promo ? ` · Terfi! Artık ${S.promo} oldun.` : '') : '');
   }
 
   /* ------------------------------------------------------------ static UI wiring */
@@ -1182,9 +1631,9 @@
     const steps = [
       ['Fotoğrafa iyi bak.', ' İpuçları her yerde saklı. Yakınlaştırmak için fotoğrafa tıkla.'],
       ['Haritada yerini işaretle.', ' Köşedeki harita üzerine gelince büyür. Onaylayana kadar iğneni istediğin kadar taşıyabilirsin.'],
-      ['Tahmin et.', ' Herkes tahmin edince ya da süre bitince doğru yer açılır.'],
+      ['Üç hakkın var.', ' Iskalarsan pusula yönü, yaklaşık uzaklığı ve bir ipucunu gösterir. Sonraki denemeler daha az puan getirir.'],
       ['Yakınlık puan getirir.', ` Tam isabet ${fmt(HK.MAX_POINTS)} puan, uzaklaştıkça azalır.` + (GAME.provinceBonus > 0 ? ` İli tutturana +${fmt(GAME.provinceBonus)} puan.` : '')],
-      [`${HK.ROUNDS} tur sonunda`, ' en çok puanı toplayan kazanır. Boş koltuklara bot oturtabilirsin.']
+      ['Tek başına ya da ekiple.', ' Oyun türünü seç; odada en çok puanı toplayan kazanır, boş koltuklara bot oturtabilirsin.']
     ];
     $('#howto-list').replaceChildren(...steps.map(([b, t]) => { const li = el('li'); li.append(el('b', '', b), document.createTextNode(t)); return li; }));
 
@@ -1193,6 +1642,7 @@
     renderCareer();
     buildSwatches();
     previewLook();
+    renderSolo();
     const codeIn = $('#in-code');
     codeIn.addEventListener('input', () => {
       const clean = codeIn.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
@@ -1202,6 +1652,7 @@
     const joinMode = on => {
       $('.home-card').classList.toggle('joining', on);
       $('#invite').hidden = !on;
+      $('#solo-block').hidden = on;   // an invited player came to join; solo play is one click away below
       $('#btn-create').hidden = on;
       $('#btn-create-alt').hidden = !on;
       setText($('#join-label'), on ? 'Oda kodu' : 'Ya da bir odaya katıl');
@@ -1223,8 +1674,11 @@
       if (code.length !== 5) { homeMsg('Oda kodu 5 karakter olmalı.', 'error'); codeIn.focus(); return; }
       guestStart(code);
     });
+    $('#btn-solo-start').addEventListener('click', () => { if (solo.mode) soloStart(solo.mode); });
+    $('#btn-solo-cancel').addEventListener('click', () => { solo.mode = null; renderSolo(); });
     $('#btn-copy').addEventListener('click', copyInvite);
     for (const b of document.querySelectorAll('#bot-controls button')) b.addEventListener('click', () => intent({ t: 'addBot', level: b.dataset.bot }));
+    $('#set-presenter').addEventListener('change', e => intent({ t: 'settings', presenter: e.target.checked }));
     $('#btn-start').addEventListener('click', () => intent({ t: 'start' }));
     const askLeave = text => {
       const others = S.view && S.view.players.some(p => !p.bot && p.id !== S.myId);
@@ -1236,7 +1690,8 @@
     $('#btn-home').addEventListener('click', () => askLeave('Ana sayfaya dönersen oda kapanır. Emin misin?'));
     $('#btn-guess').addEventListener('click', confirmGuess);
     $('#btn-next').addEventListener('click', () => intent({ t: 'next' }));
-    $('#btn-again').addEventListener('click', () => intent({ t: 'again' }));
+    $('#btn-again').addEventListener('click', () => { if (S.solo) soloAgain(); else intent({ t: 'again' }); });
+    $('#btn-share').addEventListener('click', copyShare);
     const sizeBtn = $('#btn-map-size');
     sizeBtn.addEventListener('click', () => {
       const big = !$('#mapbox').classList.contains('big');
@@ -1271,10 +1726,22 @@
       if (S.role === 'host' && S.link) S.link.broadcast({ t: 'bye' });
     });
 
-    // Test hooks, only on this machine: the province lookup and the current view.
-    if (LOCAL) window.hk = { provinceAt, view: () => S.view, role: () => S.role, debugRoundTime };
+    // Test hooks, only on this machine: the region lookup of the current pool, the view and the map state.
+    if (LOCAL) {
+      window.hk = {
+        provinceAt: (lat, lng) => provinceAt(lat, lng, activePool().id), view: () => S.view, role: () => S.role, debugRoundTime,
+        pool: () => activePool().id, minZoom: () => (map ? map.getMinZoom() : null),
+        // The page coordinates of a map position, so a test can click a known spot (e.g. open sea for a sure miss).
+        mapPoint: (lat, lng) => {
+          if (!map) return null;
+          const r = map.getContainer().getBoundingClientRect();
+          const p = map.latLngToContainerPoint([lat, lng]);
+          return { x: r.left + p.x, y: r.top + p.y };
+        }
+      };
+    }
   }
 
   buildStatic();
-  loadGeo();
+  loadGeo(DECOR_POOL);
 })();

@@ -95,6 +95,7 @@ body.in-game .decor { display: none; }
 .tag.bot { background: #ece6da; color: #5b5346; }
 .pill { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; font-weight: 700; font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pill.round { background: var(--sea); color: #fff; }
+.pill.mode { background: var(--paper); color: var(--sea-dark); border: 1px solid var(--edge); }
 .pill.timer { background: var(--paper); color: var(--ink); border: 1px solid var(--edge); min-width: 70px; justify-content: center; font-size: 15px; }
 .pill.timer.warn { background: var(--mustard-soft); border-color: #ecd28f; color: #7a5300; }
 .pill.timer.danger { background: var(--red); border-color: var(--red); color: #fff; animation: pulse 1s ease-in-out infinite; }
@@ -152,6 +153,30 @@ body.in-game .decor { display: none; }
 .invite-text { margin: 0; font-size: 14px; color: var(--sea-dark); }
 .invite-text b { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: .12em; }
 .home-card.joining #join-form { margin-top: 0; }
+
+/* home: "Tek başına" mode cards and "Ekiple" */
+.home-block { margin-top: 4px; }
+.home-block + .home-block { margin-top: 14px; padding-top: 2px; border-top: 1px dashed var(--edge-2); }
+.home-block > .section-head { margin-top: 12px; }
+.pool-row { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 8px; margin-bottom: 8px; }
+.pool-row .label { margin: 0; }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mode-card {
+  appearance: none; display: grid; align-content: start; gap: 2px; min-width: 0; padding: 9px 11px; text-align: left;
+  background: #fff; border: 1px solid var(--edge); border-radius: 10px; cursor: pointer; transition: border-color .12s, box-shadow .12s, transform .06s;
+}
+.mode-card:hover:not(:disabled) { border-color: var(--sea); }
+.mode-card:active:not(:disabled) { transform: translateY(1px); }
+.mode-card:disabled { opacity: .5; cursor: not-allowed; }
+.mode-card[aria-pressed=true] { border-color: var(--sea); background: var(--sea-soft); box-shadow: 0 0 0 1px var(--sea); }
+.mode-card b { font-size: 14px; color: var(--ink); }
+.mode-card small { font-size: 12px; line-height: 1.35; color: var(--ink-2); }
+.mode-card .meta { margin-top: 2px; font-size: 11.5px; font-weight: 700; color: var(--terra); }
+.solo-setup { display: grid; gap: 10px; margin-top: 10px; padding: 12px; background: var(--paper-2); border: 1px dashed var(--edge-2); border-radius: 10px; }
+.solo-head { display: grid; gap: 2px; }
+.solo-head b { font-family: var(--font-title); font-size: 17px; }
+.solo-setup .label { margin-bottom: 4px; }
+.solo-actions .btn.primary { flex: 1; }
 .home-card.joining #btn-join { flex: 1; }
 .home-card.joining #in-code { max-width: 150px; }
 
@@ -179,6 +204,13 @@ body.in-game .decor { display: none; }
 .seg button[aria-checked=true] { background: #fff; color: var(--sea-dark); box-shadow: 0 1px 2px rgba(0, 0, 0, .12), 0 0 0 1px var(--sea); }
 .seg button:disabled { cursor: default; }
 #btn-leave { margin-top: 8px; }
+.mode-desc { margin: 6px 0 0; font-size: 13px; color: var(--ink-2); }
+.switch { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: var(--paper-2); border: 1px solid var(--edge); border-radius: 10px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+.switch input { flex: none; width: 18px; height: 18px; margin: 0; accent-color: var(--sea); cursor: inherit; }
+.switch:has(input:disabled) { cursor: default; }
+.qr-box { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 10px 12px; background: #fff; border: 1px solid var(--edge); border-radius: 10px; }
+.qr-box img { flex: none; width: 112px; height: 112px; image-rendering: pixelated; }
+.qr-box p { margin: 0; }
 
 /* game */
 .game { position: fixed; inset: 0; background: var(--night); overflow: hidden; }
@@ -208,6 +240,10 @@ body.in-game .decor { display: none; }
 .chip.guessed .who small { color: var(--olive); font-weight: 700; }
 .chip.takeover .who small, .chip.offline .who small { color: var(--terra); }
 .chip.me { box-shadow: 0 0 0 2px var(--sea), var(--shadow); }
+.tries { display: flex; gap: 3px; margin-left: auto; padding-left: 2px; }
+.tries i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--edge-2); }
+.tries i.on { background: var(--terra); border-color: var(--terra); }
+.chip.guessed .tries i.on { background: var(--olive); border-color: var(--olive); }
 
 /* map: an inset during the guess, the big view at the reveal */
 .mapbox { position: absolute; right: 16px; bottom: 16px; z-index: 6; width: 340px; display: grid; gap: 0; background: var(--paper); border: 1px solid var(--edge); border-radius: var(--radius); box-shadow: var(--shadow-lg); overflow: hidden; transition: width .2s ease; }
@@ -222,6 +258,26 @@ body.in-game .decor { display: none; }
 .map-hover { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); white-space: nowrap; z-index: 500; padding: 3px 9px; border-radius: 999px; background: rgba(255, 250, 240, .95); border: 1px solid var(--edge-2); font-size: 12px; font-weight: 700; color: var(--ink); pointer-events: none; }
 .map-size { position: absolute; right: 8px; top: 8px; z-index: 500; width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--edge-2); background: var(--paper); cursor: pointer; font-size: 15px; line-height: 1; }
 .map-size[aria-pressed=true] { background: var(--sea); color: #fff; border-color: var(--sea-dark); }
+/* compass card after a miss: direction, distance band, hint and the attempts left; leaves the zoom buttons free */
+.compass { position: absolute; left: 50px; right: 46px; top: 8px; z-index: 600; display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: rgba(255, 250, 240, .97); border: 1px solid var(--edge-2); border-radius: 12px; box-shadow: var(--shadow); }
+.compass.in { animation: slide-in .28s ease; }
+@keyframes slide-in { from { transform: translateY(-10px); opacity: 0; } to { transform: none; opacity: 1; } }
+.rose { flex: none; width: 50px; height: 50px; }
+.rose .ring { fill: #fff; stroke: var(--edge-2); stroke-width: 1.5; }
+.rose .ring-in { fill: none; stroke: var(--edge); stroke-dasharray: 2 3; }
+.rose text { font: 700 8px var(--font); fill: var(--ink-2); text-anchor: middle; dominant-baseline: central; }
+.rose .hub { fill: var(--ink); }
+.needle { transform-box: fill-box; transform-origin: center; transition: transform .7s cubic-bezier(.3, 1.4, .5, 1); }
+.needle .n { fill: var(--terra); }
+.needle .s { fill: var(--sea); }
+.compass-body { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.compass-band { font-family: var(--font-title); font-size: 21px; line-height: 1.05; color: var(--ink); }
+.compass-text { margin: 0; font-size: 12.5px; line-height: 1.3; color: var(--ink-2); }
+.compass-hint { margin: 0; font-size: 12.5px; line-height: 1.3; font-weight: 700; color: var(--sea-dark); }
+.dots { flex: none; display: flex; flex-direction: column; gap: 4px; }
+.dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--terra); }
+.dots i.on { background: var(--terra); }
+.map-wrap.compassing .map-hover { top: auto; bottom: 22px; }
 .guess-bar { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 12px; border-top: 1px solid var(--edge); }
 .guess-info { flex: 1; min-width: 0; font-size: 13px; color: var(--ink-2); }
 .guess-bar .btn { min-height: 42px; padding: 0 20px; }
@@ -241,6 +297,7 @@ body.in-game .decor { display: none; }
 .rv-place { margin: 6px 0 0; color: var(--ink-2); }
 .rv-place b { color: var(--terra); }
 .rv-desc { margin: 8px 0 0; color: var(--ink-2); font-size: 13.5px; }
+.rv-flavour { margin: 8px 0 0; font-family: var(--font-title); font-style: italic; color: var(--sea-dark); }
 .rv-photo { margin: 12px 0 0; }
 .rv-photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; border: 6px solid #fff; box-shadow: var(--shadow); transform: rotate(-1.2deg); background: var(--sand-2); }
 .rv-credit { margin-top: 8px; font-size: 11.5px; color: var(--muted); }
@@ -251,6 +308,8 @@ body.in-game .decor { display: none; }
 .result .who { flex: 1; min-width: 0; display: grid; line-height: 1.25; }
 .result .who b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; }
 .result .who small { color: var(--ink-2); font-size: 12px; }
+.result .bdg { flex: none; font-size: 15px; letter-spacing: 1px; }
+.result .bdg:empty { display: none; }
 .result .pts { text-align: right; display: grid; line-height: 1.2; font-variant-numeric: tabular-nums; }
 .result .pts b { color: var(--olive); }
 .result .pts small { color: var(--muted); font-size: 11px; }
@@ -258,6 +317,25 @@ body.in-game .decor { display: none; }
 .result.nopin .pts b { color: var(--muted); }
 .result.takeover .who small { color: var(--terra); }
 .rv-next { margin-top: auto; padding-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+/* presenter: the host's shared screen, big photo, big timer, join code and QR, player chips that flip */
+.present { display: grid; justify-items: center; gap: 6px; padding: 14px; text-align: center; z-index: 6; }
+.present .code { font-size: 38px; }
+.present img { width: 180px; height: 180px; image-rendering: pixelated; }
+.present small { font-size: 11.5px; color: var(--muted); word-break: break-all; }
+.game[data-presenter][data-phase=guess] .mapbox, .game[data-presenter] .zoom-hint, .game[data-presenter] .rv-mine { display: none; }
+.game[data-presenter] .chip.guessed { animation: flip .6s ease both; }
+@keyframes flip { 0% { transform: perspective(400px) rotateY(0); } 50% { transform: perspective(400px) rotateY(90deg); } 100% { transform: perspective(400px) rotateY(0); } }
+@media (min-width: 821px) {
+  .present { position: absolute; right: 16px; top: 64px; width: 230px; }
+  .game[data-presenter] .question { font-size: 28px; }
+  .game[data-presenter] .hud .timer { min-height: 56px; min-width: 132px; font-size: 30px; }
+  .game[data-presenter] .chips { left: 16px; right: 16px; top: auto; bottom: 16px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-height: 40%; }
+  .game[data-presenter] .chip { min-width: 0; max-width: none; padding: 6px 14px 6px 6px; }
+  .game[data-presenter] .chip .avatar.sm { width: 34px; height: 34px; }
+  .game[data-presenter] .chip .who b { font-size: 15px; }
+  .game[data-presenter] .result .who b { font-size: 15px; }
+}
 
 /* pins on the map */
 .pin-icon { background: transparent; border: 0; }
@@ -292,6 +370,12 @@ body.in-game .decor { display: none; }
 .rank .who b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rank small { color: var(--ink-2); font-size: 11.5px; font-variant-numeric: tabular-nums; }
 .rank .pts { font-weight: 800; font-variant-numeric: tabular-nums; }
+.end-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.end-badges .tag { background: var(--mustard-soft); color: #7a5300; }
+.rounds .km { color: var(--ink-2); font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.share { display: grid; gap: 8px; margin-top: 14px; padding: 12px; background: var(--paper-2); border: 1px dashed var(--edge-2); border-radius: 10px; }
+.share .label { margin: 0; }
+.share-text { height: auto; min-height: 70px; padding: 10px 12px; resize: none; font-family: var(--font); font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow: hidden; }
 .end-xp { margin: 14px 0 0; padding: 9px 12px; border-radius: 9px; background: var(--mustard-soft); border: 1px solid #ecd28f; color: #6d4b07; font-weight: 600; text-align: center; }
 .end-xp:empty { display: none; }
 .end-actions { justify-content: center; margin-top: 16px; }
@@ -313,6 +397,14 @@ body.in-game .toasts { top: 64px; }
   .home-card, .lobby-card { width: 100%; max-height: none; padding: 22px 18px 18px; }
   .airmail { margin: -22px -18px 16px; }
   .home h1 { font-size: 30px; }
+  .modes { gap: 6px; }
+  .mode-card { padding: 8px 9px; }
+  .pill.mode { min-height: 28px; padding: 0 9px; font-size: 12px; }
+  .compass { right: 8px; }
+  .present { position: relative; grid-template-columns: auto 1fr; justify-items: start; align-items: center; margin: 0; border-radius: 0; text-align: left; flex: none; }
+  .present img { width: 96px; height: 96px; grid-column: 1; grid-row: 1 / span 3; }
+  .present > :not(img) { grid-column: 2; }
+  .present .code { font-size: 28px; }
   .look-wrap { gap: 12px; }
   .avatar.xl { width: 64px; height: 64px; }
 
@@ -325,7 +417,7 @@ body.in-game .toasts { top: 64px; }
   .zoom-hint { left: 8px; bottom: 8px; }
   .chips { position: relative; left: auto; top: auto; display: flex; gap: 6px; overflow-x: auto; max-height: none; padding: 8px 10px; background: var(--night); flex: none; }
   .chip { min-width: 0; max-width: none; flex: none; padding-right: 8px; }
-  .chip .who small { display: none; }
+  .chip .who small, .chip .tries { display: none; }
   .mapbox, .mapbox.open, .mapbox.big { position: relative; right: auto; bottom: auto; width: auto; margin: 0; border-radius: 0; border: 0; flex: none; display: flex; flex-direction: column; }
   .map, .mapbox.open .map, .mapbox.big .map { height: 34vh; min-height: 220px; }
   .map-size { display: none; }

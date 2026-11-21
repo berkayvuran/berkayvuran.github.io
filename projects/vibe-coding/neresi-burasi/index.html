@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Tahmin oyunu</title>
-  <meta name="description" content="En fazla 15 kişilik online odalarda oynanan bir tahmin oyunu: fotoğrafa bak, Türkiye haritasında yerini işaretle, en yakın tahmin kazansın.">
+  <meta name="description" content="Tek başına ya da en fazla 15 kişilik online odalarda oynanan bir tahmin oyunu: fotoğrafa bak, haritada yerini işaretle, en yakın tahmin kazansın.">
   <meta name="theme-color" content="#2a6f97">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
@@ -46,18 +46,45 @@
           <small id="career-xp"></small>
         </div>
 
-        <div id="invite" class="invite" hidden>
-          <p class="invite-text">Bir oyuna davet edildin: <b id="invite-code"></b></p>
-        </div>
-        <button id="btn-create" class="btn primary block" type="button">Yeni oda kur</button>
-        <form id="join-form" class="join" autocomplete="off">
-          <label class="label" for="in-code" id="join-label">Ya da bir odaya katıl</label>
-          <div class="join-row">
-            <input id="in-code" class="input code-input" type="text" maxlength="5" autocapitalize="characters" spellcheck="false" placeholder="KOD">
-            <button id="btn-join" class="btn" type="submit">Katıl</button>
+        <div id="solo-block" class="home-block" role="group" aria-labelledby="solo-title">
+          <div class="section-head"><h2 id="solo-title">Tek başına</h2></div>
+          <div id="solo-pool-row" class="pool-row" hidden>
+            <span id="lbl-solo-pool" class="label">Harita</span>
+            <div id="solo-pool" class="seg" role="radiogroup" aria-labelledby="lbl-solo-pool"></div>
           </div>
-        </form>
-        <button id="btn-create-alt" class="btn ghost block" type="button" hidden>Kendi odamı kurmak istiyorum</button>
+          <div id="solo-modes" class="modes"></div>
+          <div id="solo-setup" class="solo-setup" hidden>
+            <div class="solo-head"><b id="solo-name"></b><small id="solo-desc" class="muted"></small></div>
+            <div id="solo-bots-row" class="setting">
+              <span id="lbl-solo-bots" class="label">Rakip botlar</span>
+              <div id="solo-bots" class="seg" role="radiogroup" aria-labelledby="lbl-solo-bots"></div>
+            </div>
+            <div id="solo-time-row" class="setting">
+              <span id="lbl-solo-time" class="label">Tur süresi</span>
+              <div id="solo-time" class="seg" role="radiogroup" aria-labelledby="lbl-solo-time"></div>
+            </div>
+            <div class="row solo-actions">
+              <button id="btn-solo-start" class="btn primary" type="button">Başla</button>
+              <button id="btn-solo-cancel" class="btn ghost" type="button">Vazgeç</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="team-block" class="home-block" role="group" aria-labelledby="team-home-title">
+          <div class="section-head"><h2 id="team-home-title">Ekiple</h2></div>
+          <div id="invite" class="invite" hidden>
+            <p class="invite-text">Bir oyuna davet edildin: <b id="invite-code"></b></p>
+          </div>
+          <button id="btn-create" class="btn primary block" type="button">Yeni oda kur</button>
+          <form id="join-form" class="join" autocomplete="off">
+            <label class="label" for="in-code" id="join-label">Ya da bir odaya katıl</label>
+            <div class="join-row">
+              <input id="in-code" class="input code-input" type="text" maxlength="5" autocapitalize="characters" spellcheck="false" placeholder="KOD">
+              <button id="btn-join" class="btn" type="submit">Katıl</button>
+            </div>
+          </form>
+          <button id="btn-create-alt" class="btn ghost block" type="button" hidden>Kendi odamı kurmak istiyorum</button>
+        </div>
         <p id="home-msg" class="msg" role="status" aria-live="polite"></p>
 
         <details class="howto">
@@ -82,6 +109,10 @@
           </div>
         </div>
         <button id="btn-copy" class="btn block" type="button">Davet linkini kopyala</button>
+        <div id="lobby-qr" class="qr-box" hidden>
+          <img id="lobby-qr-img" alt="Davet linkinin QR kodu" width="112" height="112">
+          <p class="muted small">Telefon kamerasıyla okut, odaya katıl. Oyun başlayınca bu ekran sunum ekranına döner.</p>
+        </div>
         <p id="lobby-net" class="msg warn" role="status" hidden></p>
 
         <div class="section-head">
@@ -96,13 +127,26 @@
 
         <div class="settings">
           <div class="setting">
+            <span id="lbl-mode" class="label">Oyun türü</span>
+            <div id="set-mode" class="seg" role="radiogroup" aria-labelledby="lbl-mode"></div>
+            <p id="set-mode-desc" class="mode-desc"></p>
+          </div>
+          <div id="row-pool" class="setting" hidden>
+            <span id="lbl-pool" class="label">Harita</span>
+            <div id="set-pool" class="seg" role="radiogroup" aria-labelledby="lbl-pool"></div>
+          </div>
+          <div class="setting">
             <span class="label">Tur</span>
             <p id="set-rounds" class="static">5 tur, her turda bir fotoğraf</p>
           </div>
-          <div class="setting">
+          <div id="row-time" class="setting">
             <span id="lbl-time" class="label">Tur süresi</span>
             <div id="set-time" class="seg" role="radiogroup" aria-labelledby="lbl-time"></div>
           </div>
+          <label id="row-presenter" class="switch">
+            <input id="set-presenter" type="checkbox">
+            <span>Sunum modu: ekranı paylaş, herkes telefondan oynasın</span>
+          </label>
         </div>
         <button id="btn-start" class="btn primary block big" type="button">Oyunu başlat</button>
         <p id="lobby-wait" class="waiting" hidden>Oda sahibinin oyunu başlatması bekleniyor…</p>
@@ -121,6 +165,7 @@
 
       <header class="hud">
         <span id="hud-round" class="pill round">Tur 1/5</span>
+        <span id="hud-mode" class="pill mode"></span>
         <p id="hud-question" class="question"></p>
         <span id="hud-timer" class="pill timer" role="timer">0:00</span>
         <button id="btn-mute" class="icon-btn" type="button" aria-pressed="false" title="Ses">🔊</button>
@@ -129,11 +174,34 @@
 
       <ul id="chips" class="chips" aria-label="Oyuncular"></ul>
 
+      <!-- Presenter (screen share): the join code and a QR of the invite link beside the big photo -->
+      <aside id="present" class="card present" aria-label="Odaya katıl" hidden>
+        <span class="muted small">Odaya katıl</span>
+        <strong id="present-code" class="code"></strong>
+        <img id="present-qr" alt="Davet linkinin QR kodu" width="180" height="180">
+        <small id="present-url"></small>
+      </aside>
+
       <div id="mapbox" class="mapbox">
         <div class="map-wrap">
-          <div id="map" class="map" aria-label="Türkiye haritası"></div>
+          <div id="map" class="map" aria-label="Harita"></div>
           <span id="map-hover" class="map-hover" hidden></span>
           <button id="btn-map-size" class="map-size" type="button" aria-pressed="false" title="Haritayı büyüt">⤢</button>
+          <div id="compass" class="compass" role="status" hidden>
+            <svg class="rose" viewBox="0 0 64 64" aria-hidden="true">
+              <circle class="ring" cx="32" cy="32" r="30"/>
+              <circle class="ring-in" cx="32" cy="32" r="20"/>
+              <text x="32" y="8">K</text><text x="56" y="32">D</text><text x="32" y="56">G</text><text x="8" y="32">B</text>
+              <g id="compass-needle" class="needle"><path class="n" d="M32 12 L37 32 L27 32 Z"/><path class="s" d="M32 52 L27 32 L37 32 Z"/></g>
+              <circle class="hub" cx="32" cy="32" r="2.5"/>
+            </svg>
+            <div class="compass-body">
+              <strong id="compass-band" class="compass-band"></strong>
+              <p id="compass-text" class="compass-text"></p>
+              <p id="compass-hint" class="compass-hint"></p>
+            </div>
+            <span id="compass-dots" class="dots" aria-hidden="true"></span>
+          </div>
         </div>
         <div class="guess-bar">
           <span id="guess-info" class="guess-info" role="status"></span>
@@ -146,6 +214,7 @@
         <h2 id="rv-title" class="title"></h2>
         <p class="rv-place"><span id="rv-label"></span>: <b id="rv-province"></b></p>
         <p id="rv-desc" class="rv-desc"></p>
+        <p id="rv-flavour" class="rv-flavour" hidden></p>
         <figure class="rv-photo">
           <img id="rv-img" alt="">
           <figcaption id="rv-credit" class="rv-credit"></figcaption>
@@ -167,8 +236,15 @@
       <h2 id="end-title" class="title"></h2>
       <p id="end-sub" class="muted"></p>
       <div id="podium" class="podium"></div>
-      <h3 class="end-h">Sıralama</h3>
+      <h3 id="end-rank-h" class="end-h">Sıralama</h3>
       <ol id="end-rank" class="rank"></ol>
+      <h3 id="end-rounds-h" class="end-h" hidden>Turlar</h3>
+      <ol id="end-rounds" class="rank rounds" hidden></ol>
+      <div id="end-share" class="share" hidden>
+        <label class="label" for="share-text">Sonucunu paylaş</label>
+        <textarea id="share-text" class="input share-text" rows="3" readonly></textarea>
+        <button id="btn-share" class="btn primary block" type="button">Sonucu kopyala</button>
+      </div>
       <p id="end-xp" class="end-xp"></p>
       <div class="row end-actions">
         <button id="btn-again" class="btn primary" type="button">Tekrar oyna</button>
@@ -182,6 +258,7 @@
 
   <script src="vendor/peerjs.min.js"></script>
   <script src="vendor/leaflet.js"></script>
+  <script src="vendor/qrcode.min.js"></script>
   <script src="game/config.js"></script>
   <script src="sim.js"></script>
   <script src="net.js"></script>
